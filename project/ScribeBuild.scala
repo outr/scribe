@@ -65,7 +65,7 @@ object ScribeBuild extends Build {
 }
 
 object Details {
-  val organization = "com.outr"
+  val organization = "com.outr.scribe"
   val name = "scribe"
   val version = "1.0.0-SNAPSHOT"
   val url = "http://outr.com"
