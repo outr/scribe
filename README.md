@@ -1,4 +1,6 @@
 # scribe
+
+[![Join the chat at https://gitter.im/outr/scribe](https://badges.gitter.im/outr/scribe.svg)](https://gitter.im/outr/scribe?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Practical logging framework that doesn't depend on any other logging framework and can be completely configured programmatically.
 
 [![Build Status](https://travis-ci.org/outr/scribe.svg?branch=master)](https://travis-ci.org/outr/scribe)
