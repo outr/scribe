@@ -9,7 +9,7 @@ object ScribeBuild extends Build {
     base = file(".")
   ).settings(name := "Scribe", publish := {})
    .aggregate(core)
-  lazy val core = project("core").withDependencies(enumeratum, scalaTest).settings(
+  lazy val core = project("core").withDependencies(scalaTest).settings(
     libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
   )
 
@@ -83,5 +83,4 @@ object Details {
 
 object Dependencies {
   val scalaTest = "org.scalatest" %% "scalatest" % "2.2.5" % "test"
-  val enumeratum = "com.beachape" %% "enumeratum" % "1.3.6"
 }

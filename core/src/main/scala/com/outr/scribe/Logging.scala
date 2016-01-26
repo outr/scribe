@@ -10,4 +10,14 @@ trait Logging {
     * Defaults to class name with package
     */
   protected def loggerName = getClass.getName
+
+  var logger: Logger = Logger(loggerName)
+  def updateLogger(f: Logger => Logger): Unit = {
+    val original = logger
+    val updated = f(original)
+    if (original.handlers.nonEmpty) {
+      updated.handlers ++= original.handlers
+    }
+    logger = updated
+  }
 }
