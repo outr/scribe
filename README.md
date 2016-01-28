@@ -1,12 +1,12 @@
 # scribe #
 
-Scribe is a completely different way of thinking about logging. Instead of wrapping around existing logging frameworks, Scribe is built from the ground up to provide fast and effective logging in Scala
-without the need of configuration files additional dependencies. All management of logging is handled programmatically in Scala itself.
-
 [![Build Status](https://travis-ci.org/outr/scribe.svg?branch=master)](https://travis-ci.org/outr/scribe)
 [![Stories in Ready](https://badge.waffle.io/outr/scribe.png?label=ready&title=Ready)](https://waffle.io/outr/scribe)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/scribe)
 [![Maven Central](https://img.shields.io/maven-central/v/com.outr.scribe/scribe-core_2.11.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr.scribe/scribe-core_2.11)
+
+Scribe is a completely different way of thinking about logging. Instead of wrapping around existing logging frameworks, Scribe is built from the ground up to provide fast and effective logging in Scala
+without the need of configuration files additional dependencies. All management of logging is handled programmatically in Scala itself.
 
 ## SBT Configuration ##
 
@@ -54,18 +54,17 @@ logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(direct
 A `Logger` is actually just a case class with some additional functionality added on. The `Logger` contains `name`,
 `parent`, `multiplier`, and `includeTrace`.
 
-`name: String`
-:   The name used to reference the logger being used. This defaults to the full class name.
-`parent: Option[Logger]`
-:   The parent logger that will receive all logging events this logger receives. Defaults to `Some(Logger.Root)`.
-`multiplier: Double`
-:   The multiplier added to logs coming through this logger. This provides the ability to boost the value for log records.
-    For example, if you want to see all `Debug` levels for a specific class only, but your handler is filtering to only
-    show `Info` and above you can set `multiplier` to `2.0` and all logs that come through will boost to be included on
-    the next levels value. It is worth noting that they will still output with their proper level name. Defaults to `1.0`.
-`includeTrace: Boolean`
-:   Flag to determine whether trace information (method name and line number) should be included in logging information.
-    This is a somewhat expensive feature, but can be very useful for tracking down bugs. Defaults to false.
+`name: String`: The name used to reference the logger being used. This defaults to the full class name.
+
+`parent: Option[Logger]`: The parent logger that will receive all logging events this logger receives. Defaults to `Some(Logger.Root)`.
+
+`multiplier: Double`: The multiplier added to logs coming through this logger. This provides the ability to boost the value for log records.
+For example, if you want to see all `Debug` levels for a specific class only, but your handler is filtering to only
+show `Info` and above you can set `multiplier` to `2.0` and all logs that come through will boost to be included on
+the next levels value. It is worth noting that they will still output with their proper level name. Defaults to `1.0`.
+
+`includeTrace: Boolean`: Flag to determine whether trace information (method name and line number) should be included in logging information.
+This is a somewhat expensive feature, but can be very useful for tracking down bugs. Defaults to false.
 
 If I want to simply update my logger removing the `Logger.Root` parent and set a new name I can do so like this:
 
