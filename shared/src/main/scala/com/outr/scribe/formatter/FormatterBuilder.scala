@@ -1,6 +1,6 @@
 package com.outr.scribe.formatter
 
-import com.outr.scribe.LogRecord
+import com.outr.scribe.{Platform, LogRecord}
 
 case class FormatterBuilder(formatters: List[LogRecord => String] = Nil) extends Formatter {
   def string(s: String): FormatterBuilder = add(FormatterBuilder.Static(s))
