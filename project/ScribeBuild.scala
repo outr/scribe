@@ -1,10 +1,10 @@
-import sbt._
-import sbt.Keys._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
+import sbt.Keys._
+import sbt._
 
 object ScribeBuild extends Build {
   val SharedSettings = Seq(
-    name := s"${Details.name}-core",
+    name := Details.name,
     version := Details.version,
     organization := Details.organization,
     scalaVersion := Details.scalaVersion,
