@@ -1,10 +1,10 @@
 package com.outr.scribe.formatter
 
-import com.outr.scribe.LogRecord
-
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import scala.util.matching.Regex
+
+import com.outr.scribe.{Platform, LogRecord}
 
 case class FormatterBuilder(items: List[LogRecord => String] = Nil) extends Formatter {
   def string(s: String): FormatterBuilder = add(FormatterBuilder.Static(s))
@@ -26,7 +26,7 @@ case class FormatterBuilder(items: List[LogRecord => String] = Nil) extends Form
 
   def newLine: FormatterBuilder = add(FormatterBuilder.NewLine)
 
-  def add(item: LogRecord => String): FormatterBuilder = copy(items = (item :: items.reverse).reverse)
+  def add(item: LogRecord => String): FormatterBuilder = copy(items = items ++ Seq(item))
 
   def format(record: LogRecord): String = {
     val b = new StringBuilder
@@ -35,12 +35,11 @@ case class FormatterBuilder(items: List[LogRecord => String] = Nil) extends Form
   }
 
   @tailrec
-  private def process(b: StringBuilder, record: LogRecord, l: List[LogRecord => String]): Unit = {
+  private def process(b: StringBuilder, record: LogRecord, l: List[LogRecord => String]): Unit =
     if (l.nonEmpty) {
       b.append(l.head(record))
       process(b, record, l.tail)
     }
-  }
 }
 
 object FormatterBuilder {
@@ -64,7 +63,8 @@ object FormatterBuilder {
   add("newLine", (s: String) => NewLine)
 
   def Static(s: String): LogRecord => String = (record: LogRecord) => s
-  def Date(format: String = "%1$tY.%1$tm.%1$td %1$tT:%1$tL"): LogRecord => String = (record: LogRecord) => format.format(record.timestamp)
+  def Date(format: String = "%1$tY.%1$tm.%1$td %1$tT:%1$tL"): LogRecord => String = (record: LogRecord) =>
+    Platform.formatDate(format, record.timestamp)
 
   val ThreadName: LogRecord => String = (record: LogRecord) => record.threadName
   val Level: LogRecord => String = (record: LogRecord) => record.level.name
@@ -73,17 +73,15 @@ object FormatterBuilder {
   val ClassNameAbbreviated = (record: LogRecord) => abbreviate(record.name.split("[.]").toList)
   val MethodName = (record: LogRecord) => record.methodName.getOrElse("Unknown method")
   val LineNumber = (record: LogRecord) => record.lineNumber.fold("???")(_.toString)
-  val Message: LogRecord => String = (record: LogRecord) => {
-    String.valueOf(record.message())
-  }
-  val NewLine: LogRecord => String = (record: LogRecord) => System.getProperty("line.separator")
+  val Message: LogRecord => String = (record: LogRecord) => String.valueOf(record.message())
+  val NewLine: LogRecord => String = (record: LogRecord) => Platform.LineSeparator
 
-  private val regex: Regex = """\$\{(.*?)\}""".r
+//  private val regex: Regex = """\$\{(.*?)\}""".r
 
-  def parse(s: String): FormatterBuilder = {
-    val results = regex.findAllIn(s)
-    FormatterBuilder(processRecursive(results))
-  }
+//  def parse(s: String): FormatterBuilder = {
+//    val results = regex.findAllIn(s)
+//    FormatterBuilder(processRecursive(results))
+//  }
 
   private def processRecursive(iterator: Regex.MatchIterator,
                                list: ListBuffer[FormatEntry] = ListBuffer.empty[FormatEntry],

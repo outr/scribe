@@ -1,15 +1,12 @@
-package test
-
-import com.outr.scribe.formatter.Formatter
-import com.outr.scribe.writer.Writer
-import com.outr.scribe._
-import org.scalatest.{Matchers, WordSpec}
+package com.outr.scribe
 
 import scala.collection.mutable.ListBuffer
 
-/**
- * @author Matt Hicks <matt@outr.com>
- */
+import org.scalatest.{Matchers, WordSpec}
+
+import com.outr.scribe.writer.Writer
+import com.outr.scribe.formatter.Formatter
+
 class LoggingSpec extends WordSpec with Matchers with Logging {
   updateLogger { l =>
     l.copy(parent = None)
@@ -45,7 +42,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       TestingWriter.records.length should be(3)
     }
     "write a detailed log message" in {
-      val lineNumber = 65
+      val lineNumber = 62
       TestingWriter.clear()
       LoggingTestObject.testLogger()
       TestingWriter.records.length should be(1)

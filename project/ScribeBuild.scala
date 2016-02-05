@@ -1,26 +1,16 @@
-import sbt.Keys._
 import sbt._
+import sbt.Keys._
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
 object ScribeBuild extends Build {
-  import Dependencies._
-
-  lazy val root = Project(
-    id = "root",
-    base = file(".")
-  ).settings(name := "Scribe", publish := {})
-   .aggregate(core)
-  lazy val core = project("core").withDependencies(scalaTest).settings(
-    libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
-  )
-
-  private def project(projectName: String) = Project(id = projectName, base = file(projectName)).settings(
-    name := s"${Details.name}-$projectName",
+  val SharedSettings = Seq(
+    name := s"${Details.name}-core",
     version := Details.version,
     organization := Details.organization,
     scalaVersion := Details.scalaVersion,
     sbtVersion := Details.sbtVersion,
-    fork := true,
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
+      "-encoding", "utf8"),
     resolvers ++= Seq(
       Resolver.sonatypeRepo("snapshots"),
       Resolver.sonatypeRepo("releases"),
@@ -37,7 +27,8 @@ object ScribeBuild extends Build {
         }
     },
     publishArtifact in Test := false,
-    pomExtra := <url>${Details.url}</url>
+    pomExtra :=
+      <url>${Details.url}</url>
       <licenses>
         <license>
           <name>{Details.licenseType}</name>
@@ -59,9 +50,34 @@ object ScribeBuild extends Build {
       </developers>
   )
 
-  implicit class EnhancedProject(project: Project) {
-    def withDependencies(modules: ModuleID*): Project = project.settings(libraryDependencies ++= modules)
-  }
+  lazy val root = project.in(file("core"))
+    .aggregate(js, jvm)
+    .settings(SharedSettings: _*)
+    .settings(publishArtifact := false)
+
+  lazy val scribe = crossProject.in(file("core"))
+    .settings(SharedSettings: _*)
+    .settings(
+      libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _),
+      autoAPIMappings := true,
+      apiMappings += (scalaInstance.value.libraryJar -> url(s"http://www.scala-lang.org/api/${scalaVersion.value}/"))
+    )
+    .jsSettings(
+      libraryDependencies ++= Seq(
+        "io.github.widok" %%% "scala-js-momentjs" % "0.1.4",
+        "org.scalatest" %%% "scalatest" % Dependencies.ScalaTest % "test"
+      ),
+
+      scalaJSStage in Global := FastOptStage
+    )
+    .jvmSettings(
+      libraryDependencies ++= Seq(
+        "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test"
+      )
+    )
+
+  lazy val js = scribe.js
+  lazy val jvm = scribe.jvm
 }
 
 object Details {
@@ -82,5 +98,5 @@ object Details {
 }
 
 object Dependencies {
-  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.5" % "test"
+  val ScalaTest  = "3.0.0-M15"
 }

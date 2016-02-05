@@ -7,7 +7,7 @@ trait Formatter {
 }
 
 object Formatter {
-  val Default = FormatterBuilder.parse("${date} [${threadName}] ${levelPaddedRight} ${classNameAbbreviated} - ${message}${newLine}")
+//  val Default = FormatterBuilder.parse("${date} [${threadName}] ${levelPaddedRight} ${classNameAbbreviated} - ${message}${newLine}")
   val Advanced = FormatterBuilder().
     date().
     string(" [").threadName.string("] ").

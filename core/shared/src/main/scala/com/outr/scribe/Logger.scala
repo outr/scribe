@@ -1,26 +1,32 @@
 package com.outr.scribe
 
+import scala.language.experimental.macros
+
 case class Logger(name: String,
                   parent: Option[Logger] = Some(Logger.Root),
                   multiplier: Double = 1.0,
                   includeTrace: Boolean = false) {
   private[scribe] var handlers = Set.empty[LogHandler]
 
-  def trace(message: => Any): Unit = log(Level.Trace, message)
-  def debug(message: => Any): Unit = log(Level.Debug, message)
-  def info(message: => Any): Unit = log(Level.Info, message)
-  def warn(message: => Any): Unit = log(Level.Warn, message)
-  def error(message: => Any): Unit = log(Level.Error, message)
+  def trace(message: => Any): Unit = macro Macros.trace
+  def debug(message: => Any): Unit = macro Macros.debug
+  def info(message: => Any): Unit = macro Macros.info
+  def warn(message: => Any): Unit = macro Macros.warn
+  def error(message: => Any): Unit = macro Macros.error
 
-  def log(level: Level, message: => Any): Unit = if (accepts(level.value)) {
-    val record = if (includeTrace) {
-      val (methodName, lineNumber) = LogRecord.trace(name, level)
-      LogRecord(name, level, level.value * multiplier, () => message, methodName, lineNumber)
-    } else {
-      LogRecord(name, level, level.value * multiplier, () => message)
+  def log(level: Level,
+          message: => Any,
+          methodName: Option[String] = None,
+          lineNumber: Option[Int] = None
+         ): Unit =
+    if (accepts(level.value)) {
+      val record = if (includeTrace) {
+        LogRecord(name, level, level.value * multiplier, () => message, methodName, lineNumber)
+      } else {
+        LogRecord(name, level, level.value * multiplier, () => message)
+      }
+      log(record)
     }
-    log(record)
-  }
 
   protected[scribe] def log(record: LogRecord): Unit = {
     handlers.foreach(h => h.log(record))
