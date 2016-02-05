@@ -1,10 +1,6 @@
 package com.outr.scribe.formatter
 
-import scala.annotation.tailrec
-import scala.collection.mutable.ListBuffer
-import scala.util.matching.Regex
-
-import com.outr.scribe.{Platform, LogRecord}
+import com.outr.scribe.LogRecord
 
 case class FormatterBuilder(formatters: List[LogRecord => String] = Nil) extends Formatter {
   def string(s: String): FormatterBuilder = add(FormatterBuilder.Static(s))
@@ -62,8 +58,8 @@ object FormatterBuilder {
   val ClassName = (record: LogRecord) => record.name
   val ClassNameAbbreviated = (record: LogRecord) => abbreviate(record.name)
   val MethodName = (record: LogRecord) => record.methodName.getOrElse("Unknown method")
-  val LineNumber = (record: LogRecord) => record.lineNumber.fold("???")(_.toString)
-  val Message: LogRecord => String = (record: LogRecord) => String.valueOf(record.message())
+  val LineNumber = (record: LogRecord) => record.lineNumber.toString
+  val Message: LogRecord => String = (record: LogRecord) => String.valueOf(record.message)
   val NewLine: LogRecord => String = (record: LogRecord) => Platform.LineSeparator
 
   final def abbreviate(className: String): String = {

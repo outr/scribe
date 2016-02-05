@@ -20,7 +20,7 @@ object Macros {
     val logger = c.prefix.tree
     val method = enclosingMethod(c)
     val line = c.enclosingPosition.line
-    q"$logger.log($level, $message, $method, Some($line))"
+    q"$logger.log($level, $message, $method, $line)"
   }
 
   def trace(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Trace), message)

@@ -1,11 +1,10 @@
 package com.outr.scribe
 
-import scala.collection.mutable.ListBuffer
-
+import com.outr.scribe.formatter.Formatter
+import com.outr.scribe.writer.Writer
 import org.scalatest.{Matchers, WordSpec}
 
-import com.outr.scribe.writer.Writer
-import com.outr.scribe.formatter.Formatter
+import scala.collection.mutable.ListBuffer
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
   updateLogger { l =>
@@ -47,7 +46,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       LoggingTestObject.testLogger()
       TestingWriter.records.length should be(1)
       TestingWriter.records.head.methodName should be(Some("testLogger"))
-      TestingWriter.records.head.lineNumber should be(Some(lineNumber))
+      TestingWriter.records.head.lineNumber should be(lineNumber)
     }
   }
 }
