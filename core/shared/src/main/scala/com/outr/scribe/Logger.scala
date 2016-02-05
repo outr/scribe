@@ -4,8 +4,7 @@ import scala.language.experimental.macros
 
 case class Logger(name: String,
                   parent: Option[Logger] = Some(Logger.Root),
-                  multiplier: Double = 1.0,
-                  includeTrace: Boolean = false) {
+                  multiplier: Double = 1.0) {
   private[scribe] var handlers = Set.empty[LogHandler]
 
   def trace(message: => Any): Unit = macro Macros.trace
@@ -20,11 +19,7 @@ case class Logger(name: String,
           lineNumber: Option[Int] = None
          ): Unit =
     if (accepts(level.value)) {
-      val record = if (includeTrace) {
-        LogRecord(name, level, level.value * multiplier, () => message, methodName, lineNumber)
-      } else {
-        LogRecord(name, level, level.value * multiplier, () => message)
-      }
+      val record = LogRecord(name, level, level.value * multiplier, () => message, methodName, lineNumber)
       log(record)
     }
 

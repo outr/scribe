@@ -54,7 +54,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
 
 object LoggingTestObject extends Logging {
   updateLogger { l =>
-    l.copy(parent = None, includeTrace = true)
+    l.copy(parent = None)
   }
   logger.addHandler(LogHandler(Level.Debug, writer = TestingWriter))
 
