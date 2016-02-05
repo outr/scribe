@@ -8,8 +8,11 @@ object Macros {
     import c.universe._
     val term = c.internal.enclosingOwner.asTerm
     val name = term.name.decodedName.toString
-    if (name.head == '<') c.universe.reify(None)
-    else c.Expr(q"Some($name)")
+    if (name.head == '<') {
+      reify(None)
+    } else {
+      c.Expr(q"Some($name)")
+    }
   }
 
   def log(c: whitebox.Context)(level: c.Expr[Level], message: c.Tree): c.universe.Tree = {
@@ -20,18 +23,13 @@ object Macros {
     q"$logger.log($level, $message, $method, Some($line))"
   }
 
-  def trace(c: whitebox.Context)(message: c.Tree): c.universe.Tree =
-    log(c)(c.universe.reify(Level.Trace), message)
+  def trace(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Trace), message)
 
-  def debug(c: whitebox.Context)(message: c.Tree): c.universe.Tree =
-    log(c)(c.universe.reify(Level.Debug), message)
+  def debug(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Debug), message)
 
-  def info(c: whitebox.Context)(message: c.Tree): c.universe.Tree =
-    log(c)(c.universe.reify(Level.Info), message)
+  def info(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Info), message)
 
-  def warn(c: whitebox.Context)(message: c.Tree): c.universe.Tree =
-    log(c)(c.universe.reify(Level.Warn), message)
+  def warn(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Warn), message)
 
-  def error(c: whitebox.Context)(message: c.Tree): c.universe.Tree =
-    log(c)(c.universe.reify(Level.Error), message)
+  def error(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Error), message)
 }
