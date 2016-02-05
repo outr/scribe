@@ -50,12 +50,12 @@ object ScribeBuild extends Build {
       </developers>
   )
 
-  lazy val root = project.in(file("core"))
+  lazy val root = project.in(file("."))
     .aggregate(js, jvm)
     .settings(SharedSettings: _*)
     .settings(publishArtifact := false)
 
-  lazy val scribe = crossProject.in(file("core"))
+  lazy val scribe = crossProject.in(file("."))
     .settings(SharedSettings: _*)
     .settings(
       libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _),
