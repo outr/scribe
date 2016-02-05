@@ -60,25 +60,18 @@ object FormatterBuilder {
   val Level: LogRecord => String = (record: LogRecord) => record.level.name
   val LevelPaddedRight: LogRecord => String = (record: LogRecord) => record.level.namePaddedRight
   val ClassName = (record: LogRecord) => record.name
-  val ClassNameAbbreviated = (record: LogRecord) => abbreviate(record.name.split("[.]").toList)
+  val ClassNameAbbreviated = (record: LogRecord) => abbreviate(record.name)
   val MethodName = (record: LogRecord) => record.methodName.getOrElse("Unknown method")
   val LineNumber = (record: LogRecord) => record.lineNumber.fold("???")(_.toString)
   val Message: LogRecord => String = (record: LogRecord) => String.valueOf(record.message())
   val NewLine: LogRecord => String = (record: LogRecord) => Platform.LineSeparator
 
-  @tailrec
-  final def abbreviate(values: List[String], b: StringBuilder = new StringBuilder): String = {
-    if (values.isEmpty) {
-      b.toString()
-    } else {
-      if (values.tail.isEmpty) {
-        b.append(values.head)
-        b.toString()
-      } else {
-        b.append(values.head.charAt(0))
-        b.append('.')
-        abbreviate(values.tail, b)
-      }
-    }
+  final def abbreviate(className: String): String = {
+    val parts = className.split('.')
+    val last = parts.length - 1
+    parts.zipWithIndex.map {
+      case (cur, i) if i == last => cur
+      case (cur, _)              => "" + cur.head
+    }.mkString(".")
   }
 }
