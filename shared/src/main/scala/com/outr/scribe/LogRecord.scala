@@ -60,6 +60,7 @@ object LogRecord {
     r._threadId = threadId
     r._threadName = threadName
     r._timestamp = timestamp
+    r._message = None
     r
   }
 }
