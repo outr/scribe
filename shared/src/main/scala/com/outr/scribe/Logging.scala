@@ -11,8 +11,18 @@ trait Logging {
     */
   protected def loggerName = getClass.getName
 
-  var logger: Logger = Logger(loggerName)
-  def updateLogger(f: Logger => Logger): Unit = {
+  /**
+    * The logger for this class. Though it can be replaced (being this is a var), it is recommended you use the
+    * `updateLogger` method instead to properly retain existing handlers.
+    */
+  protected var logger: Logger = Logger(loggerName)
+
+  /**
+    * Updates the current logger for this class. The supplied function receives the current logger instance and should
+    * return the instance intended to replace it. Upon completion of the function the handlers that currently exist on
+    * the previous logger will be added to the new logger.
+    */
+  protected def updateLogger(f: Logger => Logger): Unit = {
     val original = logger
     val updated = f(original)
     if (original.handlers.nonEmpty) {
