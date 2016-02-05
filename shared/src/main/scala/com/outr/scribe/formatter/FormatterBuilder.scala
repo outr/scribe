@@ -71,7 +71,7 @@ object FormatterBuilder {
     val last = parts.length - 1
     parts.zipWithIndex.map {
       case (cur, i) if i == last => cur
-      case (cur, _)              => "" + cur.head
+      case (cur, _)              => cur.head
     }.mkString(".")
   }
 }
