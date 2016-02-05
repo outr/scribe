@@ -23,7 +23,7 @@ case class StandardLogHandler(level: Level, formatter: Formatter, writer: Writer
 
 object LogHandler {
   def apply(level: Level = Level.Info,
-            formatter: Formatter = Formatter.Advanced,
+            formatter: Formatter = Formatter.Default,
             writer: Writer = ConsoleWriter): LogHandler = {
     StandardLogHandler(level, formatter, writer)
   }

@@ -66,13 +66,6 @@ object FormatterBuilder {
   val Message: LogRecord => String = (record: LogRecord) => String.valueOf(record.message())
   val NewLine: LogRecord => String = (record: LogRecord) => Platform.LineSeparator
 
-//  private val regex: Regex = """\$\{(.*?)\}""".r
-
-//  def parse(s: String): FormatterBuilder = {
-//    val results = regex.findAllIn(s)
-//    FormatterBuilder(processRecursive(results))
-//  }
-
   private def processRecursive(iterator: Regex.MatchIterator,
                                list: ListBuffer[FormatEntry] = ListBuffer.empty[FormatEntry],
                                previousEnd: Int = 0): List[FormatEntry] = {
