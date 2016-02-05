@@ -66,37 +66,6 @@ object FormatterBuilder {
   val Message: LogRecord => String = (record: LogRecord) => String.valueOf(record.message())
   val NewLine: LogRecord => String = (record: LogRecord) => Platform.LineSeparator
 
-  private def processRecursive(iterator: Regex.MatchIterator,
-                               list: ListBuffer[FormatEntry] = ListBuffer.empty[FormatEntry],
-                               previousEnd: Int = 0): List[FormatEntry] = {
-    if (!iterator.hasNext) {
-      val after = iterator.source.subSequence(previousEnd, iterator.source.length())
-      if (after.length() > 0) {
-        list += FormatterBuilder.Static(after.toString)
-      }
-      list.toList
-    } else {
-      iterator.next()
-      if (iterator.start > previousEnd) {
-        val before = iterator.source.subSequence(previousEnd, iterator.start)
-        list += FormatterBuilder.Static(before.toString)
-      }
-      val block = iterator.group(1)
-      val separator = block.indexOf(':')
-      val (name, value) = if (separator != -1) {
-        (block.substring(0, separator), block.substring(separator + 1))
-      } else {
-        (block, null)
-      }
-      list += parseBlock(name, value)
-      processRecursive(iterator, list, iterator.end)
-    }
-  }
-
-  protected def parseBlock(name: String, value: String): FormatEntry = {
-    map(name)(value)
-  }
-
   @tailrec
   final def abbreviate(values: List[String], b: StringBuilder = new StringBuilder): String = {
     if (values.isEmpty) {
