@@ -41,7 +41,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       TestingWriter.records.length should be(3)
     }
     "write a detailed log message" in {
-      val lineNumber = 62
+      val lineNumber = 61
       TestingWriter.clear()
       LoggingTestObject.testLogger()
       TestingWriter.records.length should be(1)
