@@ -98,5 +98,5 @@ object Details {
 }
 
 object Dependencies {
-  val ScalaTest  = "3.0.0-M15"
+  val ScalaTest = "3.0.0-M15"
 }
