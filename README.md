@@ -13,8 +13,8 @@ without the need of configuration files additional dependencies. All management 
 Scribe is published to Sonatype OSS and Maven Central:
 
 ```
-libraryDependencies += "com.outr.scribe" %% "scribe" % "1.1.0-SNAPSHOT"   // Scala
-libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.1.0-SNAPSHOT"  // Scala.js
+libraryDependencies += "com.outr.scribe" %% "scribe" % "1.1.0"   // Scala
+libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.1.0"  // Scala.js
 ```
 
 ## Using Scribe ##
