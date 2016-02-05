@@ -4,13 +4,12 @@ import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
 object Macros {
-  def enclosingMethod(c: whitebox.Context): c.Expr[Option[String]] = {
+  def enclosingMethod(c: whitebox.Context): c.universe.Expr[Option[String]] = {
     import c.universe._
-    c.enclosingMethod match {
-      case DefDef(_, name, _, _, _, _) =>
-        c.universe.reify(Some(c.literal(name.toString).splice))
-      case _ => c.universe.reify(None)
-    }
+    val term = c.internal.enclosingOwner.asTerm
+    val name = term.name.decodedName.toString
+    if (name.head == '<') c.universe.reify(None)
+    else c.Expr(q"Some($name)")
   }
 
   def log(c: whitebox.Context)(level: c.Expr[Level], message: c.Tree): c.universe.Tree = {
