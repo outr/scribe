@@ -6,7 +6,7 @@ import scala.util.matching.Regex
 
 import com.outr.scribe.{Platform, LogRecord}
 
-case class FormatterBuilder(items: List[LogRecord => String] = Nil) extends Formatter {
+case class FormatterBuilder(formatters: List[LogRecord => String] = Nil) extends Formatter {
   def string(s: String): FormatterBuilder = add(FormatterBuilder.Static(s))
 
   def message: FormatterBuilder = add(FormatterBuilder.Message)
@@ -26,20 +26,10 @@ case class FormatterBuilder(items: List[LogRecord => String] = Nil) extends Form
 
   def newLine: FormatterBuilder = add(FormatterBuilder.NewLine)
 
-  def add(item: LogRecord => String): FormatterBuilder = copy(items = items ++ Seq(item))
+  def add(item: LogRecord => String): FormatterBuilder = copy(formatters = formatters ++ Seq(item))
 
-  def format(record: LogRecord): String = {
-    val b = new StringBuilder
-    process(b, record, items)
-    b.toString()
-  }
-
-  @tailrec
-  private def process(b: StringBuilder, record: LogRecord, l: List[LogRecord => String]): Unit =
-    if (l.nonEmpty) {
-      b.append(l.head(record))
-      process(b, record, l.tail)
-    }
+  def format(record: LogRecord): String =
+    formatters.foldLeft("") { case (str, f) => str + f(record) }
 }
 
 object FormatterBuilder {
