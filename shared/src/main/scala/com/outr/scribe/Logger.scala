@@ -16,7 +16,7 @@ case class Logger(name: String,
   def log(level: Level,
           message: => Any,
           methodName: Option[String] = None,
-          lineNumber: Option[Int] = None
+          lineNumber: Int = -1
          ): Unit =
     if (accepts(level.value)) {
       val record = LogRecord(name, level, level.value * multiplier, () => message, methodName, lineNumber)
@@ -25,7 +25,7 @@ case class Logger(name: String,
 
   protected[scribe] def log(record: LogRecord): Unit = {
     handlers.foreach(h => h.log(record))
-    parent.foreach(p => p.log(record.copy(value = record.value * p.multiplier)))
+    parent.foreach(p => p.log(record.updateValue(record.value * p.multiplier)))
   }
 
   def accepts(value: Double): Boolean = {
