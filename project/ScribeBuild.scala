@@ -78,6 +78,16 @@ object ScribeBuild extends Build {
 
   lazy val js = scribe.js
   lazy val jvm = scribe.jvm
+
+  lazy val slf4j = project.in(file("slf4j"))
+    .dependsOn(jvm)
+    .settings(SharedSettings: _*)
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.slf4j" % "slf4j-api" % Dependencies.SLF4J,
+        "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test"
+      )
+    )
 }
 
 object Details {
@@ -98,5 +108,6 @@ object Details {
 }
 
 object Dependencies {
+  val SLF4J = "1.7.15"
   val ScalaTest = "3.0.0-M15"
 }
