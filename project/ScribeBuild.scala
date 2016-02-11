@@ -51,7 +51,7 @@ object ScribeBuild extends Build {
   )
 
   lazy val root = project.in(file("."))
-    .aggregate(js, jvm)
+    .aggregate(js, jvm, slf4j)
     .settings(SharedSettings: _*)
     .settings(publishArtifact := false)
 
@@ -83,6 +83,7 @@ object ScribeBuild extends Build {
     .dependsOn(jvm)
     .settings(SharedSettings: _*)
     .settings(
+      name := "scribe-slf4j",
       libraryDependencies ++= Seq(
         "org.slf4j" % "slf4j-api" % Dependencies.SLF4J,
         "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test"
