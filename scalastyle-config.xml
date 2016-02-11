@@ -78,7 +78,7 @@
             <parameter name="regex"><![CDATA[^[a-z][A-Za-z0-9]*$]]></parameter>
         </parameters>
     </check>-->
-    <check level="warning" class="org.scalastyle.scalariform.NumberOfMethodsInTypeChecker" enabled="true">
+    <check level="warning" class="org.scalastyle.scalariform.NumberOfMethodsInTypeChecker" enabled="false">
         <parameters>
             <parameter name="maxMethods"><![CDATA[30]]></parameter>
         </parameters>
