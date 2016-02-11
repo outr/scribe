@@ -53,7 +53,7 @@ object Platform {
         }
       }
       b.append(')')
-      b.append(System.getProperty("line.separator"))
+      b.append(LineSeparator)
       writeStackTrace(b, elements.tail)
     }
   }
