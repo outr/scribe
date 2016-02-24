@@ -52,6 +52,8 @@ The following will add a new `LogHandler` to the specified `logger` to append al
 logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.Daily())))
 ```
 
+You may want to use `Logger.Root` instead of `logger` to set this handler globally.
+
 ### Configuring the Logger ###
 
 A `Logger` is actually just a case class with some additional functionality added on. The `Logger` contains `name`,
