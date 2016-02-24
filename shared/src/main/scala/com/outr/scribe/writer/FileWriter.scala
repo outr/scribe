@@ -40,7 +40,12 @@ class FileWriter(val directory: File,
 object FileWriter {
   def DatePattern(pattern: String): () => String = () => pattern.format(System.currentTimeMillis())
 
-  def Daily(name: String = "application"): () => String = DatePattern(name + ".%1$tY-%1$tm-%1$td.log")
+  def Daily(name: String = "application", directory: File = new File("logs")): FileWriter = new FileWriter(directory, Generator.Daily(name))
+  def Flat(name: String = "application", directory: File = new File("logs")): FileWriter = new FileWriter(directory, () => s"$name.log")
+
+  object Generator {
+    def Daily(name: String = "application"): () => String = DatePattern(name + ".%1$tY-%1$tm-%1$td.log")
+  }
 }
 
 class FileHandle(val file: File, append: Boolean) {

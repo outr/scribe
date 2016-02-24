@@ -1,10 +1,12 @@
 package com.outr.scribe
 
+import java.io.File
+
 import com.outr.scribe.formatter.Formatter
-import com.outr.scribe.writer.Writer
+import com.outr.scribe.writer.FileWriter
 import org.scalatest.{Matchers, WordSpec}
 
-import scala.collection.mutable.ListBuffer
+import scala.io.Source
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
   updateLogger { l =>
@@ -12,6 +14,9 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
   }
   val handler = LogHandler(level = Level.Debug, writer = TestingWriter)
   logger.addHandler(handler)
+
+  lazy val fileLogger = Logger("fileLogger", parent = None)
+  lazy val logFile = new File("logs/test.log")
 
   "Logging" should {
     "have no logged entries yet" in {
@@ -41,31 +46,29 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       TestingWriter.records.length should be(3)
     }
     "write a detailed log message" in {
-      val lineNumber = 61
+      val lineNumber = 10
       TestingWriter.clear()
       LoggingTestObject.testLogger()
       TestingWriter.records.length should be(1)
       TestingWriter.records.head.methodName should be(Some("testLogger"))
       TestingWriter.records.head.lineNumber should be(lineNumber)
     }
+    "configure logging to a temporary file" in {
+      logFile.delete()
+      fileLogger.addHandler(LogHandler(formatter = Formatter.Simple, writer = FileWriter.Flat("test")))
+    }
+    "log to the file" in {
+      fileLogger.info("Testing File Logger")
+    }
+    "verify the file was logged to" in {
+      logFile.exists() should be(true)
+      val source = Source.fromFile(logFile)
+      try {
+        source.mkString.trim should equal("Testing File Logger")
+      } finally {
+        source.close()
+        logFile.delete()
+      }
+    }
   }
-}
-
-object LoggingTestObject extends Logging {
-  updateLogger { l =>
-    l.copy(parent = None)
-  }
-  logger.addHandler(LogHandler(Level.Debug, writer = TestingWriter))
-
-  def testLogger(): Unit = {
-    logger.info("This is a test!")
-  }
-}
-
-object TestingWriter extends Writer {
-  val records = ListBuffer.empty[LogRecord]
-
-  def write(record: LogRecord, formatter: Formatter): Unit = records += record
-
-  def clear(): Unit = records.clear()
 }
