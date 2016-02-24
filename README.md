@@ -49,7 +49,7 @@ By default all loggers have a direct parent of `Logger.Root`. It is this logger 
 The following will add a new `LogHandler` to the specified `logger` to append all `Debug` logs and above to a daily file.
 
 ```scala
-logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.Daily)))
+logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.Daily())))
 ```
 
 ### Configuring the Logger ###
