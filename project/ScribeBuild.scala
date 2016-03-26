@@ -16,7 +16,7 @@ object ScribeBuild extends Build {
       Resolver.sonatypeRepo("releases"),
       Resolver.typesafeRepo("releases")
     ),
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
@@ -104,11 +104,11 @@ object Details {
   val developerName = "Matt Hicks"
   val developerURL = "http://matthicks.com"
 
-  val sbtVersion = "0.13.9"
-  val scalaVersion = "2.11.7"
+  val sbtVersion = "0.13.11"
+  val scalaVersion = "2.11.8"
 }
 
 object Dependencies {
-  val SLF4J = "1.7.15"
-  val ScalaTest = "3.0.0-M15"
+  val SLF4J = "1.7.19"
+  val ScalaTest = "3.0.0-M16-SNAP3"
 }
