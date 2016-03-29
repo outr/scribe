@@ -13,7 +13,7 @@ class FileWriter(val directory: File,
   private var currentFilename: String = _
   private var handle: Option[FileHandle] = None
 
-  protected def checkOutput() = synchronized {
+  protected def checkOutput(): Unit = synchronized {
     val filename = filenameGenerator()
     handle match {
       case Some(h) if currentFilename != filename => {
@@ -40,8 +40,14 @@ class FileWriter(val directory: File,
 object FileWriter {
   def DatePattern(pattern: String): () => String = () => pattern.format(System.currentTimeMillis())
 
-  def Daily(name: String = "application", directory: File = new File("logs")): FileWriter = new FileWriter(directory, Generator.Daily(name))
-  def Flat(name: String = "application", directory: File = new File("logs")): FileWriter = new FileWriter(directory, () => s"$name.log")
+  def Daily(name: String = "application",
+            directory: File = new File("logs"),
+            append: Boolean = true,
+            autoFlush: Boolean = true): FileWriter = new FileWriter(directory, Generator.Daily(name), append, autoFlush)
+  def Flat(name: String = "application",
+           directory: File = new File("logs"),
+           append: Boolean = true,
+           autoFlush: Boolean = true): FileWriter = new FileWriter(directory, () => s"$name.log", append, autoFlush)
 
   object Generator {
     def Daily(name: String = "application"): () => String = DatePattern(name + ".%1$tY-%1$tm-%1$td.log")

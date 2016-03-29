@@ -9,8 +9,7 @@ object ScribeBuild extends Build {
     organization := Details.organization,
     scalaVersion := Details.scalaVersion,
     sbtVersion := Details.sbtVersion,
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
-      "-encoding", "utf8"),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
     resolvers ++= Seq(
       Resolver.sonatypeRepo("snapshots"),
       Resolver.sonatypeRepo("releases"),
@@ -94,7 +93,7 @@ object ScribeBuild extends Build {
 object Details {
   val organization = "com.outr.scribe"
   val name = "scribe"
-  val version = "1.2.1"
+  val version = "1.2.2-SNAPSHOT"
   val url = "http://outr.com"
   val licenseType = "MIT"
   val licenseURL = "http://opensource.org/licenses/MIT"

@@ -1,6 +1,7 @@
 package com.outr.scribe.writer
 
-import java.io.{FileOutputStream, BufferedOutputStream, File}
+import java.io.File
+import java.nio.file.{Files, StandardOpenOption}
 import java.util.concurrent.atomic.AtomicInteger
 
 class FileHandle(val file: File, append: Boolean) {
@@ -9,18 +10,23 @@ class FileHandle(val file: File, append: Boolean) {
   // Make sure the directories exist
   file.getParentFile.mkdirs()
 
-  private val output = new BufferedOutputStream(new FileOutputStream(file, append))
+  private val writer = Files.newBufferedWriter(
+    file.toPath,
+    if (append) StandardOpenOption.APPEND else StandardOpenOption.TRUNCATE_EXISTING,
+    StandardOpenOption.CREATE,
+    StandardOpenOption.WRITE
+  )
 
   def write(s: String, autoFlush: Boolean): Unit = {
-    output.write(s.getBytes)
+    writer.write(s)
     if (autoFlush) {
-      output.flush()
+      writer.flush()
     }
   }
 
   def close(): Unit = {
-    output.flush()
-    output.close()
+    writer.flush()
+    writer.close()
   }
 }
 
