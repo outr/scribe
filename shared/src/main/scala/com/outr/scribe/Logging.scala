@@ -15,7 +15,7 @@ trait Logging {
     * The logger for this class. Though it can be replaced (being this is a var), it is recommended you use the
     * `updateLogger` method instead to properly retain existing handlers.
     */
-  protected var logger: Logger = Logger(loggerName)
+  @transient protected var logger: Logger = Logger(loggerName)
 
   /**
     * Updates the current logger for this class. The supplied function receives the current logger instance and should
