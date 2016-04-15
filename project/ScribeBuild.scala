@@ -109,5 +109,5 @@ object Details {
 
 object Dependencies {
   val SLF4J = "1.7.21"
-  val ScalaTest = "3.0.0-SNAP13"
+  val ScalaTest = "3.0.0-M16-SNAP3"
 }
