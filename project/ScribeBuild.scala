@@ -108,6 +108,6 @@ object Details {
 }
 
 object Dependencies {
-  val SLF4J = "1.7.19"
-  val ScalaTest = "3.0.0-M16-SNAP3"
+  val SLF4J = "1.7.21"
+  val ScalaTest = "3.0.0-SNAP13"
 }
