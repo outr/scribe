@@ -8,6 +8,7 @@ object ScribeBuild extends Build {
     version := Details.version,
     organization := Details.organization,
     scalaVersion := Details.scalaVersion,
+    crossScalaVersions := Details.scalaVersions,
     sbtVersion := Details.sbtVersion,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
     resolvers ++= Seq(
@@ -63,7 +64,6 @@ object ScribeBuild extends Build {
     )
     .jsSettings(
       libraryDependencies ++= Seq(
-        "io.github.widok" %%% "scala-js-momentjs" % "0.1.4",
         "org.scalatest" %%% "scalatest" % Dependencies.ScalaTest % "test"
       ),
 
@@ -93,7 +93,7 @@ object ScribeBuild extends Build {
 object Details {
   val organization = "com.outr.scribe"
   val name = "scribe"
-  val version = "1.2.2"
+  val version = "1.2.3-SNAPSHOT"
   val url = "http://outr.com"
   val licenseType = "MIT"
   val licenseURL = "http://opensource.org/licenses/MIT"
@@ -104,10 +104,11 @@ object Details {
   val developerURL = "http://matthicks.com"
 
   val sbtVersion = "0.13.11"
-  val scalaVersion = "2.11.8"
+  val scalaVersions = List("2.12.0-M4", "2.11.8")
+  val scalaVersion = scalaVersions.head
 }
 
 object Dependencies {
   val SLF4J = "1.7.21"
-  val ScalaTest = "3.0.0-M16-SNAP3"
+  val ScalaTest = "3.0.0-M16-SNAP4"
 }
