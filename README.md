@@ -10,11 +10,11 @@ without the need of configuration files additional dependencies. All management 
 
 ## SBT Configuration ##
 
-Scribe is published to Sonatype OSS and Maven Central:
+Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala.js with 2.11 and 2.12:
 
 ```
-libraryDependencies += "com.outr.scribe" %% "scribe" % "1.2.2"   // Scala
-libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.2"  // Scala.js
+libraryDependencies += "com.outr.scribe" %% "scribe" % "1.2.3"   // Scala
+libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.3"  // Scala.js
 ```
 
 ## Using Scribe ##
@@ -82,3 +82,12 @@ class MyClass extends Logging {
 
 This will update the logger being used for this class going forward. All existing handlers on the previous `Logger` instance
 will be re-applied to this new instance as well.
+
+### SLF4J Logger ###
+
+If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
+
+```
+libraryDependencies += "com.outr.scribe" %% "scribe-slf4j" % "1.2.3"   // Scala
+libraryDependencies += "com.outr.scribe" %%% "scribe-slf4j" % "1.2.3"  // Scala.js
+```
