@@ -3,9 +3,9 @@ package com.outr.scribe
 import scala.annotation.tailrec
 
 object Platform {
-  private val NativeMethod = -2
+  private val nativeMethod = -2
 
-  val LineSeparator = System.getProperty("line.separator")
+  val lineSeparator = System.getProperty("line.separator")
 
   def formatDate(pattern: String, timestamp: Long): String =
     pattern.format(timestamp)
@@ -44,7 +44,7 @@ object Platform {
         b.append('.')
         b.append(head.getMethodName)
         b.append('(')
-        if (head.getLineNumber == NativeMethod) {
+        if (head.getLineNumber == nativeMethod) {
           b.append("Native Method")
         } else {
           b.append(head.getFileName)
@@ -54,7 +54,7 @@ object Platform {
           }
         }
         b.append(')')
-        b.append(LineSeparator)
+        b.append(lineSeparator)
         writeStackTrace(b, elements.tail)
       }
     }

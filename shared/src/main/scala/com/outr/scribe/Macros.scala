@@ -17,6 +17,7 @@ object Macros {
 
   def log(c: whitebox.Context)(level: c.Expr[Level], message: c.Tree): c.universe.Tree = {
     import c.universe._
+    
     val logger = c.prefix.tree
     val method = enclosingMethod(c)
     val line = c.enclosingPosition.line

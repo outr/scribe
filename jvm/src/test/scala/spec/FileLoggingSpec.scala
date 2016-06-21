@@ -17,7 +17,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
   "File Logging" should {
     "configure logging to a temporary file" in {
       logFile.delete()
-      fileLogger.addHandler(LogHandler(formatter = Formatter.Simple, writer = FileWriter.Flat("test")))
+      fileLogger.addHandler(LogHandler(formatter = Formatter.simple, writer = FileWriter.Flat("test")))
     }
     "log to the file" in {
       fileLogger.info("Testing File Logger")

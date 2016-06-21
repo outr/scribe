@@ -12,7 +12,7 @@ import scala.language.experimental.macros
   *                   logger (Defaults to 1.0)
   */
 case class Logger(name: String,
-                  parent: Option[Logger] = Some(Logger.Root),
+                  parent: Option[Logger] = Some(Logger.root),
                   multiplier: Double = 1.0) {
   private[scribe] var handlers = Set.empty[LogHandler]
 
@@ -102,7 +102,7 @@ object Logger {
   /**
     * The root logger is the default parent of all loggers and comes default with a default LogHandler added.
     */
-  val Root: Logger = {
+  val root: Logger = {
     val l = Logger("root", parent = None)
     l.addHandler(LogHandler())
     l

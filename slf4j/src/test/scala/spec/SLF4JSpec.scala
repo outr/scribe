@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory
 class SLF4JSpec extends WordSpec with Matchers {
   "SLF4J" should {
     "remove existing handlers from Root" in {
-      Logger.Root.clearHandlers()
+      Logger.root.clearHandlers()
     }
     "add a testing handler" in {
-      Logger.Root.addHandler(RecordHolder)
+      Logger.root.addHandler(RecordHolder)
     }
     "verify not records are in the RecordHolder" in {
       RecordHolder.logs.isEmpty should be(true)

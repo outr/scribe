@@ -55,14 +55,14 @@ object ScribeBuild extends Build {
     )
     .jsSettings(
       libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % Dependencies.ScalaTest % "test"
+        "org.scalatest" %%% "scalatest" % Dependencies.scalaTest % "test"
       ),
 
       scalaJSStage in Global := FastOptStage
     )
     .jvmSettings(
       libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test"
+        "org.scalatest" %% "scalatest" % Dependencies.scalaTest % "test"
       )
     )
 
@@ -75,8 +75,8 @@ object ScribeBuild extends Build {
     .settings(
       name := "scribe-slf4j",
       libraryDependencies ++= Seq(
-        "org.slf4j" % "slf4j-api" % Dependencies.SLF4J,
-        "org.scalatest" %% "scalatest" % Dependencies.ScalaTest % "test"
+        "org.slf4j" % "slf4j-api" % Dependencies.slf4j,
+        "org.scalatest" %% "scalatest" % Dependencies.scalaTest % "test"
       )
     )
 }
@@ -100,6 +100,6 @@ object Details {
 }
 
 object Dependencies {
-  val SLF4J = "1.7.21"
-  val ScalaTest = "3.0.0-M16-SNAP4"
+  val slf4j = "1.7.21"
+  val scalaTest = "3.0.0-M16-SNAP4"
 }

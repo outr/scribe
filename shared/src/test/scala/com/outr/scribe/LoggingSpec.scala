@@ -33,7 +33,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       TestingWriter.records.length should be(3)
     }
     "not increment when logging to the root logger" in {
-      Logger.Root.error("Error Log 1")
+      Logger.root.error("Error Log 1")
       TestingWriter.records.length should be(3)
     }
     "write a detailed log message" in {

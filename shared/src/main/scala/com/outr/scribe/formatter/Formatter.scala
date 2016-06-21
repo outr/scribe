@@ -7,15 +7,14 @@ trait Formatter {
 }
 
 object Formatter {
-  val Simple = FormatterBuilder().message.newLine
-  val Default = FormatterBuilder().
+  val simple = FormatterBuilder().message.newLine
+  val default = FormatterBuilder().
     date().
     string(" [").threadName.string("] ").
     levelPaddedRight.string(" ").
     classNameAbbreviated.string(".").methodName.string(":").lineNumber.
     string(" - ").message.newLine
-
-  val Trace = FormatterBuilder().
+  val trace = FormatterBuilder().
     threadName.string("-").levelPaddedRight.string("-")
     .classNameAbbreviated.string(".").methodName.string(":").lineNumber
     .string("-").message.newLine
