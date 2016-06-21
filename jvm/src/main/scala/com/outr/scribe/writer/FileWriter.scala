@@ -38,18 +38,16 @@ class FileWriter(val directory: File,
 }
 
 object FileWriter {
-  def DatePattern(pattern: String): () => String = () => pattern.format(System.currentTimeMillis())
+  def datePattern(pattern: String): () => String = () => pattern.format(System.currentTimeMillis())
 
-  def Daily(name: String = "application",
+  def daily(name: String = "application",
             directory: File = new File("logs"),
             append: Boolean = true,
-            autoFlush: Boolean = true): FileWriter = new FileWriter(directory, Generator.Daily(name), append, autoFlush)
-  def Flat(name: String = "application",
+            autoFlush: Boolean = true): FileWriter = {
+    new FileWriter(directory, datePattern(name + ".%1$tY-%1$tm-%1$td.log"), append, autoFlush)
+  }
+  def flat(name: String = "application",
            directory: File = new File("logs"),
            append: Boolean = true,
            autoFlush: Boolean = true): FileWriter = new FileWriter(directory, () => s"$name.log", append, autoFlush)
-
-  object Generator {
-    def Daily(name: String = "application"): () => String = DatePattern(name + ".%1$tY-%1$tm-%1$td.log")
-  }
 }
