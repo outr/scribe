@@ -21,7 +21,7 @@ case class FormatterBuilder(formatters: List[LogRecord => String] = Nil) extends
   def methodName: FormatterBuilder = add(_.methodName.getOrElse("Unknown method"))
   def lineNumber: FormatterBuilder = add(_.lineNumber.toString)
 
-  def newLine: FormatterBuilder = add(_ => Platform.LineSeparator)
+  def newLine: FormatterBuilder = add(_ => Platform.lineSeparator)
 
   def add(item: LogRecord => String): FormatterBuilder = copy(formatters = formatters ++ Seq(item))
 

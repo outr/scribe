@@ -3,7 +3,7 @@ package com.outr.scribe
 import scala.scalajs.js.Date
 
 object Platform {
-  val LineSeparator = "\n"
+  val lineSeparator = "\n"
 
   private val replacements = Map(
     "%1$tY" -> ((d: Date) => d.getFullYear().toString),
