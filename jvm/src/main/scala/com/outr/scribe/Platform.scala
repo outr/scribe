@@ -36,25 +36,27 @@ object Platform {
 
   @tailrec
   private def writeStackTrace(b: StringBuilder, elements: Array[StackTraceElement]): Unit = {
-    if (elements.nonEmpty) {
-      val head = elements.head
-      b.append("\tat ")
-      b.append(head.getClassName)
-      b.append('.')
-      b.append(head.getMethodName)
-      b.append('(')
-      if (head.getLineNumber == NativeMethod) {
-        b.append("Native Method")
-      } else {
-        b.append(head.getFileName)
-        if (head.getLineNumber > 0) {
-          b.append(':')
-          b.append(head.getLineNumber)
+    elements.headOption match {
+      case None => // No more elements
+      case Some(head) => {
+        b.append("\tat ")
+        b.append(head.getClassName)
+        b.append('.')
+        b.append(head.getMethodName)
+        b.append('(')
+        if (head.getLineNumber == NativeMethod) {
+          b.append("Native Method")
+        } else {
+          b.append(head.getFileName)
+          if (head.getLineNumber > 0) {
+            b.append(':')
+            b.append(head.getLineNumber)
+          }
         }
+        b.append(')')
+        b.append(LineSeparator)
+        writeStackTrace(b, elements.tail)
       }
-      b.append(')')
-      b.append(LineSeparator)
-      writeStackTrace(b, elements.tail)
     }
   }
 }

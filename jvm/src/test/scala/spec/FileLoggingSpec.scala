@@ -8,6 +8,7 @@ import com.outr.scribe.{LogHandler, Logger}
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.io.Source
+import scala.util.Try
 
 class FileLoggingSpec extends WordSpec with Matchers {
   lazy val fileLogger = Logger("fileLogger", parent = None)
@@ -24,6 +25,9 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify the file was logged to" in {
       logFile.exists() should be(true)
       val source = Source.fromFile(logFile)
+      Try {
+
+      }
       try {
         source.mkString.trim should equal("Testing File Logger")
       } finally {

@@ -96,7 +96,7 @@ object Details {
 
   val sbtVersion = "0.13.11"
   val scalaVersions = List("2.12.0-M4", "2.11.8")
-  val scalaVersion = scalaVersions.head
+  val scalaVersion = "2.11.8"
 }
 
 object Dependencies {
