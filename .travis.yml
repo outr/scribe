@@ -15,7 +15,8 @@ before_cache:
 notifications:
   slack: outr:A8tndkIibmnKjv7YBMnAK7SE
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION clean scribeJS/test
+  - sbt ++$TRAVIS_SCALA_VERSION clean coverage scribeJVM/test slf4j/test
   - sbt ++$TRAVIS_SCALA_VERSION coverageReport
   - sbt ++$TRAVIS_SCALA_VERSION coverageAggregate
   - sbt ++$TRAVIS_SCALA_VERSION codacyCoverage
