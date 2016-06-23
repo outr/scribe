@@ -25,9 +25,6 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify the file was logged to" in {
       logFile.exists() should be(true)
       val source = Source.fromFile(logFile)
-      Try {
-
-      }
       try {
         source.mkString.trim should equal("Testing File Logger")
       } finally {
