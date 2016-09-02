@@ -9,4 +9,8 @@ object LoggingTestObject extends Logging {
   def testLogger(): Unit = {
     logger.info("This is a test!")
   }
+
+  def testException(): Unit = {
+    logger.info(new RuntimeException("Testing"))
+  }
 }

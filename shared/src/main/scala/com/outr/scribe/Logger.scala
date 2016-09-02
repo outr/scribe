@@ -1,5 +1,6 @@
 package com.outr.scribe
 
+import scala.annotation.tailrec
 import scala.language.experimental.macros
 
 /**
@@ -21,25 +22,38 @@ case class Logger(name: String,
     */
   def trace(message: => Any): Unit = macro Macros.trace
 
+  def trace(t: => Throwable): Unit = macro Macros.traceThrowable
+
   /**
     * Debug log entry. Uses Macros to optimize performance.
     */
   def debug(message: => Any): Unit = macro Macros.debug
+
+  def debug(t: => Throwable): Unit = macro Macros.debugThrowable
 
   /**
     * Info log entry. Uses Macros to optimize performance.
     */
   def info(message: => Any): Unit = macro Macros.info
 
+  def info(t: => Throwable): Unit = macro Macros.infoThrowable
+
   /**
     * Warn log entry. Uses Macros to optimize performance.
     */
   def warn(message: => Any): Unit = macro Macros.warn
 
+  def warn(t: => Throwable): Unit = macro Macros.warnThrowable
+
   /**
     * Error log entry. Uses Macros to optimize performance.
     */
   def error(message: => Any): Unit = macro Macros.error
+
+  /**
+    * Error log entry. Uses Macros to optimize performance.
+    */
+  def error(t: => Throwable): Unit = macro Macros.errorThrowable
 
   /**
     * Log method invoked by trace, debug, info, warn, and error. Ideally should not be called directly as it will not
@@ -96,6 +110,8 @@ case class Logger(name: String,
 }
 
 object Logger {
+  private val nativeMethod = -2
+
   val systemOut = System.out
   val systemErr = System.err
 
@@ -106,5 +122,55 @@ object Logger {
     val l = Logger("root", parent = None)
     l.addHandler(LogHandler())
     l
+  }
+
+  /**
+    * Converts a Throwable to a String representation for output in logging.
+    */
+  @tailrec
+  final def throwable2String(t: Throwable,
+                             primaryCause: Boolean = true,
+                             b: StringBuilder = new StringBuilder): String = {
+    if (!primaryCause) {
+      b.append("Caused by: ")
+    }
+    b.append(t.getClass.getName)
+    if (Option(t.getLocalizedMessage).nonEmpty) {
+      b.append(": ")
+      b.append(t.getLocalizedMessage)
+    }
+    b.append(System.getProperty("line.separator"))
+    writeStackTrace(b, t.getStackTrace)
+    if (Option(t.getCause).isEmpty) {
+      b.toString()
+    } else {
+      throwable2String(t.getCause, primaryCause = false, b = b)
+    }
+  }
+
+  @tailrec
+  private def writeStackTrace(b: StringBuilder, elements: Array[StackTraceElement]): Unit = {
+    elements.headOption match {
+      case None => // No more elements
+      case Some(head) => {
+        b.append("\tat ")
+        b.append(head.getClassName)
+        b.append('.')
+        b.append(head.getMethodName)
+        b.append('(')
+        if (head.getLineNumber == nativeMethod) {
+          b.append("Native Method")
+        } else {
+          b.append(head.getFileName)
+          if (head.getLineNumber > 0) {
+            b.append(':')
+            b.append(head.getLineNumber)
+          }
+        }
+        b.append(')')
+        b.append(Platform.lineSeparator)
+        writeStackTrace(b, elements.tail)
+      }
+    }
   }
 }

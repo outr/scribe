@@ -89,5 +89,4 @@ If you add the `scribe-slf4j` dependency to your project Scribe will be picked u
 
 ```
 libraryDependencies += "com.outr.scribe" %% "scribe-slf4j" % "1.2.3"   // Scala
-libraryDependencies += "com.outr.scribe" %%% "scribe-slf4j" % "1.2.3"  // Scala.js
 ```

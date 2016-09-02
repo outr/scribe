@@ -27,7 +27,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def warn(msg: String, t: Throwable): Unit = {
     logger.warn(msg)
-    logger.warn(Platform.throwable2String(t))
+    logger.warn(t)
   }
 
   override def isErrorEnabled: Boolean = logger.accepts(Level.Error.value)
@@ -48,7 +48,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def error(msg: String, t: Throwable): Unit = {
     logger.error(msg)
-    logger.error(Platform.throwable2String(t))
+    logger.error(t)
   }
 
   override def debug(msg: String): Unit = logger.debug(msg)
@@ -61,7 +61,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def debug(msg: String, t: Throwable): Unit = {
     logger.debug(msg)
-    logger.debug(Platform.throwable2String(t))
+    logger.debug(t)
   }
 
   override def isWarnEnabled: Boolean = logger.accepts(Level.Warn.value)
@@ -76,7 +76,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def trace(msg: String, t: Throwable): Unit = {
     logger.trace(msg)
-    logger.trace(Platform.throwable2String(t))
+    logger.trace(t)
   }
 
   override def info(msg: String): Unit = logger.info(msg)
@@ -89,6 +89,6 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def info(msg: String, t: Throwable): Unit = {
     logger.info(msg)
-    logger.info(Platform.throwable2String(t))
+    logger.info(t)
   }
 }

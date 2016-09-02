@@ -86,7 +86,7 @@ object ScribeBuild extends Build {
 object Details {
   val organization = "com.outr.scribe"
   val name = "scribe"
-  val version = "1.2.3"
+  val version = "1.2.4"
   val url = "http://outr.com"
   val licenseType = "MIT"
   val licenseURL = "http://opensource.org/licenses/MIT"
@@ -97,11 +97,11 @@ object Details {
   val developerURL = "http://matthicks.com"
 
   val sbtVersion = "0.13.11"
-  val scalaVersions = List("2.12.0-M4", "2.11.8")
+  val scalaVersions = List("2.12.0-M5", "2.11.8")
   val scalaVersion = "2.11.8"
 }
 
 object Dependencies {
   val slf4j = "1.7.21"
-  val scalaTest = "3.0.0-M16-SNAP4"
+  val scalaTest = "3.0.0"
 }

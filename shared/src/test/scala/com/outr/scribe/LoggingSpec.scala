@@ -44,5 +44,14 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       TestingWriter.records.head.methodName should be(Some("testLogger"))
       TestingWriter.records.head.lineNumber should be(lineNumber)
     }
+    "write an exception" in {
+      val lineNumber = 14
+      TestingWriter.clear()
+      LoggingTestObject.testException()
+      TestingWriter.records.length should be(1)
+      TestingWriter.records.head.methodName should be(Some("testException"))
+      TestingWriter.records.head.lineNumber should be(lineNumber)
+      TestingWriter.records.head.message should startWith("java.lang.RuntimeException: Testing")
+    }
   }
 }

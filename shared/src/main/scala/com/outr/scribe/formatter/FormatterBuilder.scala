@@ -18,7 +18,7 @@ case class FormatterBuilder(formatters: List[LogRecord => String] = Nil) extends
   def className: FormatterBuilder = add(_.name)
   def classNameAbbreviated: FormatterBuilder = add(record => FormatterBuilder.abbreviate(record.name))
 
-  def methodName: FormatterBuilder = add(_.methodName.getOrElse("Unknown method"))
+  def methodName: FormatterBuilder = add(_.methodName.getOrElse("???"))
   def lineNumber: FormatterBuilder = add(_.lineNumber.toString)
 
   def newLine: FormatterBuilder = add(_ => Platform.lineSeparator)

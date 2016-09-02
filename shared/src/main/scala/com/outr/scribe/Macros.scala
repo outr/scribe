@@ -26,11 +26,46 @@ object Macros {
 
   def trace(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Trace), message)
 
+  def traceThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    log(c)(c.universe.reify(Level.Trace), q"com.outr.scribe.Logger.throwable2String($t)")
+  }
+
   def debug(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Debug), message)
+
+  def debugThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    log(c)(c.universe.reify(Level.Debug), q"com.outr.scribe.Logger.throwable2String($t)")
+  }
 
   def info(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Info), message)
 
+  def infoThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    log(c)(c.universe.reify(Level.Info), q"com.outr.scribe.Logger.throwable2String($t)")
+  }
+
   def warn(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Warn), message)
 
+  def warnThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    log(c)(c.universe.reify(Level.Warn), q"com.outr.scribe.Logger.throwable2String($t)")
+  }
+
   def error(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Error), message)
+
+  def errorThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    log(c)(c.universe.reify(Level.Error), q"com.outr.scribe.Logger.throwable2String($t)")
+  }
+
+  /*def errorThrowable(c: whitebox.Context)(t: c.Expr[Throwable]): c.Expr[Unit] = {
+    import c.universe._
+
+    val logger = c.prefix.tree
+    val method = enclosingMethod(c)
+    val line = c.enclosingPosition.line
+    val message = q"com.outr.scribe.Logger.throwable2String(t)"
+    c.Expr[Unit](q"$logger.log(Level.Error, $message, $method, $line)")
+  }*/
 }
