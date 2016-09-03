@@ -1,7 +1,6 @@
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
-import scoverage.ScoverageSbtPlugin.autoImport._
 
 object ScribeBuild extends Build {
   val SharedSettings = Seq(
@@ -58,14 +57,12 @@ object ScribeBuild extends Build {
       libraryDependencies ++= Seq(
         "org.scalatest" %%% "scalatest" % Dependencies.scalaTest % "test"
       ),
-      coverageEnabled := false,
       scalaJSStage in Global := FastOptStage
     )
     .jvmSettings(
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % Dependencies.scalaTest % "test"
-      ),
-      coverageEnabled := true
+      )
     )
 
   lazy val js = scribe.js
@@ -86,7 +83,7 @@ object ScribeBuild extends Build {
 object Details {
   val organization = "com.outr.scribe"
   val name = "scribe"
-  val version = "1.2.4"
+  val version = "1.2.5"
   val url = "http://outr.com"
   val licenseType = "MIT"
   val licenseURL = "http://opensource.org/licenses/MIT"
