@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/outr/scribe.svg?branch=master)](https://travis-ci.org/outr/scribe)
 [![Stories in Ready](https://badge.waffle.io/outr/scribe.png?label=ready&title=Ready)](https://waffle.io/outr/scribe)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/scribe)
-[![Maven Central](https://img.shields.io/maven-central/v/com.outr.scribe/scribe_2.11.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr.scribe/scribe_2.11)
+[![Maven Central](https://img.shields.io/maven-central/v/com.outr.scribe/scribe_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr.scribe/scribe_2.12)
 
 Scribe is a completely different way of thinking about logging. Instead of wrapping around existing logging frameworks, Scribe is built from the ground up to provide fast and effective logging in Scala and Scala.js
 without the need of configuration files additional dependencies. All management of logging is handled programmatically in Scala itself.
@@ -13,8 +13,8 @@ without the need of configuration files additional dependencies. All management 
 Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala.js with 2.11 and 2.12:
 
 ```
-libraryDependencies += "com.outr.scribe" %% "scribe" % "1.2.3"   // Scala
-libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.3"  // Scala.js
+libraryDependencies += "com.outr.scribe" %% "scribe" % "1.2.6"   // Scala
+libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.6"  // Scala.js
 ```
 
 ## Using Scribe ##
@@ -88,5 +88,5 @@ will be re-applied to this new instance as well.
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
 
 ```
-libraryDependencies += "com.outr.scribe" %% "scribe-slf4j" % "1.2.3"   // Scala
+libraryDependencies += "com.outr.scribe" %% "scribe-slf4j" % "1.2.6"   // Scala
 ```

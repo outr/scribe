@@ -58,14 +58,4 @@ object Macros {
     import c.universe._
     log(c)(c.universe.reify(Level.Error), q"com.outr.scribe.Logger.throwable2String($t)")
   }
-
-  /*def errorThrowable(c: whitebox.Context)(t: c.Expr[Throwable]): c.Expr[Unit] = {
-    import c.universe._
-
-    val logger = c.prefix.tree
-    val method = enclosingMethod(c)
-    val line = c.enclosingPosition.line
-    val message = q"com.outr.scribe.Logger.throwable2String(t)"
-    c.Expr[Unit](q"$logger.log(Level.Error, $message, $method, $line)")
-  }*/
 }
