@@ -1,10 +1,12 @@
-package com.outr.scribe
+package specs
 
-object LoggingTestObject extends Logging {
+import com.outr.scribe.{Level, LogHandler, Logging}
+
+class LoggingTestObject(writer: TestingWriter) extends Logging {
   logger.update {
     logger.copy(parentName = None)
   }
-  logger.addHandler(LogHandler(Level.Debug, writer = TestingWriter))
+  logger.addHandler(LogHandler(Level.Debug, writer = writer))
 
   def testLogger(): Unit = {
     logger.info("This is a test!")

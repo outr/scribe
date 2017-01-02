@@ -1,12 +1,13 @@
-package com.outr.scribe
+package specs
 
+import com.outr.scribe.LogRecord
 import com.outr.scribe.formatter.Formatter
 import com.outr.scribe.writer.Writer
 
 import scala.collection.mutable.ListBuffer
 
-object TestingWriter extends Writer {
-  val records = ListBuffer.empty[LogRecord]
+class TestingWriter extends Writer {
+  val records: ListBuffer[LogRecord] = ListBuffer.empty[LogRecord]
 
   def write(record: LogRecord, formatter: Formatter): Unit = records += record
 

@@ -15,11 +15,39 @@ case class FormatterBuilder(formatters: List[LogRecord => String] = Nil) extends
   def level: FormatterBuilder = add(_.level.name)
   def levelPaddedRight: FormatterBuilder = add(_.level.namePaddedRight)
 
-  def className: FormatterBuilder = add(_.name)
-  def classNameAbbreviated: FormatterBuilder = add(record => FormatterBuilder.abbreviate(record.name))
+  def className: FormatterBuilder = add(_.className)
+  def classNameAbbreviated: FormatterBuilder = add(record => FormatterBuilder.abbreviate(record.className))
 
   def methodName: FormatterBuilder = add(_.methodName.getOrElse("???"))
   def lineNumber: FormatterBuilder = add(_.lineNumber.toString)
+
+  def position: FormatterBuilder = add { record =>
+    val b = new StringBuilder
+    b.append(record.className)
+    record.methodName.foreach { methodName =>
+      b.append('.')
+      b.append(methodName)
+    }
+    if (record.lineNumber > 0) {
+      b.append(':')
+      b.append(record.lineNumber)
+    }
+    b.toString()
+  }
+
+  def positionAbbreviated: FormatterBuilder = add { record =>
+    val b = new StringBuilder
+    b.append(FormatterBuilder.abbreviate(record.className))
+    record.methodName.foreach { methodName =>
+      b.append('.')
+      b.append(methodName)
+    }
+    if (record.lineNumber > 0) {
+      b.append(':')
+      b.append(record.lineNumber)
+    }
+    b.toString()
+  }
 
   def newLine: FormatterBuilder = add(_ => Platform.lineSeparator)
 

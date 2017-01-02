@@ -1,10 +1,10 @@
 package com.outr.scribe
 
 class LogRecord private() {
-  private var _name: String = _
   private var _level: Level = _
   private var _value: Double = _
   private var _messageFunction: () => Any = _
+  private var _className: String = _
   private var _methodName: Option[String] = None
   private var _lineNumber: Int = _
   private var _threadId: Long = _
@@ -13,7 +13,6 @@ class LogRecord private() {
 
   private var _message: Option[String] = None
 
-  def name: String = _name
   def level: Level = _level
   def value: Double = _value
   def message: String = _message match {
@@ -24,6 +23,7 @@ class LogRecord private() {
       m
     }
   }
+  def className: String = _className
   def methodName: Option[String] = _methodName
   def lineNumber: Int = _lineNumber
   def threadId: Long = _threadId
@@ -34,6 +34,18 @@ class LogRecord private() {
     _value = value
     this
   }
+
+  override def toString: String = {
+    val list = List(
+      "level" -> level.name,
+      "value" -> value.toString,
+      "class" -> className,
+      "method" -> methodName.getOrElse("???"),
+      "line" -> lineNumber.toString,
+      "message" -> message
+    )
+    list.map(t => s"${t._1}: ${t._2}").mkString("LogRecord(", ", ", ")")
+  }
 }
 
 object LogRecord {
@@ -41,20 +53,20 @@ object LogRecord {
     override def initialValue(): LogRecord = new LogRecord()
   }
 
-  def apply(name: String,
-            level: Level,
+  def apply(level: Level,
             value: Double,
             message: () => Any,
+            className: String,
             methodName: Option[String],
             lineNumber: Int,
             threadId: Long = Thread.currentThread().getId,
             threadName: String = Thread.currentThread().getName,
             timestamp: Long = System.currentTimeMillis()): LogRecord = {
     val r = instance.get()
-    r._name = name
     r._level = level
     r._value = value
     r._messageFunction = message
+    r._className = className
     r._methodName = methodName
     r._lineNumber = lineNumber
     r._threadId = threadId

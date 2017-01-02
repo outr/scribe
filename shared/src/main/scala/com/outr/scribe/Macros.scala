@@ -4,24 +4,31 @@ import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
 object Macros {
-  def enclosingMethod(c: whitebox.Context): c.universe.Expr[Option[String]] = {
+  case class EnclosingType(className: String, methodName: Option[String])
+
+  def enclosingType(c: whitebox.Context): EnclosingType = {
     import c.universe._
+
     val term = c.internal.enclosingOwner.asTerm
-    val name = term.name.decodedName.toString
-    if (name.head == '<') {
-      reify(None)
-    } else {
-      c.Expr(q"Some($name)")
-    }
+    val className = term.owner.asClass.fullName
+    val methodName = if (term.isMethod) Some(term.asMethod.name.decodedName.toString) else None
+    EnclosingType(className, methodName)
+  }
+
+  def loggerByEnclosingType(c: whitebox.Context): c.universe.Tree = {
+    import c.universe._
+
+    val EnclosingType(className, _) = enclosingType(c)
+    q"com.outr.scribe.Logger.byName($className)"
   }
 
   def log(c: whitebox.Context)(level: c.Expr[Level], message: c.Tree): c.universe.Tree = {
     import c.universe._
 
     val logger = c.prefix.tree
-    val method = enclosingMethod(c)
+    val EnclosingType(className, methodName) = enclosingType(c)
     val line = c.enclosingPosition.line
-    q"$logger.log($level, $message, $method, $line)"
+    q"$logger.log($level, $message, $className, $methodName, $line)"
   }
 
   def trace(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Trace), message)

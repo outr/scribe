@@ -9,16 +9,15 @@ import scala.language.experimental.macros
   * Logger is the class to which all logging calls are made. The primary use-case of Logger is via use of the Logging
   * trait that may be mixed-in to any class.
   *
-  * @param name the name of this logger
   * @param parentName the name of the parent logger if there is one (defaults to the root logger)
   * @param multiplier the multiplier that should be applied to boost the value of all messages routed through this
   *                   logger (Defaults to 1.0)
   */
-case class Logger(name: String,
-                  parentName: Option[String] = Some(Logger.rootName),
+case class Logger(parentName: Option[String] = Some(Logger.rootName),
                   multiplier: Double = 1.0) {
   private[scribe] var handlers = Set.empty[LogHandler]
 
+  def name: Option[String] = Logger.name(this)
   def parent: Option[Logger] = parentName.map(Logger.byName)
 
   /**
@@ -70,9 +69,10 @@ case class Logger(name: String,
     */
   def log(level: Level,
           message: => Any,
+          className: String,
           methodName: Option[String] = None,
           lineNumber: Int = -1): Unit = if (accepts(level.value)) {
-    val record = LogRecord(name, level, level.value * multiplier, () => message, methodName, lineNumber)
+    val record = LogRecord(level, level.value * multiplier, () => message, className, methodName, lineNumber)
     log(record)
   }
 
@@ -122,7 +122,7 @@ case class Logger(name: String,
     if (handlers.nonEmpty) {
       updated.handlers ++= handlers
     }
-    Logger.set(updated)
+    Logger.replace(this, updated)
   }
 }
 
@@ -137,19 +137,27 @@ object Logger {
     loggers.get(name) match {
       case Some(l) => l
       case None => {
-        val l = Logger(name)
+        val l = Logger()
         loggers += name -> l
         l
       }
     }
   }
 
-  def set(logger: Logger): Unit = synchronized {
-    loggers += logger.name -> logger
+  def name(logger: Logger): Option[String] = loggers.find(_._2 eq logger).map(_._1)
+
+  def set(name: String, logger: Logger): Unit = synchronized {
+    loggers += name -> logger
   }
 
-  def clear(logger: Logger): Unit = synchronized {
-    loggers -= logger.name
+  def replace(oldLogger: Logger, newLogger: Logger): Unit = {
+    name(oldLogger).foreach { key =>
+      set(key, newLogger)
+    }
+  }
+
+  def clear(name: String): Unit = synchronized {
+    loggers -= name
   }
 
   val rootName: String = "root"

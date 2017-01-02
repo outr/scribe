@@ -11,7 +11,7 @@ import scala.io.Source
 import scala.util.Try
 
 class FileLoggingSpec extends WordSpec with Matchers {
-  lazy val fileLogger = Logger("fileLogger", parentName = None)
+  lazy val fileLogger = Logger(parentName = None)
   lazy val logFile = new File("logs/test.log")
 
   "File Logging" should {
