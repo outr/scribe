@@ -1,5 +1,7 @@
 package com.outr.scribe
 
+import java.io.PrintStream
+
 import scala.annotation.tailrec
 import scala.language.experimental.macros
 
@@ -8,14 +10,16 @@ import scala.language.experimental.macros
   * trait that may be mixed-in to any class.
   *
   * @param name the name of this logger
-  * @param parent the parent logger (defaults to Logger.Root)
+  * @param parentName the name of the parent logger if there is one (defaults to the root logger)
   * @param multiplier the multiplier that should be applied to boost the value of all messages routed through this
   *                   logger (Defaults to 1.0)
   */
 case class Logger(name: String,
-                  parent: Option[Logger] = Some(Logger.root),
+                  parentName: Option[String] = Some(Logger.rootName),
                   multiplier: Double = 1.0) {
   private[scribe] var handlers = Set.empty[LogHandler]
+
+  def parent: Option[Logger] = parentName.map(Logger.byName)
 
   /**
     * Trace log entry. Uses Macros to optimize performance.
@@ -107,22 +111,59 @@ case class Logger(name: String,
   def clearHandlers(): Unit = synchronized {
     handlers = Set.empty
   }
+
+  /**
+    * Replaces the current logger with what is returned by `updater`. Existing handlers are added to the new Logger.
+    *
+    * @param updater function to create the new logger
+    */
+  def update(updater: => Logger): Unit = {
+    val updated: Logger = updater
+    if (handlers.nonEmpty) {
+      updated.handlers ++= handlers
+    }
+    Logger.set(updated)
+  }
 }
 
 object Logger {
+  private var loggers = Map.empty[String, Logger]
   private val nativeMethod = -2
 
-  val systemOut = System.out
-  val systemErr = System.err
+  val systemOut: PrintStream = System.out
+  val systemErr: PrintStream = System.err
+
+  def byName(name: String): Logger = synchronized {
+    loggers.get(name) match {
+      case Some(l) => l
+      case None => {
+        val l = Logger(name)
+        loggers += name -> l
+        l
+      }
+    }
+  }
+
+  def set(logger: Logger): Unit = synchronized {
+    loggers += logger.name -> logger
+  }
+
+  def clear(logger: Logger): Unit = synchronized {
+    loggers -= logger.name
+  }
+
+  val rootName: String = "root"
 
   /**
     * The root logger is the default parent of all loggers and comes default with a default LogHandler added.
     */
-  val root: Logger = {
-    val l = Logger("root", parent = None)
-    l.addHandler(LogHandler())
-    l
+  def root: Logger = byName(rootName)
+
+  // Initial setup of root logger
+  root.update {
+    root.copy(parentName = None)
   }
+  root.addHandler(LogHandler())
 
   /**
     * Converts a Throwable to a String representation for output in logging.

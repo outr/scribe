@@ -1,8 +1,8 @@
 package com.outr.scribe
 
 object LoggingTestObject extends Logging {
-  updateLogger { l =>
-    l.copy(parent = None)
+  logger.update {
+    logger.copy(parentName = None)
   }
   logger.addHandler(LogHandler(Level.Debug, writer = TestingWriter))
 

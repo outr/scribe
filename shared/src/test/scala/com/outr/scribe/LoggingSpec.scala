@@ -3,8 +3,8 @@ package com.outr.scribe
 import org.scalatest.{Matchers, WordSpec}
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
-  updateLogger { l =>
-    l.copy(parent = None)
+  logger.update {
+    logger.copy(parentName = None)
   }
   val handler = LogHandler(level = Level.Debug, writer = TestingWriter)
   logger.addHandler(handler)
@@ -28,7 +28,9 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       TestingWriter.records.length should be(2)
     }
     "boost the this logging instance" in {
-      updateLogger(_.copy(multiplier = 2.0))
+      logger.update {
+        logger.copy(multiplier = 2.0)
+      }
       logger.debug("Debug Log 3")
       TestingWriter.records.length should be(3)
     }
