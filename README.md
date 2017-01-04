@@ -56,6 +56,11 @@ import com.outr.scribe._
 
 class MyClass {
   logger.info("Hello, World!")
+  doSomething()
+  
+  def doSomething(): Unit = {
+    logger.info("I did something!")
+  }
 }
 ```
 
@@ -63,6 +68,7 @@ The output will look something like the following:
 
 ```
 2017.01.02 19:05:47:342 [main] INFO MyClass:4 - Hello, World!
+2017.01.02 19:05:47.342 [main] INFO MyClass.doSomething:8 - I did something!
 ```
 
 In addition, you can utilize the implicit class to log on a specific instance without touching the code of that class:
