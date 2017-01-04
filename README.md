@@ -4,12 +4,37 @@
 [![Stories in Ready](https://badge.waffle.io/outr/scribe.png?label=ready&title=Ready)](https://waffle.io/outr/scribe)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/scribe)
 [![Maven Central](https://img.shields.io/maven-central/v/com.outr/scribe_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.12)
+[![Latest version](https://index.scala-lang.org/com.outr/scribe/scribe/latest.svg)](https://index.scala-lang.org/com.outr/scribe/scribe)
 
 Scribe is a completely different way of thinking about logging. Instead of wrapping around existing logging frameworks
 and bearing their performance and design flaws, Scribe is built from the ground up to provide fast and effective logging
 in Scala and Scala.js without the need of configuration files additional dependencies. All management of logging is
 handled programmatically in Scala itself giving the developer the freedom to use whatever configuration framework, if
 any, they should choose to use.
+
+## Why Another Logging Framework? ##
+
+Yes, we know there are too many Java logging frameworks to count, and a large number of decent logging frameworks in
+Scala, so why did we write yet another logging framework?  As we see it, nearly every Scala logging framework is mostly
+just a wrapper around Java logging frameworks (usually SLF4J, Log4J, or Logback). This comes with a few problems:
+
+1. No support for Scala.js
+2. Performance cost
+3. Additional dependencies
+
+A few of the main features that Scribe offers:
+
+1. Performance is critical consideration. We leverage Macros to handle optimization of everything possible at compile-time
+to avoid logging slowing down your production application.
+2. Programmatic configuration. No need to be bound to configuration files to configure your logging. This means you can
+rely on any configuration framework or you can configure real-time changes to your logging in your production environment.
+This particularly comes in handy if you need to enable debug logging on something going wrong in production. No need to
+restart your server, simply provide a mechanism to modify the logging configuration in real-time.
+3. Clean logging. Macros allow us to introduce logging into a class via an import instead of a mix-in or unnecessary
+setup code.
+4. Zero cost class, method, and line number logging built-in. Never worry about your logger working up the stack to figure
+out the position of the logging statement at runtime. With Macros we determine that information at compile-time to avoid
+any runtime cost.
 
 ## SBT Configuration ##
 
@@ -32,6 +57,12 @@ import com.outr.scribe._
 class MyClass {
   logger.info("Hello, World!")
 }
+```
+
+The output will look something like the following:
+
+```
+2017.01.02 19:05:47:342 [main] INFO MyClass:4 - Hello, World!
 ```
 
 In addition, you can utilize the implicit class to log on a specific instance without touching the code of that class:
