@@ -41,8 +41,8 @@ any runtime cost.
 Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala.js with 2.11 and 2.12:
 
 ```
-libraryDependencies += "com.outr" %% "scribe" % "1.3.0"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "1.3.0"  // Scala.js
+libraryDependencies += "com.outr" %% "scribe" % "1.3.1"   // Scala
+libraryDependencies += "com.outr" %%% "scribe" % "1.3.1"  // Scala.js
 ```
 
 ## Using Scribe ##
@@ -173,7 +173,7 @@ instance will be re-applied to this new instance as well.
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "1.3.0"   // Scala
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "1.3.1"   // Scala
 ```
 
 Obviously this only applies to JVM as SLF4J isn't available in the browser.
