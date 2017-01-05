@@ -9,8 +9,11 @@ object Macros {
   def enclosingType(c: whitebox.Context): EnclosingType = {
     import c.universe._
 
-    val term = c.internal.enclosingOwner.asTerm
-    val className = term.owner.asClass.fullName
+    val term = c.internal.enclosingOwner.asTerm match {
+      case t if t.isMethod => t
+      case t if t.owner.isMethod => t.owner
+    }
+    val className = term.owner.fullName
     val methodName = if (term.isMethod) Some(term.asMethod.name.decodedName.toString) else None
     EnclosingType(className, methodName)
   }
