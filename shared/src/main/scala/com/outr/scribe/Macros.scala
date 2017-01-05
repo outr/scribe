@@ -12,6 +12,7 @@ object Macros {
     val term = c.internal.enclosingOwner.asTerm match {
       case t if t.isMethod => t
       case t if t.owner.isMethod => t.owner
+      case t => t
     }
     val className = term.owner.fullName
     val methodName = if (term.isMethod) Some(term.asMethod.name.decodedName.toString) else None

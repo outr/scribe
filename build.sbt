@@ -1,6 +1,6 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "1.3.1"
+version in ThisBuild := "1.3.2"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
