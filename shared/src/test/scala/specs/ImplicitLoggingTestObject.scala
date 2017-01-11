@@ -5,7 +5,7 @@ import com.outr.scribe._
 object ImplicitLoggingTestObject {
   val testingWriter = new TestingWriter
 
-  def setup(): Unit = {
+  def initialize(): Unit = {
     logger.update {
       logger.copy(parentName = None)
     }

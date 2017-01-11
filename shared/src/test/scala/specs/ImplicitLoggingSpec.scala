@@ -10,7 +10,7 @@ class ImplicitLoggingSpec extends WordSpec with Matchers {
       logger.name should be(Some("specs.ImplicitLoggingSpec"))
     }
     "config properly" in {
-      ImplicitLoggingTestObject.setup()
+      ImplicitLoggingTestObject.initialize()
     }
     "properly log a simple message" in {
       val lineNumber = 17

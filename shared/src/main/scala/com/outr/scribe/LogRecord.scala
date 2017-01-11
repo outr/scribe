@@ -44,7 +44,9 @@ class LogRecord private() {
       "line" -> lineNumber.toString,
       "message" -> message
     )
-    list.map(t => s"${t._1}: ${t._2}").mkString("LogRecord(", ", ", ")")
+    list.map {
+      case (key, value) => s"$key: $value"
+    }.mkString("LogRecord(", ", ", ")")
   }
 }
 

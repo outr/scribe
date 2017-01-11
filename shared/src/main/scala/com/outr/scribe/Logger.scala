@@ -144,15 +144,17 @@ object Logger {
     }
   }
 
-  def name(logger: Logger): Option[String] = loggers.find(_._2 eq logger).map(_._1)
+  def name(logger: Logger): Option[String] = loggers.collectFirst {
+    case (key, value) if value eq logger => key
+  }
 
-  def set(name: String, logger: Logger): Unit = synchronized {
+  def assign(name: String, logger: Logger): Unit = synchronized {
     loggers += name -> logger
   }
 
   def replace(oldLogger: Logger, newLogger: Logger): Unit = {
     name(oldLogger).foreach { key =>
-      set(key, newLogger)
+      assign(key, newLogger)
     }
   }
 
