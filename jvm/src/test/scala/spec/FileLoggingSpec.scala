@@ -11,13 +11,14 @@ import scala.io.Source
 import scala.util.Try
 
 class FileLoggingSpec extends WordSpec with Matchers {
-  lazy val fileLogger = Logger(parentName = None)
-  lazy val logFile = new File("logs/test.log")
+  lazy val fileLogger: Logger = Logger(parentName = None)
+  lazy val logFile: File = new File("logs/test.log")
+  lazy val writer: FileWriter = FileWriter.flat("test")
 
   "File Logging" should {
     "configure logging to a temporary file" in {
       logFile.delete()
-      fileLogger.addHandler(LogHandler(formatter = Formatter.simple, writer = FileWriter.flat("test")))
+      fileLogger.addHandler(LogHandler(formatter = Formatter.simple, writer = writer))
     }
     "log to the file" in {
       fileLogger.info("Testing File Logger")
@@ -31,6 +32,9 @@ class FileLoggingSpec extends WordSpec with Matchers {
         source.close()
         logFile.delete()
       }
+    }
+    "close and release the file handle" in {
+      writer.close()
     }
   }
 }
