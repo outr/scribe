@@ -20,7 +20,7 @@ Scala, so why did we write yet another logging framework?  As we see it, nearly 
 just a wrapper around Java logging frameworks (usually SLF4J, Log4J, or Logback). This comes with a few problems:
 
 1. No support for Scala.js
-2. Performance cost
+2. Performance cost (Blog Post: http://www.matthicks.com/2017/01/logging-performance.html)
 3. Additional dependencies
 
 A few of the main features that Scribe offers:
@@ -36,6 +36,21 @@ setup code.
 4. Zero cost class, method, and line number logging built-in. Never worry about your logger working up the stack to figure
 out the position of the logging statement at runtime. With Macros we determine that information at compile-time to avoid
 any runtime cost.
+
+### Performance Comparison
+
+Since Scala Logging is the most popular Scala logging framework, we did a benchmark to compare the logging speed and
+memory usage of the two logging frameworks:
+
+![Logging Rate Over Sixy Seconds](https://1.bp.blogspot.com/-Sn0WJ91M47s/WHepNt0ok9I/AAAAAAAABrQ/4E7LOFv1RLo_XUlksp7t_Mnz_thsHhw5QCLcB/s1600/logging-speed.png)
+
+That is a comparison of how many records were able to be logged over sixty seconds.  In addition, we can see the memory
+comparison after that benchmark was run:
+
+![Logging Memory Usage](https://2.bp.blogspot.com/-iI0njBLrYk8/WHeqTwuagiI/AAAAAAAABrc/dRktzYWBuOkY9V7Z7gWDDRuN6RE2sbEIQCLcB/s1600/logging-memory.png)
+
+Though not a staggering distinction, Scribe is clearly both faster and has a smaller memory footprint. For more on the
+results of the benchmark take a look at this blog post: http://www.matthicks.com/2017/01/logging-performance.html
 
 ## SBT Configuration ##
 
