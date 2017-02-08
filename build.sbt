@@ -1,12 +1,12 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "1.3.3-SNAPSHOT"
+version in ThisBuild := "1.4.0"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
 
 lazy val root = project.in(file("."))
-  .aggregate(js, jvm, slf4j)
+  .aggregate(js, jvm, slf4j, slack)
   .settings(
     publish := {},
     publishLocal := {}
@@ -29,4 +29,12 @@ lazy val slf4j = project.in(file("slf4j"))
       "org.slf4j" % "slf4j-api" % "1.7.22",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test"
     )
+  )
+
+lazy val slack = project.in(file("slack"))
+  .dependsOn(jvm)
+  .settings(
+    name := "scribe-slack",
+    libraryDependencies += "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.2.0",
+    libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.4"
   )

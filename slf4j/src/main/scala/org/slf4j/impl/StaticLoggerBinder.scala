@@ -1,6 +1,6 @@
 package org.slf4j.impl
 
-import com.scribe.slf4j.ScribeLoggerFactory
+import scribe.slf4j.ScribeLoggerFactory
 import org.slf4j.ILoggerFactory
 import org.slf4j.spi.LoggerFactoryBinder
 

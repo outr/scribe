@@ -1,6 +1,6 @@
 package specs
 
-import com.outr.scribe._
+import scribe._
 import org.scalatest.{Matchers, WordSpec}
 
 class LoggingSpec extends WordSpec with Matchers with Logging {

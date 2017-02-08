@@ -2,9 +2,9 @@ package spec
 
 import java.io.File
 
-import com.outr.scribe.formatter.Formatter
-import com.outr.scribe.writer.FileWriter
-import com.outr.scribe.{LogHandler, Logger}
+import scribe.formatter.Formatter
+import scribe.writer.FileWriter
+import scribe.{LogHandler, Logger}
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.io.Source

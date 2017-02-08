@@ -1,6 +1,6 @@
 package specs
 
-import com.outr.scribe.{Level, LogHandler, Logging}
+import scribe.{Level, LogHandler, Logging}
 
 class LoggingTestObject(writer: TestingWriter) extends Logging {
   logger.update {

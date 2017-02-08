@@ -1,6 +1,6 @@
 package spec
 
-import com.outr.scribe.{Level, LogRecord, LogHandler, Logger}
+import scribe.{Level, LogRecord, LogHandler, Logger}
 import org.scalatest.{Matchers, WordSpec}
 import org.slf4j.LoggerFactory
 

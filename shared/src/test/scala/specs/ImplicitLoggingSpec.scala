@@ -2,7 +2,7 @@ package specs
 
 import org.scalatest.{Matchers, WordSpec}
 
-import com.outr.scribe._
+import scribe._
 
 class ImplicitLoggingSpec extends WordSpec with Matchers {
   "implicit logger" should {

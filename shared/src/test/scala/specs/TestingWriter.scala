@@ -1,8 +1,8 @@
 package specs
 
-import com.outr.scribe.LogRecord
-import com.outr.scribe.formatter.Formatter
-import com.outr.scribe.writer.Writer
+import scribe.LogRecord
+import scribe.formatter.Formatter
+import scribe.writer.Writer
 
 import scala.collection.mutable.ListBuffer
 

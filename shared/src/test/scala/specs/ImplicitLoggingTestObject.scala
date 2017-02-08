@@ -1,6 +1,6 @@
 package specs
 
-import com.outr.scribe._
+import scribe._
 
 object ImplicitLoggingTestObject {
   val testingWriter = new TestingWriter

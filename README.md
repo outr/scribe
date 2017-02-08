@@ -25,7 +25,7 @@ just a wrapper around Java logging frameworks (usually SLF4J, Log4J, or Logback)
 
 A few of the main features that Scribe offers:
 
-1. Performance is critical consideration. We leverage Macros to handle optimization of everything possible at compile-time
+1. Performance is a critical consideration. We leverage Macros to handle optimization of everything possible at compile-time
 to avoid logging slowing down your production application.
 2. Programmatic configuration. No need to be bound to configuration files to configure your logging. This means you can
 rely on any configuration framework or you can configure real-time changes to your logging in your production environment.
@@ -52,13 +52,25 @@ comparison after that benchmark was run:
 Though not a staggering distinction, Scribe is clearly both faster and has a smaller memory footprint. For more on the
 results of the benchmark take a look at this blog post: http://www.matthicks.com/2017/01/logging-performance.html
 
+## Library Dependencies
+
+No matter how simple or straight-forward a library might be, its dependencies can quickly add a lot of bloat to your
+project. This is why in Scribe we have absolutely no external dependencies for the core library.
+
+### scribe-slf4j
+* slf4j-api
+
+### scribe-slack
+* gigahorse-asynchttpclient (https://github.com/eed3si9n/gigahorse)
+* upickle (https://github.com/lihaoyi/upickle-pprint)
+
 ## SBT Configuration ##
 
 Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala.js with 2.11 and 2.12:
 
 ```
-libraryDependencies += "com.outr" %% "scribe" % "1.3.2"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "1.3.2"  // Scala.js
+libraryDependencies += "com.outr" %% "scribe" % "1.4.0"   // Scala
+libraryDependencies += "com.outr" %%% "scribe" % "1.4.0"  // Scala.js
 ```
 
 ## Using Scribe ##
@@ -68,7 +80,7 @@ class the way many logging frameworks do.  However, Scribe now supports a packag
 same result via an import without needing to mix-in anything:
 
 ```scala
-import com.outr.scribe._
+import scribe._
 
 class MyClass {
   logger.info("Hello, World!")
@@ -87,10 +99,25 @@ The output will look something like the following:
 2017.01.02 19:05:47.342 [main] INFO MyClass.doSomething:8 - I did something!
 ```
 
+You can also do logging without an import at all:
+
+```scala
+class MyClass {
+  scribe.logger.info("Hello, World!")
+  doSomething()
+  
+  def doSomething(): Unit = {
+    scribe.logger.info("I did something!")
+  }
+}
+```
+
+This can be useful for temporary logging statements so you can remove them without leaving behind any unused imports.
+
 In addition, you can utilize the implicit class to log on a specific instance without touching the code of that class:
 
 ```scala
-import com.outr.scribe._
+import scribe._
 
 class MyClass {
   val myString = "Nothing Special About Me"
@@ -102,7 +129,7 @@ Though at first glance this might not seem useful, you can configure logging on 
 class name to retain configuration:
 
 ```scala
-import com.outr.scribe._
+import scribe._
 
 class MyClass {
   val myString = "Nothing Special About Me"
@@ -122,7 +149,7 @@ Though probably less useful, you can still utilize the `Logging` mix-in to add l
 other frameworks do:
 
 ```scala
-import com.outr.scribe.Logging
+import scribe.Logging
 
 class MyClass extends Logging {
   logger.info("Hello, World!")
@@ -172,7 +199,7 @@ Defaults to `1.0`.
 If I want to simply update my logger removing the `Logger.Root` parent reference I can do so like this:
 
 ```scala
-import com.outr.scribe.Logging
+import scribe.Logging
 
 class MyClass extends Logging {
   logger.update {
@@ -189,7 +216,30 @@ instance will be re-applied to this new instance as well.
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "1.3.2"   // Scala
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "1.4.0"
 ```
 
 Obviously this only applies to JVM as SLF4J isn't available in the browser.
+
+### Slack Logging ###
+
+If you add the `scribe-slack` dependency to your project you can configure Scribe to log to Slack (https://slack.com/).
+
+```
+libraryDependencies += "com.outr" %% "scribe-slack" % "1.4.0"
+```
+
+The easiest way to configure this is to use the convenience method `configure`:
+
+```scala
+scribe.slack.Slack.configure(serviceHash, botName)
+```
+
+`serviceHash` is the API service hash provided by Slack.
+
+`botName` is the name of the bot when it sends a message to Slack.
+
+The method has several other parameters available but has defaults. For example, this will default to using the `root`
+logger, but you can override the default to use any logger.
+
+Finally, if you want complete control over the logging and formatting you can directly use the `SlackWriter`.
