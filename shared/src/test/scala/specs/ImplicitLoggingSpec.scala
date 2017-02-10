@@ -2,18 +2,16 @@ package specs
 
 import org.scalatest.{Matchers, WordSpec}
 
-import scribe._
-
 class ImplicitLoggingSpec extends WordSpec with Matchers {
   "implicit logger" should {
     "verify implicit logger has the correct name" in {
-      logger.name should be(Some("specs.ImplicitLoggingSpec"))
+      scribe.name should be(Some("scribe"))
     }
     "config properly" in {
       ImplicitLoggingTestObject.initialize()
     }
     "properly log a simple message" in {
-      val lineNumber = 17
+      val lineNumber = 14
 
       ImplicitLoggingTestObject.doSomething()
       ImplicitLoggingTestObject.testingWriter.records.length should be(1)
