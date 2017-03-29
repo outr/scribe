@@ -7,8 +7,8 @@ object Platform {
 
   private val replacements = Map(
     "%1$tY" -> ((d: Date) => d.getFullYear().toString),
-    "%1$tm" -> ((d: Date) => d.getMonth().toString),
-    "%1$td" -> ((d: Date) => d.getDay().toString),
+    "%1$tm" -> ((d: Date) => (d.getMonth() + 1).toString),
+    "%1$td" -> ((d: Date) => d.getDate().toString),
     "%1$tT" -> ((d: Date) => s"${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}"),
     "%1$tL" -> ((d: Date) => d.getMilliseconds().toString)
   )

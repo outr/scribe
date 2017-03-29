@@ -1,6 +1,6 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "1.4.1"
+version in ThisBuild := "1.4.2"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
@@ -26,7 +26,7 @@ lazy val slf4j = project.in(file("slf4j"))
   .settings(
     name := "scribe-slf4j",
     libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-api" % "1.7.22",
+      "org.slf4j" % "slf4j-api" % "1.7.25",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test"
     )
   )
