@@ -57,13 +57,16 @@ trait LoggerSupport {
     * @param message function to derive the message for the log
     * @param methodName the method name if applicable
     * @param lineNumber the line number the logging was invoked on
+    * @param stringify the conversion function to generate a String from the message.
+    *                  Defaults to LogRecord.DefaultStringify.
     */
   def log(level: Level,
           message: => Any,
           className: String,
           methodName: Option[String] = None,
-          lineNumber: Int = -1): Unit = if (accepts(level.value)) {
-    val record = LogRecord(level, level.value * multiplier, () => message, className, methodName, lineNumber)
+          lineNumber: Int = -1,
+          stringify: Any => String = LogRecord.DefaultStringify): Unit = if (accepts(level.value)) {
+    val record = LogRecord(level, level.value * multiplier, () => message, className, methodName, lineNumber, stringify = stringify)
     log(record)
   }
 

@@ -29,44 +29,50 @@ object Macros {
   def log(c: whitebox.Context)(level: c.Expr[Level], message: c.Tree): c.universe.Tree = {
     import c.universe._
 
+    logSpecial(c)(level, message, q"scribe.LogRecord.DefaultStringify")
+  }
+
+  def logSpecial(c: whitebox.Context)(level: c.Expr[Level], message: c.Tree, stringify: c.Tree): c.universe.Tree = {
+    import c.universe._
+
     val logger = c.prefix.tree
     val EnclosingType(className, methodName) = enclosingType(c)
     val line = c.enclosingPosition.line
-    q"$logger.log($level, $message, $className, $methodName, $line)"
+    q"$logger.log($level, $message, $className, $methodName, $line, $stringify)"
   }
 
   def trace(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Trace), message)
 
   def traceThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
     import c.universe._
-    log(c)(c.universe.reify(Level.Trace), q"scribe.Logger.throwable2String($t)")
+    logSpecial(c)(c.universe.reify(Level.Trace), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 
   def debug(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Debug), message)
 
   def debugThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
     import c.universe._
-    log(c)(c.universe.reify(Level.Debug), q"scribe.Logger.throwable2String($t)")
+    logSpecial(c)(c.universe.reify(Level.Debug), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 
   def info(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Info), message)
 
   def infoThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
     import c.universe._
-    log(c)(c.universe.reify(Level.Info), q"scribe.Logger.throwable2String($t)")
+    logSpecial(c)(c.universe.reify(Level.Info), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 
   def warn(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Warn), message)
 
   def warnThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
     import c.universe._
-    log(c)(c.universe.reify(Level.Warn), q"scribe.Logger.throwable2String($t)")
+    logSpecial(c)(c.universe.reify(Level.Warn), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 
   def error(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Error), message)
 
   def errorThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
     import c.universe._
-    log(c)(c.universe.reify(Level.Error), q"scribe.Logger.throwable2String($t)")
+    logSpecial(c)(c.universe.reify(Level.Error), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 }

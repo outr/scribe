@@ -10,7 +10,9 @@ class LogRecord private() {
   private var _threadId: Long = _
   private var _threadName: String = _
   private var _timestamp: Long = _
+  private var _stringify: Any => String = _
 
+  private var _messageObject: Option[Any] = None
   private var _message: Option[String] = None
 
   def level: Level = _level
@@ -18,9 +20,17 @@ class LogRecord private() {
   def message: String = _message match {
     case Some(m) => m
     case None => {
-      val m = String.valueOf(_messageFunction())
+      val m = _stringify(messageObject)
       _message = Option(m)
       m
+    }
+  }
+  def messageObject: Any = _messageObject match {
+    case Some(o) => o
+    case None => {
+      val o = _messageFunction()
+      _messageObject = Option(o)
+      o
     }
   }
   def className: String = _className
@@ -51,6 +61,8 @@ class LogRecord private() {
 }
 
 object LogRecord {
+  val DefaultStringify: Any => String = (v: Any) => String.valueOf(v)
+
   private val instance = new ThreadLocal[LogRecord] {
     override def initialValue(): LogRecord = new LogRecord()
   }
@@ -63,7 +75,8 @@ object LogRecord {
             lineNumber: Int,
             threadId: Long = Thread.currentThread().getId,
             threadName: String = Thread.currentThread().getName,
-            timestamp: Long = System.currentTimeMillis()): LogRecord = {
+            timestamp: Long = System.currentTimeMillis(),
+            stringify: Any => String = DefaultStringify): LogRecord = {
     val r = instance.get()
     r._level = level
     r._value = value
@@ -75,6 +88,8 @@ object LogRecord {
     r._threadName = threadName
     r._timestamp = timestamp
     r._message = None
+    r._messageObject = None
+    r._stringify = stringify
     r
   }
 }

@@ -1,9 +1,8 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "1.4.2"
-scalaVersion in ThisBuild := "2.12.1"
-crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
-sbtVersion in ThisBuild := "0.13.13"
+version in ThisBuild := "1.4.3-SNAPSHOT"
+scalaVersion in ThisBuild := "2.12.2"
+crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 
 lazy val root = project.in(file("."))
   .aggregate(js, jvm, slf4j, slack)
@@ -15,7 +14,7 @@ lazy val root = project.in(file("."))
 lazy val scribe = crossProject.in(file("."))
     .settings(
       libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _),
-      libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+      libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
     )
 
 lazy val js = scribe.js
@@ -27,7 +26,7 @@ lazy val slf4j = project.in(file("slf4j"))
     name := "scribe-slf4j",
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % "1.7.25",
-      "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+      "org.scalatest" %% "scalatest" % "3.0.3" % "test"
     )
   )
 
@@ -35,6 +34,6 @@ lazy val slack = project.in(file("slack"))
   .dependsOn(jvm)
   .settings(
     name := "scribe-slack",
-    libraryDependencies += "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.2.0",
+    libraryDependencies += "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.3.0",
     libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.4"
   )
