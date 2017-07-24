@@ -1,8 +1,10 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "1.4.3"
+version in ThisBuild := "1.4.4-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
+
+import sbtcrossproject.crossProject
 
 lazy val root = project.in(file("."))
   .aggregate(js, jvm, slf4j, slack)
@@ -11,7 +13,7 @@ lazy val root = project.in(file("."))
     publishLocal := {}
   )
 
-lazy val scribe = crossProject.in(file("."))
+lazy val scribe = crossProject(JSPlatform, JVMPlatform).in(file("."))
     .settings(
       libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _),
       libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
@@ -34,6 +36,6 @@ lazy val slack = project.in(file("slack"))
   .dependsOn(jvm)
   .settings(
     name := "scribe-slack",
-    libraryDependencies += "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.3.0",
+    libraryDependencies += "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.3.1",
     libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.4"
   )
