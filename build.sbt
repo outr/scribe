@@ -1,10 +1,8 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "1.4.4"
+version in ThisBuild := "1.4.5"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
-
-import sbtcrossproject.crossProject
 
 lazy val root = project.in(file("."))
   .aggregate(js, jvm, slf4j, slack)
@@ -13,7 +11,7 @@ lazy val root = project.in(file("."))
     publishLocal := {}
   )
 
-lazy val scribe = crossProject(JSPlatform, JVMPlatform).in(file("."))
+lazy val scribe = crossProject.in(file("."))
     .settings(
       libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _),
       libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
