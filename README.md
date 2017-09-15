@@ -115,7 +115,7 @@ import scribe._
 
 class MyClass {
   val myString = "Nothing Special About Me"
-  myString.logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.Daily())))
+  myString.logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.daily())))
   myString.logger.info("Logging on a String!")
   
   "Another String".logger.info("Written to a file...")
@@ -172,7 +172,7 @@ By default all loggers have a direct parent of `Logger.Root`. It is this logger 
 The following will add a new `LogHandler` to the specified `logger` to append all `Debug` logs and above to a daily file.
 
 ```scala
-logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.Daily())))
+logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.daily())))
 ```
 
 You may want to use `Logger.Root` instead of `logger` to set this handler globally.
