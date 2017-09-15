@@ -115,7 +115,7 @@ import scribe._
 
 class MyClass {
   val myString = "Nothing Special About Me"
-  myString.logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.Daily())))
+  myString.logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.daily())))
   myString.logger.info("Logging on a String!")
   
   "Another String".logger.info("Written to a file...")
