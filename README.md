@@ -206,6 +206,27 @@ class MyClass extends Logging {
 This will update the logger being used for this class going forward. All existing handlers on the previous `Logger`
 instance will be re-applied to this new instance as well.
 
+To change the default global log level, use:
+
+```scala
+Logger.root.clearHandlers()
+Logger.root.addHandler(LogHandler(level = Level.Error))
+```
+
+You can configure the output (how the log will look like) when adding a `LogHandler`.
+The `Formatter` companion has three pre-defined scenarios (simple, default, and trace).
+Building your own Formatter instance is easy with the `FormatterBuilder`:
+
+```scala
+Logger.root.addHandler(LogHandler(formatter = FormatterBuilder()
+        .string("[")
+        .threadName.string("] ")
+        .positionAbbreviated.string(" - ")
+        .message
+        .newLine))     
+
+```
+
 ### SLF4J Logger ###
 
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
