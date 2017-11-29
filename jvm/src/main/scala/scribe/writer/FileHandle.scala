@@ -1,17 +1,19 @@
 package scribe.writer
 
-import java.io.File
+import java.nio.file.Path
 import java.nio.file.{Files, StandardOpenOption}
 import java.util.concurrent.atomic.AtomicInteger
 
-class FileHandle(val file: File, append: Boolean) {
+class FileHandle(val file: Path, append: Boolean) {
   val references = new AtomicInteger(0)
 
   // Make sure the directories exist
-  file.getParentFile.mkdirs()
+  for (parent <- Option(file.getParent)) {
+    Files.createDirectories(parent)
+  }
 
   private val writer = Files.newBufferedWriter(
-    file.toPath,
+    file,
     if (append) StandardOpenOption.APPEND else StandardOpenOption.TRUNCATE_EXISTING,
     StandardOpenOption.CREATE,
     StandardOpenOption.WRITE
@@ -31,9 +33,9 @@ class FileHandle(val file: File, append: Boolean) {
 }
 
 object FileHandle {
-  @volatile private var map = Map.empty[File, FileHandle]
+  private var map = Map.empty[Path, FileHandle]
 
-  def apply(file: File, append: Boolean): FileHandle = synchronized {
+  def apply(file: Path, append: Boolean): FileHandle = synchronized {
     val h = map.get(file) match {
       case Some(handle) => handle
       case None => {
