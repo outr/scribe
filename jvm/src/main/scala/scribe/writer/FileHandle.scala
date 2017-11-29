@@ -31,7 +31,7 @@ class FileHandle(val file: File, append: Boolean) {
 }
 
 object FileHandle {
-  private var map = Map.empty[File, FileHandle]
+  @volatile private var map = Map.empty[File, FileHandle]
 
   def apply(file: File, append: Boolean): FileHandle = synchronized {
     val h = map.get(file) match {
@@ -47,8 +47,7 @@ object FileHandle {
   }
 
   def release(handle: FileHandle): Unit = synchronized {
-    handle.references.decrementAndGet()
-    if (handle.references.get() == 0) {
+    if (handle.references.decrementAndGet() < 1) {
       map -= handle.file
       handle.close()
     }
