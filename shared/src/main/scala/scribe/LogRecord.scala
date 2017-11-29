@@ -11,27 +11,36 @@ class LogRecord private() {
   private var _threadName: String = _
   private var _timestamp: Long = _
   private var _stringify: Any => String = _
-
-  private var _messageObject: Option[Any] = None
-  private var _message: Option[String] = None
+  @volatile private var _messageObject: Option[Any] = None
+  @volatile private var _message: Option[String] = None
 
   def level: Level = _level
   def value: Double = _value
   def message: String = _message match {
     case Some(m) => m
-    case None => {
-      val m = _stringify(messageObject)
-      _message = Option(m)
-      m
-    }
+    case None =>
+      synchronized {
+        _message match {
+          case Some(m) => m
+          case None =>
+            val m = _stringify(messageObject)
+            _message = Option(m)
+            m
+        }
+      }
   }
   def messageObject: Any = _messageObject match {
     case Some(o) => o
-    case None => {
-      val o = _messageFunction()
-      _messageObject = Option(o)
-      o
-    }
+    case None =>
+      synchronized {
+        _messageObject match {
+          case Some(o) => o
+          case None =>
+            val o = _messageFunction()
+            _messageObject = Option(o)
+            o
+        }
+      }
   }
   def className: String = _className
   def methodName: Option[String] = _methodName
