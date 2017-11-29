@@ -1,12 +1,10 @@
 package scribe.writer
 
-import java.io.{BufferedOutputStream, File, FileOutputStream}
-import java.util.concurrent.atomic.AtomicInteger
-
+import java.nio.file.{Path, Paths}
 import scribe.LogRecord
 import scribe.formatter.Formatter
 
-class FileWriter(val directory: File,
+class FileWriter(val directory: Path,
                  val filenameGenerator: () => String,
                  val append: Boolean = true,
                  val autoFlush: Boolean = true) extends Writer {
@@ -19,11 +17,11 @@ class FileWriter(val directory: File,
       case Some(h) if currentFilename != filename => {
         FileHandle.release(h)
         currentFilename = filename
-        handle = Some(FileHandle(new File(directory, currentFilename), append))
+        handle = Some(FileHandle(directory.resolve(currentFilename), append))
       }
       case None => {
         currentFilename = filename
-        handle = Some(FileHandle(new File(directory, currentFilename), append))
+        handle = Some(FileHandle(directory.resolve(currentFilename), append))
       }
       case _ => // Ignore
     }
@@ -41,13 +39,13 @@ object FileWriter {
   def datePattern(pattern: String): () => String = () => pattern.format(System.currentTimeMillis())
 
   def daily(name: String = "application",
-            directory: File = new File("logs"),
+            directory: Path = Paths.get("logs"),
             append: Boolean = true,
             autoFlush: Boolean = true): FileWriter = {
     new FileWriter(directory, datePattern(name + ".%1$tY-%1$tm-%1$td.log"), append, autoFlush)
   }
   def flat(name: String = "application",
-           directory: File = new File("logs"),
+           directory: Path = Paths.get("logs"),
            append: Boolean = true,
            autoFlush: Boolean = true): FileWriter = new FileWriter(directory, () => s"$name.log", append, autoFlush)
 }
