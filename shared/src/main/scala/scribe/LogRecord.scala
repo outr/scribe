@@ -19,7 +19,7 @@ class LogRecord private() {
   def message: String = _message match {
     case Some(m) => m
     case None =>
-      this.synchronized {
+      synchronized {
         _message match {
           case Some(m) => m
           case None =>
@@ -32,7 +32,7 @@ class LogRecord private() {
   def messageObject: Any = _messageObject match {
     case Some(o) => o
     case None =>
-      this.synchronized {
+      synchronized {
         _messageObject match {
           case Some(o) => o
           case None =>
