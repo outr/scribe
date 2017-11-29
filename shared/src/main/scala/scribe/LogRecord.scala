@@ -11,11 +11,7 @@ class LogRecord private() {
   private var _threadName: String = _
   private var _timestamp: Long = _
   private var _stringify: Any => String = _
-
-  private val messageObjectLock: AnyRef = new AnyRef()
   @volatile private var _messageObject: Option[Any] = None
-
-  private val messageLock: AnyRef = new AnyRef()
   @volatile private var _message: Option[String] = None
 
   def level: Level = _level
@@ -23,7 +19,7 @@ class LogRecord private() {
   def message: String = _message match {
     case Some(m) => m
     case None =>
-      messageLock.synchronized {
+      this.synchronized {
         _message match {
           case Some(m) => m
           case None =>
@@ -36,7 +32,7 @@ class LogRecord private() {
   def messageObject: Any = _messageObject match {
     case Some(o) => o
     case None =>
-      messageObjectLock synchronized {
+      this.synchronized {
         _messageObject match {
           case Some(o) => o
           case None =>
