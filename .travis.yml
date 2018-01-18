@@ -1,15 +1,13 @@
-sudo: false
 language: scala
+sudo: required
+dist: trusty
 scala:
-  - 2.12.0
+  - 2.11.12
 jdk:
   - oraclejdk8
-cache:
-  directories:
-    - $HOME/.ivy2/cache
-    - $HOME/.sbt/boot
-before_cache:
-  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
-  - find $HOME/.sbt -name "*.lock" -delete
+before_script:
+  - curl https://raw.githubusercontent.com/scala-native/scala-native/master/bin/travis_setup.sh | bash -x
+script:
+  - sbt clean test
 notifications:
   slack: outr:A8tndkIibmnKjv7YBMnAK7SE
