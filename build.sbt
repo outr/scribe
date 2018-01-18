@@ -27,6 +27,7 @@ lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(scribeJVM)
   .settings(
     name := "scribe-slf4j",
+    publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % "1.7.25",
       "org.scalatest" %% "scalatest" % "3.0.4" % Test
@@ -38,6 +39,7 @@ lazy val slack = project.in(file("slack"))
   .dependsOn(scribeJVM)
   .settings(
     name := "scribe-slack",
+    publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.3.1",
       "com.lihaoyi" %% "upickle" % "0.5.1"
