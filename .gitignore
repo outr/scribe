@@ -17,3 +17,7 @@ project/plugins/project/
 .worksheet
 
 .idea/
+logs/
+.jvm/
+.js/
+.native/
