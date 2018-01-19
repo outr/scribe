@@ -48,11 +48,21 @@ object Macros {
     logSpecial(c)(c.universe.reify(Level.Trace), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 
+  def traceMessageAndThrowable(c: whitebox.Context)(message: c.Tree, t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    logSpecial(c)(c.universe.reify(Level.Trace), q"($message, $t)", q"""{ case (m: String, t: Throwable) => scribe.Logger.messageAndThrowable2String(m, t) }""")
+  }
+
   def debug(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Debug), message)
 
   def debugThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
     import c.universe._
     logSpecial(c)(c.universe.reify(Level.Debug), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
+  }
+
+  def debugMessageAndThrowable(c: whitebox.Context)(message: c.Tree, t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    logSpecial(c)(c.universe.reify(Level.Debug), q"($message, $t)", q"""{ case (m: String, t: Throwable) => scribe.Logger.messageAndThrowable2String(m, t) }""")
   }
 
   def info(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Info), message)
@@ -62,6 +72,11 @@ object Macros {
     logSpecial(c)(c.universe.reify(Level.Info), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 
+  def infoMessageAndThrowable(c: whitebox.Context)(message: c.Tree, t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    logSpecial(c)(c.universe.reify(Level.Info), q"($message, $t)", q"""{ case (m: String, t: Throwable) => scribe.Logger.messageAndThrowable2String(m, t) }""")
+  }
+
   def warn(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Warn), message)
 
   def warnThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
@@ -69,10 +84,20 @@ object Macros {
     logSpecial(c)(c.universe.reify(Level.Warn), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
   }
 
+  def warnMessageAndThrowable(c: whitebox.Context)(message: c.Tree, t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    logSpecial(c)(c.universe.reify(Level.Warn), q"($message, $t)", q"""{ case (m: String, t: Throwable) => scribe.Logger.messageAndThrowable2String(m, t) }""")
+  }
+
   def error(c: whitebox.Context)(message: c.Tree): c.universe.Tree = log(c)(c.universe.reify(Level.Error), message)
 
   def errorThrowable(c: whitebox.Context)(t: c.Tree): c.universe.Tree = {
     import c.universe._
     logSpecial(c)(c.universe.reify(Level.Error), t, q"(v: Any) => scribe.Logger.throwable2String(v.asInstanceOf[Throwable])")
+  }
+
+  def errorMessageAndThrowable(c: whitebox.Context)(message: c.Tree, t: c.Tree): c.universe.Tree = {
+    import c.universe._
+    logSpecial(c)(c.universe.reify(Level.Error), q"($message, $t)", q"""{ case (m: String, t: Throwable) => scribe.Logger.messageAndThrowable2String(m, t) }""")
   }
 }
