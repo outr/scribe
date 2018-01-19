@@ -2,9 +2,25 @@ import sbtcrossproject.{crossProject, CrossType}
 
 name in ThisBuild := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "1.4.5"
+version in ThisBuild := "1.4.6"
 scalaVersion in ThisBuild := "2.12.4"
 crossScalaVersions in ThisBuild := List("2.12.4", "2.11.12")
+
+publishTo in ThisBuild := sonatypePublishTo.value
+sonatypeProfileName in ThisBuild := "com.outr"
+publishMavenStyle in ThisBuild := true
+licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
+sonatypeProjectHosting in ThisBuild := Some(xerial.sbt.Sonatype.GithubHosting("outr", "scribe", "matt@outr.com"))
+homepage in ThisBuild := Some(url("https://github.com/outr/scribe"))
+scmInfo in ThisBuild := Some(
+  ScmInfo(
+    url("https://github.com/outr/scribe"),
+    "scm:git@github.com:outr/scribe.git"
+  )
+)
+developers in ThisBuild := List(
+  Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.", url=url("http://matthicks.com"))
+)
 
 lazy val scribe = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
