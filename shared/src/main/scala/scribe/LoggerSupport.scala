@@ -18,12 +18,16 @@ trait LoggerSupport {
 
   def trace(t: => Throwable): Unit = macro Macros.traceThrowable
 
+  def trace(message: => String, t: => Throwable): Unit = macro Macros.traceMessageAndThrowable
+
   /**
     * Debug log entry. Uses Macros to optimize performance.
     */
   def debug(message: => Any): Unit = macro Macros.debug
 
   def debug(t: => Throwable): Unit = macro Macros.debugThrowable
+
+  def debug(message: => String, t: => Throwable): Unit = macro Macros.debugMessageAndThrowable
 
   /**
     * Info log entry. Uses Macros to optimize performance.
@@ -32,6 +36,8 @@ trait LoggerSupport {
 
   def info(t: => Throwable): Unit = macro Macros.infoThrowable
 
+  def info(message: => String, t: => Throwable): Unit = macro Macros.infoMessageAndThrowable
+
   /**
     * Warn log entry. Uses Macros to optimize performance.
     */
@@ -39,15 +45,16 @@ trait LoggerSupport {
 
   def warn(t: => Throwable): Unit = macro Macros.warnThrowable
 
+  def warn(message: => String, t: => Throwable): Unit = macro Macros.warnMessageAndThrowable
+
   /**
     * Error log entry. Uses Macros to optimize performance.
     */
   def error(message: => Any): Unit = macro Macros.error
 
-  /**
-    * Error log entry. Uses Macros to optimize performance.
-    */
   def error(t: => Throwable): Unit = macro Macros.errorThrowable
+
+  def error(message: => String, t: => Throwable): Unit = macro Macros.errorMessageAndThrowable
 
   /**
     * Log method invoked by trace, debug, info, warn, and error. Ideally should not be called directly as it will not

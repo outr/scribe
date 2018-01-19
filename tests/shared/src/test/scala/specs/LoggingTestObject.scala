@@ -15,4 +15,8 @@ class LoggingTestObject(writer: TestingWriter) extends Logging {
   def testException(): Unit = {
     logger.info(new RuntimeException("Testing"))
   }
+
+  def testLoggerException(): Unit = {
+    logger.info("Oh no", new RuntimeException("Testing"))
+  }
 }
