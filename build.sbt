@@ -22,6 +22,18 @@ lazy val scribe = crossProject.in(file("."))
 lazy val js = scribe.js
 lazy val jvm = scribe.jvm
 
+lazy val core = crossProject.in(file("core"))
+    .settings(
+      name := "scribe-core",
+      libraryDependencies ++= Seq(
+        "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+        "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
+      )
+    )
+
+lazy val coreJs = core.js
+lazy val coreJvm = core.jvm
+
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(jvm)
   .settings(
@@ -43,7 +55,7 @@ lazy val slack = project.in(file("slack"))
   )
 
 lazy val benchmarks = project.in(file("benchmarks"))
-  .dependsOn(jvm)
+  .dependsOn(jvm, coreJvm)
   .enablePlugins(JmhPlugin)
   .settings(
     publishArtifact := false,
