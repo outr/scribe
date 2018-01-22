@@ -52,24 +52,10 @@ class LocalThreadOverhead {
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
-  def withScribe2Async(): Unit = {
+  def withScribe2(): Unit = {
     var i = 0
     while (i < 1000) {
 //      scribe2Logger.info("test")
-      scribe2Logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
-      i += 1
-    }
-  }
-
-  @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
-  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
-  @annotations.OperationsPerInvocation(1000)
-  def withScribe2Sync(): Unit = {
-    scribe2.Logger.asynchronous = false
-    var i = 0
-    while (i < 1000) {
-      //      scribe2Logger.info("test")
       scribe2Logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
       i += 1
     }

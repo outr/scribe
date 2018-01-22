@@ -27,6 +27,7 @@ lazy val core = crossProject.in(file("core"))
       name := "scribe-core",
       libraryDependencies ++= Seq(
         "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+        "com.typesafe.akka" %% "akka-actor" % "2.5.9",
         "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
       )
     )
