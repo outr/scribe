@@ -22,15 +22,25 @@ lazy val scribe = crossProject.in(file("."))
 lazy val js = scribe.js
 lazy val jvm = scribe.jvm
 
+lazy val macros = crossProject.in(file("macros"))
+  .settings(
+    name := "scribe-macros",
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+  )
+
+lazy val macrosJs = macros.js
+lazy val macrosJvm = macros.jvm
+
 lazy val core = crossProject.in(file("core"))
-    .settings(
-      name := "scribe-core",
-      libraryDependencies ++= Seq(
-        "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-        "com.typesafe.akka" %% "akka-actor" % "2.5.9",
-        "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
-      )
+  .dependsOn(macros)
+  .settings(
+    name := "scribe-core",
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "com.typesafe.akka" %% "akka-actor" % "2.5.9",
+      "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
     )
+  )
 
 lazy val coreJs = core.js
 lazy val coreJvm = core.jvm

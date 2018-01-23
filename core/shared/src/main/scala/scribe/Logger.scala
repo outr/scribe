@@ -1,9 +1,11 @@
 package scribe2
 
+import java.io.PrintStream
+
 case class Logger(parentName: Option[String],
                   modifiers: List[LogModifier],
-                  handlers: List[LogHandler]) extends LogHandler {
-  override def log(record: LogRecord): Unit = {
+                  handlers: List[LogHandler]) {
+  def log(record: LogRecord): Unit = {
     modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
       handlers.foreach(_.log(r))
       parentName.map(Logger.byName).foreach(_.log(record))
@@ -12,13 +14,21 @@ case class Logger(parentName: Option[String],
 }
 
 object Logger {
+  private val systemOut = System.out
+  private val systemErr = System.err
+
+  object system {
+    def out: PrintStream = systemOut
+    def err: PrintStream = systemErr
+  }
+
   val rootName: String = "root"
 
   def root: Logger = byName(rootName)
 
   private var map = Map.empty[String, Logger]
 
-  update(rootName, Logger(None, Nil, Nil))
+  update(rootName, Logger(None, Nil, List(LogHandler(Formatter.default, ConsoleWriter, Nil))))
 
   def byName(name: String): Logger = synchronized {
     map.get(name) match {
@@ -31,11 +41,12 @@ object Logger {
     }
   }
 
-  def update(name: String, logger: Logger): Unit = synchronized {
+  def update(name: String, logger: Logger): Logger = synchronized {
     map += name -> logger
+    logger
   }
 
-  def update(name: String)(modifier: Logger => Logger): Unit = {
+  def update(name: String)(modifier: Logger => Logger): Logger = {
     update(name, modifier(byName(name)))
   }
 }

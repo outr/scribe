@@ -17,7 +17,10 @@ class LocalThreadOverhead {
     l.addHandler(LogHandler(writer = FileWriter.flat("scribe", append = false)))
     l
   }
-  private lazy val scribe2Logger = scribe2.Logger.root
+  private lazy val scribe2Logger = scribe2.Logger.update(scribe2.Logger.rootName) { l =>
+    val handler = scribe2.LogHandler(scribe2.Formatter.simple, scribe2.FileWriter.single("scribe2", asynchronous = false), Nil)
+    l.copy(handlers = List(handler))
+  }
 
   assert(log4jLogger.isInfoEnabled, "INFO is not enabled in log4j!")
 
@@ -59,6 +62,7 @@ class LocalThreadOverhead {
       scribe2Logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
       i += 1
     }
+    scribe2.dispose()
   }
 
   @annotations.Benchmark

@@ -1,5 +1,7 @@
 package scribe2
 
 trait Writer {
-  def write(record: LogRecord, formatter: Formatter): Unit
+  def write(output: String): Unit
+
+  def dispose(): Unit = {}
 }
