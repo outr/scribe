@@ -8,13 +8,12 @@ import scribe.writer.ConsoleWriter
 
 case class Logger(parentName: Option[String] = Some(Logger.rootName),
                   modifiers: List[LogModifier] = Nil,
-                  handlers: List[LogHandler] = Nil) extends LogSupport {
-  override type Self = Logger
-
+                  handlers: List[LogHandler] = Nil) extends LogSupport[Logger] {
   def orphan(): Logger = copy(parentName = None)
   def withParent(name: String): Logger = copy(parentName = Some(name))
   def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
+  def clearHandlers(): Logger = copy(handlers = Nil)
   override def withModifier(modifier: LogModifier): Logger = copy(modifiers = modifiers ::: List(modifier))
   override def withoutModifier(modifier: LogModifier): Logger = copy(modifiers = modifiers.filterNot(_ == modifier))
 

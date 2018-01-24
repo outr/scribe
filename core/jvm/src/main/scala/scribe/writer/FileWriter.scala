@@ -1,11 +1,9 @@
-package scribe
+package scribe.writer
 
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file._
-
-import scribe.writer.Writer
 
 case class FileWriter(directory: Path,
                       fileNameGenerator: () => String,

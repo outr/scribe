@@ -2,18 +2,7 @@ import sbtcrossproject.{crossProject, CrossType}
 
 name in ThisBuild := "scribe"
 organization in ThisBuild := "com.outr"
-<<<<<<< HEAD
 version in ThisBuild := "2.0.0-SNAPSHOT"
-scalaVersion in ThisBuild := "2.12.4"
-crossScalaVersions in ThisBuild := List("2.12.4", "2.11.12")
-
-lazy val root = project.in(file("."))
-  .aggregate(macrosJS, macrosJVM, coreJS, coreJVM, slf4j, slack, benchmarks)
-  .settings(
-    publish := {},
-    publishLocal := {}
-=======
-version in ThisBuild := "1.4.6"
 scalaVersion in ThisBuild := "2.12.4"
 crossScalaVersions in ThisBuild := List("2.12.4", "2.11.12")
 
@@ -27,37 +16,62 @@ scmInfo in ThisBuild := Some(
   ScmInfo(
     url("https://github.com/outr/scribe"),
     "scm:git@github.com:outr/scribe.git"
->>>>>>> master
   )
 )
 developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.", url=url("http://matthicks.com"))
 )
 
-<<<<<<< HEAD
-lazy val macros = crossProject.in(file("macros"))
+lazy val root = project.in(file("."))
+  .aggregate(
+    macrosJS, macrosJVM, macrosNative,
+    coreJS, coreJVM, coreNative,
+    testsJS, testsJVM,
+    extrasJS, extrasJVM, extrasNative,
+    slf4j, slack, benchmarks)
+  .settings(
+    publish := {},
+    publishLocal := {}
+  )
+
+lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+  .crossType(CrossType.Full)
+  .in(file("macros"))
   .settings(
     name := "scribe-macros",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    publishArtifact in Test := false
+  )
+  .nativeSettings(
+    scalaVersion := "2.11.12",
   )
 
 lazy val macrosJS = macros.js
 lazy val macrosJVM = macros.jvm
+lazy val macrosNative = macros.native
 
-lazy val core = crossProject.in(file("core"))
+lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+  .crossType(CrossType.Full)
+  .in(file("core"))
   .dependsOn(macros)
   .settings(
-    name := "scribe-core",
+    name := "scribe",
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %%% "scalatest" % "3.0.3" % "test"
-    )
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value
+    ),
+    publishArtifact in Test := false
+  )
+  .nativeSettings(
+    scalaVersion := "2.11.12",
   )
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
+lazy val coreNative = core.native
 
-lazy val extras = crossProject.in(file("extras"))
+lazy val extras = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+  .crossType(CrossType.Full)
+  .in(file("extras"))
   .dependsOn(core)
   .settings(
     name := "scribe-extras"
@@ -67,33 +81,16 @@ lazy val extras = crossProject.in(file("extras"))
       "com.typesafe.akka" %% "akka-actor" % "2.5.9"
     )
   )
+  .nativeSettings(
+    scalaVersion := "2.11.12",
+  )
 
 lazy val extrasJS = extras.js
 lazy val extrasJVM = extras.jvm
+lazy val extrasNative = extras.native
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
-=======
-lazy val scribe = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .crossType(CrossType.Full)
-  .in(file("."))
-  .settings(
-    name := "scribe",
-    libraryDependencies += scalaVersion("org.scala-lang" % "scala-reflect" % _).value,
-    publishArtifact in Test := false
-  )
-  .nativeSettings(
-    scalaVersion := "2.11.12",
-    crossScalaVersions := Seq("2.11.12")
-  )
-
-lazy val scribeJS = scribe.js
-lazy val scribeJVM = scribe.jvm
-lazy val scribeNative = scribe.native
-
-lazy val slf4j = project.in(file("slf4j"))
-  .dependsOn(scribeJVM)
->>>>>>> master
   .settings(
     name := "scribe-slf4j",
     publishArtifact in Test := false,
@@ -105,13 +102,12 @@ lazy val slf4j = project.in(file("slf4j"))
   )
 
 lazy val slack = project.in(file("slack"))
-<<<<<<< HEAD
   .dependsOn(coreJVM)
   .settings(
     name := "scribe-slack",
     libraryDependencies ++= Seq(
       "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.3.1",
-      "com.lihaoyi" %% "upickle" % "0.4.4"
+      "com.lihaoyi" %% "upickle" % "0.5.1"
     )
   )
 
@@ -126,20 +122,9 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "com.lmax" % "disruptor" % "3.3.7"
     )
   )
-=======
-  .dependsOn(scribeJVM)
-  .settings(
-    name := "scribe-slack",
-    publishArtifact in Test := false,
-    libraryDependencies ++= Seq(
-      "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.3.1",
-      "com.lihaoyi" %% "upickle" % "0.5.1"
-    )
-  )
-
 
 lazy val tests = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full)
-  .dependsOn(scribe)
+  .dependsOn(core)
   .settings(
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test,
     publish := {},
@@ -149,4 +134,3 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full)
 
 lazy val testsJVM = tests.jvm
 lazy val testsJS = tests.js
->>>>>>> master

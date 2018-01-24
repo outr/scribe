@@ -6,9 +6,7 @@ import scribe.writer.{ConsoleWriter, Writer}
 
 case class LogHandler(formatter: Formatter = Formatter.default,
                       writer: Writer = ConsoleWriter,
-                      modifiers: List[LogModifier] = Nil) extends LogSupport {
-  override type Self = Logger
-
+                      modifiers: List[LogModifier] = Nil) extends LogSupport[LogHandler] {
   def withFormatter(formatter: Formatter): LogHandler = copy(formatter = formatter)
   def withWriter(writer: Writer): LogHandler = copy(writer = writer)
   override def withModifier(modifier: LogModifier): LogHandler = copy(modifiers = modifiers ::: List(modifier))
