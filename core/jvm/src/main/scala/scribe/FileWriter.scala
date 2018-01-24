@@ -1,16 +1,17 @@
-package scribe2
+package scribe
 
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file._
 
+import scribe.writer.Writer
+
 case class FileWriter(directory: Path,
                       fileNameGenerator: () => String,
                       append: Boolean = true,
                       autoFlush: Boolean = true,
-                      asynchronous: Boolean = true,
-                      charset: Charset = Charset.defaultCharset()) extends AsynchronousSequentialWriter {
+                      charset: Charset = Charset.defaultCharset()) extends Writer {
   private lazy val options: List[OpenOption] = if (append) {
     List(StandardOpenOption.WRITE, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
   } else {
@@ -19,7 +20,7 @@ case class FileWriter(directory: Path,
   private var channel: Option[FileChannel] = None
   private var currentFileName: Option[String] = None
 
-  override protected def asyncWrite(output: String): Unit = {
+  override def write(output: String): Unit = {
     validateFileName()
     val channel = validateChannel()
     val bytes = output.getBytes(charset)
@@ -52,12 +53,6 @@ case class FileWriter(directory: Path,
     }
   }
 
-  override def write(output: String): Unit = if (asynchronous) {
-    super.write(output)
-  } else {
-    asyncWrite(output)
-  }
-
   override def dispose(): Unit = {
     super.dispose()
   }
@@ -78,9 +73,8 @@ object FileWriter {
              directory: Path = Paths.get("logs"),
              append: Boolean = true,
              autoFlush: Boolean = true,
-             asynchronous: Boolean = true,
              charset: Charset = Charset.defaultCharset()): FileWriter = {
-    new FileWriter(directory, generator.single(prefix, suffix), append, autoFlush, asynchronous, charset)
+    new FileWriter(directory, generator.single(prefix, suffix), append, autoFlush, charset)
   }
 
   def daily(prefix: String = "app",
@@ -88,8 +82,7 @@ object FileWriter {
             directory: Path = Paths.get("logs"),
             append: Boolean = true,
             autoFlush: Boolean = true,
-            asynchronous: Boolean = true,
             charset: Charset = Charset.defaultCharset()): FileWriter = {
-    new FileWriter(directory, generator.daily(prefix, suffix), append, autoFlush, asynchronous, charset)
+    new FileWriter(directory, generator.daily(prefix, suffix), append, autoFlush, charset)
   }
 }

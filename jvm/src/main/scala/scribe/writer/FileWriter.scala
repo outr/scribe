@@ -2,7 +2,7 @@ package scribe.writer
 
 import java.nio.file.{Path, Paths}
 import scribe.LogRecord
-import scribe.formatter.Formatter
+import scribe.format.Formatter
 
 class FileWriter(val directory: Path,
                  val filenameGenerator: () => String,

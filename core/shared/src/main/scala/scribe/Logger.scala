@@ -1,10 +1,23 @@
-package scribe2
+package scribe
 
 import java.io.PrintStream
 
-case class Logger(parentName: Option[String],
-                  modifiers: List[LogModifier],
-                  handlers: List[LogHandler]) {
+import scribe.format.Formatter
+import scribe.modify.{LevelFilter, LogModifier}
+import scribe.writer.ConsoleWriter
+
+case class Logger(parentName: Option[String] = Some(Logger.rootName),
+                  modifiers: List[LogModifier] = Nil,
+                  handlers: List[LogHandler] = Nil) extends LogSupport {
+  override type Self = Logger
+
+  def orphan(): Logger = copy(parentName = None)
+  def withParent(name: String): Logger = copy(parentName = Some(name))
+  def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))
+  def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
+  override def withModifier(modifier: LogModifier): Logger = copy(modifiers = modifiers ::: List(modifier))
+  override def withoutModifier(modifier: LogModifier): Logger = copy(modifiers = modifiers.filterNot(_ == modifier))
+
   def log(record: LogRecord): Unit = {
     modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
       handlers.foreach(_.log(r))
@@ -14,6 +27,7 @@ case class Logger(parentName: Option[String],
 }
 
 object Logger {
+  // Keep a reference to the print streams just in case we need to redirect later
   private val systemOut = System.out
   private val systemErr = System.err
 
@@ -28,7 +42,12 @@ object Logger {
 
   private var map = Map.empty[String, Logger]
 
-  update(rootName, Logger(None, Nil, List(LogHandler(Formatter.default, ConsoleWriter, Nil))))
+  // Configure the root logger to filter anything under Info and write to the console
+  update(rootName)(
+    _.orphan()
+     .withModifier(LevelFilter >= Level.Info)
+     .withHandler(LogHandler(Formatter.default, ConsoleWriter, Nil))
+  )
 
   def byName(name: String): Logger = synchronized {
     map.get(name) match {

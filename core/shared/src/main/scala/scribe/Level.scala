@@ -1,4 +1,4 @@
-package scribe2
+package scribe
 
 class Level(val name: String, val value: Double) {
   Level.maxLength = math.max(Level.maxLength, name.length)

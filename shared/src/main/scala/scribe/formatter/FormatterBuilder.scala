@@ -1,4 +1,4 @@
-package scribe.formatter
+package scribe.format
 
 import scribe.{Platform, LogRecord}
 

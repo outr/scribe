@@ -2,19 +2,17 @@ package specs
 
 import scribe._
 import org.scalatest.{Matchers, WordSpec}
+import scribe.modify.LogBooster
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
   "Logging" should {
     val testingWriter = new TestingWriter
     val testObject = new LoggingTestObject(testingWriter)
-    val handler = LogHandler(level = Level.Debug, writer = testingWriter)
+    val handler = LogHandler.default.withWriter(testingWriter)
 
     "set up the logging" in {
       testingWriter.clear()
-      logger.update {
-        logger.copy(parentName = None)
-      }
-      logger.addHandler(handler)
+      update(_.orphan().withHandler(handler))
     }
     "have no logged entries yet" in {
       testingWriter.records.length should be(0)
@@ -28,15 +26,14 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingWriter.records.length should be(2)
     }
     "ignore the third entry after reconfiguring without debug logging" in {
-      logger.removeHandler(handler)
-      logger.addHandler(LogHandler(level = Level.Info, writer = testingWriter))
+      update(_.withoutHandler(handler).withHandler(LogHandler.default.withWriter(testingWriter)))
+//      logger.removeHandler(handler)
+//      logger.addHandler(LogHandler(level = Level.Info, writer = testingWriter))
       logger.debug("Debug Log 2")
       testingWriter.records.length should be(2)
     }
     "boost the this logging instance" in {
-      logger.update {
-        logger.copy(multiplier = 2.0)
-      }
+      update(_.withModifier(LogBooster.multiply(2.0)))
       logger.debug("Debug Log 3")
       testingWriter.records.length should be(3)
     }

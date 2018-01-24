@@ -1,6 +1,6 @@
 package scribe
 
-import scribe.formatter.Formatter
+import scribe.format.Formatter
 import scribe.writer.{ConsoleWriter, Writer}
 
 trait LogHandler {

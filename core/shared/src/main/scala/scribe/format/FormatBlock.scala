@@ -1,4 +1,6 @@
-package scribe2
+package scribe.format
+
+import scribe.LogRecord
 
 trait FormatBlock {
   def format(record: LogRecord, b: StringBuilder): Unit

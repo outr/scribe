@@ -1,7 +1,7 @@
 package scribe.writer
 
 import scribe.{Logger, LogRecord}
-import scribe.formatter.Formatter
+import scribe.format.Formatter
 
 object ErrorWriter extends Writer {
    def write(record: LogRecord, formatter: Formatter): Unit = {

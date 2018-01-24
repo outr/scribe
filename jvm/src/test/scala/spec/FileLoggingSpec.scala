@@ -1,7 +1,7 @@
 package spec
 
 import java.nio.file.{Files, Path, Paths}
-import scribe.formatter.Formatter
+import scribe.format.Formatter
 import scribe.writer.FileWriter
 import scribe.{LogHandler, Logger}
 import org.scalatest.{Matchers, WordSpec}

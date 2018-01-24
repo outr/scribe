@@ -1,17 +1,8 @@
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 
-package object scribe2 {
-  def date: FormatBlock = FormatBlock.Date.Standard
-  def threadName: FormatBlock = FormatBlock.ThreadName
-  def levelPaddedRight: FormatBlock = FormatBlock.Level.PaddedRight
-  def positionAbbreviated: FormatBlock = FormatBlock.Position.Abbreviated
-  def message: FormatBlock = FormatBlock.Message
-  def newLine: FormatBlock = FormatBlock.NewLine
+package object scribe {
+  protected[scribe] var disposables = Set.empty[() => Unit]
 
-  implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
-    def formatter(args: Any*): Formatter = macro Macros.formatter
-  }
-
-  def dispose(): Unit = AsynchronousSequentialWriter.dispose()
+  def dispose(): Unit = disposables.foreach(d => d())
 }

@@ -1,4 +1,4 @@
-package scribe2
+package scribe.writer
 
 trait Writer {
   def write(output: String): Unit

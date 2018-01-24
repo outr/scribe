@@ -1,7 +1,7 @@
 package specs
 
 import scribe.LogRecord
-import scribe.formatter.Formatter
+import scribe.format.Formatter
 import scribe.writer.Writer
 
 import scala.collection.mutable.ListBuffer

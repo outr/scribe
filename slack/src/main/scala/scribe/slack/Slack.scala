@@ -3,7 +3,7 @@ package scribe.slack
 import gigahorse.{FullResponse, MimeTypes}
 import gigahorse.support.asynchttpclient.Gigahorse
 import scribe._
-import scribe.formatter.FormatterBuilder
+import scribe.format.FormatterBuilder
 import upickle.Js
 
 import scala.concurrent.Future
