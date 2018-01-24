@@ -80,6 +80,10 @@ object Logger {
   }
   root.addHandler(LogHandler())
 
+  final def messageAndThrowable2String(message: String, t: Throwable): String = {
+    throwable2String(t, b = new StringBuilder(message).append(" - "))
+  }
+
   /**
     * Converts a Throwable to a String representation for output in logging.
     */
