@@ -1,6 +1,5 @@
 import sbtcrossproject.{crossProject, CrossType}
 
-name in ThisBuild := "scribe"
 organization in ThisBuild := "com.outr"
 version in ThisBuild := "2.0.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.4"
@@ -30,6 +29,7 @@ lazy val root = project.in(file("."))
     extrasJS, extrasJVM, extrasNative,
     slf4j, slack, benchmarks)
   .settings(
+    name := "scribe",
     publish := {},
     publishLocal := {}
   )
