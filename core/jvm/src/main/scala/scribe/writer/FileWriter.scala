@@ -5,6 +5,8 @@ import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file._
 
+import scala.annotation.tailrec
+
 case class FileWriter(directory: Path,
                       fileNameGenerator: () => String,
                       append: Boolean = true,
@@ -22,11 +24,15 @@ case class FileWriter(directory: Path,
     validateFileName()
     val channel = validateChannel()
     val bytes = output.getBytes(charset)
-    val buffer = ByteBuffer.allocate(bytes.length)
-    buffer.put(bytes)
-    buffer.flip()
-    channel.write(buffer, 0L)
+    val buffer = ByteBuffer.wrap(bytes)
+    writeBuffer(buffer, channel)
     buffer.clear()
+  }
+
+  @tailrec
+  private def writeBuffer(buffer: ByteBuffer, channel: FileChannel): Unit = if (buffer.hasRemaining) {
+    channel.write(buffer)
+    writeBuffer(buffer, channel)
   }
 
   protected def validateFileName(): Unit = {
@@ -53,6 +59,8 @@ case class FileWriter(directory: Path,
 
   override def dispose(): Unit = {
     super.dispose()
+
+    channel.foreach(_.close())
   }
 }
 

@@ -5,16 +5,19 @@ import java.util.concurrent.TimeUnit
 import org.apache.logging.log4j.LogManager
 import org.openjdk.jmh.annotations
 import scribe._
+import scribe.format._
 
 // jmh:run -i 3 -wi 3 -f1 -t1
 @annotations.State(annotations.Scope.Thread)
 class LocalThreadOverhead {
   private lazy val log4jLogger = LogManager.getRootLogger
   private lazy val scribe2Logger = scribe.Logger.update(scribe.Logger.rootName) { l =>
+    //formatter"$date [$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
     l.clearHandlers()
      .withHandler(
       LogHandler
         .default
+        .withFormatter(formatter"$date $threadName $levelPaddedRight $positionAbbreviated - $message$newLine")
         .withWriter(writer.FileWriter.single("scribe"))
     )
   }
@@ -47,7 +50,6 @@ class LocalThreadOverhead {
       scribe2Logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
       i += 1
     }
-    scribe.dispose()
   }
 
   @annotations.Benchmark

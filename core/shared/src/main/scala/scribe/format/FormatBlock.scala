@@ -1,5 +1,7 @@
 package scribe.format
 
+import java.text.SimpleDateFormat
+
 import scribe.LogRecord
 
 trait FormatBlock {
@@ -13,9 +15,14 @@ object FormatBlock {
 
   object Date {
     object Standard extends FormatBlock {
+      private lazy val sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
+
       override def format(record: LogRecord, b: StringBuilder): Unit = {
-        val l = record.timeStamp
-        b.append(f"$l%tY.$l%tm.$l%td $l%tT:$l%tL")
+//        val l = record.timeStamp
+//        b.append(f"$l%tY.$l%tm.$l%td $l%tT:$l%tL")
+//        b.append(sdf.format(l))
+//        b.append(l)
+        // TODO: improve
       }
     }
   }
