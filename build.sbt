@@ -112,7 +112,7 @@ lazy val slack = project.in(file("slack"))
   )
 
 lazy val benchmarks = project.in(file("benchmarks"))
-  .dependsOn(coreJVM)
+  .dependsOn(coreJVM, extrasJVM)
   .enablePlugins(JmhPlugin)
   .settings(
     publishArtifact := false,

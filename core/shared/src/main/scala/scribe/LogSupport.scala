@@ -7,4 +7,6 @@ trait LogSupport[L <: LogSupport[L]] {
   def withoutModifier(modifier: LogModifier): L
 
   // TODO: withFilter, withLevelFilter
+
+  def log(record: LogRecord): Unit
 }
