@@ -5,41 +5,39 @@ import java.text.SimpleDateFormat
 import scribe.LogRecord
 
 trait FormatBlock {
-  def format(record: LogRecord, b: StringBuilder): Unit
+  def format(record: LogRecord, b: java.lang.StringBuilder): Unit
 }
 
 object FormatBlock {
   case class RawString(s: String) extends FormatBlock {
-    override def format(record: LogRecord, b: StringBuilder): Unit = b.append(s)
+    override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = b.append(s)
   }
 
   object Date {
     object Standard extends FormatBlock {
       private lazy val sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
 
-      override def format(record: LogRecord, b: StringBuilder): Unit = {
-//        val l = record.timeStamp
-//        b.append(f"$l%tY.$l%tm.$l%td $l%tT:$l%tL")
-//        b.append(sdf.format(l))
-//        b.append(l)
-        // TODO: improve
+      override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = {
+        val l = record.timeStamp
+        // TODO: find a faster f"" interpolator option
+        b.append(sdf.format(l))
       }
     }
   }
 
   object ThreadName extends FormatBlock {
-    override def format(record: LogRecord, b: StringBuilder): Unit = b.append(record.thread.getName)
+    override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = b.append(record.thread.getName)
   }
 
   object Level {
     object PaddedRight extends FormatBlock {
-      override def format(record: LogRecord, b: StringBuilder): Unit = b.append(record.level.namePaddedRight)
+      override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = b.append(record.level.namePaddedRight)
     }
   }
 
   object Position {
     object Abbreviated extends FormatBlock {
-      override def format(record: LogRecord, b: StringBuilder): Unit = {
+      override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = {
         val parts = record.className.split('.')
         val last = parts.length - 1
         val abbreviation = parts.zipWithIndex.map {
@@ -52,10 +50,10 @@ object FormatBlock {
   }
 
   object Message extends FormatBlock {
-    override def format(record: LogRecord, b: StringBuilder): Unit = b.append(record.message)
+    override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = b.append(record.message)
   }
 
   object NewLine extends FormatBlock {
-    override def format(record: LogRecord, b: StringBuilder): Unit = b.append('\n')
+    override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = b.append('\n')
   }
 }

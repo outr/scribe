@@ -2,7 +2,7 @@ package spec
 
 import java.nio.file.{Files, Path, Paths}
 import scribe.format.Formatter
-import scribe.writer.FileWriter
+import scribe.writer.FileNIOWriter
 import scribe.{LogHandler, Logger}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -11,7 +11,7 @@ import scala.io.Source
 class FileLoggingSpec extends WordSpec with Matchers {
   lazy val fileLogger: Logger = Logger(parentName = None)
   lazy val logFile: Path = Paths.get("logs/test.log")
-  lazy val writer: FileWriter = FileWriter.flat("test")
+  lazy val writer: FileNIOWriter = FileNIOWriter.flat("test")
 
   "File Logging" should {
     "configure logging to a temporary file" in {
