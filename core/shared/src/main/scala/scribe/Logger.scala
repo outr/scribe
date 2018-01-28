@@ -7,7 +7,7 @@ import scribe.writer.ConsoleWriter
 
 case class Logger(parentName: Option[String] = Some(Logger.rootName),
                   modifiers: List[LogModifier] = Nil,
-                  handlers: List[LogHandler] = Nil) extends LogSupport[Logger] {
+                  handlers: List[LogHandler] = Nil) extends LogSupport[Logger] with LoggerSupport {
   def orphan(): Logger = copy(parentName = None)
   def withParent(name: String): Logger = copy(parentName = Some(name))
   def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))

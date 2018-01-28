@@ -30,4 +30,37 @@ object Macros {
       case _ => c.abort(c.enclosingPosition, "Bad usage of formatter interpolation.")
     }
   }
+
+  def info(c: blackbox.Context)(message: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Info", message)
+  }
+
+  def log(c: blackbox.Context)(level: c.Tree, message: c.Tree): c.Tree = {
+    import c.universe._
+
+    val logger = c.prefix.tree
+    val EnclosingType(className, methodName) = enclosingType(c)
+    val line = c.enclosingPosition.line match {
+      case -1 => None
+      case n => Some(n)
+    }
+    val stringify = q"scribe.LogRecord.Stringify.Default"
+
+    q"$logger.log(scribe.LogRecord($level, $level.value, () => $message, $stringify, $className, $methodName, $line))"
+  }
+
+  def enclosingType(c: blackbox.Context): EnclosingType = {
+    val term = c.internal.enclosingOwner.asTerm match {
+      case t if t.isMethod => t
+      case t if t.owner.isMethod => t.owner
+      case t => t
+    }
+    val className = term.owner.fullName
+    val methodName = if (term.isMethod) Some(term.asMethod.name.decodedName.toString) else None
+    EnclosingType(className, methodName)
+  }
+
+  case class EnclosingType(className: String, methodName: Option[String])
 }

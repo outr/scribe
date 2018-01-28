@@ -1,5 +1,6 @@
 package scribe.format
 
+import java.lang
 import java.text.SimpleDateFormat
 
 import scribe.LogRecord
@@ -35,7 +36,12 @@ object FormatBlock {
     }
   }
 
-  object Position {
+  object ClassName {
+    object Full extends FormatBlock {
+      override def format(record: LogRecord, b: lang.StringBuilder): Unit = {
+        b.append(record.className)
+      }
+    }
     object Abbreviated extends FormatBlock {
       override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = {
         val parts = record.className.split('.')
@@ -45,6 +51,51 @@ object FormatBlock {
           case (cur, _) => cur.head
         }.mkString(".")
         b.append(abbreviation)
+      }
+    }
+  }
+
+  object MethodName {
+    object Full extends FormatBlock {
+      override def format(record: LogRecord, b: lang.StringBuilder): Unit = {
+        record.methodName.foreach(b.append)
+      }
+    }
+  }
+
+  object Position {
+    object Full extends FormatBlock {
+      override def format(record: LogRecord, b: lang.StringBuilder): Unit = {
+        ClassName.Full.format(record, b)
+        if (record.methodName.nonEmpty) {
+          b.append(".")
+          MethodName.Full.format(record, b)
+        }
+        if (record.lineNumber.nonEmpty) {
+          b.append(":")
+          LineNumber.Full.format(record, b)
+        }
+      }
+    }
+    object Abbreviated extends FormatBlock {
+      override def format(record: LogRecord, b: lang.StringBuilder): Unit = {
+        ClassName.Abbreviated.format(record, b)
+        if (record.methodName.nonEmpty) {
+          b.append(".")
+          MethodName.Full.format(record, b)
+        }
+        if (record.lineNumber.nonEmpty) {
+          b.append(":")
+          LineNumber.Full.format(record, b)
+        }
+      }
+    }
+  }
+
+  object LineNumber {
+    object Full extends FormatBlock {
+      override def format(record: LogRecord, b: lang.StringBuilder): Unit = {
+        record.lineNumber.foreach(b.append)
       }
     }
   }

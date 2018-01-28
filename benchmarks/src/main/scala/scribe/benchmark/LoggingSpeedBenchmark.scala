@@ -40,7 +40,7 @@ class LoggingSpeedBenchmark {
         .withHandler(
           LogHandler
             .default
-            .withFormatter(formatter"$date $threadName $levelPaddedRight $positionAbbreviated - $message$newLine")
+            .withFormatter(Formatter.default)
             .withWriter(fileWriter)
         )
     }
@@ -48,7 +48,8 @@ class LoggingSpeedBenchmark {
     var i = 0
     while (i < 1000) {
 //      scribe2Logger.info("test")
-      logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
+//      logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
+      logger.info("test")
       i += 1
     }
     fileWriter.dispose()
@@ -73,8 +74,7 @@ class LoggingSpeedBenchmark {
 
     var i = 0
     while (i < 1000) {
-      //      scribe2Logger.info("test")
-      logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
+      logger.info("test")
       i += 1
     }
     fileWriter.dispose()
