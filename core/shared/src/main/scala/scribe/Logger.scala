@@ -48,11 +48,12 @@ object Logger {
   )
 
   def byName(name: String): Logger = synchronized {
-    map.get(name) match {
+    val n = name.replaceAll("[$]", "")
+    map.get(n) match {
       case Some(logger) => logger
       case None => {
         val logger = Logger(Some(rootName), Nil, Nil)
-        map += name -> logger
+        map += n -> logger
         logger
       }
     }

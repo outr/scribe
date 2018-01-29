@@ -19,7 +19,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       if (Files.exists(logFile)) {
         Files.delete(logFile)
       }
-      fileLogger.withHandler(LogHandler.default.withFormatter(Formatter.simple).withWriter(writer))
+      fileLogger = fileLogger.withHandler(LogHandler.default.withFormatter(Formatter.simple).withWriter(writer))
     }
     "log to the file" in {
       fileLogger.info("Testing File Logger")

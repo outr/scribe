@@ -9,7 +9,7 @@ object ImplicitLoggingTestObject {
 
   def initialize(): Unit = {
     val handler = LogHandler.default.withModifier(LevelFilter >= Level.Debug).withModifier(testingModifier).withWriter(NullWriter)
-    this.updateLogger(_.withHandler(handler))
+    this.updateLogger(_.orphan().withHandler(handler))
   }
 
   def doSomething(): Unit = {

@@ -9,7 +9,7 @@ package object scribe extends LoggerSupport {
   def dispose(): Unit = disposables.foreach(d => d())
 
   implicit class AnyLogging(value: Any) {
-    def logger: Logger = Logger.byName(value.getClass.getSimpleName)
-    def updateLogger(modifier: Logger => Logger): Logger = Logger.update(value.getClass.getSimpleName)(modifier)
+    def logger: Logger = Logger.byName(value.getClass.getName)
+    def updateLogger(modifier: Logger => Logger): Logger = Logger.update(value.getClass.getName)(modifier)
   }
 }
