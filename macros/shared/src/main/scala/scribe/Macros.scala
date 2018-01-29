@@ -20,8 +20,8 @@ object Macros {
             if (raw.nonEmpty) {
               list += q"scribe.format.FormatBlock.RawString($raw)"
             }
-            if (index > 0) {
-              list += argsVector(index - 1)
+            if (index < argsVector.size) {
+              list += argsVector(index)
             }
           }
         }
