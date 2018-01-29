@@ -1,24 +1,25 @@
 package spec
 
 import java.nio.file.{Files, Path, Paths}
+
 import scribe.format.Formatter
-import scribe.writer.FileNIOWriter
+import scribe.writer.{FileNIOWriter, NullWriter}
 import scribe.{LogHandler, Logger}
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.io.Source
 
 class FileLoggingSpec extends WordSpec with Matchers {
-  lazy val fileLogger: Logger = Logger(parentName = None)
+  private var fileLogger: Logger = Logger(parentName = None)
   lazy val logFile: Path = Paths.get("logs/test.log")
-  lazy val writer: FileNIOWriter = FileNIOWriter.flat("test")
+  lazy val writer: FileNIOWriter = FileNIOWriter.single("test")
 
   "File Logging" should {
     "configure logging to a temporary file" in {
       if (Files.exists(logFile)) {
         Files.delete(logFile)
       }
-      fileLogger.addHandler(LogHandler(formatter = Formatter.simple, writer = writer))
+      fileLogger.withHandler(LogHandler.default.withFormatter(Formatter.simple).withWriter(writer))
     }
     "log to the file" in {
       fileLogger.info("Testing File Logger")
@@ -34,7 +35,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       }
     }
     "close and release the file handle" in {
-      writer.close()
+      writer.dispose()
     }
   }
 }

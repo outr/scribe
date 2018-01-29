@@ -1,5 +1,6 @@
 import sbtcrossproject.{crossProject, CrossType}
 
+name := "scribe"
 organization in ThisBuild := "com.outr"
 version in ThisBuild := "2.0.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.4"

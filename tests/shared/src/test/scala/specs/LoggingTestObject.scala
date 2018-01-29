@@ -1,12 +1,11 @@
 package specs
 
+import scribe.modify.LevelFilter
+import scribe.writer.NullWriter
 import scribe.{Level, LogHandler, Logging}
 
-class LoggingTestObject(writer: TestingWriter) extends Logging {
-  logger.update {
-    logger.copy(parentName = None)
-  }
-  logger.addHandler(LogHandler(Level.Debug, writer = writer))
+class LoggingTestObject(modifier: TestingModifier) extends Logging {
+  update(_.orphan().withHandler(LogHandler.default.withModifier(LevelFilter >= Level.Debug).withModifier(modifier).withWriter(NullWriter)))
 
   def testLogger(): Unit = {
     logger.info("This is a test!")

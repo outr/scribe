@@ -4,9 +4,6 @@ import org.scalatest.{Matchers, WordSpec}
 
 class ImplicitLoggingSpec extends WordSpec with Matchers {
   "implicit logger" should {
-    "verify implicit logger has the correct name" in {
-      scribe.name should be(Some("scribe"))
-    }
     "config properly" in {
       ImplicitLoggingTestObject.initialize()
     }
@@ -14,8 +11,8 @@ class ImplicitLoggingSpec extends WordSpec with Matchers {
       val lineNumber = 14
 
       ImplicitLoggingTestObject.doSomething()
-      ImplicitLoggingTestObject.testingWriter.records.length should be(1)
-      val record = ImplicitLoggingTestObject.testingWriter.records.head
+      ImplicitLoggingTestObject.testingModifier.records.length should be(1)
+      val record = ImplicitLoggingTestObject.testingModifier.records.head
       record.className should be("specs.ImplicitLoggingTestObject")
       record.methodName should be(Some("doSomething"))
       record.lineNumber should be(lineNumber)

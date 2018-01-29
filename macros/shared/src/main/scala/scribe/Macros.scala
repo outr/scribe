@@ -31,10 +31,69 @@ object Macros {
     }
   }
 
+  def trace(c: blackbox.Context)(message: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Trace", message)
+  }
+
+  def debug(c: blackbox.Context)(message: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Debug", message)
+  }
+
   def info(c: blackbox.Context)(message: c.Tree): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Info", message)
+  }
+
+  def warn(c: blackbox.Context)(message: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Warn", message)
+  }
+
+  def error(c: blackbox.Context)(message: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Error", message)
+  }
+
+  def trace2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Trace", message)
+    log(c)(q"scribe.Level.Trace", t)
+  }
+
+  def debug2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Debug", message)
+    log(c)(q"scribe.Level.Debug", t)
+  }
+
+  def info2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Info", message)
+    log(c)(q"scribe.Level.Info", t)
+  }
+
+  def warn2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Warn", message)
+    log(c)(q"scribe.Level.Warn", t)
+  }
+
+  def error2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+    import c.universe._
+
+    log(c)(q"scribe.Level.Error", message)
+    log(c)(q"scribe.Level.Error", t)
   }
 
   def log(c: blackbox.Context)(level: c.Tree, message: c.Tree): c.Tree = {
