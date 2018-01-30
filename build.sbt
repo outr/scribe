@@ -22,6 +22,16 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.", url=url("http://matthicks.com"))
 )
 
+val akkaVersion: String = "2.5.9"
+val slf4jVersion: String = "1.7.25"
+val gigahorseVersion: String = "0.3.1"
+val upickleVersion: String = "0.5.1"
+val scalatestVersion: String = "3.0.4"
+
+// Benchmarking
+val log4jVersion: String = "2.10.0"
+val disruptorVersion: String = "3.3.7"
+
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
@@ -79,7 +89,7 @@ lazy val extras = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.5.9"
+      "com.typesafe.akka" %% "akka-actor" % akkaVersion
     )
   )
   .nativeSettings(
@@ -96,8 +106,8 @@ lazy val slf4j = project.in(file("slf4j"))
     name := "scribe-slf4j",
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-api" % "1.7.25",
-      "org.scalatest" %% "scalatest" % "3.0.4" % Test
+      "org.slf4j" % "slf4j-api" % slf4jVersion,
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
 
   )
@@ -107,8 +117,8 @@ lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
     libraryDependencies ++= Seq(
-      "com.eed3si9n" %% "gigahorse-asynchttpclient" % "0.3.1",
-      "com.lihaoyi" %% "upickle" % "0.5.1"
+      "com.eed3si9n" %% "gigahorse-asynchttpclient" % gigahorseVersion,
+      "com.lihaoyi" %% "upickle" % upickleVersion
     )
   )
 
@@ -118,16 +128,16 @@ lazy val benchmarks = project.in(file("benchmarks"))
   .settings(
     publishArtifact := false,
     libraryDependencies ++= Seq(
-      "org.apache.logging.log4j" % "log4j-api" % "2.10.0",
-      "org.apache.logging.log4j" % "log4j-core" % "2.10.0",
-      "com.lmax" % "disruptor" % "3.3.7"
+      "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
+      "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
+      "com.lmax" % "disruptor" % disruptorVersion
     )
   )
 
 lazy val tests = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full)
   .dependsOn(core)
   .settings(
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test,
+    libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test,
     publish := {},
     publishLocal := {},
     publishArtifact := false
