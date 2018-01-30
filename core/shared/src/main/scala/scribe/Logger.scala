@@ -40,6 +40,12 @@ object Logger {
 
   private var map = Map.empty[String, Logger]
 
+  def loggers: Map[String, Logger] = map
+
+  def namesFor(logger: Logger): List[String] = map.collect {
+    case (n, l) if logger eq l => n
+  }.toList
+
   // Configure the root logger to filter anything under Info and write to the console
   update(rootName)(
     _.orphan()
@@ -48,7 +54,7 @@ object Logger {
   )
 
   def byName(name: String): Logger = synchronized {
-    val n = name.replaceAll("[$]", "")
+    val n = fixName(name)
     map.get(n) match {
       case Some(logger) => logger
       case None => {
@@ -60,11 +66,13 @@ object Logger {
   }
 
   def update(name: String, logger: Logger): Logger = synchronized {
-    map += name -> logger
+    map += fixName(name) -> logger
     logger
   }
 
   def update(name: String)(modifier: Logger => Logger): Logger = {
     update(name, modifier(byName(name)))
   }
+
+  private def fixName(name: String): String = name.replaceAll("[$]", "")
 }

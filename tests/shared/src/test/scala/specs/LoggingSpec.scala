@@ -2,7 +2,7 @@ package specs
 
 import scribe._
 import org.scalatest.{Matchers, WordSpec}
-import scribe.modify.LogBooster
+import scribe.modify.{LevelFilter, LogBooster}
 import scribe.writer.NullWriter
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
@@ -27,9 +27,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.length should be(2)
     }
     "ignore the third entry after reconfiguring without debug logging" in {
-      update(_.withoutHandler(handler).withHandler(LogHandler.default.withModifier(testingModifier)))
-      //      logger.removeHandler(handler)
-      //      logger.addHandler(LogHandler(level = Level.Info, writer = testingWriter))
+      update(_.withoutHandler(handler).withHandler(LogHandler.default.withModifier(LevelFilter >= Level.Info).withModifier(testingModifier)))
       logger.debug("Debug Log 2")
       testingModifier.records.length should be(2)
     }
@@ -43,7 +41,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.length should be(3)
     }
     "write a detailed log message" in {
-      val lineNumber = 12
+      val lineNumber = Some(11)
       testingModifier.clear()
       testObject.testLogger()
       testingModifier.records.length should be(1)
@@ -51,7 +49,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.head.lineNumber should be(lineNumber)
     }
     "write an exception" in {
-      val lineNumber = 16
+      val lineNumber = Some(15)
       testingModifier.clear()
       testObject.testException()
       testingModifier.records.length should be(1)
