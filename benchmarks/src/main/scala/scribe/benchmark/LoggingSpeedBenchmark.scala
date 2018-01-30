@@ -8,7 +8,7 @@ import org.openjdk.jmh.annotations.TearDown
 import scribe._
 import scribe.format._
 
-// jmh:run -i 3 -wi 3 -f1 -t1
+// jmh:run -i 3 -wi 3 -f1 -t1 -rf JSON -rff benchmarks.json
 @annotations.State(annotations.Scope.Thread)
 class LoggingSpeedBenchmark {
   assert(LogManager.getRootLogger.isInfoEnabled, "INFO is not enabled in log4j!")

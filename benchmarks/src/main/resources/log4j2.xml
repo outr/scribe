@@ -9,8 +9,8 @@
     <Appenders>
         <File name="MyFile" fileName="logs/log4j.log">
             <PatternLayout>
-                <!--<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>-->
-                <Pattern>%d{ISO8601}{GMT} %-5p %C{2} (%F:%L) - %m%n</Pattern>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+                <!--<Pattern>%d{ISO8601}{GMT} %-5p %C{2} (%F:%L) - %m%n</Pattern>-->
             </PatternLayout>
         </File>
         <Async name="Async">
