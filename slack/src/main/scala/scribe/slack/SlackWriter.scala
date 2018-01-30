@@ -1,17 +1,13 @@
 package scribe.slack
 
-import scribe.LogRecord
-import scribe.format.Formatter
 import scribe.writer.Writer
 
 /**
   * SlackWriter is
   *
-  * @param slack
-  * @param emojiIcon
+  * @param slack Slack instance
+  * @param emojiIcon the emoji to use when sending messages
   */
 class SlackWriter(slack: Slack, emojiIcon: String) extends Writer {
-  def write(record: LogRecord, formatter: Formatter): Unit = {
-    slack.request(formatter.format(record), emojiIcon = emojiIcon)
-  }
+  override def write(output: String): Unit = slack.request(output, emojiIcon = emojiIcon)
 }
