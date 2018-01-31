@@ -3,6 +3,8 @@ package scribe.benchmark
 import java.util.concurrent.TimeUnit
 
 import org.apache.logging.log4j.LogManager
+import com.typesafe.{scalalogging => sc}
+
 import org.openjdk.jmh.annotations
 import org.openjdk.jmh.annotations.TearDown
 import scribe._
@@ -35,20 +37,11 @@ class LoggingSpeedBenchmark {
   def withScribe(): Unit = {
     val fileWriter = writer.FileWriter.single("scribe")
     val logger = scribe.Logger.update(scribe.Logger.rootName) { l =>
-      //formatter"$date [$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
-      l.clearHandlers()
-        .withHandler(
-          LogHandler
-            .default
-            .withFormatter(Formatter.default)
-            .withWriter(fileWriter)
-        )
+      l.clearHandlers().withHandler(LogHandler(Formatter.default, fileWriter))
     }
 
     var i = 0
     while (i < 1000) {
-//      scribe2Logger.info("test")
-//      logger.log(LogRecord(Level.Info, Level.Info.value, "test", "", None, None, Thread.currentThread(), System.currentTimeMillis()))
       logger.info("test")
       i += 1
     }
@@ -62,14 +55,7 @@ class LoggingSpeedBenchmark {
   def withScribeAsync(): Unit = {
     val fileWriter = writer.FileWriter.single("scribe-async")
     val logger = scribe.Logger.update(scribe.Logger.rootName) { l =>
-      //formatter"$date [$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
-      l.clearHandlers()
-        .withHandler(
-          AsynchronousLogHandler
-            .default
-            .withFormatter(formatter"[$date] $threadName $levelPaddedRight $positionAbbreviated - $message$newLine")
-            .withWriter(fileWriter)
-        )
+      l.clearHandlers().withHandler(AsynchronousLogHandler(Formatter.default, fileWriter))
     }
 
     var i = 0
@@ -86,6 +72,34 @@ class LoggingSpeedBenchmark {
   @annotations.OperationsPerInvocation(1000)
   def withLog4j(): Unit = {
     val logger = LogManager.getRootLogger
+    var i = 0
+    while (i < 1000) {
+      logger.info("test")
+      i += 1
+    }
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withLog4jTrace(): Unit = {
+    val logger = LogManager.getLogger("Trace")
+    var i = 0
+    while (i < 1000) {
+      logger.info("test")
+      i += 1
+    }
+  }
+
+  // com.typesafe.scalalogging
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withScalaLogging(): Unit = {
+    val logger = sc.Logger("root")
     var i = 0
     while (i < 1000) {
       logger.info("test")

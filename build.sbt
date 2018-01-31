@@ -32,6 +32,8 @@ val scalatestVersion: String = "3.0.4"
 // Benchmarking
 val log4jVersion: String = "2.10.0"
 val disruptorVersion: String = "3.3.7"
+val logbackVersion: String = "1.2.3"
+val scalaLoggingVersion: String = "3.7.2"
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -131,7 +133,9 @@ lazy val benchmarks = project.in(file("benchmarks"))
     libraryDependencies ++= Seq(
       "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
       "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
-      "com.lmax" % "disruptor" % disruptorVersion
+      "com.lmax" % "disruptor" % disruptorVersion,
+      "ch.qos.logback" % "logback-classic" % logbackVersion,
+      "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion
     )
   )
 

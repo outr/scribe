@@ -13,6 +13,11 @@
                 <!--<Pattern>%d{ISO8601}{GMT} %-5p %C{2} (%F:%L) - %m%n</Pattern>-->
             </PatternLayout>
         </File>
+        <File name="TraceFile" fileName="logs/log4j-trace.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601}{GMT} %-5p %C{2} (%F:%L) - %m%n</Pattern>
+            </PatternLayout>
+        </File>
         <Async name="Async">
             <AppenderRef ref="MyFile"/>
         </Async>
@@ -21,5 +26,8 @@
         <Root level="trace">
             <AppenderRef ref="MyFile"/>
         </Root>
+        <Logger name="Trace" level="trace">
+            <AppenderRef ref="TraceFile"/>
+        </Logger>
     </Loggers>
 </Configuration>
