@@ -6,6 +6,7 @@ package object format {
   def date: FormatBlock = FormatBlock.Date.Standard
   def threadName: FormatBlock = FormatBlock.ThreadName
   def levelPaddedRight: FormatBlock = FormatBlock.Level.PaddedRight
+  def position: FormatBlock = FormatBlock.Position.Full
   def positionAbbreviated: FormatBlock = FormatBlock.Position.Abbreviated
   def message: FormatBlock = FormatBlock.Message
   def newLine: FormatBlock = FormatBlock.NewLine

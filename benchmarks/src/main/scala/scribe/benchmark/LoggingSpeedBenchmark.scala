@@ -2,9 +2,8 @@ package scribe.benchmark
 
 import java.util.concurrent.TimeUnit
 
-import org.apache.logging.log4j.LogManager
 import com.typesafe.{scalalogging => sc}
-
+import org.apache.logging.log4j.LogManager
 import org.openjdk.jmh.annotations
 import org.openjdk.jmh.annotations.TearDown
 import scribe._
@@ -15,9 +14,6 @@ import scribe.format._
 class LoggingSpeedBenchmark {
   assert(LogManager.getRootLogger.isInfoEnabled, "INFO is not enabled in log4j!")
 
-  /**
-    * Subtract the time of this benchmark from the other benchmarks.
-    */
   @annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)

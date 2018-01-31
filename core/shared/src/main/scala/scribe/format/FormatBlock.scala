@@ -17,11 +17,25 @@ object FormatBlock {
   object Date {
     object Standard extends FormatBlock {
       private lazy val sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
+      private lazy val cache = new ThreadLocal[String] {
+        override def initialValue(): String = ""
+      }
+      private lazy val lastValue = new ThreadLocal[Long] {
+        override def initialValue(): Long = 0L
+      }
 
       override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = {
         val l = record.timeStamp
-        // TODO: find a faster f"" interpolator option
-        b.append(sdf.format(l))
+        val date = if (l - lastValue.get() > 1000L) {
+          // TODO: find a faster f"" interpolator option
+          val d = sdf.format(l)
+          cache.set(d)
+          lastValue.set(l)
+          d
+        } else {
+          cache.get()
+        }
+        b.append(date)
       }
     }
   }
@@ -43,13 +57,26 @@ object FormatBlock {
       }
     }
     object Abbreviated extends FormatBlock {
+      private val MaxSize = 1000000
+      private var cache = Map.empty[String, String]
+
       override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = {
-        val parts = record.className.split('.')
-        val last = parts.length - 1
-        val abbreviation = parts.zipWithIndex.map {
-          case (cur, i) if i == last => cur
-          case (cur, _) => cur.head
-        }.mkString(".")
+        val abbreviation: String = cache.get(record.className) match {
+          case Some(a) => a
+          case None => synchronized {
+            val parts = record.className.split('.')
+            val last = parts.length - 1
+            val a = parts.zipWithIndex.map {
+              case (cur, i) if i == last => cur
+              case (cur, _) => cur.head
+            }.mkString(".")
+            if (cache.size >= MaxSize) {
+              cache = Map.empty
+            }
+            cache += record.className -> a
+            a
+          }
+        }
         b.append(abbreviation)
       }
     }
@@ -105,6 +132,6 @@ object FormatBlock {
   }
 
   object NewLine extends FormatBlock {
-    override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = b.append('\n')
+    override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = b.append("\n")
   }
 }
