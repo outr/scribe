@@ -48,7 +48,8 @@ class LoggingSpeedBenchmark {
     fileWriter.dispose()
   }
 
-  @annotations.Benchmark
+  // TODO: figure out why this shrivels up and dies
+  /*@annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
@@ -64,7 +65,7 @@ class LoggingSpeedBenchmark {
       i += 1
     }
     fileWriter.dispose()
-  }
+  }*/
 
   @annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
@@ -91,8 +92,6 @@ class LoggingSpeedBenchmark {
       i += 1
     }
   }
-
-  // com.typesafe.scalalogging
 
   @annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
