@@ -5,6 +5,9 @@ import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
                                   writer: Writer = ConsoleWriter,
                                   modifiers: List[LogModifier] = Nil) extends LogHandler {
@@ -39,5 +42,8 @@ object AsynchronousLogHandler {
     AsynchronousLogHandler(handler.formatter, handler.writer, handler.modifiers)
   }
 
-  def dispose(): Unit = system.terminate()
+  def dispose(): Unit = {
+    system.terminate()
+    Await.ready(system.whenTerminated, 15.seconds)
+  }
 }
