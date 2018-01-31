@@ -2,14 +2,14 @@ package specs
 
 import scribe._
 import org.scalatest.{Matchers, WordSpec}
-import scribe.modify.{LevelFilter, LogBooster}
+import scribe.modify.LogBooster
 import scribe.writer.NullWriter
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
   "Logging" should {
     val testingModifier = new TestingModifier
     val testObject = new LoggingTestObject(testingModifier)
-    val handler = LogHandler.default.withWriter(NullWriter).withModifier(testingModifier)
+    val handler = LogHandler(writer = NullWriter, minimumLevel = Level.Debug).withModifier(testingModifier)
 
     "set up the logging" in {
       testingModifier.clear()
@@ -27,7 +27,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.length should be(2)
     }
     "ignore the third entry after reconfiguring without debug logging" in {
-      update(_.withoutHandler(handler).withHandler(LogHandler.default.withModifier(LevelFilter >= Level.Info).withModifier(testingModifier)))
+      update(_.withoutHandler(handler).withHandler(LogHandler(writer = NullWriter, minimumLevel = Level.Info).withModifier(testingModifier)))
       logger.debug("Debug Log 2")
       testingModifier.records.length should be(2)
     }
@@ -41,7 +41,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.length should be(3)
     }
     "write a detailed log message" in {
-      val lineNumber = Some(11)
+      val lineNumber = Some(10)
       testingModifier.clear()
       testObject.testLogger()
       testingModifier.records.length should be(1)
@@ -49,7 +49,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.head.lineNumber should be(lineNumber)
     }
     "write an exception" in {
-      val lineNumber = Some(15)
+      val lineNumber = Some(14)
       testingModifier.clear()
       testObject.testException()
       testingModifier.records.length should be(1)

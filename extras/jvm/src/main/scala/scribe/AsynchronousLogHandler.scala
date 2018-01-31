@@ -12,8 +12,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   override def withFormatter(formatter: Formatter): LogHandler = copy(formatter = formatter)
   override def withWriter(writer: Writer): LogHandler = copy(writer = writer)
-  override def withModifier(modifier: LogModifier): LogHandler = copy(modifiers = modifiers ::: List(modifier))
-  override def withoutModifier(modifier: LogModifier): LogHandler = copy(modifiers = modifiers.filterNot(_ == modifier))
+  override def setModifiers(modifiers: List[LogModifier]): LogHandler = copy(modifiers = modifiers)
 
   override def log(record: LogRecord): Unit = router ! record
 
@@ -30,7 +29,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
 
 object AsynchronousLogHandler {
   private lazy val system = {
-    disposables += dispose
+    disposables += dispose _
     ActorSystem("AsynchronousLogHandler")
   }
 

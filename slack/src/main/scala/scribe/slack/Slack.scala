@@ -4,7 +4,6 @@ import gigahorse.{FullResponse, MimeTypes}
 import gigahorse.support.asynchttpclient.Gigahorse
 import scribe._
 import scribe.format._
-import scribe.modify.LevelFilter
 import upickle.Js
 
 import scala.concurrent.Future
@@ -64,7 +63,7 @@ object Slack {
 
     val handler = LogHandler
       .default
-      .withModifier(LevelFilter >= level)
+      .withMinimumLevel(level)
       .withWriter(new SlackWriter(slack, emojiIcon))
       .withFormatter(formatter)
     Logger.update(loggerName)(_.withHandler(handler))

@@ -3,11 +3,11 @@ package spec
 import scribe.{Level, LogHandler, LogRecord, Logger}
 import org.scalatest.{Matchers, WordSpec}
 import org.slf4j.LoggerFactory
-import scribe.modify.{LevelFilter, LogModifier}
+import scribe.modify.LogModifier
 
 class SLF4JSpec extends WordSpec with Matchers {
   private var logs: List[LogRecord] = Nil
-  private val recordHolder = LogHandler.default.withModifier(LevelFilter >= Level.Info).withModifier(new LogModifier {
+  private val recordHolder = LogHandler.default.withMinimumLevel(Level.Info).withModifier(new LogModifier {
     override def apply(record: LogRecord): Option[LogRecord] = {
       logs = record :: logs
       Some(record)

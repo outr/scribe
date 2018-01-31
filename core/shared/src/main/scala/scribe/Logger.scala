@@ -2,7 +2,7 @@ package scribe
 
 import java.io.PrintStream
 
-import scribe.modify.{LevelFilter, LogModifier}
+import scribe.modify.LogModifier
 import scribe.writer.ConsoleWriter
 
 case class Logger(parentName: Option[String] = Some(Logger.rootName),
@@ -15,8 +15,7 @@ case class Logger(parentName: Option[String] = Some(Logger.rootName),
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
   def clearHandlers(): Logger = copy(handlers = Nil)
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))
-  override def withModifier(modifier: LogModifier): Logger = copy(modifiers = modifiers ::: List(modifier))
-  override def withoutModifier(modifier: LogModifier): Logger = copy(modifiers = modifiers.filterNot(_ == modifier))
+  override def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers)
 
   override def log(record: LogRecord): Unit = {
     modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
@@ -51,7 +50,7 @@ object Logger {
   // Configure the root logger to filter anything under Info and write to the console
   update(rootName)(
     _.orphan()
-     .withModifier(LevelFilter >= Level.Info)
+     .withMinimumLevel(Level.Info)
      .withHandler(LogHandler.default.withWriter(ConsoleWriter))
   )
 

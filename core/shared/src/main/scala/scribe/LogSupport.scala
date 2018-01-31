@@ -1,12 +1,18 @@
 package scribe
 
-import scribe.modify.LogModifier
+import scribe.modify.{LevelFilter, LogModifier}
 
 trait LogSupport[L <: LogSupport[L]] {
-  def withModifier(modifier: LogModifier): L
-  def withoutModifier(modifier: LogModifier): L
+  def modifiers: List[LogModifier]
 
-  // TODO: withFilter, withLevelFilter
+  def setModifiers(modifiers: List[LogModifier]): L
+
+  def clearModifiers(): L = setModifiers(Nil)
+
+  final def withModifier(modifier: LogModifier): L = setModifiers(modifiers ::: List(modifier))
+  final def withoutModifier(modifier: LogModifier): L = setModifiers(modifiers.filterNot(_ eq modifier))
+
+  def withMinimumLevel(level: Level): L = withModifier(LevelFilter >= level)
 
   def log(record: LogRecord): Unit
 }
