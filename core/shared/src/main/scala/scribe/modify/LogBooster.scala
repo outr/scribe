@@ -1,13 +1,13 @@
 package scribe.modify
 
-import scribe.LogRecord
+import scribe.{LogRecord, Priority}
 
-class LogBooster(booster: Double => Double) extends LogModifier {
+class LogBooster(booster: Double => Double, override val priority: Priority) extends LogModifier {
   override def apply(record: LogRecord): Option[LogRecord] = Some(record.boost(booster))
 }
 
 object LogBooster {
-  def multiply(multiplier: Double): LogBooster = new LogBooster(_ * multiplier)
-  def add(value: Double): LogBooster = new LogBooster(_ + value)
-  def subtract(value: Double): LogBooster = new LogBooster(_ - value)
+  def multiply(multiplier: Double, priority: Priority = Priority.Normal): LogBooster = new LogBooster(_ * multiplier, priority)
+  def add(value: Double, priority: Priority = Priority.Normal): LogBooster = new LogBooster(_ + value, priority)
+  def subtract(value: Double, priority: Priority = Priority.Normal): LogBooster = new LogBooster(_ - value, priority)
 }

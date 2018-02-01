@@ -1,9 +1,10 @@
 package scribe.modify
 
-import scribe.{Level, LogRecord}
+import scribe.{Level, LogRecord, Priority}
 
 class LevelFilter(include: Double => Boolean,
-                  exclude: Double => Boolean) extends LogModifier {
+                  exclude: Double => Boolean,
+                  override val priority: Priority) extends LogModifier {
   override def apply(record: LogRecord): Option[LogRecord] = if (include(record.value) && !exclude(record.value)) {
     Some(record)
   } else {
@@ -12,5 +13,5 @@ class LevelFilter(include: Double => Boolean,
 }
 
 object LevelFilter {
-  def >=(level: Level): LevelFilter = new LevelFilter(_ >= level.value, _ => false)
+  def >=(level: Level): LevelFilter = new LevelFilter(_ >= level.value, _ => false, Priority.Normal)
 }
