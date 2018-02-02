@@ -25,11 +25,14 @@ developers in ThisBuild := List(
 
 val akkaVersion: String = "2.5.9"
 val slf4jVersion: String = "1.7.25"
-val gigahorseVersion: String = "0.3.1"
-val upickleVersion: String = "0.5.1"
+val scalaJsJavaTimeVersion: String = "0.2.3"
 val scalatestVersion: String = "3.0.4"
 
-// Benchmarking
+// Slack Dependencies
+val gigahorseVersion: String = "0.3.1"
+val upickleVersion: String = "0.5.1"
+
+// Benchmarking Dependencies
 val log4jVersion: String = "2.10.0"
 val disruptorVersion: String = "3.3.7"
 val logbackVersion: String = "1.2.3"
@@ -74,6 +77,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ),
     publishArtifact in Test := false
+  )
+  .jsSettings(
+    libraryDependencies += "org.scala-js" %%% "scalajs-java-time" % scalaJsJavaTimeVersion
   )
   .nativeSettings(
     scalaVersion := "2.11.12",
@@ -123,8 +129,8 @@ lazy val slack = project.in(file("slack"))
       "com.eed3si9n" %% "gigahorse-asynchttpclient" % gigahorseVersion,
       "com.lihaoyi" %% "upickle" % upickleVersion
     )
-  )
 
+  )
 lazy val benchmarks = project.in(file("benchmarks"))
   .dependsOn(coreJVM, extrasJVM)
   .enablePlugins(JmhPlugin)
@@ -142,7 +148,7 @@ lazy val benchmarks = project.in(file("benchmarks"))
 lazy val tests = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full)
   .dependsOn(core)
   .settings(
-    libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % Test,
+    libraryDependencies += "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
     publish := {},
     publishLocal := {},
     publishArtifact := false

@@ -2,8 +2,9 @@ package scribe
 
 import java.io.PrintStream
 
+import scribe.format.Formatter
 import scribe.modify.LogModifier
-import scribe.writer.ConsoleWriter
+import scribe.writer.{ConsoleWriter, Writer}
 
 case class Logger(parentName: Option[String] = Some(Logger.rootName),
                   modifiers: List[LogModifier] = Nil,
@@ -12,6 +13,12 @@ case class Logger(parentName: Option[String] = Some(Logger.rootName),
   def orphan(): Logger = copy(parentName = None)
   def withParent(name: String): Logger = copy(parentName = Some(name))
   def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))
+  def withHandler(formatter: Formatter = Formatter.default,
+                  writer: Writer = ConsoleWriter,
+                  minimumLevel: Level = Level.Info,
+                  modifiers: List[LogModifier] = Nil): Logger = {
+    withHandler(LogHandler(formatter, writer, minimumLevel, modifiers))
+  }
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
   def clearHandlers(): Logger = copy(handlers = Nil)
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))

@@ -1,7 +1,7 @@
 package specs
 
-import scribe._
 import org.scalatest.{Matchers, WordSpec}
+import scribe._
 import scribe.modify.LogBooster
 import scribe.writer.NullWriter
 
@@ -27,7 +27,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.length should be(2)
     }
     "ignore the third entry after reconfiguring without debug logging" in {
-      update(_.withoutHandler(handler).withHandler(LogHandler(writer = NullWriter, minimumLevel = Level.Info).withModifier(testingModifier)))
+      update(_.withoutHandler(handler).withHandler(writer = NullWriter, minimumLevel = Level.Info).withModifier(testingModifier))
       logger.debug("Debug Log 2")
       testingModifier.records.length should be(2)
     }

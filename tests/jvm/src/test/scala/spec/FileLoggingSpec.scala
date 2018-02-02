@@ -2,10 +2,10 @@ package spec
 
 import java.nio.file.{Files, Path, Paths}
 
-import scribe.format.Formatter
-import scribe.writer.{FileNIOWriter, NullWriter}
-import scribe.{LogHandler, Logger}
 import org.scalatest.{Matchers, WordSpec}
+import scribe.Logger
+import scribe.format.Formatter
+import scribe.writer.FileNIOWriter
 
 import scala.io.Source
 
@@ -19,7 +19,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       if (Files.exists(logFile)) {
         Files.delete(logFile)
       }
-      fileLogger = fileLogger.withHandler(LogHandler.default.withFormatter(Formatter.simple).withWriter(writer))
+      fileLogger = fileLogger.withHandler(formatter = Formatter.simple, writer = writer)
     }
     "log to the file" in {
       fileLogger.info("Testing File Logger")
