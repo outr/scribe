@@ -1,3 +1,4 @@
+import java.text.DecimalFormat
 import java.time.{Instant, LocalDateTime, ZoneId}
 
 import scala.language.experimental.macros
@@ -17,7 +18,7 @@ package object scribe extends LoggerSupport {
   }
 
   implicit class SFInterpolator(val sc: StringContext) extends AnyVal {
-    def sf(args: Any*): String = macro Macros.sf
+    def sf(args: Any*): String = macro SFMacros.sf
   }
 
   object SFInterpolator {
@@ -38,6 +39,18 @@ package object scribe extends LoggerSupport {
       }
     }
 
+    def dec(d: Double, pattern: String): String = {
+      val s = state
+      s.decCache.get(pattern) match {
+        case Some(df) => df.format(d)
+        case None => {
+          val df = new DecimalFormat(pattern)
+          s.decCache += pattern -> df
+          df.format(d)
+        }
+      }
+    }
+
     def transaction[R](f: => R): R = {
       _state.set(Some(new SFState()))
       try {
@@ -49,6 +62,7 @@ package object scribe extends LoggerSupport {
 
     class SFState {
       var dateCache: Map[Long, LocalDateTime] = Map.empty[Long, LocalDateTime]
+      var decCache: Map[String, DecimalFormat] = Map.empty[String, DecimalFormat]
     }
   }
 }
