@@ -48,7 +48,13 @@ object Macros {
 
     val formatterMappings = Map(
       "%tY" -> new FormatSupport {
-        override def format(v: c.Tree): c.Tree = q"date($v).getYear()"
+        override def format(v: c.Tree): c.Tree = q"date($v).getYear().toString"
+      },
+      "%tm" -> new FormatSupport {
+        override def format(v: c.Tree): c.Tree = q"date($v).getMonthValue().toString"
+      },
+      "%td" -> new FormatSupport {
+        override def format(v: c.Tree): c.Tree = q"date($v).getDayOfMonth().toString"
       }
     )
 
@@ -59,7 +65,7 @@ object Macros {
         parts.zipWithIndex.foreach {
           case ((raw, _), index) => {
             if (raw.nonEmpty) {
-              val firstSpace = raw.indexWhere(_.isWhitespace)
+              val firstSpace = raw.indexWhere(c => c.isWhitespace || c == '.')    // TODO: rethink break-point
               val firstWord = if (firstSpace != -1) {
                 raw.substring(0, firstSpace)
               } else {
@@ -79,28 +85,40 @@ object Macros {
           }
         }
         var lastVariable: Option[SFBlock.Variable] = None
-        var output: c.Tree = q""""""""
+        var o: c.Tree = null
+        def out(v: c.Tree): Unit = if (o == null) {
+          o = v
+        } else {
+          o = q"$o.concat($v)"
+        }
 
         def outputLastVariable(): Unit = lastVariable.foreach { v =>
-          output = q"$output.concat(${v.v})"
+          out(v.v)
           lastVariable = None
         }
 
         list.foreach {
           case b: SFBlock.RawString => {
             outputLastVariable()
-            output = q"$output.concat(${b.s})"
+            out(q"${b.s}")
           }
           case b: SFBlock.Formatting => {
-            output = q"$output.concat(${b.fs.format(lastVariable.get.v)})"
+            out(b.fs.format(lastVariable.get.v))
             lastVariable = None
           }
           case b: SFBlock.Variable => {
             lastVariable = Some(b)
           }
         }
+        println(s"*** $o")
         outputLastVariable()
-        c.abort(c.enclosingPosition, s"Not implemented! $output")
+        q"""
+            import scribe.SFInterpolator._
+
+            transaction {
+              $o
+            }
+         """
       }
     }
   }
