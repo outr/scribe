@@ -12,4 +12,8 @@ package object scribe extends LoggerSupport {
     def logger: Logger = Logger.byName(value.getClass.getName)
     def updateLogger(modifier: Logger => Logger): Logger = Logger.update(value.getClass.getName)(modifier)
   }
+
+  implicit class SFInterpolator(val sc: StringContext) extends AnyVal {
+    def sf(args: Any*): String = macro Macros.sf
+  }
 }

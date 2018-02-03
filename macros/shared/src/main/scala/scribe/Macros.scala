@@ -31,6 +31,80 @@ object Macros {
     }
   }
 
+  def sf(c: blackbox.Context)(args: c.Tree*): c.Tree = {
+    import c.universe._
+
+    sealed trait SFBlock
+
+    object SFBlock {
+      case class RawString(s: String) extends SFBlock
+      case class Formatting(fs: FormatSupport) extends SFBlock
+      case class Variable(v: c.Tree) extends SFBlock
+    }
+
+    trait FormatSupport {
+      def format(v: c.Tree): c.Tree
+    }
+
+    val formatterMappings = Map(
+      "%tY" -> new FormatSupport {
+        override def format(v: c.Tree): c.Tree = q"date($v).getYear()"
+      }
+    )
+
+    c.prefix.tree match {
+      case Apply(_, List(Apply(_, rawParts))) => {
+        val parts = rawParts map { case t @ Literal(Constant(const: String)) => (const, t.pos) }
+        val list = ListBuffer.empty[SFBlock]
+        parts.zipWithIndex.foreach {
+          case ((raw, _), index) => {
+            if (raw.nonEmpty) {
+              val firstSpace = raw.indexWhere(_.isWhitespace)
+              val firstWord = if (firstSpace != -1) {
+                raw.substring(0, firstSpace)
+              } else {
+                raw
+              }
+              formatterMappings.get(firstWord) match {
+                case Some(fs) => {
+                  list += SFBlock.Formatting(fs)
+                  if (firstSpace != -1) {
+                    list += SFBlock.RawString(raw.substring(firstSpace))
+                  }
+                }
+                case None => list += SFBlock.RawString(raw)
+              }
+            }
+            if (index < args.length) list += SFBlock.Variable(args(index))
+          }
+        }
+        var lastVariable: Option[SFBlock.Variable] = None
+        var output: c.Tree = q""""""""
+
+        def outputLastVariable(): Unit = lastVariable.foreach { v =>
+          output = q"$output.concat(${v.v})"
+          lastVariable = None
+        }
+
+        list.foreach {
+          case b: SFBlock.RawString => {
+            outputLastVariable()
+            output = q"$output.concat(${b.s})"
+          }
+          case b: SFBlock.Formatting => {
+            output = q"$output.concat(${b.fs.format(lastVariable.get.v)})"
+            lastVariable = None
+          }
+          case b: SFBlock.Variable => {
+            lastVariable = Some(b)
+          }
+        }
+        outputLastVariable()
+        c.abort(c.enclosingPosition, s"Not implemented! $output")
+      }
+    }
+  }
+
   def trace(c: blackbox.Context)(message: c.Tree): c.Tree = {
     import c.universe._
 
