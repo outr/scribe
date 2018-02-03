@@ -1,9 +1,8 @@
 package scribe.format
 
 import java.lang
-import java.text.SimpleDateFormat
 
-import scribe.LogRecord
+import scribe._
 
 trait FormatBlock {
   def format(record: LogRecord, b: java.lang.StringBuilder): Unit
@@ -16,7 +15,6 @@ object FormatBlock {
 
   object Date {
     object Standard extends FormatBlock {
-      private lazy val sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z")
       private lazy val cache = new ThreadLocal[String] {
         override def initialValue(): String = ""
       }
@@ -26,16 +24,15 @@ object FormatBlock {
 
       override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = {
         val l = record.timeStamp
-        val date = if (l - lastValue.get() > 1000L) {
-          // TODO: find a faster f"" interpolator option
-          val d = sdf.format(l)
+        val current = if (l - lastValue.get() > 1000L) {
+          val d = sf"$l{tY}.$l{tm}.$l{td} $l{tT}"
           cache.set(d)
           lastValue.set(l)
           d
         } else {
           cache.get()
         }
-        b.append(date)
+        b.append(current)
       }
     }
   }
