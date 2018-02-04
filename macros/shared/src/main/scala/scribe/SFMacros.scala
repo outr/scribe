@@ -40,13 +40,13 @@ object SFMacros {
     }
 
     def chrono(matcher: String,
-               f: String,
+               digits: Int,
                field: c.Expr[ChronoField],
                mod: c.Expr[Int => Any] = reify((i: Int) => i)): String => Option[FormatSupport] = {
       (s: String) => if (s == matcher) {
         Some(new FormatSupport(s) {
-          override def format(v: c.Tree): c.Tree = if (f.nonEmpty) {
-            decFormat(q"$mod(date($v).get($field))", f)
+          override def format(v: c.Tree): c.Tree = if (digits > 0) {
+            q"intFormat($mod(date($v).get($field)), $digits)"
           } else {
             q"$mod(date($v).get($field)).toString"
           }
@@ -65,22 +65,22 @@ object SFMacros {
     val formatters = ListBuffer.empty[String => Option[FormatSupport]]
 
     // Time
-    formatters += chrono("tH", "00", reify(ChronoField.CLOCK_HOUR_OF_DAY))
-    formatters += chrono("tI", "00", reify(ChronoField.CLOCK_HOUR_OF_AMPM))
-    formatters += chrono("tk", "0", reify(ChronoField.HOUR_OF_DAY))
-    formatters += chrono("tl", "0", reify(ChronoField.HOUR_OF_AMPM))
-    formatters += chrono("tM", "00", reify(ChronoField.MINUTE_OF_HOUR))
-    formatters += chrono("tS", "00", reify(ChronoField.SECOND_OF_MINUTE))
-    formatters += chrono("tL", "00", reify(ChronoField.MILLI_OF_SECOND))
-    formatters += chrono("tN", "00", reify(ChronoField.NANO_OF_SECOND))
-    formatters += chrono("tp", "", reify(ChronoField.AMPM_OF_DAY), reify((value: Int) => if (value == 0) "am" else "pm"))
+    formatters += chrono("tH", 2, reify(ChronoField.CLOCK_HOUR_OF_DAY))
+    formatters += chrono("tI", 2, reify(ChronoField.CLOCK_HOUR_OF_AMPM))
+    formatters += chrono("tk", 0, reify(ChronoField.HOUR_OF_DAY))
+    formatters += chrono("tl", 0, reify(ChronoField.HOUR_OF_AMPM))
+    formatters += chrono("tM", 2, reify(ChronoField.MINUTE_OF_HOUR))
+    formatters += chrono("tS", 2, reify(ChronoField.SECOND_OF_MINUTE))
+    formatters += chrono("tL", 2, reify(ChronoField.MILLI_OF_SECOND))
+    formatters += chrono("tN", 2, reify(ChronoField.NANO_OF_SECOND))
+    formatters += chrono("tp", 0, reify(ChronoField.AMPM_OF_DAY), reify((value: Int) => if (value == 0) "am" else "pm"))
     formatters += exactly("tz", new FormatSupport(_) {
                     override def format(v: c.Tree): c.Tree = reify(ZoneId.systemDefault().getRules.getOffset(Instant.now()).toString.replaceAllLiterally(":", "")).tree //q"date($v)" decFormat(q"date($v).getDayOfMonth()", "00")
                   })
     formatters += exactly("tZ", new FormatSupport(_) {
                     override def format(v: c.Tree): c.Tree = reify(ZoneId.systemDefault().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault)).tree //q"date($v)" decFormat(q"date($v).getDayOfMonth()", "00")
                   })
-    formatters += chrono("ts", "00", reify(ChronoField.INSTANT_SECONDS))
+    formatters += chrono("ts", 2, reify(ChronoField.INSTANT_SECONDS))
 
     // Date
     formatters += exactly("tB", new FormatSupport(_) {
@@ -98,13 +98,13 @@ object SFMacros {
     formatters += exactly("ta", new FormatSupport(_) {
                     override def format(v: c.Tree): c.Tree = q"date($v).getDayOfWeek().getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.getDefault)"
                   })
-    formatters += chrono("tC", "00", reify(ChronoField.YEAR_OF_ERA))
-    formatters += chrono("tY", "0000", reify(ChronoField.YEAR))
-    formatters += chrono("ty", "00", reify(ChronoField.YEAR), reify((value: Int) => value % 100))
-    formatters += chrono("tj", "000", reify(ChronoField.DAY_OF_YEAR))
-    formatters += chrono("tm", "00", reify(ChronoField.MONTH_OF_YEAR))
-    formatters += chrono("td", "00", reify(ChronoField.DAY_OF_MONTH))
-    formatters += chrono("te", "0", reify(ChronoField.DAY_OF_MONTH))
+    formatters += chrono("tC", 2, reify(ChronoField.YEAR_OF_ERA))
+    formatters += chrono("tY", 4, reify(ChronoField.YEAR))
+    formatters += chrono("ty", 4, reify(ChronoField.YEAR), reify((value: Int) => value % 100))
+    formatters += chrono("tj", 3, reify(ChronoField.DAY_OF_YEAR))
+    formatters += chrono("tm", 2, reify(ChronoField.MONTH_OF_YEAR))
+    formatters += chrono("td", 2, reify(ChronoField.DAY_OF_MONTH))
+    formatters += chrono("te", 0, reify(ChronoField.DAY_OF_MONTH))
     formatters += exactly("tR", new MultiFormatSupport(_, "tH", ":", "tM"))
     formatters += exactly("tT", new MultiFormatSupport(_, "tH", ":", "tM", ":", "tS"))
     formatters += exactly("tr", new MultiFormatSupport(_, "tI", ":", "tM", ":", "tS", " ", "Tp"))

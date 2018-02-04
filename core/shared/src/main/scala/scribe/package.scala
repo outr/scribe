@@ -17,6 +17,10 @@ package object scribe extends LoggerSupport {
     def updateLogger(modifier: Logger => Logger): Logger = Logger.update(value.getClass.getName)(modifier)
   }
 
+  implicit class SFIInterpolator(val sc: StringContext) extends AnyVal {
+    def sfi(args: Any*): String = macro SFIMacros.sfiImpl
+  }
+
   implicit class SFInterpolator(val sc: StringContext) extends AnyVal {
     def sf(args: Any*): String = macro SFMacros.sf
   }
@@ -26,6 +30,24 @@ package object scribe extends LoggerSupport {
       override def initialValue(): Option[SFState] = None
     }
     private def state: SFState = _state.get().getOrElse(throw new RuntimeException("Cannot be called outside a transaction!"))
+
+    def intFormat(i: Int, digits: Int): String = {
+      val s = i.toString
+      val padTo = digits - s.length
+      if (padTo <= 0) {
+        s
+      } else if (padTo == 1) {
+        "0".concat(s)
+      } else if (padTo == 2) {
+        "00".concat(s)
+      } else if (padTo == 3) {
+        "000".concat(s)
+      } else if (padTo == 4) {
+        "0000".concat(s)
+      } else {
+        throw new RuntimeException(s"intFormat padding not available for $digits!")
+      }
+    }
 
     def date(l: Long): LocalDateTime = {
       val s = state
