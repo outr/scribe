@@ -25,7 +25,8 @@ developers in ThisBuild := List(
 
 val akkaVersion: String = "2.5.9"
 val slf4jVersion: String = "1.7.25"
-val scalaJsJavaTimeVersion: String = "0.2.3"
+val scalaJsJavaTimeVersion: String = "2.0.0-M12"
+val scalaJavaLocalesVersion: String = "0.5.2-cldr31"
 val scalatestVersion: String = "3.0.4"
 
 // Slack Dependencies
@@ -79,7 +80,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     publishArtifact in Test := false
   )
   .jsSettings(
-    libraryDependencies += "org.scala-js" %%% "scalajs-java-time" % scalaJsJavaTimeVersion
+    libraryDependencies ++= Seq(
+      "io.github.cquiroz" %%% "scala-java-time" % scalaJsJavaTimeVersion,
+      "io.github.cquiroz" %%% "scala-java-locales" % scalaJavaLocalesVersion
+    )
   )
   .nativeSettings(
     scalaVersion := "2.11.12",

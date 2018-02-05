@@ -25,7 +25,7 @@ object FormatBlock {
       override def format(record: LogRecord, b: java.lang.StringBuilder): Unit = {
         val l = record.timeStamp
         val current = if (l - lastValue.get() > 1000L) {
-          val d = sf"$l{tY}.$l{tm}.$l{td} $l{tT}"
+          val d = sfi"${l.tY}.${l.tm}.${l.td} ${l.tT}"
           cache.set(d)
           lastValue.set(l)
           d

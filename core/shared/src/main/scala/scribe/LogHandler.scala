@@ -39,6 +39,6 @@ object LogHandler {
             writer: Writer = ConsoleWriter,
             minimumLevel: Level = Level.Info,
             modifiers: List[LogModifier] = Nil): LogHandler = {
-    SynchronousLogHandler(formatter, writer, List(LevelFilter >= minimumLevel) ::: modifiers)
+    SynchronousLogHandler(formatter, writer, (LevelFilter >= minimumLevel) :: modifiers)
   }
 }

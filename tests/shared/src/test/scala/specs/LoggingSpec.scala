@@ -2,7 +2,7 @@ package specs
 
 import org.scalatest.{Matchers, WordSpec}
 import scribe._
-import scribe.modify.LogBooster
+import scribe.modify.{LevelFilter, LogBooster}
 import scribe.writer.NullWriter
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
@@ -27,12 +27,18 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.length should be(2)
     }
     "ignore the third entry after reconfiguring without debug logging" in {
-      update(_.withoutHandler(handler).withHandler(writer = NullWriter, minimumLevel = Level.Info).withModifier(testingModifier))
+      update(_
+        .withoutHandler(handler)
+        .withHandler(writer = NullWriter)
+        .withModifier(LevelFilter >= Level.Info)
+        .withModifier(testingModifier)
+      )
+      testingModifier.records.length should be(2)
       logger.debug("Debug Log 2")
       testingModifier.records.length should be(2)
     }
     "boost the this logging instance" in {
-      update(_.withModifier(LogBooster.multiply(2.0)))
+      update(_.withModifier(LogBooster.multiply(2.0, Priority.Critical)))
       logger.debug("Debug Log 3")
       testingModifier.records.length should be(3)
     }
