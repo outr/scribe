@@ -23,11 +23,16 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val akkaVersion: String = "2.5.9"
-val slf4jVersion: String = "1.7.25"
+// Core
 val scalaJsJavaTimeVersion: String = "2.0.0-M12"
 val scalaJavaLocalesVersion: String = "0.5.2-cldr31"
 val scalatestVersion: String = "3.0.4"
+
+// Extras
+val akkaVersion: String = "2.5.9"
+
+// SLF4J
+val slf4jVersion: String = "1.7.25"
 
 // Slack Dependencies
 val gigahorseVersion: String = "0.3.1"

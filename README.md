@@ -9,24 +9,27 @@
 
 Scribe is a completely different way of thinking about logging. Instead of wrapping around existing logging frameworks
 and bearing their performance and design flaws, Scribe is built from the ground up to provide fast and effective logging
-in Scala and Scala.js without the need of configuration files additional dependencies. All management of logging is
-handled programmatically in Scala itself giving the developer the freedom to use whatever configuration framework, if
-any, they should choose to use.
+in Scala, Scala.js, and Scala Native without the need of configuration files or additional dependencies. All management
+of logging can be handled programmatically (of course, classic logging configuration can be utilized as well if desired)
+in Scala itself, giving the developer the freedom to use whatever configuration framework, if any, they should choose to
+use.
 
-## Why Another Logging Framework? ##
+## Why Another Logging Framework?
 
 Yes, we know there are too many Java logging frameworks to count, and a large number of decent logging frameworks in
-Scala, so why did we write yet another logging framework?  As we see it, nearly every Scala logging framework is mostly
-just a wrapper around Java logging frameworks (usually SLF4J, Log4J, or Logback). This comes with a few problems:
+Scala, so why did we write yet another logging framework?  Nearly every Scala logging framework is mostly just a wrapper
+around Java logging frameworks (usually SLF4J, Log4J, or Logback). This comes with a few problems:
 
 1. No support for Scala.js
-2. Performance cost (Blog Post: http://www.matthicks.com/2017/01/logging-performance.html)
+2. Performance cost (Blog Post: http://www.matthicks.com/2018/02/scribe-2-fastest-jvm-logger-in-world.html)
 3. Additional dependencies
+4. Substantial cost logging method and line numbers
 
 A few of the main features that Scribe offers:
 
-1. Performance is a critical consideration. We leverage Macros to handle optimization of everything possible at compile-time
-to avoid logging slowing down your production application.
+1. Performance is a critical consideration. We leverage Macros to handle optimization of everything possible at
+compile-time to avoid logging slowing down your production application. As far as we are aware, Scribe is the fastest
+logging framework on the JVM.
 2. Programmatic configuration. No need to be bound to configuration files to configure your logging. This means you can
 rely on any configuration framework or you can configure real-time changes to your logging in your production environment.
 This particularly comes in handy if you need to enable debug logging on something going wrong in production. No need to
@@ -36,26 +39,26 @@ setup code.
 4. Zero cost class, method, and line number logging built-in. Never worry about your logger working up the stack to figure
 out the position of the logging statement at runtime. With Macros we determine that information at compile-time to avoid
 any runtime cost.
+5. Asynchronous logging support. Scribe's logger is very fast, but if real-time performance is critical, the
+asynchronous logging support completely removes logging impact from your application's thread impact.
 
 ### Performance Comparison
 
-Since Scala Logging is the most popular Scala logging framework, we did a benchmark to compare the logging speed and
-memory usage of the two logging frameworks:
+Scribe is now the fastest logging framework in existence. Here is a chart comparing Log4J 2, Scala Logging, and Scribe:
 
-![Logging Rate Over Sixy Seconds](https://1.bp.blogspot.com/-Sn0WJ91M47s/WHepNt0ok9I/AAAAAAAABrQ/4E7LOFv1RLo_XUlksp7t_Mnz_thsHhw5QCLcB/s1600/logging-speed.png)
+![All Frameworks Graph](https://3.bp.blogspot.com/-L6otiWniCTs/WnkhKwUbC4I/AAAAAAAACts/V9OHj6kLJIkLfKqMKOE9miDeOMyyxWxFQCLcBGAs/s640/2018.01.31.benchmark-all.png)
 
-That is a comparison of how many records were able to be logged over sixty seconds.  In addition, we can see the memory
-comparison after that benchmark was run:
+In addition, to see the graph over time:
 
-![Logging Memory Usage](https://2.bp.blogspot.com/-iI0njBLrYk8/WHeqTwuagiI/AAAAAAAABrc/dRktzYWBuOkY9V7Z7gWDDRuN6RE2sbEIQCLcB/s1600/logging-memory.png)
+![All Frameworks Chart](https://2.bp.blogspot.com/-yDXFFgJmcEY/WnkhZzCRGTI/AAAAAAAACtw/QEObVFJGi1QpKHVuwvbPj3jg9l2FYHyNgCLcBGAs/s640/2018.01.31.benchmark-all-lines.png)
 
-Though not a staggering distinction, Scribe is clearly both faster and has a smaller memory footprint. For more on the
-results of the benchmark take a look at this blog post: http://www.matthicks.com/2017/01/logging-performance.html
+For more information [check out the blog post](http://www.matthicks.com/2018/02/scribe-2-fastest-jvm-logger-in-world.html)
 
 ## Library Dependencies
 
 No matter how simple or straight-forward a library might be, its dependencies can quickly add a lot of bloat to your
-project. This is why in Scribe we have absolutely no external dependencies for the core library.
+project. This is why in Scribe we have absolutely no external dependencies for the core library for JVM and Native.
+However, to properly support dates and times we include a couple of Scala.js libraries for time and locale support.
 
 ### scribe-slf4j
 * slf4j-api
@@ -66,11 +69,12 @@ project. This is why in Scribe we have absolutely no external dependencies for t
 
 ## SBT Configuration ##
 
-Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala.js with 2.11 and 2.12:
+Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala.js with 2.11 and 2.12 and Scala Native
+with 2.11:
 
 ```
 libraryDependencies += "com.outr" %% "scribe" % "2.0.0"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "2.0.0"  // Scala.js
+libraryDependencies += "com.outr" %%% "scribe" % "2.0.0"  // Scala.js / Cross-project
 ```
 
 ## Using Scribe ##
@@ -115,7 +119,7 @@ import scribe._
 
 class MyClass {
   val myString = "Nothing Special About Me"
-  myString.logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.daily())))
+  myString.updateLogger(_.withHandler(writer = FileWriter.daily(), minimumLevel = Level.Debug))
   myString.logger.info("Logging on a String!")
   
   "Another String".logger.info("Written to a file...")
@@ -165,82 +169,93 @@ All loggers can be configured to define a parent logger that subscribes to all l
 
 ### The Root Logger ###
 
-By default all loggers have a direct parent of `Logger.Root`. It is this logger that has the default console writer.
+By default all loggers have a direct parent of `Logger.root`. It is this logger that has the default console writer.
 
 ### Logging to a File ###
 
 The following will add a new `LogHandler` to the specified `logger` to append all `Debug` logs and above to a daily file.
 
 ```scala
-logger.addHandler(LogHandler(level = Level.Debug, writer = new FileWriter(directory, FileWriter.daily())))
+Logger.update(loggerName) { l =>      // Gives you the current logger by name to allow immutable modification
+  l.withHandler(minimumLevel = Level.Debug, writer = FileWriter.daily())
+}
 ```
 
-You may want to use `Logger.Root` instead of `logger` to set this handler globally.
+All future references to `loggerName` will include the new handler.
 
 ### Configuring the Logger ###
 
-A `Logger` is actually just a case class with some additional functionality added on. The `Logger` contains `parentName`
-and `multiplier`.
+A `Logger` is actually just a case class with some additional functionality added on. The `Logger` contains `parentName`,
+`modifiers`, `handlers`, and `overrideClassName`.
 
 `parentName: Option[String]`: The parent logger that will receive all logging events this logger receives. Defaults to
-`Some(Logger.rootName)`.
+`Some(Logger.rootName)`. During configuration this can be disconnected with `logger.orphan()` or set to have a different
+parent name with `logger.withParent(parentName)`.
 
-`multiplier: Double`: The multiplier added to logs coming through this logger. This provides the ability to boost the\
-value for log records. For example, if you want to see all `Debug` levels for a specific class only, but your handler is
-filtering to only show `Info` and above you can set `multiplier` to `2.0` and all logs that come through will boost to
-be included on the next levels value. It is worth noting that they will still output with their proper level name.
-Defaults to `1.0`.
+`modifiers: List[LogModifier]`: A `LogModifier` has a priority (to determine the order in which they will be invoked)
+and take a `LogRecord` and return an `Option[LogRecord]`. This gives the modifier the ability change the record (for
+example, to boost the value or modify the message), or even to filter out records altogether by returning `None`. There
+are many pre-defined `LogModifier` helper classes, but it's trivial to define your own as needed.
 
-If I want to simply update my logger removing the `Logger.Root` parent reference I can do so like this:
+`handlers: List[LogHandler]`: A `LogHandler` receives `LogRecord`s after they have been processed sequentially by
+`modifiers` and if the result of the `modifiers` is non empty, will be passed along to each `LogHandler`. The primary
+use-case of `LogHandler` is to output the records (to the console, a file, etc.), but it is a flexible and simple
+interface that can be extended to fulfill any need.
+
+`overrideClassName: Option[String]`: The className is derived automatically when a `LogRecord` is created, but if this
+value is set, the name can be explicitly defined for records created by this logger.
+
+If you want to simply update my logger removing the `Logger.root` parent reference you can do so like this:
 
 ```scala
 import scribe.Logging
 
 class MyClass extends Logging {
-  logger.update {
-    logger.copy(parentName = None)
-  }
+  logger.update(_.orphan())
 }
 ```
 
-This will update the logger being used for this class going forward. All existing handlers on the previous `Logger`
-instance will be re-applied to this new instance as well.
+This will update the logger being used for this class going forward.
 
 To change the default global log level, use:
 
 ```scala
-Logger.root.clearHandlers()
-Logger.root.addHandler(LogHandler(level = Level.Error))
+Logger.update(Logger.rootName)(_.clearHandlers().addHandler(minimumLevel = Level.Error))
 ```
 
-You can configure the output (how the log will look like) when adding a `LogHandler`.
-The `Formatter` companion has three pre-defined scenarios (simple, default, and trace).
-Building your own Formatter instance is easy with the `FormatterBuilder`:
+You can configure the output (how the log will look like) when adding a `LogHandler`. The `Formatter` companion
+currently has two pre-defined scenarios (simple and default). Building your own Formatter instance is easy and efficient
+with the formatter interpolator:
 
 ```scala
-Logger.root.addHandler(LogHandler(formatter = FormatterBuilder()
-        .string("[")
-        .threadName.string("] ")
-        .positionAbbreviated.string(" - ")
-        .message
-        .newLine))     
+import scribe.format._
 
+val myFormatter: Formatter = formatter"[$threadName] $positionAbbreviated - $message$newLine"
+Logger.update(Logger.rootName) { l =>
+  l.clearHandlers().withHandler(formatter = myFormatter)
+}
 ```
+
+This builds an efficient formatter at compile-time with the blocks you specify. This is both clean and readable.
+Finally, this fully extensible as additional custom blocks can be defined by simply implementing the `FormatBlock`
+interface.
 
 ### SLF4J Logger ###
 
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "1.4.6"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "2.0.0"
 ```
 
-Obviously this only applies to JVM as SLF4J isn't available in the browser. This will allow any existing application that
-relies on SLF4J to log through Scribe without any additional configuration.
+Obviously this only applies to JVM as SLF4J isn't available in the browser or compiled for Scala Native. This will allow
+any existing application that relies on SLF4J to log through Scribe without any additional configuration.
 
 ### Slack Logging ###
 
 If you add the `scribe-slack` dependency to your project you can configure Scribe to log to Slack (https://slack.com/).
+
+Again, this will only work on the JVM variant.
 
 ```
 libraryDependencies += "com.outr" %% "scribe-slack" % "2.0.0"
