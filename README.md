@@ -46,11 +46,11 @@ asynchronous logging support completely removes logging impact from your applica
 
 Scribe is now the fastest logging framework in existence. Here is a chart comparing Log4J 2, Scala Logging, and Scribe:
 
-![All Frameworks Graph](https://3.bp.blogspot.com/-L6otiWniCTs/WnkhKwUbC4I/AAAAAAAACts/V9OHj6kLJIkLfKqMKOE9miDeOMyyxWxFQCLcBGAs/s640/2018.01.31.benchmark-all.png)
+![All Frameworks Graph](https://raw.githubusercontent.com/outr/scribe/master/work/images/2018.01.31.benchmark-all.png)
 
 In addition, to see the graph over time:
 
-![All Frameworks Chart](https://2.bp.blogspot.com/-yDXFFgJmcEY/WnkhZzCRGTI/AAAAAAAACtw/QEObVFJGi1QpKHVuwvbPj3jg9l2FYHyNgCLcBGAs/s640/2018.01.31.benchmark-all-lines.png)
+![All Frameworks Chart](https://raw.githubusercontent.com/outr/scribe/master/work/images/2018.01.31.benchmark-all-lines.png)
 
 For more information [check out the blog post](http://www.matthicks.com/2018/02/scribe-2-fastest-jvm-logger-in-world.html)
 
@@ -74,7 +74,7 @@ with 2.11:
 
 ```
 libraryDependencies += "com.outr" %% "scribe" % "2.0.0"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "2.0.0"  // Scala.js / Cross-project
+libraryDependencies += "com.outr" %%% "scribe" % "2.0.0"  // Scala.js / Scala Native / Cross-project
 ```
 
 ## Using Scribe ##
