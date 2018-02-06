@@ -69,8 +69,8 @@ project. This is why in Scribe we have absolutely no external dependencies for t
 Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala.js with 2.11 and 2.12:
 
 ```
-libraryDependencies += "com.outr" %% "scribe" % "1.4.6"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "1.4.6"  // Scala.js
+libraryDependencies += "com.outr" %% "scribe" % "2.0.0"   // Scala
+libraryDependencies += "com.outr" %%% "scribe" % "2.0.0"  // Scala.js
 ```
 
 ## Using Scribe ##
@@ -243,7 +243,7 @@ relies on SLF4J to log through Scribe without any additional configuration.
 If you add the `scribe-slack` dependency to your project you can configure Scribe to log to Slack (https://slack.com/).
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slack" % "1.4.6"
+libraryDependencies += "com.outr" %% "scribe-slack" % "2.0.0"
 ```
 
 The easiest way to configure this is to use the convenience method `configure`:
