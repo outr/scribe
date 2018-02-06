@@ -3,7 +3,7 @@ package scribe.slack
 import gigahorse.{FullResponse, MimeTypes}
 import gigahorse.support.asynchttpclient.Gigahorse
 import scribe._
-import scribe.formatter.FormatterBuilder
+import scribe.format._
 import upickle.Js
 
 import scala.concurrent.Future
@@ -56,20 +56,16 @@ object Slack {
   def configure(serviceHash: String,
                 botName: String,
                 emojiIcon: String = ":fire:",
-                logger: Logger = Logger.root,
+                loggerName: String = Logger.rootName,
                 level: Level = Level.Error): Unit = {
     val slack = new Slack(serviceHash, botName)
+    val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
 
-    val formatter = FormatterBuilder().
-      string("[").threadName.string("] ").
-      levelPaddedRight.string(" ").
-      classNameAbbreviated.string(".").methodName.string(":").lineNumber.
-      string(" - ").message.newLine
-
-    logger.addHandler(LogHandler(
-      level = level,
-      writer = new SlackWriter(slack, emojiIcon),
-      formatter = formatter
-    ))
+    val handler = LogHandler
+      .default
+      .withMinimumLevel(level)
+      .withWriter(new SlackWriter(slack, emojiIcon))
+      .withFormatter(formatter)
+    Logger.update(loggerName)(_.withHandler(handler))
   }
 }

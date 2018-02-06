@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration package="log4j.test"
+               status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Appenders>
+        <File name="MyFile" fileName="logs/log4j.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+                <!--<Pattern>%d{ISO8601}{GMT} %-5p %C{2} (%F:%L) - %m%n</Pattern>-->
+            </PatternLayout>
+        </File>
+        <File name="TraceFile" fileName="logs/log4j-trace.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601}{GMT} %-5p %C{2} (%F:%L) - %m%n</Pattern>
+            </PatternLayout>
+        </File>
+        <Async name="Async">
+            <AppenderRef ref="MyFile"/>
+        </Async>
+    </Appenders>
+    <Loggers>
+        <Root level="trace">
+            <AppenderRef ref="MyFile"/>
+        </Root>
+        <Logger name="Trace" level="trace">
+            <AppenderRef ref="TraceFile"/>
+        </Logger>
+    </Loggers>
+</Configuration>

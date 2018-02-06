@@ -9,6 +9,8 @@ import scribe.{Logger => ScribeLogger, Platform, Level}
 class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
   private def logger = ScribeLogger.byName(name)
 
+  ScribeLogger.update(name)(_.withClassNameOverride(name))
+
   def scribeLevel(level: Int): Level = level match {
     case LocationAwareLogger.TRACE_INT => Level.Trace
     case LocationAwareLogger.DEBUG_INT => Level.Debug
@@ -30,13 +32,13 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     if (t != null) logger.warn(t)
   }
 
-  override def isErrorEnabled: Boolean = logger.accepts(Level.Error.value)
+  override def isErrorEnabled: Boolean = true //logger.accepts(Level.Error.value)
 
-  override def isInfoEnabled: Boolean = logger.accepts(Level.Info.value)
+  override def isInfoEnabled: Boolean = true //logger.accepts(Level.Info.value)
 
-  override def isDebugEnabled: Boolean = logger.accepts(Level.Debug.value)
+  override def isDebugEnabled: Boolean = true //logger.accepts(Level.Debug.value)
 
-  override def isTraceEnabled: Boolean = logger.accepts(Level.Trace.value)
+  override def isTraceEnabled: Boolean = true //logger.accepts(Level.Trace.value)
 
   override def error(msg: String): Unit = logger.error(msg)
 
@@ -64,7 +66,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     if (t != null) logger.debug(t)
   }
 
-  override def isWarnEnabled: Boolean = logger.accepts(Level.Warn.value)
+  override def isWarnEnabled: Boolean = true //logger.accepts(Level.Warn.value)
 
   override def trace(msg: String): Unit = logger.trace(msg)
 

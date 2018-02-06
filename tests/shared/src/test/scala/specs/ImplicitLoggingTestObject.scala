@@ -1,13 +1,14 @@
 package specs
 
-import scribe.{Level, LogHandler}
+import scribe._
+import scribe.writer.NullWriter
 
 object ImplicitLoggingTestObject {
-  val testingWriter = new TestingWriter
+  val testingModifier = new TestingModifier
 
   def initialize(): Unit = {
-    val handler = LogHandler(level = Level.Debug, writer = testingWriter)
-    scribe.addHandler(handler)
+    val handler = LogHandler.default.withMinimumLevel(Level.Debug).withModifier(testingModifier).withWriter(NullWriter)
+    this.updateLogger(_.orphan().withHandler(handler))
   }
 
   def doSomething(): Unit = {
