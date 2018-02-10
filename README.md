@@ -48,6 +48,9 @@ Scribe is now the fastest logging framework in existence. Here is a chart compar
 
 ![All Frameworks Graph](https://raw.githubusercontent.com/outr/scribe/master/work/images/2018.01.31.benchmark-all.png)
 
+That's right. Scribe averages nearly 1.2 million logged records per second single-threaded. Log4J on the other hand
+maxes out at roughly 652k per second.
+
 In addition, to see the graph over time:
 
 ![All Frameworks Chart](https://raw.githubusercontent.com/outr/scribe/master/work/images/2018.01.31.benchmark-all-lines.png)
