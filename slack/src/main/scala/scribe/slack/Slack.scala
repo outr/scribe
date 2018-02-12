@@ -1,14 +1,15 @@
 package scribe.slack
 
-import gigahorse.{FullResponse, MimeTypes}
 import gigahorse.support.asynchttpclient.Gigahorse
+import gigahorse.{FullResponse, MimeTypes}
 import scribe._
 import scribe.format._
+import scribe.handler.LogHandler
 import upickle.Js
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class Slack(serviceHash: String, botName: String) {
   def request(message: String,

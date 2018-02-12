@@ -3,6 +3,7 @@ package scribe
 import java.io.PrintStream
 
 import scribe.format.Formatter
+import scribe.handler.LogHandler
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
 
@@ -58,7 +59,7 @@ object Logger {
   update(rootName)(
     _.orphan()
      .withMinimumLevel(Level.Info)
-     .withHandler(LogHandler.default.withWriter(ConsoleWriter))
+     .withHandler(LogHandler(writer = ConsoleWriter))
   )
 
   def byName(name: String): Logger = synchronized {

@@ -1,10 +1,15 @@
 package specs
 
+import scribe.handler.LogHandler
 import scribe.writer.NullWriter
-import scribe.{Level, LogHandler, Logging}
+import scribe.{Level, Logging}
 
 class LoggingTestObject(modifier: TestingModifier) extends Logging {
-  update(_.orphan().withHandler(LogHandler.default.withMinimumLevel(Level.Debug).withModifier(modifier).withWriter(NullWriter)))
+  update(_.orphan().withHandler(LogHandler(
+    minimumLevel = Level.Debug,
+    writer = NullWriter,
+    modifiers = List(modifier)
+  )))
 
   def testLogger(): Unit = {
     logger.info("This is a test!")

@@ -1,9 +1,10 @@
 package spec
 
-import scribe.{Level, LogHandler, LogRecord, Logger, Priority}
 import org.scalatest.{Matchers, WordSpec}
 import org.slf4j.LoggerFactory
+import scribe.handler.LogHandler
 import scribe.modify.LogModifier
+import scribe.{Level, LogRecord, Logger, Priority}
 
 class SLF4JSpec extends WordSpec with Matchers {
   private var logs: List[LogRecord] = Nil

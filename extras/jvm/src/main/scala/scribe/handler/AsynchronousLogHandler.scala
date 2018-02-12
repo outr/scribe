@@ -1,6 +1,7 @@
-package scribe
+package scribe.handler
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import scribe._
 import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
@@ -13,8 +14,8 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
                                   modifiers: List[LogModifier] = Nil) extends LogHandler {
   private lazy val router: ActorRef = AsynchronousLogHandler.system.actorOf(Props[Worker](new Worker))
 
-  override def withFormatter(formatter: Formatter): LogHandler = copy(formatter = formatter)
-  override def withWriter(writer: Writer): LogHandler = copy(writer = writer)
+  def withFormatter(formatter: Formatter): LogHandler = copy(formatter = formatter)
+  def withWriter(writer: Writer): LogHandler = copy(writer = writer)
   override def setModifiers(modifiers: List[LogModifier]): LogHandler = copy(modifiers = modifiers)
 
   override def log(record: LogRecord): Unit = router ! record

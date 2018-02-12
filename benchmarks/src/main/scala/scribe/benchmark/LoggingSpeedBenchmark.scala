@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager
 import org.openjdk.jmh.annotations
 import scribe._
 import scribe.format._
+import scribe.handler.LogHandler
 
 // jmh:run -i 3 -wi 3 -f1 -t1 -rf JSON -rff benchmarks.json
 @annotations.State(annotations.Scope.Thread)
