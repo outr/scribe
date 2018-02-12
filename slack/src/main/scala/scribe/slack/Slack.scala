@@ -62,11 +62,11 @@ object Slack {
     val slack = new Slack(serviceHash, botName)
     val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
 
-    val handler = LogHandler
-      .default
-      .withMinimumLevel(level)
-      .withWriter(new SlackWriter(slack, emojiIcon))
-      .withFormatter(formatter)
+    val handler = LogHandler(
+      minimumLevel = level,
+      writer = new SlackWriter(slack, emojiIcon),
+      formatter = formatter
+    )
     Logger.update(loggerName)(_.withHandler(handler))
   }
 }
