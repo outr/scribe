@@ -1,9 +1,11 @@
 package scribe
 
-class Level(val name: String, val value: Double) {
+class Level(val name: String, val value: Double) extends Ordered[Double] {
   Level.maxLength = math.max(Level.maxLength, name.length)
 
   def namePaddedRight: String = name.padTo(Level.maxLength, " ").mkString
+
+  override def compare(that: Double): Int = this.value.compare(that)
 }
 
 object Level {

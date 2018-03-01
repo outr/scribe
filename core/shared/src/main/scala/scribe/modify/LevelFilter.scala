@@ -13,5 +13,5 @@ class LevelFilter(include: Double => Boolean,
 }
 
 object LevelFilter {
-  def >=(level: Level): LevelFilter = new LevelFilter(_ >= level.value, _ => false, Priority.High)
+  def >=(level: Level): LevelFilter = new LevelFilter(level <= _, _ => false, Priority.High)
 }
