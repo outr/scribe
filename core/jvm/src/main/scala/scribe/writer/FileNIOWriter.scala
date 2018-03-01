@@ -10,7 +10,7 @@ import scala.annotation.tailrec
 case class FileNIOWriter(directory: Path,
                          fileNameGenerator: () => String,
                          append: Boolean = true,
-                         autoFlush: Boolean = true,
+                         autoFlush: Boolean = false,
                          charset: Charset = Charset.defaultCharset()) extends FileWriter {
   private lazy val options: List[OpenOption] = if (append) {
     List(StandardOpenOption.WRITE, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
@@ -72,7 +72,7 @@ object FileNIOWriter {
              suffix: String = ".log",
              directory: Path = Paths.get("logs"),
              append: Boolean = true,
-             autoFlush: Boolean = true,
+             autoFlush: Boolean = false,
              charset: Charset = Charset.defaultCharset()): FileNIOWriter = {
     new FileNIOWriter(directory, FileWriter.generator.single(prefix, suffix), append, autoFlush, charset)
   }
@@ -81,7 +81,7 @@ object FileNIOWriter {
             suffix: String = ".log",
             directory: Path = Paths.get("logs"),
             append: Boolean = true,
-            autoFlush: Boolean = true,
+            autoFlush: Boolean = false,
             charset: Charset = Charset.defaultCharset()): FileNIOWriter = {
     new FileNIOWriter(directory, FileWriter.generator.daily(prefix, suffix), append, autoFlush, charset)
   }
