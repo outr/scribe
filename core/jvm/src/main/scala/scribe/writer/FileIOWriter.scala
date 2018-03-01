@@ -2,12 +2,8 @@ package scribe.writer
 
 import java.io
 import java.io.PrintWriter
-import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file._
-
-import scala.annotation.tailrec
 
 case class FileIOWriter(directory: Path,
                       fileNameGenerator: () => String,
@@ -21,13 +17,10 @@ case class FileIOWriter(directory: Path,
     validateFileName()
     val writer = validateWriter()
     writer.write(output)
+    if (autoFlush) flush()
   }
 
-  @tailrec
-  private def writeBuffer(buffer: ByteBuffer, channel: FileChannel): Unit = if (buffer.hasRemaining) {
-    channel.write(buffer)
-    writeBuffer(buffer, channel)
-  }
+  override def flush(): Unit = writer.foreach(_.flush())
 
   protected def validateFileName(): Unit = {
     val fileName: String = fileNameGenerator()

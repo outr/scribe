@@ -27,7 +27,10 @@ case class FileNIOWriter(directory: Path,
     val buffer = ByteBuffer.wrap(bytes)
     writeBuffer(buffer, channel)
     buffer.clear()
+    if (autoFlush) flush()
   }
+
+  override def flush(): Unit = channel.foreach(_.force(false))
 
   @tailrec
   private def writeBuffer(buffer: ByteBuffer, channel: FileChannel): Unit = if (buffer.hasRemaining) {

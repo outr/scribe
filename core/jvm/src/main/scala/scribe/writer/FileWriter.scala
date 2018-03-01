@@ -3,7 +3,9 @@ package scribe.writer
 import java.nio.charset.Charset
 import java.nio.file.{Path, Paths}
 
-trait FileWriter extends Writer
+trait FileWriter extends Writer {
+  def flush(): Unit
+}
 
 object FileWriter {
   object generator {
