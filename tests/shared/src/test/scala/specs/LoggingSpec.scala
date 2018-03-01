@@ -47,6 +47,15 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       Logger.root.error("Error Log 1")
       testingModifier.records.length should be(3)
     }
+    "log using 's' interpolation" in {
+      val message = "Wahoo!"
+      logger.info(s"It works! $message")
+    }
+    // TODO: fix f interpolation support
+    /*"log using 'f' interpolation" in {
+      val d = 12.3456
+      logger.info(f"It works! $d%.0f")
+    }*/
     "write a detailed log message" in {
       val lineNumber = Some(15)
       testingModifier.clear()

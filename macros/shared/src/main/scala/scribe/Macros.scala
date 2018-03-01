@@ -106,13 +106,23 @@ object Macros {
       case n => Some(n)
     }
     val stringify = q"scribe.LogRecord.Stringify.Default"
-    val derivedClassName = if (logger.tpe.toString == "scribe.Logger") {
+    val dcn = if (logger.tpe.toString == "scribe.Logger") {
       q"$logger.overrideClassName.getOrElse($className)"
     } else {
       q"$className"
     }
+    val dmn = if (logger.tpe.toString == "scribe.Logger") {
+      q"if ($logger.overrideClassName.nonEmpty) None else $methodName"
+    } else {
+      q"$methodName"
+    }
+    val dln = if (logger.tpe.toString == "scribe.Logger") {
+      q"if ($logger.overrideClassName.nonEmpty) None else $line"
+    } else {
+      q"$line"
+    }
 
-    q"$logger.log(scribe.LogRecord($level, $level.value, () => $message, $stringify, $derivedClassName, $methodName, $line))"
+    q"$logger.log(scribe.LogRecord($level, $level.value, () => $message, $stringify, $dcn, $dmn, $dln))"
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {
