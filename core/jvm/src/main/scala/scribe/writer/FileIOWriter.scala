@@ -61,8 +61,8 @@ object FileIOWriter {
              directory: Path = Paths.get("logs"),
              append: Boolean = true,
              autoFlush: Boolean = true,
-             charset: Charset = Charset.defaultCharset()): FileNIOWriter = {
-    new FileNIOWriter(directory, FileWriter.generator.single(prefix, suffix), append, autoFlush, charset)
+             charset: Charset = Charset.defaultCharset()): FileIOWriter = {
+    new FileIOWriter(directory, FileWriter.generator.single(prefix, suffix), append, autoFlush, charset)
   }
 
   def daily(prefix: String = "app",
@@ -70,7 +70,7 @@ object FileIOWriter {
             directory: Path = Paths.get("logs"),
             append: Boolean = true,
             autoFlush: Boolean = true,
-            charset: Charset = Charset.defaultCharset()): FileNIOWriter = {
-    new FileNIOWriter(directory, FileWriter.generator.daily(prefix, suffix), append, autoFlush, charset)
+            charset: Charset = Charset.defaultCharset()): FileIOWriter = {
+    new FileIOWriter(directory, FileWriter.generator.daily(prefix, suffix), append, autoFlush, charset)
   }
 }
