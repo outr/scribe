@@ -17,7 +17,7 @@ class FormatBlocksFormatter(blocks: List[FormatBlock]) extends Formatter {
                           blocks: List[FormatBlock]): String = if (blocks.isEmpty) {
     b.toString
   } else {
-    blocks.head.format(record, b)
+    b.append(blocks.head.format(record))
     applyBlocks(b, record, blocks.tail)
   }
 }
