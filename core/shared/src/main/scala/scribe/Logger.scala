@@ -26,9 +26,12 @@ case class Logger(parentName: Option[String] = Some(Logger.rootName),
   override def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers)
 
   override def log(record: LogRecord): Unit = {
-    modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
+    val rec = overrideClassName
+      .map(cn => record.copy(className = cn, methodName = None, lineNumber = None))
+      .getOrElse(record)
+    modifiers.foldLeft(Option(rec))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
       handlers.foreach(_.log(r))
-      parentName.map(Logger.byName).foreach(_.log(record))
+      parentName.map(Logger.byName).foreach(_.log(rec))
     }
   }
 }
