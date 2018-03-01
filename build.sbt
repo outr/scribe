@@ -24,8 +24,6 @@ developers in ThisBuild := List(
 )
 
 // Core
-val scalaJsJavaTimeVersion: String = "2.0.0-M12"
-val scalaJavaLocalesVersion: String = "0.5.2-cldr31"
 val scalatestVersion: String = "3.0.4"
 
 // Extras
@@ -83,12 +81,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ),
     publishArtifact in Test := false
-  )
-  .jsSettings(
-    libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-time" % scalaJsJavaTimeVersion,
-      "io.github.cquiroz" %%% "scala-java-locales" % scalaJavaLocalesVersion
-    )
   )
   .nativeSettings(
     scalaVersion := "2.11.12",

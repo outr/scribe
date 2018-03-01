@@ -33,7 +33,7 @@ object FormatBlock {
       override def format(record: LogRecord): String = {
         val l = record.timeStamp
         if (l - lastValue.get() > 1000L) {
-          val d = sfi"${l.tY}.${l.tm}.${l.td} ${l.tT}"
+          val d = sfi"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}"
           cache.set(d)
           lastValue.set(l)
           d
