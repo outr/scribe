@@ -21,7 +21,7 @@ object FileWriter {
              suffix: String = ".log",
              directory: Path = Paths.get("logs"),
              append: Boolean = true,
-             autoFlush: Boolean = true,
+             autoFlush: Boolean = false,
              charset: Charset = Charset.defaultCharset(),
              nio: Boolean = false): FileWriter = if (nio) {
     new FileNIOWriter(directory, generator.single(prefix, suffix), append, autoFlush, charset)
@@ -33,7 +33,7 @@ object FileWriter {
             suffix: String = ".log",
             directory: Path = Paths.get("logs"),
             append: Boolean = true,
-            autoFlush: Boolean = true,
+            autoFlush: Boolean = false,
             charset: Charset = Charset.defaultCharset(),
             nio: Boolean = false): FileWriter = if (nio) {
     new FileNIOWriter(directory, generator.daily(prefix, suffix), append, autoFlush, charset)

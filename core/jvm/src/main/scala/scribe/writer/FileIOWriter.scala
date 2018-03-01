@@ -8,7 +8,7 @@ import java.nio.file._
 case class FileIOWriter(directory: Path,
                       fileNameGenerator: () => String,
                       append: Boolean = true,
-                      autoFlush: Boolean = true,
+                      autoFlush: Boolean = false,
                       charset: Charset = Charset.defaultCharset()) extends FileWriter {
   private var writer: Option[PrintWriter] = None
   private var currentFileName: Option[String] = None
@@ -60,7 +60,7 @@ object FileIOWriter {
              suffix: String = ".log",
              directory: Path = Paths.get("logs"),
              append: Boolean = true,
-             autoFlush: Boolean = true,
+             autoFlush: Boolean = false,
              charset: Charset = Charset.defaultCharset()): FileIOWriter = {
     new FileIOWriter(directory, FileWriter.generator.single(prefix, suffix), append, autoFlush, charset)
   }
@@ -69,7 +69,7 @@ object FileIOWriter {
             suffix: String = ".log",
             directory: Path = Paths.get("logs"),
             append: Boolean = true,
-            autoFlush: Boolean = true,
+            autoFlush: Boolean = false,
             charset: Charset = Charset.defaultCharset()): FileIOWriter = {
     new FileIOWriter(directory, FileWriter.generator.daily(prefix, suffix), append, autoFlush, charset)
   }
