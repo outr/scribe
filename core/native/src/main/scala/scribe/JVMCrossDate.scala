@@ -1,7 +1,6 @@
 package scribe
 
 import java.util.Calendar
-import scribe.date.CrossDate
 
 class JVMCrossDate(override val milliseconds: Long, c: java.util.Calendar) extends CrossDate {
   override def hour24: Int = c.get(Calendar.HOUR_OF_DAY)

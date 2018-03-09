@@ -1,7 +1,5 @@
 package scribe
 
-import scribe.date.CrossDate
-
 import scala.scalajs.js.Date
 
 object Platform {

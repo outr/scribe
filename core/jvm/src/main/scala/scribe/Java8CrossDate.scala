@@ -4,8 +4,6 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoField
 import java.util.TimeZone
 
-import scribe.date.CrossDate
-
 class Java8CrossDate(override val milliseconds: Long, ldt: LocalDateTime) extends CrossDate {
   override def hour24: Int = ldt.get(ChronoField.HOUR_OF_DAY)
   override def minuteOfHour: Int = ldt.get(ChronoField.MINUTE_OF_HOUR)

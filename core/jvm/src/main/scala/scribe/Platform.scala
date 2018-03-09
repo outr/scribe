@@ -2,8 +2,6 @@ package scribe
 
 import java.util.Calendar
 
-import scribe.date.CrossDate
-
 object Platform {
   val lineSeparator: String = System.getProperty("line.separator")
 

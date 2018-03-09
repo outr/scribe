@@ -1,7 +1,5 @@
 package scribe
 
-import scribe.date.CrossDate
-
 import scala.scalajs.js.Date
 
 class JavaScriptCrossDate(override val milliseconds: Long, d: Date) extends CrossDate {

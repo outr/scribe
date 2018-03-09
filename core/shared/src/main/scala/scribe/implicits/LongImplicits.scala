@@ -3,7 +3,7 @@ package scribe.implicits
 import java.math.RoundingMode
 import java.util.{Currency, Locale}
 
-import scribe.date.CrossDate
+import scribe.CrossDate
 import scribe.util.NumberFormatUtil
 
 class LongImplicits(val l: Long) extends AnyVal {

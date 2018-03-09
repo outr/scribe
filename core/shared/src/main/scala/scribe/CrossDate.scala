@@ -1,6 +1,5 @@
-package scribe.date
+package scribe
 
-import scribe._
 import scribe.util.NumberFormatUtil._
 
 trait CrossDate {
