@@ -16,5 +16,3 @@ cache:
 before_cache:
   - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
   - find $HOME/.sbt -name "*.lock" -delete
-notifications:
-  slack: outr:A8tndkIibmnKjv7YBMnAK7SE

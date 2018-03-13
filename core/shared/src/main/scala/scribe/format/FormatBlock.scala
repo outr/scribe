@@ -1,6 +1,7 @@
 package scribe.format
 
 import scribe._
+import perfolation._
 
 trait FormatBlock {
   def format(record: LogRecord): String
@@ -33,7 +34,7 @@ object FormatBlock {
       override def format(record: LogRecord): String = {
         val l = record.timeStamp
         if (l - lastValue.get() > 1000L) {
-          val d = sfi"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}"
+          val d = p"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}"
           cache.set(d)
           lastValue.set(l)
           d
@@ -94,32 +95,32 @@ object FormatBlock {
       override def format(record: LogRecord): String = {
         val className = ClassName.Full.format(record)
         val methodName = if (record.methodName.nonEmpty) {
-          sfi".${MethodName.Full.format(record)}"
+          p".${MethodName.Full.format(record)}"
         } else {
           ""
         }
         val lineNumber = if (record.lineNumber.nonEmpty) {
-          sfi":${LineNumber.Full.format(record)}"
+          p":${LineNumber.Full.format(record)}"
         } else {
           ""
         }
-        sfi"$className$methodName$lineNumber"
+        p"$className$methodName$lineNumber"
       }
     }
     object Abbreviated extends FormatBlock {
       override def format(record: LogRecord): String = {
         val className = ClassName.Abbreviated.format(record)
         val methodName = if (record.methodName.nonEmpty) {
-          sfi".${MethodName.Full.format(record)}"
+          p".${MethodName.Full.format(record)}"
         } else {
           ""
         }
         val lineNumber = if (record.lineNumber.nonEmpty) {
-          sfi":${LineNumber.Full.format(record)}"
+          p":${LineNumber.Full.format(record)}"
         } else {
           ""
         }
-        sfi"$className$methodName$lineNumber"
+        p"$className$methodName$lineNumber"
       }
     }
   }

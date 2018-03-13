@@ -24,6 +24,7 @@ developers in ThisBuild := List(
 )
 
 // Core
+val perfolationVersion: String = "1.0.0"
 val scalatestVersion: String = "3.0.4"
 
 // Extras
@@ -78,6 +79,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     name := "scribe",
     libraryDependencies ++= Seq(
+      "com.outr" %%% "perfolation" % perfolationVersion,
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ),
     publishArtifact in Test := false

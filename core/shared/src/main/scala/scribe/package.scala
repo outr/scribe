@@ -1,5 +1,3 @@
-import scribe.implicits.{DoubleImplicits, LongImplicits}
-
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 
@@ -14,13 +12,5 @@ package object scribe extends LoggerSupport {
     def logger: Logger = Logger.byName(value.getClass.getName)
 
     def updateLogger(modifier: Logger => Logger): Logger = Logger.update(value.getClass.getName)(modifier)
-  }
-
-  implicit def long2Implicits(l: Long): LongImplicits = new LongImplicits(l)
-  implicit def double2Implicits(d: Double): DoubleImplicits = new DoubleImplicits(d)
-
-
-  implicit class SFIInterpolator(val sc: StringContext) extends AnyVal {
-    def sfi(args: Any*): String = macro SFIMacros.sfiImpl
   }
 }
