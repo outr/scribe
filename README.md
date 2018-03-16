@@ -223,7 +223,7 @@ This will update the logger being used for this class going forward.
 To change the default global log level, use:
 
 ```scala
-Logger.update(Logger.rootName)(_.clearHandlers().addHandler(minimumLevel = Level.Error))
+Logger.update(Logger.rootName)(_.clearHandlers().clearModifiers().withHandler(minimumLevel = Level.Error))
 ```
 
 You can configure the output (how the log will look like) when adding a `LogHandler`. The `Formatter` companion
