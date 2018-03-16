@@ -5,18 +5,22 @@ import scala.annotation.tailrec
 trait LogRecord {
   def level: Level
   def value: Double
-  def message: String
+  def messageValue: Any
+  def stringify: Any => String
   def className: String
   def methodName: Option[String]
   def lineNumber: Option[Int]
   def thread: Thread
   def timeStamp: Long
 
+  def message: String
+
   def boost(booster: Double => Double): LogRecord = copy(value = booster(value))
 
   def copy(level: Level = level,
            value: Double = value,
-           message: String = message,
+           message: Any = messageValue,
+           stringify: Any => String = stringify,
            className: String = className,
            methodName: Option[String] = methodName,
            lineNumber: Option[Int] = lineNumber,
@@ -27,15 +31,23 @@ trait LogRecord {
 }
 
 object LogRecord {
+  object Stringify {
+    val Default: Any => String = {
+      case t: Throwable => throwable2String(t)
+      case v => String.valueOf(v)
+    }
+  }
+
   def apply(level: Level,
             value: Double,
-            message: String,
+            message: Any,
+            stringify: Any => String,
             className: String,
             methodName: Option[String],
             lineNumber: Option[Int],
             thread: Thread = Thread.currentThread(),
             timeStamp: Long = System.currentTimeMillis()): LogRecord = {
-    SimpleLogRecord(level, value, message, className, methodName, lineNumber, thread, timeStamp)
+    SimpleLogRecord(level, value, message, stringify, className, methodName, lineNumber, thread, timeStamp)
   }
 
   /**
@@ -90,21 +102,25 @@ object LogRecord {
 
   case class SimpleLogRecord(level: Level,
                              value: Double,
-                             message: String,
+                             messageValue: Any,
+                             stringify: Any => String,
                              className: String,
                              methodName: Option[String],
                              lineNumber: Option[Int],
                              thread: Thread,
                              timeStamp: Long) extends LogRecord {
+    override lazy val message: String = stringify(messageValue)
+
     def copy(level: Level = level,
              value: Double = value,
-             message: String = message,
+             message: Any = messageValue,
+             stringify: Any => String,
              className: String = className,
              methodName: Option[String] = methodName,
              lineNumber: Option[Int] = lineNumber,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord = {
-      SimpleLogRecord(level, value, message, className, methodName, lineNumber, thread, timeStamp)
+      SimpleLogRecord(level, value, message, stringify, className, methodName, lineNumber, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}
