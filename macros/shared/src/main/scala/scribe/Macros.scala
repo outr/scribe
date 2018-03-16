@@ -31,72 +31,102 @@ object Macros {
     }
   }
 
-  def trace(c: blackbox.Context)(message: c.Tree): c.Tree = {
+  def trace(c: blackbox.Context)(message: c.Expr[String]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Trace", message)
   }
 
-  def debug(c: blackbox.Context)(message: c.Tree): c.Tree = {
+  def debug(c: blackbox.Context)(message: c.Expr[String]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Debug", message)
   }
 
-  def info(c: blackbox.Context)(message: c.Tree): c.Tree = {
+  def info(c: blackbox.Context)(message: c.Expr[String]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Info", message)
   }
 
-  def warn(c: blackbox.Context)(message: c.Tree): c.Tree = {
+  def warn(c: blackbox.Context)(message: c.Expr[String]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Warn", message)
   }
 
-  def error(c: blackbox.Context)(message: c.Tree): c.Tree = {
+  def error(c: blackbox.Context)(message: c.Expr[String]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Error", message)
   }
 
-  def trace2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+  def traceThrowable(c: blackbox.Context)(t: c.Expr[Throwable]): c.Tree = {
+    import c.universe._
+
+    logThrowable(c)(q"scribe.Level.Trace", t)
+  }
+
+  def debugThrowable(c: blackbox.Context)(t: c.Expr[Throwable]): c.Tree = {
+    import c.universe._
+
+    logThrowable(c)(q"scribe.Level.Debug", t)
+  }
+
+  def infoThrowable(c: blackbox.Context)(t: c.Expr[Throwable]): c.Tree = {
+    import c.universe._
+
+    logThrowable(c)(q"scribe.Level.Info", t)
+  }
+
+  def warnThrowable(c: blackbox.Context)(t: c.Expr[Throwable]): c.Tree = {
+    import c.universe._
+
+    logThrowable(c)(q"scribe.Level.Warn", t)
+  }
+
+  def errorThrowable(c: blackbox.Context)(t: c.Expr[Throwable]): c.Tree = {
+    import c.universe._
+
+    logThrowable(c)(q"scribe.Level.Error", t)
+  }
+
+  def trace2(c: blackbox.Context)(message: c.Expr[String], t: c.Expr[Throwable]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Trace", message)
-    log(c)(q"scribe.Level.Trace", t)
+    logThrowable(c)(q"scribe.Level.Trace", t)
   }
 
-  def debug2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+  def debug2(c: blackbox.Context)(message: c.Expr[String], t: c.Expr[Throwable]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Debug", message)
-    log(c)(q"scribe.Level.Debug", t)
+    logThrowable(c)(q"scribe.Level.Debug", t)
   }
 
-  def info2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+  def info2(c: blackbox.Context)(message: c.Expr[String], t: c.Expr[Throwable]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Info", message)
-    log(c)(q"scribe.Level.Info", t)
+    logThrowable(c)(q"scribe.Level.Info", t)
   }
 
-  def warn2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+  def warn2(c: blackbox.Context)(message: c.Expr[String], t: c.Expr[Throwable]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Warn", message)
-    log(c)(q"scribe.Level.Warn", t)
+    logThrowable(c)(q"scribe.Level.Warn", t)
   }
 
-  def error2(c: blackbox.Context)(message: c.Tree, t: c.Tree): c.Tree = {
+  def error2(c: blackbox.Context)(message: c.Expr[String], t: c.Expr[Throwable]): c.Tree = {
     import c.universe._
 
     log(c)(q"scribe.Level.Error", message)
-    log(c)(q"scribe.Level.Error", t)
+    logThrowable(c)(q"scribe.Level.Error", t)
   }
 
-  def log(c: blackbox.Context)(level: c.Tree, message: c.Tree): c.Tree = {
+  def log(c: blackbox.Context)(level: c.Tree, message: c.Expr[String]): c.Tree = {
     import c.universe._
 
     val logger = c.prefix.tree
@@ -105,7 +135,6 @@ object Macros {
       case -1 => None
       case n => Some(n)
     }
-    val stringify = q"scribe.LogRecord.Stringify.Default"
     val dcn = if (logger.tpe.toString == "scribe.Logger") {
       q"$logger.overrideClassName.getOrElse($className)"
     } else {
@@ -122,7 +151,13 @@ object Macros {
       q"$line"
     }
 
-    q"$logger.log(scribe.LogRecord($level, $level.value, () => $message, $stringify, $dcn, $dmn, $dln))"
+    q"$logger.log(scribe.LogRecord($level, $level.value, $message, $dcn, $dmn, $dln))"
+  }
+
+  def logThrowable(c: blackbox.Context)(level: c.Tree, t: c.Expr[Throwable]): c.Tree = {
+    import c.universe._
+
+    log(c)(level, c.Expr[String](q"scribe.LogRecord.throwable2String($t)"))
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {
