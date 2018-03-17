@@ -1,12 +1,14 @@
 package scribe
 
 import scala.annotation.tailrec
+import perfolation._
 
-trait LogRecord {
+trait LogRecord[M] {
   def level: Level
   def value: Double
-  def messageValue: Any
-  def stringify: Any => String
+  def messageValue: M
+  def stringify: M => String
+  def throwable: Option[Throwable]
   def className: String
   def methodName: Option[String]
   def lineNumber: Option[Int]
@@ -15,48 +17,49 @@ trait LogRecord {
 
   def message: String
 
-  def boost(booster: Double => Double): LogRecord = copy(value = booster(value))
+  def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(value))
 
   def copy(level: Level = level,
            value: Double = value,
-           message: Any = messageValue,
-           stringify: Any => String = stringify,
+           message: M = messageValue,
+           stringify: M => String = stringify,
+           throwable: Option[Throwable] = throwable,
            className: String = className,
            methodName: Option[String] = methodName,
            lineNumber: Option[Int] = lineNumber,
            thread: Thread = thread,
-           timeStamp: Long = timeStamp): LogRecord
+           timeStamp: Long = timeStamp): LogRecord[M]
 
   def dispose(): Unit
 }
 
 object LogRecord {
   object Stringify {
-    val Default: Any => String = {
-      case t: Throwable => throwable2String(t)
-      case v => String.valueOf(v)
-    }
+    implicit val Throwable2String: Throwable => String = throwable2String(None, _)
   }
 
-  def apply(level: Level,
-            value: Double,
-            message: Any,
-            stringify: Any => String,
-            className: String,
-            methodName: Option[String],
-            lineNumber: Option[Int],
-            thread: Thread = Thread.currentThread(),
-            timeStamp: Long = System.currentTimeMillis()): LogRecord = {
-    SimpleLogRecord(level, value, message, stringify, className, methodName, lineNumber, thread, timeStamp)
+  def apply[T](level: Level,
+               value: Double,
+               message: T,
+               stringify: T => String,
+               throwable: Option[Throwable],
+               className: String,
+               methodName: Option[String],
+               lineNumber: Option[Int],
+               thread: Thread = Thread.currentThread(),
+               timeStamp: Long = System.currentTimeMillis()): LogRecord[T] = {
+    SimpleLogRecord(level, value, message, stringify, throwable, className, methodName, lineNumber, thread, timeStamp)
   }
 
   /**
     * Converts a Throwable to a String representation for output in logging.
     */
   @tailrec
-  final def throwable2String(t: Throwable,
+  final def throwable2String(message: Option[String],
+                             t: Throwable,
                              primaryCause: Boolean = true,
                              b: StringBuilder = new StringBuilder): String = {
+    message.foreach(m => b.append(p"$m${Platform.lineSeparator}"))
     if (!primaryCause) {
       b.append("Caused by: ")
     }
@@ -65,12 +68,12 @@ object LogRecord {
       b.append(": ")
       b.append(t.getLocalizedMessage)
     }
-    b.append(System.getProperty("line.separator"))
+    b.append(Platform.lineSeparator)
     writeStackTrace(b, t.getStackTrace)
     if (Option(t.getCause).isEmpty) {
       b.toString()
     } else {
-      throwable2String(t.getCause, primaryCause = false, b = b)
+      throwable2String(None, t.getCause, primaryCause = false, b = b)
     }
   }
 
@@ -100,27 +103,35 @@ object LogRecord {
     }
   }
 
-  case class SimpleLogRecord(level: Level,
-                             value: Double,
-                             messageValue: Any,
-                             stringify: Any => String,
-                             className: String,
-                             methodName: Option[String],
-                             lineNumber: Option[Int],
-                             thread: Thread,
-                             timeStamp: Long) extends LogRecord {
-    override lazy val message: String = stringify(messageValue)
+  case class SimpleLogRecord[T](level: Level,
+                                value: Double,
+                                messageValue: T,
+                                stringify: T => String,
+                                throwable: Option[Throwable],
+                                className: String,
+                                methodName: Option[String],
+                                lineNumber: Option[Int],
+                                thread: Thread,
+                                timeStamp: Long) extends LogRecord[T] {
+    override lazy val message: String = {
+      val msg = stringify(messageValue)
+      throwable match {
+        case Some(t) => throwable2String(Option(msg), t)
+        case None => stringify(messageValue)
+      }
+    }
 
     def copy(level: Level = level,
              value: Double = value,
-             message: Any = messageValue,
-             stringify: Any => String,
+             message: T = messageValue,
+             stringify: T => String,
+             throwable: Option[Throwable],
              className: String = className,
              methodName: Option[String] = methodName,
              lineNumber: Option[Int] = lineNumber,
              thread: Thread = thread,
-             timeStamp: Long = timeStamp): LogRecord = {
-      SimpleLogRecord(level, value, message, stringify, className, methodName, lineNumber, thread, timeStamp)
+             timeStamp: Long = timeStamp): LogRecord[T] = {
+      SimpleLogRecord(level, value, message, stringify, throwable, className, methodName, lineNumber, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}

@@ -3,7 +3,7 @@ package scribe.modify
 import scribe.{LogRecord, Priority}
 
 class ClassNameFilter(includeClassName: String => Boolean, exclude: Boolean, val priority: Priority) extends LogModifier {
-  override def apply(record: LogRecord): Option[LogRecord] = {
+  override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = {
     val include = includeClassName(record.className)
     if ((exclude && !include) || (!exclude && include)) {
       Some(record)

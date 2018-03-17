@@ -19,6 +19,14 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     case LocationAwareLogger.ERROR_INT => Level.Error
   }
 
+  def log(level: Level, msg: String, t: Throwable): Unit = if (msg != null) {
+    logger.log(level, msg, Option(t))
+  } else {
+    import scribe.LogRecord.Stringify._
+
+    logger.log(level, t, None)
+  }
+
   override def warn(msg: String): Unit = logger.warn(msg)
 
   override def warn(format: String, arg: scala.Any): Unit = logger.warn(format.format(arg))
@@ -27,10 +35,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def warn(format: String, arg1: scala.Any, arg2: scala.Any): Unit = logger.warn(format.format(arg1, arg2))
 
-  override def warn(msg: String, t: Throwable): Unit = {
-    if (msg != null) logger.warn(msg)
-    if (t != null) logger.warn(t)
-  }
+  override def warn(msg: String, t: Throwable): Unit = log(Level.Warn, msg, t)
 
   override def isErrorEnabled: Boolean = true //logger.accepts(Level.Error.value)
 
@@ -48,10 +53,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def error(format: String, arguments: AnyRef*): Unit = logger.error(format.format(arguments: _*))
 
-  override def error(msg: String, t: Throwable): Unit = {
-    if (msg != null) logger.error(msg)
-    if (t != null) logger.error(t)
-  }
+  override def error(msg: String, t: Throwable): Unit = log(Level.Error, msg, t)
 
   override def debug(msg: String): Unit = logger.debug(msg)
 
@@ -61,10 +63,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def debug(format: String, arguments: AnyRef*): Unit = logger.debug(format.format(arguments: _*))
 
-  override def debug(msg: String, t: Throwable): Unit = {
-    if (msg != null) logger.debug(msg)
-    if (t != null) logger.debug(t)
-  }
+  override def debug(msg: String, t: Throwable): Unit = log(Level.Debug, msg, t)
 
   override def isWarnEnabled: Boolean = true //logger.accepts(Level.Warn.value)
 
@@ -76,10 +75,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def trace(format: String, arguments: AnyRef*): Unit = logger.trace(format.format(arguments: _*))
 
-  override def trace(msg: String, t: Throwable): Unit = {
-    if (msg != null) logger.trace(msg)
-    if (t != null) logger.trace(t)
-  }
+  override def trace(msg: String, t: Throwable): Unit = log(Level.Trace, msg, t)
 
   override def info(msg: String): Unit = logger.info(msg)
 
@@ -89,8 +85,5 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def info(format: String, arguments: AnyRef*): Unit = logger.info(format.format(arguments: _*))
 
-  override def info(msg: String, t: Throwable): Unit = {
-    if (msg != null) logger.info(msg)
-    if (t != null) logger.info(t)
-  }
+  override def info(msg: String, t: Throwable): Unit = log(Level.Info, msg, t)
 }

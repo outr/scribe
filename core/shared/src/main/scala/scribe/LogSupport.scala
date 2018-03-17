@@ -14,5 +14,5 @@ trait LogSupport[L <: LogSupport[L]] {
 
   def withMinimumLevel(level: Level): L = withModifier(LevelFilter >= level)
 
-  def log(record: LogRecord): Unit
+  def log[M](record: LogRecord[M]): Unit
 }

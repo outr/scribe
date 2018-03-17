@@ -3,19 +3,20 @@ package scribe
 import scala.language.experimental.macros
 
 trait LoggerSupport {
-  def log(record: LogRecord): Unit
+  def log[M](record: LogRecord[M]): Unit
 
-  def log(level: Level, message: String): Unit = macro Macros.log
+  def log[M](level: Level, message: M, throwable: Option[Throwable])
+            (implicit stringify: M => String): Unit = macro Macros.log[M]
   
-  def trace(message: Any): Unit = macro Macros.trace
-  def debug(message: Any): Unit = macro Macros.debug
-  def info(message: Any): Unit = macro Macros.info
-  def warn(message: Any): Unit = macro Macros.warn
-  def error(message: Any): Unit = macro Macros.error
+  def trace[M](message: M)(implicit stringify: M => String): Unit = macro Macros.trace[M]
+  def debug[M](message: M)(implicit stringify: M => String): Unit = macro Macros.debug[M]
+  def info[M](message: M)(implicit stringify: M => String): Unit = macro Macros.info[M]
+  def warn[M](message: M)(implicit stringify: M => String): Unit = macro Macros.warn[M]
+  def error[M](message: M)(implicit stringify: M => String): Unit = macro Macros.error[M]
 
-  def trace(message: Any, t: Throwable): Unit = macro Macros.trace2
-  def debug(message: Any, t: Throwable): Unit = macro Macros.debug2
-  def info(message: Any, t: Throwable): Unit = macro Macros.info2
-  def warn(message: Any, t: Throwable): Unit = macro Macros.warn2
-  def error(message: Any, t: Throwable): Unit = macro Macros.error2
+  def trace[M](message: M, t: Throwable)(implicit stringify: M => String): Unit = macro Macros.trace2[M]
+  def debug[M](message: M, t: Throwable)(implicit stringify: M => String): Unit = macro Macros.debug2[M]
+  def info[M](message: M, t: Throwable)(implicit stringify: M => String): Unit = macro Macros.info2[M]
+  def warn[M](message: M, t: Throwable)(implicit stringify: M => String): Unit = macro Macros.warn2[M]
+  def error[M](message: M, t: Throwable)(implicit stringify: M => String): Unit = macro Macros.error2[M]
 }

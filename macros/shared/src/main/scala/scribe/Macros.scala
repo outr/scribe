@@ -31,72 +31,82 @@ object Macros {
     }
   }
 
-  def trace(c: blackbox.Context)(message: c.Expr[Any]): c.Tree = {
+  def trace[M](c: blackbox.Context)(message: c.Expr[M])
+              (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Trace", message)
+    log(c)(q"scribe.Level.Trace", message, reify[Option[Throwable]](None))(stringify)
   }
 
-  def debug(c: blackbox.Context)(message: c.Expr[Any]): c.Tree = {
+  def debug[M](c: blackbox.Context)(message: c.Expr[M])
+              (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Debug", message)
+    log(c)(q"scribe.Level.Debug", message, reify[Option[Throwable]](None))(stringify)
   }
 
-  def info(c: blackbox.Context)(message: c.Expr[Any]): c.Tree = {
+  def info[M](c: blackbox.Context)(message: c.Expr[M])
+             (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Info", message)
+    log(c)(q"scribe.Level.Info", message, reify[Option[Throwable]](None))(stringify)
   }
 
-  def warn(c: blackbox.Context)(message: c.Expr[Any]): c.Tree = {
+  def warn[M](c: blackbox.Context)(message: c.Expr[M])
+             (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Warn", message)
+    log(c)(q"scribe.Level.Warn", message, reify[Option[Throwable]](None))(stringify)
   }
 
-  def error(c: blackbox.Context)(message: c.Expr[Any]): c.Tree = {
+  def error[M](c: blackbox.Context)(message: c.Expr[M])
+              (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Error", message)
+    log(c)(q"scribe.Level.Error", message, reify[Option[Throwable]](None))(stringify)
   }
 
-  def trace2(c: blackbox.Context)(message: c.Expr[Any], t: c.Expr[Throwable]): c.Tree = {
+  def trace2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])
+               (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Trace", message)
-    log(c)(q"scribe.Level.Trace", t)
+    log(c)(q"scribe.Level.Trace", message, c.Expr[Option[Throwable]](q"Option($t)"))(stringify)
   }
 
-  def debug2(c: blackbox.Context)(message: c.Expr[Any], t: c.Expr[Throwable]): c.Tree = {
+  def debug2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])
+               (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Debug", message)
-    log(c)(q"scribe.Level.Debug", t)
+    log(c)(q"scribe.Level.Debug", message, c.Expr[Option[Throwable]](q"Option($t)"))(stringify)
   }
 
-  def info2(c: blackbox.Context)(message: c.Expr[Any], t: c.Expr[Throwable]): c.Tree = {
+  def info2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])
+              (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Info", message)
-    log(c)(q"scribe.Level.Info", t)
+    log(c)(q"scribe.Level.Info", message, c.Expr[Option[Throwable]](q"Option($t)"))(stringify)
   }
 
-  def warn2(c: blackbox.Context)(message: c.Expr[Any], t: c.Expr[Throwable]): c.Tree = {
+  def warn2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])
+              (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Warn", message)
-    log(c)(q"scribe.Level.Warn", t)
+    log(c)(q"scribe.Level.Warn", message, c.Expr[Option[Throwable]](q"Option($t)"))(stringify)
   }
 
-  def error2(c: blackbox.Context)(message: c.Expr[Any], t: c.Expr[Throwable]): c.Tree = {
+  def error2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])
+               (stringify: c.Expr[M => String])(implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
-    log(c)(q"scribe.Level.Error", message)
-    log(c)(q"scribe.Level.Error", t)
+    log(c)(q"scribe.Level.Error", message, c.Expr[Option[Throwable]](q"Option($t)"))(stringify)
   }
 
-  def log(c: blackbox.Context)(level: c.Tree, message: c.Expr[Any]): c.Tree = {
+  def log[M](c: blackbox.Context)
+            (level: c.Tree,
+             message: c.Expr[M],
+             throwable: c.Expr[Option[Throwable]])
+            (stringify: c.Expr[M => String])
+            (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
     val logger = c.prefix.tree
@@ -105,7 +115,6 @@ object Macros {
       case -1 => None
       case n => Some(n)
     }
-    val stringify = q"scribe.LogRecord.Stringify.Default"
     val dcn = if (logger.tpe.toString == "scribe.Logger") {
       q"$logger.overrideClassName.getOrElse($className)"
     } else {
@@ -122,7 +131,7 @@ object Macros {
       q"$line"
     }
 
-    q"$logger.log(scribe.LogRecord($level, $level.value, $message, $stringify, $dcn, $dmn, $dln))"
+    q"$logger.log(scribe.LogRecord[$m]($level, $level.value, $message, $stringify, $throwable, $dcn, $dmn, $dln))"
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {

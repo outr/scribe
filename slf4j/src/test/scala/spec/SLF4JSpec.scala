@@ -7,11 +7,11 @@ import scribe.modify.LogModifier
 import scribe.{Level, LogRecord, Logger, Priority}
 
 class SLF4JSpec extends WordSpec with Matchers {
-  private var logs: List[LogRecord] = Nil
+  private var logs: List[LogRecord[_]] = Nil
   private val recordHolder = LogHandler.default.withMinimumLevel(Level.Info).withModifier(new LogModifier {
     override def priority: Priority = Priority.Normal
 
-    override def apply(record: LogRecord): Option[LogRecord] = {
+    override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = {
       logs = record :: logs
       Some(record)
     }

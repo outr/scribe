@@ -3,7 +3,7 @@ package scribe.format
 import scribe.LogRecord
 
 trait Formatter {
-  def format(record: LogRecord): String
+  def format[M](record: LogRecord[M]): String
 }
 
 object Formatter {

@@ -8,9 +8,9 @@ import scala.collection.mutable.ListBuffer
 class TestingModifier extends LogModifier {
   override def priority: Priority = Priority.Normal
 
-  val records: ListBuffer[LogRecord] = ListBuffer.empty[LogRecord]
+  val records: ListBuffer[LogRecord[_]] = ListBuffer.empty[LogRecord[_]]
 
-  override def apply(record: LogRecord): Option[LogRecord] = {
+  override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = {
     records += record
     Some(record)
   }

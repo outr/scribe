@@ -17,7 +17,7 @@ object LogHandler {
     SynchronousLogHandler(formatter, writer, (LevelFilter >= minimumLevel) :: modifiers)
   }
 
-  def apply(minimumLevel: Level)(f: LogRecord => Unit): LogHandler = {
+  def apply(minimumLevel: Level)(f: LogRecord[_] => Unit): LogHandler = {
     FunctionalLogHandler(f, List(LevelFilter >= minimumLevel))
   }
 }

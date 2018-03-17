@@ -18,11 +18,11 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
   def withWriter(writer: Writer): LogHandler = copy(writer = writer)
   override def setModifiers(modifiers: List[LogModifier]): LogHandler = copy(modifiers = modifiers)
 
-  override def log(record: LogRecord): Unit = router ! record
+  override def log[M](record: LogRecord[M]): Unit = router ! record
 
   class Worker extends Actor {
     override def receive: Receive = {
-      case record: LogRecord => {
+      case record: LogRecord[Any] => {
         modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
           writer.write(formatter.format(r))
         }
