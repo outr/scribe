@@ -19,12 +19,13 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     case LocationAwareLogger.ERROR_INT => Level.Error
   }
 
-  def log(level: Level, msg: String, t: Throwable): Unit = if (msg != null) {
-    logger.log(level, msg, Option(t))
-  } else {
-    import scribe.LogRecord.Stringify._
+  def log(level: Level, msg: String, t: Throwable): Unit = Option(msg) match {
+    case Some(message) => logger.log(level, message, Option(t))
+    case None => {
+      import scribe.LogRecord.Stringify._
 
-    logger.log(level, t, None)
+      logger.log(level, t, None)
+    }
   }
 
   override def warn(msg: String): Unit = logger.warn(msg)
