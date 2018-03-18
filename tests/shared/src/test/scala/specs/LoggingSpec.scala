@@ -10,7 +10,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
   "Logging" should {
     val testingModifier = new TestingModifier
     val testObject = new LoggingTestObject(testingModifier)
-    val handler = LogHandler(writer = NullWriter, minimumLevel = Level.Debug).withModifier(testingModifier)
+    val handler = LogHandler(writer = NullWriter).withModifier(testingModifier)
 
     "set up the logging" in {
       testingModifier.clear()
@@ -56,7 +56,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logger.info(f"It works! $d%.0f")
     }
     "write a detailed log message" in {
-      val lineNumber = Some(17)
+      val lineNumber = Some(16)
       testingModifier.clear()
       testObject.testLogger()
       testingModifier.records.length should be(1)
@@ -64,7 +64,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.head.lineNumber should be(lineNumber)
     }
     "write an exception" in {
-      val lineNumber = Some(21)
+      val lineNumber = Some(20)
       testingModifier.clear()
       testObject.testException()
       testingModifier.records.length should be(1)

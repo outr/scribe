@@ -6,6 +6,8 @@ import scribe.{LogRecord, Priority}
 import scala.collection.mutable.ListBuffer
 
 class TestingModifier extends LogModifier {
+  override def id: String = "TestingModifier"
+
   override def priority: Priority = Priority.Normal
 
   val records: ListBuffer[LogRecord[_]] = ListBuffer.empty[LogRecord[_]]

@@ -9,7 +9,7 @@ trait LogSupport[L <: LogSupport[L]] {
 
   def clearModifiers(): L = setModifiers(Nil)
 
-  final def withModifier(modifier: LogModifier): L = setModifiers((modifiers ::: List(modifier)).sorted)
+  final def withModifier(modifier: LogModifier): L = setModifiers((modifiers.filterNot(_.id == modifier.id) ::: List(modifier)).sorted)
   final def withoutModifier(modifier: LogModifier): L = setModifiers(modifiers.filterNot(_ eq modifier))
 
   def withMinimumLevel(level: Level): L = withModifier(LevelFilter >= level)

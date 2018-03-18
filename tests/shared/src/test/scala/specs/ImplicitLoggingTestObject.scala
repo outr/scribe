@@ -10,7 +10,6 @@ object ImplicitLoggingTestObject {
   def initialize(): Unit = {
     val handler = LogHandler(
       writer = NullWriter,
-      minimumLevel = Level.Debug,
       modifiers = List(testingModifier)
     )
     this.updateLogger(_.orphan().withHandler(handler))

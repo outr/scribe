@@ -8,7 +8,6 @@ class LoggingTestObject(modifier: TestingModifier) extends Logging {
   import scribe.LogRecord.Stringify._
 
   update(_.orphan().withHandler(LogHandler(
-    minimumLevel = Level.Debug,
     writer = NullWriter,
     modifiers = List(modifier)
   )))

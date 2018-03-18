@@ -3,6 +3,8 @@ package scribe.modify
 import scribe.{LogRecord, Priority}
 
 class LogBooster(booster: Double => Double, override val priority: Priority) extends LogModifier {
+  override def id: String = "LogBooster"
+
   override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = Some(record.boost(booster))
 }
 

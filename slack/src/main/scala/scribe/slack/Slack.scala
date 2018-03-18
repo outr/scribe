@@ -63,7 +63,7 @@ object Slack {
     val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
 
     val handler = LogHandler(
-      minimumLevel = level,
+      minimumLevel = Some(level),
       writer = new SlackWriter(slack, emojiIcon),
       formatter = formatter
     )
