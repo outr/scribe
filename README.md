@@ -77,8 +77,8 @@ Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala
 with 2.11:
 
 ```
-libraryDependencies += "com.outr" %% "scribe" % "2.2.1"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "2.2.1"  // Scala.js / Scala Native / Cross-project
+libraryDependencies += "com.outr" %% "scribe" % "2.3.0"   // Scala
+libraryDependencies += "com.outr" %%% "scribe" % "2.3.0"  // Scala.js / Scala Native / Cross-project
 ```
 
 ## Using Scribe ##
@@ -123,7 +123,7 @@ import scribe._
 
 class MyClass {
   val myString = "Nothing Special About Me"
-  myString.updateLogger(_.withHandler(writer = FileWriter.daily(), minimumLevel = Level.Debug))
+  myString.logger.withHandler(writer = FileWriter.daily()).replace()
   myString.logger.info("Logging on a String!")
   
   "Another String".logger.info("Written to a file...")
@@ -177,12 +177,10 @@ By default all loggers have a direct parent of `Logger.root`. It is this logger 
 
 ### Logging to a File ###
 
-The following will add a new `LogHandler` to the specified `logger` to append all `Debug` logs and above to a daily file.
+The following will add a new `LogHandler` to the specified `logger` to append to a daily file.
 
 ```scala
-Logger.update(loggerName) { l =>      // Gives you the current logger by name to allow immutable modification
-  l.withHandler(minimumLevel = Level.Debug, writer = FileWriter.daily())
-}
+Logger.byName(loggerName).withHandler(writer = FileWriter.daily()).replace()
 ```
 
 All future references to `loggerName` will include the new handler.
@@ -215,7 +213,7 @@ If you want to simply update my logger removing the `Logger.root` parent referen
 import scribe.Logging
 
 class MyClass extends Logging {
-  logger.update(_.orphan())
+  logger.orphan().replace()
 }
 ```
 
@@ -224,7 +222,7 @@ This will update the logger being used for this class going forward.
 To change the default global log level, use:
 
 ```scala
-Logger.update(Logger.rootName)(_.clearHandlers().clearModifiers().withHandler(minimumLevel = Level.Error))
+scribe.Logger.root.clearHandler().clearModifiers().withHandler(minimumLevel = Some(Level.Error)).replace()
 ```
 
 You can configure the output (how the log will look like) when adding a `LogHandler`. The `Formatter` companion
@@ -235,9 +233,7 @@ with the formatter interpolator:
 import scribe.format._
 
 val myFormatter: Formatter = formatter"[$threadName] $positionAbbreviated - $message$newLine"
-Logger.update(Logger.rootName) { l =>
-  l.clearHandlers().withHandler(formatter = myFormatter)
-}
+Logger.root.clearHandlers().withHandler(formatter = myFormatter).replace()
 ```
 
 This builds an efficient formatter at compile-time with the blocks you specify. This is both clean and readable.
@@ -249,7 +245,7 @@ interface.
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "2.2.1"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "2.3.0"
 ```
 
 Obviously this only applies to JVM as SLF4J isn't available in the browser or compiled for Scala Native. This will allow
@@ -262,7 +258,7 @@ If you add the `scribe-slack` dependency to your project you can configure Scrib
 Again, this will only work on the JVM variant.
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slack" % "2.2.1"
+libraryDependencies += "com.outr" %% "scribe-slack" % "2.3.0"
 ```
 
 The easiest way to configure this is to use the convenience method `configure`:
