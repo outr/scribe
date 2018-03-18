@@ -12,7 +12,7 @@ object ImplicitLoggingTestObject {
       writer = NullWriter,
       modifiers = List(testingModifier)
     )
-    this.updateLogger(_.orphan().withHandler(handler))
+    this.logger.orphan().withHandler(handler).replace()
   }
 
   def doSomething(): Unit = {
