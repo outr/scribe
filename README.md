@@ -62,7 +62,6 @@ For more information [check out the blog post](http://www.matthicks.com/2018/02/
 
 No matter how simple or straight-forward a library might be, its dependencies can quickly add a lot of bloat to your
 project. This is why in Scribe we have absolutely no external dependencies for the core library for JVM and Native.
-However, to properly support dates and times we include a couple of Scala.js libraries for time and locale support.
 
 ### scribe-slf4j
 * slf4j-api
