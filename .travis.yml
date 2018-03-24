@@ -6,7 +6,7 @@ scala:
 jdk:
   - oraclejdk8
 before_script:
-  - curl https://raw.githubusercontent.com/scala-native/scala-native/master/bin/travis_setup.sh | bash -x
+  - curl https://raw.githubusercontent.com/scala-native/scala-native/master/scripts/travis_setup.sh | bash -x
 script:
   - sbt clean test
 cache:
