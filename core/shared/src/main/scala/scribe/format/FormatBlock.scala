@@ -49,7 +49,9 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): String = record.thread.getName
   }
 
-  object Level {
+  object Level extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.level.name
+
     object PaddedRight extends FormatBlock {
       override def format[M](record: LogRecord[M]): String = record.level.namePaddedRight
     }

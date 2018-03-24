@@ -5,6 +5,7 @@ import scala.language.experimental.macros
 package object format {
   def date: FormatBlock = FormatBlock.Date.Standard
   def threadName: FormatBlock = FormatBlock.ThreadName
+  def level: FormatBlock = FormatBlock.Level
   def levelPaddedRight: FormatBlock = FormatBlock.Level.PaddedRight
   def position: FormatBlock = FormatBlock.Position.Full
   def positionAbbreviated: FormatBlock = FormatBlock.Position.Abbreviated
