@@ -3,8 +3,8 @@ import sbtcrossproject.{CrossType, crossProject}
 name := "scribe"
 organization in ThisBuild := "com.outr"
 version in ThisBuild := "2.3.1-SNAPSHOT"
-scalaVersion in ThisBuild := "2.12.4"
-crossScalaVersions in ThisBuild := List("2.12.4", "2.11.12")
+scalaVersion in ThisBuild := "2.12.5"
+crossScalaVersions in ThisBuild := List("2.12.5", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 publishTo in ThisBuild := sonatypePublishTo.value
@@ -38,7 +38,7 @@ val gigahorseVersion: String = "0.3.1"
 val upickleVersion: String = "0.5.1"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.10.0"
+val log4jVersion: String = "2.11.0"
 val disruptorVersion: String = "3.4.1"
 val logbackVersion: String = "1.2.3"
 val scalaLoggingVersion: String = "3.8.0"
