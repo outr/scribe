@@ -51,6 +51,16 @@ object LogRecord {
     SimpleLogRecord(level, value, message, stringify, throwable, className, methodName, lineNumber, thread, timeStamp)
   }
 
+  def simple(message: String,
+             className: String,
+             methodName: Option[String] = None,
+             lineNumber: Option[Int] = None,
+             level: Level = Level.Info,
+             thread: Thread = Thread.currentThread(),
+             timeStamp: Long = System.currentTimeMillis()): LogRecord[String] = {
+    apply[String](level, level.value, message, implicitly[String => String], None, className, methodName, lineNumber, thread, timeStamp)
+  }
+
   /**
     * Converts a Throwable to a String representation for output in logging.
     */

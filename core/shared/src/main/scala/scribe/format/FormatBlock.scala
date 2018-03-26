@@ -2,11 +2,23 @@ package scribe.format
 
 import scribe._
 import perfolation._
+import scribe.util.Abbreviator
 
 trait FormatBlock {
   def format[M](record: LogRecord[M]): String
 
   def map(f: String => String): FormatBlock = FormatBlock.Mapped(this, f)
+
+  def abbreviate(maxLength: Int, padded: Boolean = false, separator: Char = '.'): FormatBlock = {
+    val block = new AbbreviateBlock(this, maxLength, separator)
+    if (padded) {
+      new RightPaddingBlock(block, maxLength, ' ')
+    } else {
+      block
+    }
+  }
+
+  def padRight(length: Int, padding: Char = ' '): FormatBlock = new RightPaddingBlock(this, length, padding)
 }
 
 object FormatBlock {
@@ -43,6 +55,7 @@ object FormatBlock {
         }
       }
     }
+
   }
 
   object ThreadName extends FormatBlock {
@@ -57,80 +70,50 @@ object FormatBlock {
     }
   }
 
-  object ClassName {
-    object Full extends FormatBlock {
-      override def format[M](record: LogRecord[M]): String = record.className
-    }
-    object Abbreviated extends FormatBlock {
-      private val MaxSize = 1000000
-      private var cache = Map.empty[String, String]
+  object ClassName extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.className
+  }
 
-      override def format[M](record: LogRecord[M]): String = {
-        cache.get(record.className) match {
-          case Some(a) => a
-          case None => synchronized {
-            val parts = record.className.split('.')
-            val last = parts.length - 1
-            val a = parts.zipWithIndex.map {
-              case (cur, i) if i == last => cur
-              case (cur, _) => cur.head
-            }.mkString(".")
-            if (cache.size >= MaxSize) {
-              cache = Map.empty
-            }
-            cache += record.className -> a
-            a
-          }
-        }
+  object MethodName extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.methodName.getOrElse("")
+  }
+
+  object ClassAndMethodName extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = {
+      val className = ClassName.format(record)
+      val methodName = if (record.methodName.nonEmpty) {
+        p".${MethodName.format(record)}"
+      } else {
+        ""
       }
+      p"$className$methodName"
     }
   }
 
-  object MethodName {
-    object Full extends FormatBlock {
-      override def format[M](record: LogRecord[M]): String = record.methodName.getOrElse("")
+  object Position extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = {
+      val lineNumber = if (record.lineNumber.nonEmpty) {
+        p":${LineNumber.format(record)}"
+      } else {
+        ""
+      }
+      p"${ClassAndMethodName.format(record)}$lineNumber"
+    }
+
+    override def abbreviate(maxLength: Int, padded: Boolean, separator: Char): FormatBlock = apply { record =>
+      val classAndMethodName = ClassAndMethodName.format(record)
+      val lineNumber = if (record.lineNumber.nonEmpty) {
+        p":${LineNumber.format(record)}"
+      } else {
+        ""
+      }
+      val abbreviated = Abbreviator(classAndMethodName, maxLength - lineNumber.length, separator)
+      p"$abbreviated$lineNumber"
     }
   }
 
-  object Position {
-    object Full extends FormatBlock {
-      override def format[M](record: LogRecord[M]): String = {
-        val className = ClassName.Full.format(record)
-        val methodName = if (record.methodName.nonEmpty) {
-          p".${MethodName.Full.format(record)}"
-        } else {
-          ""
-        }
-        val lineNumber = if (record.lineNumber.nonEmpty) {
-          p":${LineNumber.Full.format(record)}"
-        } else {
-          ""
-        }
-        p"$className$methodName$lineNumber"
-      }
-    }
-    object Abbreviated extends FormatBlock {
-      override def format[M](record: LogRecord[M]): String = {
-        val className = ClassName.Abbreviated.format(record)
-        val methodName = if (record.methodName.nonEmpty) {
-          p".${MethodName.Full.format(record)}"
-        } else {
-          ""
-        }
-        val lineNumber = if (record.lineNumber.nonEmpty) {
-          p":${LineNumber.Full.format(record)}"
-        } else {
-          ""
-        }
-        p"$className$methodName$lineNumber"
-      }
-    }
-  }
-
-  object LineNumber {
-    object Full extends FormatBlock {
-      override def format[M](record: LogRecord[M]): String = record.lineNumber.map(_.toString).getOrElse("")
-    }
+  object LineNumber extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.lineNumber.map(_.toString).getOrElse("")
   }
 
   object Message extends FormatBlock {
@@ -140,4 +123,5 @@ object FormatBlock {
   object NewLine extends FormatBlock {
     override def format[M](record: LogRecord[M]): String = "\n"
   }
+
 }
