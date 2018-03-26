@@ -76,8 +76,8 @@ Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala
 with 2.11:
 
 ```
-libraryDependencies += "com.outr" %% "scribe" % "2.3.0"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "2.3.0"  // Scala.js / Scala Native / Cross-project
+libraryDependencies += "com.outr" %% "scribe" % "2.3.1"   // Scala
+libraryDependencies += "com.outr" %%% "scribe" % "2.3.1"  // Scala.js / Scala Native / Cross-project
 ```
 
 ## Using Scribe ##
@@ -244,7 +244,7 @@ interface.
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "2.3.0"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "2.3.1"
 ```
 
 Obviously this only applies to JVM as SLF4J isn't available in the browser or compiled for Scala Native. This will allow
@@ -257,7 +257,7 @@ If you add the `scribe-slack` dependency to your project you can configure Scrib
 Again, this will only work on the JVM variant.
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slack" % "2.3.0"
+libraryDependencies += "com.outr" %% "scribe-slack" % "2.3.1"
 ```
 
 The easiest way to configure this is to use the convenience method `configure`:

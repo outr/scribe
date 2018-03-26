@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.3.1-SNAPSHOT"
+version in ThisBuild := "2.3.1"
 scalaVersion in ThisBuild := "2.12.5"
 crossScalaVersions in ThisBuild := List("2.12.5", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -11,7 +11,7 @@ publishTo in ThisBuild := sonatypePublishTo.value
 sonatypeProfileName in ThisBuild := "com.outr"
 publishMavenStyle in ThisBuild := true
 licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
-sonatypeProjectHosting in ThisBuild := Some(xerial.sbt.Sonatype.GithubHosting("outr", "scribe", "matt@outr.com"))
+sonatypeProjectHosting in ThisBuild := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "scribe", "matt@outr.com"))
 homepage in ThisBuild := Some(url("https://github.com/outr/scribe"))
 scmInfo in ThisBuild := Some(
   ScmInfo(
