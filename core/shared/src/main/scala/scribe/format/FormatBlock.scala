@@ -9,8 +9,12 @@ trait FormatBlock {
 
   def map(f: String => String): FormatBlock = FormatBlock.Mapped(this, f)
 
-  def abbreviate(maxLength: Int, padded: Boolean = false, separator: Char = '.'): FormatBlock = {
-    val block = new AbbreviateBlock(this, maxLength, separator)
+  def abbreviate(maxLength: Int,
+                 padded: Boolean = false,
+                 separator: Char = '.',
+                 removeEntries: Boolean = true,
+                 abbreviateName: Boolean = false): FormatBlock = {
+    val block = new AbbreviateBlock(this, maxLength, separator, removeEntries, abbreviateName)
     if (padded) {
       new RightPaddingBlock(block, maxLength, ' ')
     } else {
@@ -100,15 +104,19 @@ object FormatBlock {
       p"${ClassAndMethodName.format(record)}$lineNumber"
     }
 
-    override def abbreviate(maxLength: Int, padded: Boolean, separator: Char): FormatBlock = apply { record =>
+    override def abbreviate(maxLength: Int,
+                            padded: Boolean = false,
+                            separator: Char = '.',
+                            removeEntries: Boolean = true,
+                            abbreviateName: Boolean = false): FormatBlock = apply { record =>
       val classAndMethodName = ClassAndMethodName.format(record)
       val lineNumber = if (record.lineNumber.nonEmpty) {
         p":${LineNumber.format(record)}"
       } else {
         ""
       }
-      val abbreviated = Abbreviator(classAndMethodName, maxLength - lineNumber.length, separator)
-      p"$abbreviated$lineNumber"
+      val v = Abbreviator(classAndMethodName, maxLength - lineNumber.length, separator, removeEntries, abbreviateName)
+      p"$v$lineNumber"
     }
   }
 

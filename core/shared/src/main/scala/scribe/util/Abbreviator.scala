@@ -18,9 +18,9 @@ object Abbreviator {
     if (result.length > maxLength && removeEntries) {
       entries = Array(entries.last)
     }
-    if (result.length > math.max(maxLength, 5) && abbreviateName) {
+    if (result.length > math.max(maxLength, 4) && abbreviateName) {
       val entry = entries.head
-      entries = Array(p"${entry.charAt(0)}...${entry.charAt(entry.length - 1)}")
+      Array(p"${entry.substring(0, maxLength - 3)}...")
     }
     result
   }
