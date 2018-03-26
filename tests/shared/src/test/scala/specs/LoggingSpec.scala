@@ -56,19 +56,30 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logger.info(f"It works! $d%.0f")
     }
     "write a detailed log message" in {
-      val lineNumber = Some(16)
+      val lineNumber = Some(20)
       testingModifier.clear()
       testObject.testLogger()
       testingModifier.records.length should be(1)
       testingModifier.records.head.methodName should be(Some("testLogger"))
+      testingModifier.records.head.className should be("specs.LoggingTestObject")
+      testingModifier.records.head.lineNumber should be(lineNumber)
+    }
+    "write a log message with an anonymous function" in {
+      val lineNumber = Some(16)
+      testingModifier.clear()
+      testObject.testAnonymous()
+      testingModifier.records.length should be(1)
+      testingModifier.records.head.methodName should be(None)
+      testingModifier.records.head.className should be("specs.LoggingTestObject.anonymous")
       testingModifier.records.head.lineNumber should be(lineNumber)
     }
     "write an exception" in {
-      val lineNumber = Some(20)
+      val lineNumber = Some(28)
       testingModifier.clear()
       testObject.testException()
       testingModifier.records.length should be(1)
       testingModifier.records.head.methodName should be(Some("testException"))
+      testingModifier.records.head.className should be("specs.LoggingTestObject")
       testingModifier.records.head.lineNumber should be(lineNumber)
       testingModifier.records.head.message should startWith("java.lang.RuntimeException: Testing")
     }

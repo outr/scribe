@@ -12,8 +12,16 @@ class LoggingTestObject(modifier: TestingModifier) extends Logging {
     modifiers = List(modifier)
   )))
 
+  private val anonymous = () => {
+    LoggingTestObject.this.logger.info("Anonymous logging!")
+  }
+
   def testLogger(): Unit = {
     logger.info("This is a test!")
+  }
+
+  def testAnonymous(): Unit = {
+    anonymous()
   }
 
   def testException(): Unit = {
