@@ -32,9 +32,9 @@ class AbbreviatorSpec extends WordSpec with Matchers {
       val s = Abbreviator(className1, 0)
       s should be("Bar")
     }
-    "properly abbreviate longer class name at 0" in {
-      val s = Abbreviator(className2, 0, abbreviateName = true)
-      s should be("F...r")
+    "properly abbreviate longer class name at 5" in {
+      val s = Abbreviator(className2, 5, abbreviateName = true)
+      s should be("Fo...")
     }
   }
 }
