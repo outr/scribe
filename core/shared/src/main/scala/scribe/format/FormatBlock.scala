@@ -74,6 +74,10 @@ object FormatBlock {
     }
   }
 
+  object FileName extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.fileName
+  }
+
   object ClassName extends FormatBlock {
     override def format[M](record: LogRecord[M]): String = record.className
   }

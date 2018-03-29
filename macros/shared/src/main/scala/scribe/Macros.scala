@@ -73,6 +73,7 @@ object Macros {
       case -1 => None
       case n => Some(n)
     }
+    val fileName = c.enclosingPosition.source.path
     val dcn = if (logger.tpe.toString == "scribe.Logger") {
       q"$logger.overrideClassName.getOrElse($className)"
     } else {
@@ -89,7 +90,7 @@ object Macros {
       q"$line"
     }
 
-    q"$logger.log(scribe.LogRecord[$m]($level, $level.value, $message, $stringify, $throwable, $dcn, $dmn, $dln))"
+    q"$logger.log(scribe.LogRecord[$m]($level, $level.value, $message, $stringify, $throwable, $fileName, $dcn, $dmn, $dln))"
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {
