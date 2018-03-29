@@ -7,7 +7,7 @@ trait LogRecord[M] {
   def level: Level
   def value: Double
   def messageValue: M
-  def stringify: M => String
+  def stringify: Loggable[M]
   def throwable: Option[Throwable]
   def fileName: String
   def className: String
@@ -23,7 +23,7 @@ trait LogRecord[M] {
   def copy(level: Level = level,
            value: Double = value,
            message: M = messageValue,
-           stringify: M => String = stringify,
+           stringify: Loggable[M] = stringify,
            throwable: Option[Throwable] = throwable,
            fileName: String = fileName,
            className: String = className,
@@ -37,13 +37,15 @@ trait LogRecord[M] {
 
 object LogRecord {
   object Stringify {
-    implicit val Throwable2String: Throwable => String = throwable2String(None, _)
+    implicit def Throwable2String[T <: Throwable] = new Loggable[T] {
+      def apply(t: T): String = throwable2String(None, t)
+    }
   }
 
   def apply[T](level: Level,
                value: Double,
                message: T,
-               stringify: T => String,
+               stringify: Loggable[T],
                throwable: Option[Throwable],
                fileName: String,
                className: String,
@@ -62,7 +64,7 @@ object LogRecord {
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = System.currentTimeMillis()): LogRecord[String] = {
-    apply[String](level, level.value, message, implicitly[String => String], None, fileName, className, methodName, lineNumber, thread, timeStamp)
+    apply[String](level, level.value, message, Loggable.StringLoggable, None, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
   /**
@@ -120,7 +122,7 @@ object LogRecord {
   case class SimpleLogRecord[T](level: Level,
                                 value: Double,
                                 messageValue: T,
-                                stringify: T => String,
+                                stringify: Loggable[T],
                                 throwable: Option[Throwable],
                                 fileName: String,
                                 className: String,
@@ -139,7 +141,7 @@ object LogRecord {
     def copy(level: Level = level,
              value: Double = value,
              message: T = messageValue,
-             stringify: T => String,
+             stringify: Loggable[T],
              throwable: Option[Throwable],
              fileName: String = fileName,
              className: String = className,

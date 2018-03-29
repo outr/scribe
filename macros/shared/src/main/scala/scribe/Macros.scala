@@ -43,7 +43,7 @@ object Macros {
     }
   }
 
-  def autoLevel[M](c: blackbox.Context)(message: c.Expr[M])(stringify: c.Expr[M => String])
+  def autoLevel[M](c: blackbox.Context)(message: c.Expr[M])(stringify: c.Expr[Loggable[M]])
                   (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
@@ -51,7 +51,7 @@ object Macros {
     log(c)(level, message, reify[Option[Throwable]](None))(stringify)
   }
 
-  def autoLevel2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])(stringify: c.Expr[M => String])
+  def autoLevel2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])(stringify: c.Expr[Loggable[M]])
                    (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
@@ -63,7 +63,7 @@ object Macros {
             (level: c.Tree,
              message: c.Expr[M],
              throwable: c.Expr[Option[Throwable]])
-            (stringify: c.Expr[M => String])
+            (stringify: c.Expr[Loggable[M]])
             (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
