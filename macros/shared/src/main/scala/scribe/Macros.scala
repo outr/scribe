@@ -18,14 +18,14 @@ object FormatterMacros {
         parts.zipWithIndex.foreach {
           case ((raw, _), index) => {
             if (raw.nonEmpty) {
-              list += q"scribe.format.FormatBlock.RawString($raw)"
+              list += q"_root_.scribe.format.FormatBlock.RawString($raw)"
             }
             if (index < argsVector.size) {
               list += argsVector(index)
             }
           }
         }
-        q"scribe.format.Formatter.fromBlocks(..$list)"
+        q"_root_.scribe.format.Formatter.fromBlocks(..$list)"
       }
       case _ => c.abort(c.enclosingPosition, "Bad usage of formatter interpolation.")
     }

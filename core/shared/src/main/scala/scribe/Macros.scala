@@ -11,11 +11,11 @@ object Macros {
     import c.universe._
 
     c.macroApplication.symbol.name.decodedName.toString match {
-      case "trace" => q"scribe.Level.Trace"
-      case "debug" => q"scribe.Level.Debug"
-      case "info" => q"scribe.Level.Info"
-      case "warn" => q"scribe.Level.Warn"
-      case "error" => q"scribe.Level.Error"
+      case "trace" => q"_root_.scribe.Level.Trace"
+      case "debug" => q"_root_.scribe.Level.Debug"
+      case "info" => q"_root_.scribe.Level.Info"
+      case "warn" => q"_root_.scribe.Level.Warn"
+      case "error" => q"_root_.scribe.Level.Error"
     }
   }
 
@@ -50,23 +50,23 @@ object Macros {
       case n => Some(n)
     }
     val fileName = c.enclosingPosition.source.path
-    val dcn = if (logger.tpe.toString == "scribe.Logger") {
+    val dcn = if (logger.tpe =:= typeOf[Logger]) {
       q"$logger.overrideClassName.getOrElse($className)"
     } else {
       q"$className"
     }
-    val dmn = if (logger.tpe.toString == "scribe.Logger") {
+    val dmn = if (logger.tpe =:= typeOf[Logger]) {
       q"if ($logger.overrideClassName.nonEmpty) None else $methodName"
     } else {
       q"$methodName"
     }
-    val dln = if (logger.tpe.toString == "scribe.Logger") {
+    val dln = if (logger.tpe =:= typeOf[Logger]) {
       q"if ($logger.overrideClassName.nonEmpty) None else $line"
     } else {
       q"$line"
     }
 
-    q"$logger.log(scribe.LogRecord[$m]($level, $level.value, $message, $stringify, $throwable, $fileName, $dcn, $dmn, $dln))"
+    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $message, $stringify, $throwable, $fileName, $dcn, $dmn, $dln))"
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {
