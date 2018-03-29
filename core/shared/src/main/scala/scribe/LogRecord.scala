@@ -36,12 +36,6 @@ trait LogRecord[M] {
 }
 
 object LogRecord {
-  object Stringify {
-    implicit def Throwable2String[T <: Throwable] = new Loggable[T] {
-      def apply(t: T): String = throwable2String(None, t)
-    }
-  }
-
   def apply[T](level: Level,
                value: Double,
                message: T,
