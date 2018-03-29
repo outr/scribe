@@ -6,7 +6,7 @@ trait LoggerSupport {
   def log[M](record: LogRecord[M]): Unit
 
   def log[M](level: Level, message: M, throwable: Option[Throwable])
-            (implicit stringify: Loggable[M]): Unit = macro Macros.log[M]
+            (implicit loggable: Loggable[M]): Unit = macro Macros.log[M]
   
   def trace[M : Loggable](message: M): Unit = macro Macros.autoLevel[M]
   def debug[M : Loggable](message: M): Unit = macro Macros.autoLevel[M]

@@ -19,27 +19,27 @@ object Macros {
     }
   }
 
-  def autoLevel[M](c: blackbox.Context)(message: c.Expr[M])(stringify: c.Expr[Loggable[M]])
+  def autoLevel[M](c: blackbox.Context)(message: c.Expr[M])(loggable: c.Expr[Loggable[M]])
                   (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
     val level = getLevel(c)
-    log(c)(level, message, reify[Option[Throwable]](None))(stringify)
+    log(c)(level, message, reify[Option[Throwable]](None))(loggable)
   }
 
-  def autoLevel2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])(stringify: c.Expr[Loggable[M]])
+  def autoLevel2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])(loggable: c.Expr[Loggable[M]])
                    (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
     val level = getLevel(c)
-    log(c)(level, message, c.Expr[Option[Throwable]](q"Option($t)"))(stringify)
+    log(c)(level, message, c.Expr[Option[Throwable]](q"Option($t)"))(loggable)
   }
 
   def log[M](c: blackbox.Context)
             (level: c.Tree,
              message: c.Expr[M],
              throwable: c.Expr[Option[Throwable]])
-            (stringify: c.Expr[Loggable[M]])
+            (loggable: c.Expr[Loggable[M]])
             (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
@@ -66,7 +66,7 @@ object Macros {
       q"$line"
     }
 
-    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $message, $stringify, $throwable, $fileName, $dcn, $dmn, $dln))"
+    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $message, $loggable, $throwable, $fileName, $dcn, $dmn, $dln))"
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {
