@@ -74,6 +74,10 @@ object FormatBlock {
     }
   }
 
+  object FileName extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.fileName
+  }
+
   object ClassName extends FormatBlock {
     override def format[M](record: LogRecord[M]): String = record.className
   }
@@ -121,7 +125,7 @@ object FormatBlock {
   }
 
   object LineNumber extends FormatBlock {
-    override def format[M](record: LogRecord[M]): String = record.lineNumber.map(_.toString).getOrElse("")
+    override def format[M](record: LogRecord[M]): String = record.lineNumber.fold("")(_.toString)
   }
 
   object Message extends FormatBlock {

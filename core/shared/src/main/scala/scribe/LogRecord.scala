@@ -9,6 +9,7 @@ trait LogRecord[M] {
   def messageValue: M
   def stringify: M => String
   def throwable: Option[Throwable]
+  def fileName: String
   def className: String
   def methodName: Option[String]
   def lineNumber: Option[Int]
@@ -24,6 +25,7 @@ trait LogRecord[M] {
            message: M = messageValue,
            stringify: M => String = stringify,
            throwable: Option[Throwable] = throwable,
+           fileName: String = fileName,
            className: String = className,
            methodName: Option[String] = methodName,
            lineNumber: Option[Int] = lineNumber,
@@ -43,22 +45,24 @@ object LogRecord {
                message: T,
                stringify: T => String,
                throwable: Option[Throwable],
+               fileName: String,
                className: String,
                methodName: Option[String],
                lineNumber: Option[Int],
                thread: Thread = Thread.currentThread(),
                timeStamp: Long = System.currentTimeMillis()): LogRecord[T] = {
-    SimpleLogRecord(level, value, message, stringify, throwable, className, methodName, lineNumber, thread, timeStamp)
+    SimpleLogRecord(level, value, message, stringify, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
   def simple(message: String,
+             fileName: String,
              className: String,
              methodName: Option[String] = None,
              lineNumber: Option[Int] = None,
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = System.currentTimeMillis()): LogRecord[String] = {
-    apply[String](level, level.value, message, implicitly[String => String], None, className, methodName, lineNumber, thread, timeStamp)
+    apply[String](level, level.value, message, implicitly[String => String], None, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
   /**
@@ -118,6 +122,7 @@ object LogRecord {
                                 messageValue: T,
                                 stringify: T => String,
                                 throwable: Option[Throwable],
+                                fileName: String,
                                 className: String,
                                 methodName: Option[String],
                                 lineNumber: Option[Int],
@@ -136,12 +141,13 @@ object LogRecord {
              message: T = messageValue,
              stringify: T => String,
              throwable: Option[Throwable],
+             fileName: String = fileName,
              className: String = className,
              methodName: Option[String] = methodName,
              lineNumber: Option[Int] = lineNumber,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[T] = {
-      SimpleLogRecord(level, value, message, stringify, throwable, className, methodName, lineNumber, thread, timeStamp)
+      SimpleLogRecord(level, value, message, stringify, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}
