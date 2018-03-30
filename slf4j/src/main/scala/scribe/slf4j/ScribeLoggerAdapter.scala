@@ -21,11 +21,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   def log(level: Level, msg: String, t: Throwable): Unit = Option(msg) match {
     case Some(message) => logger.log(level, message, Option(t))
-    case None => {
-      import scribe.LogRecord.Stringify._
-
-      logger.log(level, t, None)
-    }
+    case None => logger.log(level, t, None)
   }
 
   override def warn(msg: String): Unit = logger.warn(msg)

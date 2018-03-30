@@ -5,7 +5,6 @@ import scribe.writer.NullWriter
 import scribe.{Level, Logging}
 
 class LoggingTestObject(modifier: TestingModifier) extends Logging {
-  import scribe.LogRecord.Stringify._
 
   update(_.orphan().withHandler(LogHandler(
     writer = NullWriter,

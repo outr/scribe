@@ -25,6 +25,6 @@ package object format {
   def newLine: FormatBlock = FormatBlock.NewLine
 
   implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
-    def formatter(args: Any*): Formatter = macro Macros.formatter
+    def formatter(args: Any*): Formatter = macro FormatterMacros.formatter
   }
 }

@@ -7,7 +7,7 @@ trait LogRecord[M] {
   def level: Level
   def value: Double
   def messageValue: M
-  def stringify: M => String
+  def loggable: Loggable[M]
   def throwable: Option[Throwable]
   def fileName: String
   def className: String
@@ -23,7 +23,7 @@ trait LogRecord[M] {
   def copy(level: Level = level,
            value: Double = value,
            message: M = messageValue,
-           stringify: M => String = stringify,
+           loggable: Loggable[M] = loggable,
            throwable: Option[Throwable] = throwable,
            fileName: String = fileName,
            className: String = className,
@@ -36,14 +36,10 @@ trait LogRecord[M] {
 }
 
 object LogRecord {
-  object Stringify {
-    implicit val Throwable2String: Throwable => String = throwable2String(None, _)
-  }
-
   def apply[T](level: Level,
                value: Double,
                message: T,
-               stringify: T => String,
+               loggable: Loggable[T],
                throwable: Option[Throwable],
                fileName: String,
                className: String,
@@ -51,7 +47,7 @@ object LogRecord {
                lineNumber: Option[Int],
                thread: Thread = Thread.currentThread(),
                timeStamp: Long = System.currentTimeMillis()): LogRecord[T] = {
-    SimpleLogRecord(level, value, message, stringify, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+    SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
   def simple(message: String,
@@ -62,7 +58,7 @@ object LogRecord {
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = System.currentTimeMillis()): LogRecord[String] = {
-    apply[String](level, level.value, message, implicitly[String => String], None, fileName, className, methodName, lineNumber, thread, timeStamp)
+    apply[String](level, level.value, message, Loggable.StringLoggable, None, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
   /**
@@ -120,7 +116,7 @@ object LogRecord {
   case class SimpleLogRecord[T](level: Level,
                                 value: Double,
                                 messageValue: T,
-                                stringify: T => String,
+                                loggable: Loggable[T],
                                 throwable: Option[Throwable],
                                 fileName: String,
                                 className: String,
@@ -129,17 +125,17 @@ object LogRecord {
                                 thread: Thread,
                                 timeStamp: Long) extends LogRecord[T] {
     override lazy val message: String = {
-      val msg = stringify(messageValue)
+      val msg = loggable(messageValue)
       throwable match {
         case Some(t) => throwable2String(Option(msg), t)
-        case None => stringify(messageValue)
+        case None => loggable(messageValue)
       }
     }
 
     def copy(level: Level = level,
              value: Double = value,
              message: T = messageValue,
-             stringify: T => String,
+             loggable: Loggable[T],
              throwable: Option[Throwable],
              fileName: String = fileName,
              className: String = className,
@@ -147,7 +143,7 @@ object LogRecord {
              lineNumber: Option[Int] = lineNumber,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[T] = {
-      SimpleLogRecord(level, value, message, stringify, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+      SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}
