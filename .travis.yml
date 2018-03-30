@@ -2,13 +2,17 @@ sudo: required
 dist: trusty
 language: scala
 scala:
-  - 2.11.12
+  - 2.12.5
 jdk:
   - oraclejdk8
 before_script:
   - curl https://raw.githubusercontent.com/scala-native/scala-native/master/scripts/travis_setup.sh | bash -x
 script:
   - sbt clean test
+  - sbt coverage coreJVM/test slf4j/test
+  - sbt coverageReport
+  - sbt coverageAggregate
+  - sbt codacyCoverage
 cache:
   directories:
     - $HOME/.ivy2/cache
