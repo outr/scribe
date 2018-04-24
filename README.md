@@ -45,6 +45,8 @@ asynchronous logging support completely removes logging impact from your applica
 
 ### Performance Comparison
 
+*UPDATED*: As of 2.3.3, [Scribe is roughly three times faster than Log4J 2 (2.11.0)](https://jmh.morethan.io/?gist=https://gist.githubusercontent.com/darkfrog26/4d87d50ecc608801173bd259016bad2d/raw/070280e0b5bc9c251d640e5892a7ea64c549834a/gistfile1.txt)
+
 Scribe is now the fastest logging framework in existence. Here is a chart comparing Log4J 2, Scala Logging, and Scribe:
 
 ![All Frameworks Graph](https://raw.githubusercontent.com/outr/scribe/master/work/images/2018.01.31.benchmark-all.png)
@@ -76,8 +78,8 @@ Scribe is published to Sonatype OSS and Maven Central and supports JVM and Scala
 with 2.11:
 
 ```
-libraryDependencies += "com.outr" %% "scribe" % "2.3.2"   // Scala
-libraryDependencies += "com.outr" %%% "scribe" % "2.3.2"  // Scala.js / Scala Native / Cross-project
+libraryDependencies += "com.outr" %% "scribe" % "2.3.3"   // Scala
+libraryDependencies += "com.outr" %%% "scribe" % "2.3.3"  // Scala.js / Scala Native / Cross-project
 ```
 
 ## Using Scribe ##
@@ -246,7 +248,7 @@ interface.
 If you add the `scribe-slf4j` dependency to your project Scribe will be picked up as an SLF4J implementation:
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "2.3.2"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "2.3.3"
 ```
 
 Obviously this only applies to JVM as SLF4J isn't available in the browser or compiled for Scala Native. This will allow
@@ -259,7 +261,7 @@ If you add the `scribe-slack` dependency to your project you can configure Scrib
 Again, this will only work on the JVM variant.
 
 ```
-libraryDependencies += "com.outr" %% "scribe-slack" % "2.3.2"
+libraryDependencies += "com.outr" %% "scribe-slack" % "2.3.3"
 ```
 
 The easiest way to configure this is to use the convenience method `configure`:

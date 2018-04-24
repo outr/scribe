@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.3.2"
+version in ThisBuild := "2.3.3"
 scalaVersion in ThisBuild := "2.12.5"
 crossScalaVersions in ThisBuild := List("2.12.5", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -24,11 +24,11 @@ developers in ThisBuild := List(
 )
 
 // Core
-val perfolationVersion: String = "1.0.0"
+val perfolationVersion: String = "1.0.1"
 val scalatestVersion: String = "3.0.5"
 
 // Extras
-val akkaVersion: String = "2.5.11"
+val akkaVersion: String = "2.5.12"
 
 // SLF4J
 val slf4jVersion: String = "1.7.25"
@@ -39,9 +39,9 @@ val upickleVersion: String = "0.5.1"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.11.0"
-val disruptorVersion: String = "3.4.1"
+val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
-val scalaLoggingVersion: String = "3.8.0"
+val scalaLoggingVersion: String = "3.9.0"
 
 lazy val root = project.in(file("."))
   .aggregate(
