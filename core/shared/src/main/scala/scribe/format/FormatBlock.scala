@@ -132,8 +132,11 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): String = record.message
   }
 
+  case class MDCReference(key: String) extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = MDC.get(key).orNull
+  }
+
   object NewLine extends FormatBlock {
     override def format[M](record: LogRecord[M]): String = "\n"
   }
-
 }

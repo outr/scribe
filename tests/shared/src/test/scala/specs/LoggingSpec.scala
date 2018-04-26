@@ -4,7 +4,13 @@ import org.scalatest.{Matchers, WordSpec}
 import scribe._
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster}
-import scribe.writer.NullWriter
+import scribe.writer.{NullWriter, Writer}
+import scribe.format._
+
+import scala.collection.mutable.ListBuffer
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
   val expectedTestFileName = "tests/shared/src/test/scala/specs/LoggingTestObject.scala"
@@ -88,5 +94,36 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.head.message should startWith("java.lang.RuntimeException: Testing")
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }
+    "utilize MDC logging" in {
+      val logs = ListBuffer.empty[String]
+      val logger = Logger.empty.withHandler(
+        formatter = LoggingSpec.mdcFormatter,
+        writer = new Writer {
+          override def write(output: String): Unit = logs += output
+        }
+      )
+
+      logger.info("A")
+      MDC("test1") = "First"
+      MDC("test2") = "Second"
+      logger.info("B")
+      Await.result(Future {
+        logger.info("C")
+      }, Duration.Inf)
+      MDC.remove("test1")
+      logger.info("D")
+      MDC.clear()
+      logger.info("E")
+
+      logs.head should be("null, null - A")
+      logs(1) should be("First, Second - B")
+      logs(2) should be("null, null - C")
+      logs(3) should be("null, Second - D")
+      logs(4) should be("null, null - E")
+    }
   }
+}
+
+object LoggingSpec {
+  val mdcFormatter: Formatter = formatter"${mdc("test1")}, ${mdc("test2")} - $message"
 }
