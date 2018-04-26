@@ -11,6 +11,7 @@ object MDC {
   def map: Map[String, String] = instance.map
   def get(key: String): Option[String] = instance.get(key)
   def update(key: String, value: String): Unit = instance(key) = value
+  def contextualize[Return](key: String, value: String)(f: => Return): Return = instance.contextualize(key, value)(f)
   def remove(key: String): Unit = instance.remove(key)
   def clear(): Unit = instance.clear()
 }
@@ -23,6 +24,15 @@ class MDC(parent: Option[MDC]) {
   def get(key: String): Option[String] = _map.get(key)
 
   def update(key: String, value: String): Unit = _map = _map + (key -> value)
+
+  def contextualize[Return](key: String, value: String)(f: => Return): Return = {
+    update(key, value)
+    try {
+      f
+    } finally{
+      remove(key)
+    }
+  }
 
   def remove(key: String): Unit = _map = _map - key
 
