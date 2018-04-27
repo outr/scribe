@@ -7,7 +7,7 @@ import scribe.MDC
 import scala.collection.JavaConverters._
 
 object ScribeMDCAdapter extends MDCAdapter {
-  override def put(key: String, `val`: String): Unit = MDC.update(key) = `val`
+  override def put(key: String, `val`: String): Unit = MDC(key) = `val`
 
   override def get(key: String): String = MDC.get(key).orNull
 

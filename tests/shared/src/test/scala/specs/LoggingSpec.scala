@@ -8,9 +8,6 @@ import scribe.writer.{NullWriter, Writer}
 import scribe.format._
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.Duration
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
   val expectedTestFileName = "tests/shared/src/test/scala/specs/LoggingTestObject.scala"
@@ -107,19 +104,19 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       MDC("test1") = "First"
       MDC("test2") = "Second"
       logger.info("B")
-      Await.result(Future {
-        logger.info("C")
-      }, Duration.Inf)
       MDC.remove("test1")
       logger.info("D")
       MDC.clear()
       logger.info("E")
 
-      logs.head should be("null, null - A")
-      logs(1) should be("First, Second - B")
-      logs(2) should be("null, null - C")
-      logs(3) should be("null, Second - D")
-      logs(4) should be("null, null - E")
+      var pos = 0
+      logs(pos) should be("null, null - A")
+      pos += 1
+      logs(pos) should be("First, Second - B")
+      pos += 1
+      logs(pos) should be("null, Second - D")
+      pos += 1
+      logs(pos) should be("null, null - E")
     }
   }
 }
