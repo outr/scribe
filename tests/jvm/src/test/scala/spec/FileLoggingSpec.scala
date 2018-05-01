@@ -5,14 +5,14 @@ import java.nio.file.{Files, Path, Paths}
 import org.scalatest.{Matchers, WordSpec}
 import scribe.Logger
 import scribe.format.Formatter
-import scribe.writer.FileNIOWriter
+import scribe.writer.FileWriter
 
 import scala.io.Source
 
 class FileLoggingSpec extends WordSpec with Matchers {
   private var fileLogger: Logger = Logger(parentName = None)
   lazy val logFile: Path = Paths.get("logs/test.log")
-  lazy val writer: FileNIOWriter = FileNIOWriter.single("test")
+  lazy val writer: FileWriter = FileWriter.single("test", nio = true)
 
   "File Logging" should {
     "configure logging to a temporary file" in {
