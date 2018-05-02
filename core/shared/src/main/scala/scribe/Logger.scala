@@ -29,6 +29,11 @@ case class Logger(parentName: Option[String] = Some(Logger.rootName),
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))
   override def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers)
 
+  override def includes(level: Level): Boolean = {
+    super.includes(level) &&
+      (handlers.exists(_.includes(level)) || parentName.map(Logger.byName).forall(_.includes(level)))
+  }
+
   override def log[M](record: LogRecord[M]): Unit = {
     modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
       handlers.foreach(_.log(r))

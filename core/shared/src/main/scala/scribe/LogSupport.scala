@@ -14,5 +14,9 @@ trait LogSupport[L <: LogSupport[L]] {
 
   def withMinimumLevel(level: Level): L = withModifier(LevelFilter >= level)
 
+  def includes(level: Level): Boolean = {
+    modifiers.find(_.id == LevelFilter.Id).map(_.asInstanceOf[LevelFilter]).forall(_.accepts(level.value))
+  }
+
   def log[M](record: LogRecord[M]): Unit
 }
