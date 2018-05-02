@@ -1,32 +1,38 @@
 package specs
 
+import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
 
 import org.scalatest.{AsyncWordSpec, Matchers}
 import scribe.Logger
 import scribe.format._
-import scribe.writer.Writer
+import scribe.writer.{FileWriter, Writer}
 
 import scala.concurrent.Future
 import scala.collection.JavaConverters._
 import perfolation._
 
+import scala.io.Source
+
 class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
+  private val Regex = """(\d+) - (.+)""".r
+  private val threads = "abcdefghijklmnopqrstuvwxyz"
+  private val iterations = 10000
+  private val total = threads.length * iterations
+
   "Asynchronous Logging" should {
-    val queue = new ConcurrentLinkedQueue[String]
-    val logger = Logger.empty.orphan().withHandler(
-      formatter = AsynchronousLoggingSpec.format,
-      writer = new Writer {
-        override def write(output: String): Unit = queue.add(output)
-      }
-    )
+    s"log $total records in the proper order with simple logging" in {
+      val queue = new ConcurrentLinkedQueue[String]
+      val logger = Logger.empty.orphan().withHandler(
+        formatter = AsynchronousLoggingSpec.format,
+        writer = new Writer {
+          override def write(output: String): Unit = queue.add(output.trim)
+        }
+      )
 
-    "log 10000 records in the proper order" in {
-      val Regex = """(\d+) - (.+)""".r
-
-      Future.sequence("abcdefghij".map { char =>
+      Future.sequence(threads.map { char =>
         Future {
-          (0 until 1000).foreach { index =>
+          (0 until iterations).foreach { index =>
             logger.info(p"$char:$index")
           }
         }
@@ -39,12 +45,43 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
             previous = timeStamp
           }
         }
-        queue.size() should be(10000)
+        queue.size() should be(total)
+      }
+    }
+    s"log $total records in the proper order with file logging" in {
+      val file = new File("logs/app.log")
+      file.delete()
+
+      val fileWriter = FileWriter.single(nio = true)
+      val logger = Logger.empty.orphan().withHandler(
+        formatter = AsynchronousLoggingSpec.format,
+        writer = fileWriter
+      )
+
+      Future.sequence(threads.map { char =>
+        Future {
+          (0 until iterations).foreach { index =>
+            logger.info(p"$char:$index")
+          }
+        }
+      }).map { _ =>
+        var previous = 0L
+        fileWriter.flush()
+        fileWriter.dispose()
+        val lines = Source.fromFile(file).getLines().toList
+        lines.foreach {
+          case Regex(ts, message) => {
+            val timeStamp = ts.toLong
+            timeStamp should be >= previous
+            previous = timeStamp
+          }
+        }
+        lines.length should be(threads.length * iterations)
       }
     }
   }
 }
 
 object AsynchronousLoggingSpec {
-  val format = formatter"$timeStamp - $message"
+  val format = formatter"$timeStamp - $message$newLine"
 }
