@@ -38,6 +38,10 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): String = s
   }
 
+  object TimeStamp extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.timeStamp.toString
+  }
+
   object Date {
     object Standard extends FormatBlock {
       private lazy val cache = new ThreadLocal[String] {

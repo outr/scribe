@@ -7,6 +7,7 @@ package object format {
   private val PositionAbbreviationLength = 25
 
   def date: FormatBlock = FormatBlock.Date.Standard
+  def timeStamp: FormatBlock = FormatBlock.TimeStamp
   def threadName: FormatBlock = FormatBlock.ThreadName
   def threadNameAbbreviated: FormatBlock = threadName.abbreviate(
     maxLength = ThreadNameAbbreviationLength,
