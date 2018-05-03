@@ -1,17 +1,16 @@
-package specs
+package spec
 
 import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
 
 import org.scalatest.{AsyncWordSpec, Matchers}
+import perfolation._
 import scribe.Logger
 import scribe.format._
 import scribe.writer.{FileWriter, Writer}
 
-import scala.concurrent.Future
 import scala.collection.JavaConverters._
-import perfolation._
-
+import scala.concurrent.Future
 import scala.io.Source
 
 class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
