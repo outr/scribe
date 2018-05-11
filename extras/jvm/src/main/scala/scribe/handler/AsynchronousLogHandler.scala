@@ -24,7 +24,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
     override def receive: Receive = {
       case record: LogRecord[_] => {
         modifiers.foldLeft(Option(record.asInstanceOf[LogRecord[Any]]))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
-          writer.write(formatter.format(r))
+          writer.write(record, formatter.format(r))
         }
       }
     }
