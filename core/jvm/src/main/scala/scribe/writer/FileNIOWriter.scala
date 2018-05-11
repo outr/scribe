@@ -40,19 +40,20 @@ case class FileNIOWriter(manager: FileLoggingManager,
 
   protected def validate(): FileChannel = synchronized {
     val resolution = manager.derivePath
-    if (resolution.changed.nonEmpty || !path.exists(Files.isSameFile(_, resolution.path))) {
+
+    FileWriter.validate(path, resolution).foreach { p =>
       // Set the new path
-      this.path = Some(resolution.path)
+      this.path = Some(p)
       // Close and cleanup active channel
       channel.foreach(_.close())
       channel = None
       // Apply the manager's change if provided
       resolution.changed.foreach(_.change())
       // Re-open the channel
-      if (!Files.exists(resolution.path.getParent)) {
-        Files.createDirectories(resolution.path.getParent)
+      if (!Files.exists(p.getParent)) {
+        Files.createDirectories(p.getParent)
       }
-      channel = Some(FileChannel.open(resolution.path, options: _*))
+      channel = Some(FileChannel.open(p, options: _*))
     }
     channel.getOrElse(throw new RuntimeException("No channel created during validate!"))
   }

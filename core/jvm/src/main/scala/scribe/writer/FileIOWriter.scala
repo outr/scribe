@@ -24,9 +24,9 @@ case class FileIOWriter(manager: FileLoggingManager,
 
   protected def validate(): PrintWriter = synchronized {
     val resolution = manager.derivePath
-    if (resolution.changed.nonEmpty || !path.exists(Files.isSameFile(_, resolution.path))) {
+    FileWriter.validate(path, resolution).foreach { p =>
       // Set the new path
-      this.path = Some(resolution.path)
+      this.path = Some(p)
       // Close and cleanup active PrintWriter
       writer.foreach { w =>
         w.flush()
@@ -36,8 +36,8 @@ case class FileIOWriter(manager: FileLoggingManager,
       // Apply the manager's change if provided
       resolution.changed.foreach(_.change())
       // Re-open the channel
-      if (!Files.exists(resolution.path.getParent)) {
-        Files.createDirectories(resolution.path.getParent)
+      if (!Files.exists(p.getParent)) {
+        Files.createDirectories(p.getParent)
       }
       val file = resolution.path.toFile
       writer = Some(new PrintWriter(new io.FileWriter(file, append)))

@@ -1,9 +1,9 @@
 package scribe.writer
 
 import java.nio.charset.Charset
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Files, Path, Paths}
 
-import scribe.writer.manager.{FileLoggingManager, FlatFileLoggingManager, FormattedFileLoggingManager, RollingFormattedFileLoggingManager}
+import scribe.writer.manager._
 
 trait FileWriter extends Writer {
   def flush(): Unit
@@ -57,5 +57,30 @@ object FileWriter {
     FileNIOWriter(manager, append, autoFlush, charset)
   } else {
     FileIOWriter(manager, append, autoFlush, charset)
+  }
+
+  protected[writer] def validate(current: Option[Path], resolution: PathResolution): Option[Path] = {
+    current match {
+      case Some(existing) => {
+        val newPath = resolution.path
+        val existingExists = Files.exists(existing)
+        val newExists = Files.exists(newPath)
+        val sameFile = if (existingExists) {
+          if (newExists) {
+            Files.isSameFile(existing, newPath)
+          } else {
+            false
+          }
+        } else {
+          existing.toAbsolutePath.toString == newPath.toAbsolutePath.toString
+        }
+        if (sameFile) {
+          None
+        } else {
+          Some(newPath)
+        }
+      }
+      case None => Some(resolution.path)
+    }
   }
 }
