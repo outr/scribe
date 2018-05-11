@@ -96,7 +96,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = LoggingSpec.mdcFormatter,
         writer = new Writer {
-          override def write(output: String): Unit = logs += output
+          override def write[M](record: LogRecord[M], output: String): Unit = logs += output
         }
       )
 

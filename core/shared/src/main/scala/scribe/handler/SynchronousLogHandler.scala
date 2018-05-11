@@ -16,7 +16,7 @@ case class SynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   override def log[M](record: LogRecord[M]): Unit = synchronized {
     modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
-      writer.write(formatter.format(r))
+      writer.write(record, formatter.format(r))
     }
   }
 }

@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.3.5-SNAPSHOT"
+version in ThisBuild := "2.4.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -37,6 +37,9 @@ val slf4jVersion: String = "1.7.25"
 val gigahorseVersion: String = "0.3.1"
 val upickleVersion: String = "0.5.1"
 
+// Logstash Dependencies
+val youiVersion: String = "0.9.0-M11"
+
 // Benchmarking Dependencies
 val log4jVersion: String = "2.11.0"
 val disruptorVersion: String = "3.4.2"
@@ -49,7 +52,7 @@ lazy val root = project.in(file("."))
     coreJS, coreJVM, coreNative,
     testsJS, testsJVM,
     extrasJS, extrasJVM, extrasNative,
-    slf4j, slack, benchmarks)
+    slf4j, slack, logstash, benchmarks)
   .settings(
     name := "scribe",
     publish := {},
@@ -134,6 +137,16 @@ lazy val slack = project.in(file("slack"))
     )
 
   )
+
+lazy val logstash = project.in(file("logstash"))
+  .dependsOn(coreJVM)
+  .settings(
+    name := "scribe-logstash",
+    libraryDependencies ++= Seq(
+      "io.youi" %% "youi-client" % youiVersion
+    )
+  )
+
 lazy val benchmarks = project.in(file("benchmarks"))
   .dependsOn(coreJVM, extrasJVM)
   .enablePlugins(JmhPlugin)

@@ -5,6 +5,7 @@ import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file._
 
+import scribe.LogRecord
 import scribe.writer.manager.FileLoggingManager
 
 import scala.annotation.tailrec
@@ -21,7 +22,7 @@ case class FileNIOWriter(manager: FileLoggingManager,
   private var path: Option[Path] = None
   private var channel: Option[FileChannel] = None
 
-  override def write(output: String): Unit = {
+  override def write[M](record: LogRecord[M], output: String): Unit = {
     val channel = validate()
     val bytes = output.getBytes(charset)
     val buffer = ByteBuffer.wrap(bytes)

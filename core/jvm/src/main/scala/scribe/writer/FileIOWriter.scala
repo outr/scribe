@@ -5,6 +5,7 @@ import java.io.PrintWriter
 import java.nio.charset.Charset
 import java.nio.file._
 
+import scribe.LogRecord
 import scribe.writer.manager.FileLoggingManager
 
 case class FileIOWriter(manager: FileLoggingManager,
@@ -14,7 +15,7 @@ case class FileIOWriter(manager: FileLoggingManager,
   private var path: Option[Path] = None
   private var writer: Option[PrintWriter] = None
 
-  override def write(output: String): Unit = {
+  override def write[M](record: LogRecord[M], output: String): Unit = {
     val writer = validate()
     writer.write(output)
     if (autoFlush) flush()

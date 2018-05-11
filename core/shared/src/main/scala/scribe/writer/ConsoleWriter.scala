@@ -1,7 +1,7 @@
 package scribe.writer
 
-import scribe.Logger
+import scribe.{LogRecord, Logger}
 
 object ConsoleWriter extends Writer {
-  override def write(output: String): Unit = Logger.system.out.print(output)
+  override def write[M](record: LogRecord[M], output: String): Unit = Logger.system.out.print(output)
 }

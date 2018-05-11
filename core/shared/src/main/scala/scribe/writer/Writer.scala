@@ -1,7 +1,9 @@
 package scribe.writer
 
+import scribe.LogRecord
+
 trait Writer {
-  def write(output: String): Unit
+  def write[M](record: LogRecord[M], output: String): Unit
 
   def dispose(): Unit = {}
 }
