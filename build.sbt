@@ -33,11 +33,7 @@ val akkaVersion: String = "2.5.12"
 // SLF4J
 val slf4jVersion: String = "1.7.25"
 
-// Slack Dependencies
-val gigahorseVersion: String = "0.3.1"
-val upickleVersion: String = "0.5.1"
-
-// Logstash Dependencies
+// Slack and Logstash Dependencies
 val youiVersion: String = "0.9.0-M11"
 
 // Benchmarking Dependencies
@@ -132,10 +128,8 @@ lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
     libraryDependencies ++= Seq(
-      "com.eed3si9n" %% "gigahorse-asynchttpclient" % gigahorseVersion,
-      "com.lihaoyi" %% "upickle" % upickleVersion
+      "io.youi" %% "youi-client" % youiVersion
     )
-
   )
 
 lazy val logstash = project.in(file("logstash"))

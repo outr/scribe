@@ -1,53 +1,38 @@
 package scribe.slack
 
-import gigahorse.support.asynchttpclient.Gigahorse
-import gigahorse.{FullResponse, MimeTypes}
+import io.youi.client.HttpClient
+import io.youi.http.{Content, HttpRequest, HttpResponse, Method}
+import io.youi.net.{ContentType, URL}
+import profig.JsonUtil
 import scribe._
 import scribe.format._
 import scribe.handler.LogHandler
-import upickle.Js
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
 
 class Slack(serviceHash: String, botName: String) {
+  private lazy val client = new HttpClient
+  private lazy val url: URL = URL(s"https://hooks.slack.com/services/$serviceHash")
+
   def request(message: String,
               markdown: Boolean = true,
-              attachment: Option[Slack.Attachment] = None,
-              emojiIcon: String = ":fire:"): Future[FullResponse] = {
-    val http = Gigahorse.http(Gigahorse.config)
-    val json = upickle.json.write(Js.Obj(
-      Seq(
-        "text" -> Js.Str(message),
-        "username" -> Js.Str(botName),
-        "mrkdwn" -> (if (markdown) Js.True else Js.False),
-        "icon_emoji" -> Js.Str(emojiIcon)
-      ) ++ (
-        attachment match {
-          case None => Seq.empty
-          case Some(s) => Seq("attachments" -> Js.Arr(
-            Js.Obj(
-              "title" -> Js.Str(s.title),
-              "fallback" -> Js.Str(s.title),
-              "text" -> Js.Str(s.text)
-            )
-          ))
-        }
-        ): _*
-    ))
-
-    val r = Gigahorse
-      .url(s"https://hooks.slack.com/services/$serviceHash")
-      .post(json)
-      .withContentType(MimeTypes.JSON, Gigahorse.utf8)
-      .withRequestTimeout(5.seconds)
-
-    val future = http.run(r)
-    future.onComplete { t =>
-      http.close()
-    }
-    future
+              attachments: List[Slack.Attachment] = Nil,
+              emojiIcon: String = ":fire:"): Future[HttpResponse] = {
+    val m = SlackMessage(
+      text = message,
+      username = botName,
+      mrkdwn = markdown,
+      icon_emoji = emojiIcon,
+      attachments = attachments
+    )
+    val json = JsonUtil.toJsonString(m)
+    val content = Content.string(json, ContentType.`application/json`)
+    val request = HttpRequest(
+      method = Method.Post,
+      url = url,
+      content = Some(content)
+    )
+    client.send(request)
   }
 }
 
