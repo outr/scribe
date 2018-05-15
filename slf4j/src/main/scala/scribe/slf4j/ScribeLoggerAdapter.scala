@@ -7,9 +7,9 @@ import org.slf4j.spi.LocationAwareLogger
 import scribe.{Logger => ScribeLogger, Platform, Level}
 
 class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
-  private def logger = ScribeLogger.byName(name)
+  private def logger = ScribeLogger(name)
 
-  ScribeLogger.update(name)(_.withClassNameOverride(name))
+  logger.withClassNameOverride(name).replace(Some(name))
 
   def scribeLevel(level: Int): Level = level match {
     case LocationAwareLogger.TRACE_INT => Level.Trace

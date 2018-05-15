@@ -19,7 +19,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
 
     "set up the logging" in {
       testingModifier.clear()
-      update(_.orphan().withHandler(handler))
+      logger.orphan().withHandler(handler).replace()
     }
     "have no logged entries yet" in {
       testingModifier.records.length should be(0)
@@ -33,18 +33,18 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.length should be(2)
     }
     "ignore the third entry after reconfiguring without debug logging" in {
-      update(_
+      logger
         .withoutHandler(handler)
         .withHandler(writer = NullWriter)
-        .withModifier(LevelFilter >= Level.Info)
+        .withMinimumLevel(Level.Info)
         .withModifier(testingModifier)
-      )
+        .replace()
       testingModifier.records.length should be(2)
       logger.debug("Debug Log 2")
       testingModifier.records.length should be(2)
     }
     "boost the this logging instance" in {
-      update(_.withModifier(LogBooster.multiply(2.0, Priority.Critical)))
+      logger.withModifier(LogBooster.multiply(2.0, Priority.Critical)).replace()
       logger.debug("Debug Log 3")
       testingModifier.records.length should be(3)
     }
@@ -61,7 +61,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logger.info(f"It works! $d%.0f")
     }
     "write a detailed log message" in {
-      val lineNumber = Some(19)
+      val lineNumber = Some(14)
       testingModifier.clear()
       testObject.testLogger()
       testingModifier.records.length should be(1)
@@ -71,7 +71,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }
     "write a log message with an anonymous function" in {
-      val lineNumber = Some(15)
+      val lineNumber = Some(10)
       testingModifier.clear()
       testObject.testAnonymous()
       testingModifier.records.length should be(1)
@@ -81,7 +81,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }
     "write an exception" in {
-      val lineNumber = Some(27)
+      val lineNumber = Some(22)
       testingModifier.clear()
       testObject.testException()
       testingModifier.records.length should be(1)

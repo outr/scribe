@@ -26,9 +26,7 @@ class LoggingSpeedBenchmark {
   @annotations.OperationsPerInvocation(1000)
   def withScribe(): Unit = {
     val fileWriter = writer.FileWriter.single("scribe")
-    val logger = scribe.Logger.update(scribe.Logger.rootName) { l =>
-      l.clearHandlers().withHandler(LogHandler(Formatter.default, fileWriter))
-    }
+    val logger = Logger.empty.orphan().withHandler(LogHandler(writer = fileWriter))
 
     var i = 0
     while (i < 1000) {

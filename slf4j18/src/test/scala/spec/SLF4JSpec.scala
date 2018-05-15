@@ -19,10 +19,10 @@ class SLF4JSpec extends WordSpec with Matchers {
 
   "SLF4J" should {
     "remove existing handlers from Root" in {
-      Logger.update(Logger.rootName)(_.clearHandlers())
+      Logger.root.clearHandlers().replace()
     }
     "add a testing handler" in {
-      Logger.update(Logger.rootName)(_.withHandler(recordHolder))
+      Logger.root.withHandler(recordHolder).replace()
     }
     "verify not records are in the RecordHolder" in {
       logs.isEmpty should be(true)

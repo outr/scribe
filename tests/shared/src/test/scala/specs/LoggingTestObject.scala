@@ -1,15 +1,10 @@
 package specs
 
-import scribe.handler.LogHandler
 import scribe.writer.NullWriter
-import scribe.{Level, Logging}
+import scribe.Logging
 
 class LoggingTestObject(modifier: TestingModifier) extends Logging {
-
-  update(_.orphan().withHandler(LogHandler(
-    writer = NullWriter,
-    modifiers = List(modifier)
-  )))
+  logger.orphan().withHandler(writer = NullWriter, modifiers = List(modifier)).replace()
 
   private val anonymous = () => {
     LoggingTestObject.this.logger.info("Anonymous logging!")

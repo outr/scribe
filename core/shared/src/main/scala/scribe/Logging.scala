@@ -14,13 +14,5 @@ trait Logging {
   /**
     * The logger for this class.
     */
-  protected def logger: Logger = Logger.byName(loggerName)
-
-  /**
-    * Updates the logger by name.
-    *
-    * @param f function to modify the logger
-    * @return the modified logger
-    */
-  protected def update(f: Logger => Logger): Logger = Logger.update(loggerName)(f)
+  protected def logger: Logger = Logger(loggerName)
 }

@@ -52,6 +52,6 @@ object Slack {
       writer = new SlackWriter(slack, emojiIcon),
       formatter = formatter
     )
-    Logger.update(loggerName)(_.withHandler(handler))
+    Logger(loggerName).withHandler(handler).replace()
   }
 }
