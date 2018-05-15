@@ -25,6 +25,7 @@ around Java logging frameworks (usually SLF4J, Log4J, or Logback). This comes wi
 3. Performance cost (Blog Post: http://www.matthicks.com/2018/02/scribe-2-fastest-jvm-logger-in-world.html)
 4. Additional dependencies
 5. Substantial cost logging method and line numbers
+6. Lack of programmatic configuration support
 
 A few of the main features that Scribe offers:
 
