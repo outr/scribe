@@ -61,15 +61,15 @@ any runtime cost.
 asynchronous logging support completely removes logging impact from your application's thread impact.
 
 ## Documentation
-* [Performance / Benchmarks](benchmarks)
-* [Library Dependencies](library-dependencies)
-* [Getting Started](getting-started)
-* [Advanced Topics](advanced)
+* [Performance / Benchmarks](https://github.com/outr/scribe/wiki/benchmarks)
+* [Library Dependencies](https://github.com/outr/scribe/wiki/library-dependencies)
+* [Getting Started](https://github.com/outr/scribe/wiki/getting-started)
+* [Advanced Topics](https://github.com/outr/scribe/wiki/advanced)
 
 ## Optional Modules
-* [SLF4J integration](slf4j)
-* [Slack integration](slack)
-* [Logstash integration](logstash)
+* [SLF4J integration](https://github.com/outr/scribe/wiki/slf4j)
+* [Slack integration](https://github.com/outr/scribe/wiki/slack)
+* [Logstash integration](https://github.com/outr/scribe/wiki/logstash)
 
 ## Community
 The best way to receive immediate feedback for any questions is via our [Gitter channel](https://gitter.im/outr/scribe)
