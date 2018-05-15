@@ -14,6 +14,22 @@ of logging can be handled programmatically (of course, classic logging configura
 in Scala itself, giving the developer the freedom to use whatever configuration framework, if any, they should choose to
 use.
 
+## Quick Start
+
+For people that want to skip the explanations and see it action, this is the place to start!
+
+### Dependency Configuration
+
+```scala
+libraryDependencies += "com.outr" %%% "scribe-slf4j" % "2.4.0"
+```
+
+### Usage
+
+```scala
+scribe.info("Yes, it's that simple!")
+```
+
 ## Why Another Logging Framework?
 
 Yes, we know there are too many Java logging frameworks to count, and a large number of decent logging frameworks in
