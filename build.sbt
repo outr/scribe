@@ -32,6 +32,7 @@ val akkaVersion: String = "2.5.12"
 
 // SLF4J
 val slf4jVersion: String = "1.7.25"
+val slf4j18Version: String = "1.8.0-beta2"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.9.0-M11"
@@ -48,7 +49,7 @@ lazy val root = project.in(file("."))
     coreJS, coreJVM, coreNative,
     testsJS, testsJVM,
     extrasJS, extrasJVM, extrasNative,
-    slf4j, slack, logstash, benchmarks)
+    slf4j, slf4j18, slack, logstash, benchmarks)
   .settings(
     name := "scribe",
     publish := {},
@@ -120,7 +121,17 @@ lazy val slf4j = project.in(file("slf4j"))
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
+  )
 
+lazy val slf4j18 = project.in(file("slf4j18"))
+  .dependsOn(coreJVM)
+  .settings(
+    name := "scribe-swlf4j18",
+    publishArtifact in Test := false,
+    libraryDependencies ++= Seq(
+      "org.slf4j" % "slf4j-api" % slf4j18Version,
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
+    )
   )
 
 lazy val slack = project.in(file("slack"))
