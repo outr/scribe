@@ -9,14 +9,16 @@ import scribe.writer.{ConsoleWriter, Writer}
 
 import scala.util.Random
 
-case class Logger(parentName: Option[String] = Some(Logger.rootName),
+case class Logger(parentId: Option[Long] = Some(Logger.rootId),
                   modifiers: List[LogModifier] = Nil,
                   handlers: List[LogHandler] = Nil,
                   overrideClassName: Option[String] = None,
                   id: Long = Random.nextLong()) extends LogSupport[Logger] with LoggerSupport {
-  def reset(): Logger = copy(parentName = Some(Logger.rootName), Nil, Nil, None)
-  def orphan(): Logger = copy(parentName = None)
-  def withParent(name: String): Logger = copy(parentName = Some(name))
+  def reset(): Logger = copy(parentId = Some(Logger.rootId), Nil, Nil, None)
+  def orphan(): Logger = copy(parentId = None)
+  def withParent(name: String): Logger = copy(parentId = Some(Logger(name).id))
+  def withParent(logger: Logger): Logger = copy(parentId = Some(logger.id))
+  def withParent(id: Long): Logger = copy(parentId = Some(id))
   def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))
   def withHandler(formatter: Formatter = Formatter.default,
                   writer: Writer = ConsoleWriter,
@@ -31,13 +33,13 @@ case class Logger(parentName: Option[String] = Some(Logger.rootName),
 
   override def includes(level: Level): Boolean = {
     super.includes(level) &&
-      (handlers.exists(_.includes(level)) || parentName.map(Logger.apply).forall(_.includes(level)))
+      (handlers.exists(_.includes(level)) || parentId.map(Logger.apply).forall(_.includes(level)))
   }
 
   override def log[M](record: LogRecord[M]): Unit = {
     modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
       handlers.foreach(_.log(r))
-      parentName.map(Logger.apply).foreach(_.log(record))
+      parentId.map(Logger.apply).foreach(_.log(record))
     }
   }
 
@@ -57,24 +59,20 @@ object Logger {
     def err: PrintStream = systemErr
   }
 
-  val rootName: String = "root"
-
-  def empty: Logger = Logger()
-  def root: Logger = apply(rootName)
+  val rootId: Long = 0L
 
   private var id2Logger: Map[Long, Logger] = Map.empty
   private var name2Id: Map[String, Long] = Map.empty
 
+  // Configure the root logger to filter anything under Info and write to the console
+  root.orphan().withMinimumLevel(Level.Info).withHandler().replace(Some("root"))
+
+  def empty: Logger = Logger()
+  def root: Logger = apply(rootId)
+
   def loggersByName: Map[String, Logger] = name2Id.map {
     case (name, id) => name -> id2Logger(id)
   }
-
-//  def namesFor(logger: Logger): List[String] = map.collect {
-//    case (n, l) if logger eq l => n
-//  }.toList
-
-  // Configure the root logger to filter anything under Info and write to the console
-  root.orphan().withMinimumLevel(Level.Info).withHandler(LogHandler(writer = ConsoleWriter)).replace()
 
   def apply(name: String): Logger = get(name) match {
     case Some(logger) => logger
@@ -87,7 +85,18 @@ object Logger {
     }
   }
 
+  def apply(id: Long): Logger = get(id) match {
+    case Some(logger) => logger
+    case None => synchronized {
+      val logger = new Logger(id = id)
+      id2Logger += logger.id -> logger
+      logger
+    }
+  }
+
   def get(name: String): Option[Logger] = name2Id.get(fixName(name)).flatMap(id2Logger.get)
+
+  def get(id: Long): Option[Logger] = id2Logger.get(id)
 
   def replace(logger: Logger): Logger = synchronized {
     id2Logger += logger.id -> logger

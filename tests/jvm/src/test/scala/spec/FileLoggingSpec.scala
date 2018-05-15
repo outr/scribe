@@ -10,7 +10,7 @@ import scribe.writer.FileWriter
 import scala.io.Source
 
 class FileLoggingSpec extends WordSpec with Matchers {
-  private var fileLogger: Logger = Logger(parentName = None)
+  private var fileLogger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
   lazy val writer: FileWriter = FileWriter.single("test", nio = true)
 

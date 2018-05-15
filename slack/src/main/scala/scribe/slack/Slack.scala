@@ -42,7 +42,7 @@ object Slack {
   def configure(serviceHash: String,
                 botName: String,
                 emojiIcon: String = ":fire:",
-                loggerName: String = Logger.rootName,
+                loggerName: String = "slack",
                 level: Level = Level.Error): Unit = {
     val slack = new Slack(serviceHash, botName)
     val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
