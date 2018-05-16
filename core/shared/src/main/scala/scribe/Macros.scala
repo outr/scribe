@@ -65,7 +65,9 @@ object Macros {
     } else {
       q"$line"
     }
-    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, () => $message, $loggable, $throwable, $fileName, $dcn, $dmn, $dln))"
+    val messageFunction = c.typecheck(q"() => $message")
+    c.internal.changeOwner(message, c.internal.enclosingOwner, messageFunction.symbol)
+    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $messageFunction, $loggable, $throwable, $fileName, $dcn, $dmn, $dln))"
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {

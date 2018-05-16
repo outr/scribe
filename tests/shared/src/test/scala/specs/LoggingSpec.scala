@@ -3,7 +3,7 @@ package specs
 import org.scalatest.{Matchers, WordSpec}
 import scribe._
 import scribe.handler.LogHandler
-import scribe.modify.{LevelFilter, LogBooster}
+import scribe.modify.LogBooster
 import scribe.writer.{NullWriter, Writer}
 import scribe.format._
 import perfolation._
@@ -63,7 +63,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
     }
     "log using perfolation formatting of Double" in {
       val d = 12.3456
-      logger.info(s"It works! ${d.f()}")
+      logger.info(p"It works! ${d.f()}")
     }
     "write a detailed log message" in {
       val lineNumber = Some(14)

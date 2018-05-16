@@ -6,6 +6,8 @@ version in ThisBuild := "2.4.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
+resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
+resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 
 publishTo in ThisBuild := sonatypePublishTo.value
 sonatypeProfileName in ThisBuild := "com.outr"
@@ -24,7 +26,7 @@ developers in ThisBuild := List(
 )
 
 // Core
-val perfolationVersion: String = "1.0.1"
+val perfolationVersion: String = "1.0.2"
 val scalatestVersion: String = "3.0.5"
 
 // Extras
