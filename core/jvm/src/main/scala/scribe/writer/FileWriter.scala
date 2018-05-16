@@ -60,27 +60,31 @@ object FileWriter {
   }
 
   protected[writer] def validate(current: Option[Path], resolution: PathResolution): Option[Path] = {
-    current match {
-      case Some(existing) => {
-        val newPath = resolution.path
-        val existingExists = Files.exists(existing)
-        val newExists = Files.exists(newPath)
-        val sameFile = if (existingExists) {
-          if (newExists) {
-            Files.isSameFile(existing, newPath)
+    val newPath = resolution.path
+    if (current.contains(newPath)) {
+      None
+    } else {
+      current match {
+        case Some(existing) => {
+          val existingExists = Files.exists(existing)
+          val newExists = Files.exists(newPath)
+          val sameFile = if (existingExists) {
+            if (newExists) {
+              Files.isSameFile(existing, newPath)
+            } else {
+              false
+            }
           } else {
-            false
+            existing.toAbsolutePath.toString == newPath.toAbsolutePath.toString
           }
-        } else {
-          existing.toAbsolutePath.toString == newPath.toAbsolutePath.toString
+          if (sameFile) {
+            None
+          } else {
+            Some(newPath)
+          }
         }
-        if (sameFile) {
-          None
-        } else {
-          Some(newPath)
-        }
+        case None => Some(newPath)
       }
-      case None => Some(resolution.path)
     }
   }
 }
