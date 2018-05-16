@@ -6,7 +6,7 @@ import perfolation._
 trait LogRecord[M] {
   def level: Level
   def value: Double
-  def messageValue: M
+  def messageValue: () => M
   def loggable: Loggable[M]
   def throwable: Option[Throwable]
   def fileName: String
@@ -22,7 +22,7 @@ trait LogRecord[M] {
 
   def copy(level: Level = level,
            value: Double = value,
-           message: M = messageValue,
+           messageValue: () => M = messageValue,
            loggable: Loggable[M] = loggable,
            throwable: Option[Throwable] = throwable,
            fileName: String = fileName,
@@ -36,21 +36,21 @@ trait LogRecord[M] {
 }
 
 object LogRecord {
-  def apply[T](level: Level,
+  def apply[M](level: Level,
                value: Double,
-               message: T,
-               loggable: Loggable[T],
+               messageValue: () => M,
+               loggable: Loggable[M],
                throwable: Option[Throwable],
                fileName: String,
                className: String,
                methodName: Option[String],
                lineNumber: Option[Int],
                thread: Thread = Thread.currentThread(),
-               timeStamp: Long = System.currentTimeMillis()): LogRecord[T] = {
-    SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+               timeStamp: Long = System.currentTimeMillis()): LogRecord[M] = {
+    SimpleLogRecord(level, value, messageValue, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
-  def simple(message: String,
+  def simple(messageValue: () => String,
              fileName: String,
              className: String,
              methodName: Option[String] = None,
@@ -58,7 +58,7 @@ object LogRecord {
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = System.currentTimeMillis()): LogRecord[String] = {
-    apply[String](level, level.value, message, Loggable.StringLoggable, None, fileName, className, methodName, lineNumber, thread, timeStamp)
+    apply[String](level, level.value, messageValue, Loggable.StringLoggable, None, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
   /**
@@ -113,37 +113,37 @@ object LogRecord {
     }
   }
 
-  case class SimpleLogRecord[T](level: Level,
+  case class SimpleLogRecord[M](level: Level,
                                 value: Double,
-                                messageValue: T,
-                                loggable: Loggable[T],
+                                messageValue: () => M,
+                                loggable: Loggable[M],
                                 throwable: Option[Throwable],
                                 fileName: String,
                                 className: String,
                                 methodName: Option[String],
                                 lineNumber: Option[Int],
                                 thread: Thread,
-                                timeStamp: Long) extends LogRecord[T] {
+                                timeStamp: Long) extends LogRecord[M] {
     override lazy val message: String = {
-      val msg = loggable(messageValue)
+      val msg = loggable(messageValue())
       throwable match {
         case Some(t) => throwable2String(Option(msg), t)
-        case None => loggable(messageValue)
+        case None => loggable(messageValue())
       }
     }
 
     def copy(level: Level = level,
              value: Double = value,
-             message: T = messageValue,
-             loggable: Loggable[T],
+             messageValue: () => M = messageValue,
+             loggable: Loggable[M],
              throwable: Option[Throwable],
              fileName: String = fileName,
              className: String = className,
              methodName: Option[String] = methodName,
              lineNumber: Option[Int] = lineNumber,
              thread: Thread = thread,
-             timeStamp: Long = timeStamp): LogRecord[T] = {
-      SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+             timeStamp: Long = timeStamp): LogRecord[M] = {
+      SimpleLogRecord(level, value, messageValue, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}

@@ -19,7 +19,7 @@ object Macros {
     }
   }
 
-  def autoLevel[M](c: blackbox.Context)(message: c.Expr[M])(loggable: c.Expr[Loggable[M]])
+  def autoLevel[M](c: blackbox.Context)(message: c.Tree)(loggable: c.Expr[Loggable[M]])
                   (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
@@ -27,7 +27,7 @@ object Macros {
     log(c)(level, message, reify[Option[Throwable]](None))(loggable)
   }
 
-  def autoLevel2[M](c: blackbox.Context)(message: c.Expr[M], t: c.Expr[Throwable])(loggable: c.Expr[Loggable[M]])
+  def autoLevel2[M](c: blackbox.Context)(message: c.Tree, t: c.Expr[Throwable])(loggable: c.Expr[Loggable[M]])
                    (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
@@ -37,7 +37,7 @@ object Macros {
 
   def log[M](c: blackbox.Context)
             (level: c.Tree,
-             message: c.Expr[M],
+             message: c.Tree,
              throwable: c.Expr[Option[Throwable]])
             (loggable: c.Expr[Loggable[M]])
             (implicit m: c.WeakTypeTag[M]): c.Tree = {
@@ -65,8 +65,9 @@ object Macros {
     } else {
       q"$line"
     }
-
-    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $message, $loggable, $throwable, $fileName, $dcn, $dmn, $dln))"
+    val messageFunction = c.typecheck(q"() => $message")
+    c.internal.changeOwner(message, c.internal.enclosingOwner, messageFunction.symbol)
+    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $messageFunction, $loggable, $throwable, $fileName, $dcn, $dmn, $dln))"
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {
