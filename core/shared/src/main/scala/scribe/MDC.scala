@@ -6,7 +6,18 @@ object MDC {
 
     override def childValue(parentValue: MDC): MDC = new MDC(Option(parentValue))
   }
-  private def instance: MDC = threadLocal.get()
+  def instance: MDC = threadLocal.get()
+
+  def set(mdc: MDC): Unit = threadLocal.set(mdc)
+  def contextualize[Return](mdc: MDC)(f: => Return): Return = {
+    val previous = threadLocal.get()
+    set(mdc)
+    try {
+      f
+    } finally {
+      set(previous)
+    }
+  }
 
   def map: Map[String, String] = instance.map
   def get(key: String): Option[String] = instance.get(key)
