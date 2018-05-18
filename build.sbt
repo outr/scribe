@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.4.0"
+version in ThisBuild := "2.5.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -29,9 +29,6 @@ developers in ThisBuild := List(
 val perfolationVersion: String = "1.0.2"
 val scalatestVersion: String = "3.0.5"
 
-// Extras
-val akkaVersion: String = "2.5.12"
-
 // SLF4J
 val slf4jVersion: String = "1.7.25"
 val slf4j18Version: String = "1.8.0-beta2"
@@ -43,6 +40,7 @@ val youiVersion: String = "0.9.0-M11"
 val log4jVersion: String = "2.11.0"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
+val typesafeConfigVersion: String = "1.3.3"
 val scalaLoggingVersion: String = "3.9.0"
 
 lazy val root = project.in(file("."))
@@ -50,7 +48,6 @@ lazy val root = project.in(file("."))
     macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
     testsJS, testsJVM,
-    extrasJS, extrasJVM, extrasNative,
     slf4j, slf4j18, slack, logstash, benchmarks)
   .settings(
     name := "scribe",
@@ -94,26 +91,6 @@ lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 lazy val coreNative = core.native
 
-lazy val extras = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .crossType(CrossType.Full)
-  .in(file("extras"))
-  .dependsOn(core)
-  .settings(
-    name := "scribe-extras"
-  )
-  .jvmSettings(
-    libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % akkaVersion
-    )
-  )
-  .nativeSettings(
-    scalaVersion := "2.11.12",
-  )
-
-lazy val extrasJS = extras.js
-lazy val extrasJVM = extras.jvm
-lazy val extrasNative = extras.native
-
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
   .settings(
@@ -155,7 +132,7 @@ lazy val logstash = project.in(file("logstash"))
   )
 
 lazy val benchmarks = project.in(file("benchmarks"))
-  .dependsOn(coreJVM, extrasJVM)
+  .dependsOn(coreJVM)
   .enablePlugins(JmhPlugin)
   .settings(
     publishArtifact := false,
@@ -164,6 +141,7 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
       "com.lmax" % "disruptor" % disruptorVersion,
       "ch.qos.logback" % "logback-classic" % logbackVersion,
+      "com.typesafe" % "config" % typesafeConfigVersion,
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion
     )
   )

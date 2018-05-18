@@ -5,7 +5,13 @@ import scribe.modify.{LevelFilter, LogModifier}
 import scribe.writer.{ConsoleWriter, Writer}
 import scribe.{Level, LogRecord, LogSupport}
 
-trait LogHandler extends LogSupport[LogHandler]
+trait LogHandler extends LogSupport[LogHandler] {
+  def formatter: Formatter
+  def writer: Writer
+
+  def withFormatter(formatter: Formatter): LogHandler
+  def withWriter(writer: Writer): LogHandler
+}
 
 object LogHandler {
   lazy val default: LogHandler = SynchronousLogHandler()

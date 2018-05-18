@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager
 import org.openjdk.jmh.annotations
 import scribe._
 import scribe.format._
-import scribe.handler.{AsynchronousLogHandler, LogHandler}
+import scribe.handler.AsynchronousLogHandler
 
 // jmh:run -i 3 -wi 3 -f1 -t1 -rf JSON -rff benchmarks.json
 @annotations.State(annotations.Scope.Thread)
@@ -26,7 +26,7 @@ class LoggingSpeedBenchmark {
   @annotations.OperationsPerInvocation(1000)
   def withScribe(): Unit = {
     val fileWriter = writer.FileWriter.single("scribe")
-    val logger = Logger.empty.orphan().withHandler(LogHandler(writer = fileWriter))
+    val logger = Logger.empty.orphan().withHandler(writer = fileWriter)
 
     var i = 0
     while (i < 1000) {
@@ -37,15 +37,13 @@ class LoggingSpeedBenchmark {
   }
 
   // TODO: figure out why this shrivels up and dies
-  /*@annotations.Benchmark
+  @annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withScribeAsync(): Unit = {
     val fileWriter = writer.FileWriter.single("scribe-async")
-    val logger = scribe.Logger.update(scribe.Logger.rootName) { l =>
-      l.clearHandlers().withHandler(AsynchronousLogHandler(Formatter.default, fileWriter))
-    }
+    val logger = Logger.empty.orphan().withHandler(AsynchronousLogHandler(Formatter.default, fileWriter))
 
     var i = 0
     while (i < 1000) {
@@ -53,7 +51,7 @@ class LoggingSpeedBenchmark {
       i += 1
     }
     fileWriter.dispose()
-  }*/
+  }
 
   @annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
@@ -95,7 +93,5 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.TearDown
-  def tearDown(): Unit = {
-    AsynchronousLogHandler.dispose()
-  }
+  def tearDown(): Unit = {}
 }
