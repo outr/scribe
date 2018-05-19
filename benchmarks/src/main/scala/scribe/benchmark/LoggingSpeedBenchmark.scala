@@ -78,6 +78,19 @@ class LoggingSpeedBenchmark {
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
+  def withLog4s(): Unit = {
+    val logger = org.log4s.getLogger("scala")
+    var i = 0
+    while (i < 1000) {
+      logger.info("test")
+      i += 1
+    }
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
   def withLog4jTrace(): Unit = {
     val logger = LogManager.getLogger("Trace")
     var i = 0
@@ -121,6 +134,18 @@ class LoggingSpeedBenchmark {
     var i = 0
     while (i < 1000) {
       tinylog.Logger.info("test")
+      i += 1
+    }
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withPrintLine(): Unit = {
+    var i = 0
+    while (i < 1000) {
+      println("test")
       i += 1
     }
   }
