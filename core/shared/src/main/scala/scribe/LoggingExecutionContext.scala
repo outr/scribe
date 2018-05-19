@@ -6,12 +6,15 @@ class LoggingExecutionContext(context: ExecutionContext) extends ExecutionContex
   private val stack = Position.stack
 
   override def execute(runnable: Runnable): Unit = {
+    val mdc = MDC.instance
     val r = new Runnable {
       override def run(): Unit = {
         val previous = Position.stack
         Position.stack = stack
         try {
-          runnable.run()
+          MDC.contextualize(mdc) {
+            runnable.run()
+          }
         } finally {
           Position.stack = previous
         }
