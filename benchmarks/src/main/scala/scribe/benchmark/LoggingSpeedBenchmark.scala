@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.{scalalogging => sc}
 import org.apache.logging.log4j.LogManager
 import org.openjdk.jmh.annotations
+import org.pmw.tinylog
 import scribe._
 import scribe.format._
 import scribe.handler.AsynchronousLogHandler
@@ -21,6 +22,12 @@ class LoggingSpeedBenchmark {
   @annotations.Setup(annotations.Level.Trial)
   def doSetup(): Unit = {
     ConfigFactory.load()
+    tinylog.Configurator
+      .defaultConfig()
+      .removeAllWriters()
+      .writer(new tinylog.writers.FileWriter("logs/tiny.log"))
+      .level(tinylog.Level.INFO)
+      .activate()
   }
 
   @annotations.Benchmark
@@ -89,6 +96,31 @@ class LoggingSpeedBenchmark {
     var i = 0
     while (i < 1000) {
       logger.info("test")
+      i += 1
+    }
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withLogback(): Unit = {
+    val logger = org.slf4j.LoggerFactory.getLogger("logback")
+    var i = 0
+    while (i < 1000) {
+      logger.info("test")
+      i += 1
+    }
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withTinyLog(): Unit = {
+    var i = 0
+    while (i < 1000) {
+      tinylog.Logger.info("test")
       i += 1
     }
   }

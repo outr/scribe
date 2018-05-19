@@ -1,22 +1,25 @@
 
 <configuration>
-
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="file-trace" class="ch.qos.logback.core.FileAppender">
+        <file>logs/scala-logging.log}</file>
         <encoder>
-            <pattern>%date{HH:mm:ss} %-5level %logger{0} {%class %method} - %msg%n</pattern>
+            <pattern>%date{HH:mm:ss} %-5level %logger{0} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>logs/scala-logging.log}</file>
+        <file>logs/logback.log}</file>
         <encoder>
-            <pattern>%date{HH:mm:ss} %-5level %logger{0} {%class %method} - %msg%n</pattern>
+            <pattern>%date{HH:mm:ss} %-5level %logger{0} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <root level="info">
         <!--<appender-ref ref="console"/>-->
-        <appender-ref ref="file"/>
+        <appender-ref ref="file-trace"/>
     </root>
 
+    <logger name="logback" level="info">
+        <appender-ref ref="file"/>
+    </logger>
 </configuration>

@@ -42,6 +42,7 @@ val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
 val typesafeConfigVersion: String = "1.3.3"
 val scalaLoggingVersion: String = "3.9.0"
+val tinyLogVersion: String = "1.3.5"
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -142,7 +143,8 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "com.lmax" % "disruptor" % disruptorVersion,
       "ch.qos.logback" % "logback-classic" % logbackVersion,
       "com.typesafe" % "config" % typesafeConfigVersion,
-      "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion
+      "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+      "org.tinylog" % "tinylog" % tinyLogVersion
     )
   )
 
