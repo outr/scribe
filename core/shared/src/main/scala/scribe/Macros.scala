@@ -1,7 +1,7 @@
 package scribe
 
 import scala.annotation.compileTimeOnly
-import scala.collection.mutable.ListBuffer
+import scala.concurrent.ExecutionContext
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
@@ -68,6 +68,42 @@ object Macros {
     val messageFunction = c.typecheck(q"() => $message")
     c.internal.changeOwner(message, c.internal.enclosingOwner, messageFunction.symbol)
     q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $messageFunction, $loggable, $throwable, $fileName, $dcn, $dmn, $dln))"
+  }
+
+  def executionContext(c: blackbox.Context): c.Expr[ExecutionContext] = {
+    import c.universe._
+
+    c.Expr[ExecutionContext](
+      q"""
+          scribe.Position.push()
+          try {
+            new scribe.LoggingExecutionContext(scala.concurrent.ExecutionContext.global)
+          } finally {
+            scribe.Position.pop()
+          }
+       """)
+  }
+
+  def pushPosition(c: blackbox.Context)(): c.Expr[Unit] = {
+    import c.universe._
+
+    val p = position(c)
+    Position.push(p)
+    reify(())
+  }
+
+  def position(c: blackbox.Context): Position = {
+    val EnclosingType(className, methodName) = enclosingType(c)
+    val line = c.enclosingPosition.line match {
+      case -1 => None
+      case n => Some(n)
+    }
+    val column = c.enclosingPosition.column match {
+      case -1 => None
+      case n => Some(n)
+    }
+    val fileName = c.enclosingPosition.source.path
+    Position(className, methodName, line, column, fileName)
   }
 
   def enclosingType(c: blackbox.Context): EnclosingType = {
