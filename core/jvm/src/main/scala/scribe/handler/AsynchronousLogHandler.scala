@@ -27,7 +27,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
           case Some(record) => {
             cached.decrementAndGet()
             SynchronousLogHandler.log(AsynchronousLogHandler.this, record)
-            Thread.sleep(10L)
+            Thread.sleep(1L)
           }
           case None => Thread.sleep(10L)
         }
@@ -61,7 +61,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
           }
           true
         }
-        case Overflow.Error => throw new LogOverflowException(s"Queue filled (max: ${maxBuffer}) while attempting to asynchronously log")
+        case Overflow.Error => throw new LogOverflowException(s"Queue filled (max: $maxBuffer) while attempting to asynchronously log")
       }
     } else {
       true
