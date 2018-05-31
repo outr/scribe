@@ -18,6 +18,7 @@ case class FileIOWriter(manager: FileLoggingManager,
   override def write[M](record: LogRecord[M], output: String): Unit = {
     val writer = validate()
     writer.write(output)
+    manager.written(record, output)
     if (autoFlush) flush()
   }
 

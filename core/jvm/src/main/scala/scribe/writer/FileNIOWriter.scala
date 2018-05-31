@@ -28,6 +28,7 @@ case class FileNIOWriter(manager: FileLoggingManager,
     val buffer = ByteBuffer.wrap(bytes)
     writeBuffer(buffer, channel)
     buffer.clear()
+    manager.written(record, output)
     if (autoFlush) flush()
   }
 

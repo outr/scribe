@@ -70,8 +70,6 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
       queue.add(record)
     }
   }
-
-  implicit def atomicExtras(l: AtomicLong): AtomicLongExtras = new AtomicLongExtras(l)
 }
 
 object AsynchronousLogHandler {

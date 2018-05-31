@@ -69,4 +69,8 @@ class AtomicLongExtras(val value: AtomicLong) extends AnyVal {
       None
     }
   })
+
+  def setIfCondition(condition: Long => Boolean, value: Long): Boolean = modify((value: Long) => {
+    Some(value).filter(condition)
+  })
 }
