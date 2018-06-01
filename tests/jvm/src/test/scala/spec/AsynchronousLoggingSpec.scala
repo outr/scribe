@@ -7,6 +7,7 @@ import org.scalatest.{AsyncWordSpec, Matchers}
 import perfolation._
 import scribe.{LogRecord, Logger}
 import scribe.format._
+import scribe.writer.file.LogFileMode
 import scribe.writer.{FileWriter, Writer}
 
 import scala.collection.JavaConverters._
@@ -51,7 +52,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       val file = new File("logs/app.log")
       file.delete()
 
-      val fileWriter = FileWriter.single(nio = true)
+      val fileWriter = FileWriter.simple(mode = LogFileMode.NIO)
       val logger = Logger.empty.orphan().withHandler(
         formatter = AsynchronousLoggingSpec.format,
         writer = fileWriter

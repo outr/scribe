@@ -16,7 +16,7 @@ import scribe.handler.AsynchronousLogHandler
 class LoggingSpeedBenchmark {
   assert(LogManager.getRootLogger.isInfoEnabled, "INFO is not enabled in log4j!")
 
-  private lazy val asynchronousWriter = writer.FileWriter.single("scribe-async")
+  private lazy val asynchronousWriter = writer.FileWriter.simple("scribe-async.log")
   private lazy val asynchronousHandler = AsynchronousLogHandler(Formatter.default, asynchronousWriter)
 
   @annotations.Setup(annotations.Level.Trial)
@@ -31,11 +31,12 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withScribe(): Unit = {
-    val fileWriter = writer.FileWriter.single("scribe")
+    val fileWriter = writer.FileWriter.simple("scribe.log")
     val logger = Logger.empty.orphan().withHandler(writer = fileWriter)
 
     var i = 0
@@ -48,7 +49,8 @@ class LoggingSpeedBenchmark {
 
   // TODO: figure out why this shrivels up and dies
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withScribeAsync(): Unit = {
@@ -62,7 +64,8 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withLog4j(): Unit = {
@@ -75,7 +78,8 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withLog4s(): Unit = {
@@ -88,7 +92,8 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withLog4jTrace(): Unit = {
@@ -101,7 +106,8 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withScalaLogging(): Unit = {
@@ -114,7 +120,8 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withLogback(): Unit = {
@@ -127,7 +134,8 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withTinyLog(): Unit = {
@@ -139,7 +147,8 @@ class LoggingSpeedBenchmark {
   }
 
   @annotations.Benchmark
-  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+//  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withPrintLine(): Unit = {

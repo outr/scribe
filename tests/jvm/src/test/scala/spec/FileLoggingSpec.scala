@@ -6,13 +6,14 @@ import org.scalatest.{Matchers, WordSpec}
 import scribe.Logger
 import scribe.format.Formatter
 import scribe.writer.FileWriter
+import scribe.writer.file.LogFileMode
 
 import scala.io.Source
 
 class FileLoggingSpec extends WordSpec with Matchers {
   private var fileLogger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
-  lazy val writer: FileWriter = FileWriter.single("test", nio = true)
+  lazy val writer: FileWriter = FileWriter.simple("test.log", mode = LogFileMode.NIO)
 
   "File Logging" should {
     "configure logging to a temporary file" in {
