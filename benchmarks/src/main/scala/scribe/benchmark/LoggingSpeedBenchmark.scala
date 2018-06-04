@@ -47,7 +47,6 @@ class LoggingSpeedBenchmark {
     fileWriter.dispose()
   }
 
-  // TODO: figure out why this shrivels up and dies
   @annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
 //  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))

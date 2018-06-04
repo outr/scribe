@@ -2,15 +2,14 @@ package scribe
 
 import scala.concurrent.ExecutionContext
 
-class LoggingExecutionContext(context: ExecutionContext) extends ExecutionContext {
-  private val stack = Position.stack
-
+class LoggingExecutionContext(context: ExecutionContext, stack: List[Position]) extends ExecutionContext {
   override def execute(runnable: Runnable): Unit = {
     val mdc = MDC.instance
+    val external = Position.stack
     val r = new Runnable {
       override def run(): Unit = {
         val previous = Position.stack
-        Position.stack = stack
+        Position.stack = previous ::: external ::: stack
         try {
           MDC.contextualize(mdc) {
             runnable.run()

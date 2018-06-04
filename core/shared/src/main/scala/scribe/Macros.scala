@@ -73,15 +73,20 @@ object Macros {
   def executionContext(c: blackbox.Context): c.Expr[ExecutionContext] = {
     import c.universe._
 
-    c.Expr[ExecutionContext](
-      q"""
-          scribe.Position.push()
-          try {
-            new scribe.LoggingExecutionContext(scala.concurrent.ExecutionContext.global)
-          } finally {
-            scribe.Position.pop()
-          }
+    implicit val liftablePosition: c.universe.Liftable[scribe.Position] = new Liftable[scribe.Position] {
+      override def apply(p: scribe.Position): c.universe.Tree = q"scribe.Position(${p.className}, ${p.methodName}, ${p.line}, ${p.column}, ${p.fileName})"
+    }
+
+    Position.push(position(c))
+    val stack = Position.stack
+    try {
+      c.Expr[ExecutionContext](
+        q"""
+          new scribe.LoggingExecutionContext(scala.concurrent.ExecutionContext.global, List(..$stack))
        """)
+    } finally {
+      Position.pop()
+    }
   }
 
   def pushPosition(c: blackbox.Context)(): c.Expr[Unit] = {
