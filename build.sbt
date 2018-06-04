@@ -45,6 +45,15 @@ val scalaLoggingVersion: String = "3.9.0"
 val tinyLogVersion: String = "1.3.5"
 val log4sVersion: String = "1.6.1"
 
+// set source map paths from local directories to github path
+val sourceMapSettings = List(
+  scalacOptions ++= git.gitHeadCommit.value.map { headCommit =>
+    val local = baseDirectory.value.toURI
+    val remote = s"https://raw.githubusercontent.com/outr/scribe/${headCommit}/"
+    s"-P:scalajs:mapSourceURI:$local->$remote"
+  }
+)
+
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
@@ -85,6 +94,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     ),
     publishArtifact in Test := false
   )
+  .jsSettings(sourceMapSettings)
   .nativeSettings(
     scalaVersion := "2.11.12",
   )
