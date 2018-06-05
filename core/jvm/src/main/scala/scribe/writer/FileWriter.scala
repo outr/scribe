@@ -91,7 +91,7 @@ object FileWriter {
            suffix: String = ".log",
            directory: Path = Paths.get("logs"),
            maxLogs: Option[Int] = None,
-           maxSize: Option[Long] = None,
+           maxBytes: Option[Long] = None,
            gzip: Boolean = false,
            mode: LogFileMode = LogFileMode.IO,
            append: Boolean = true,
@@ -105,7 +105,7 @@ object FileWriter {
       }.toList.sortBy(Files.getLastModifiedTime(_)).reverse
     }
     val flatPathBuilder = new FlatPathBuilder(directory.resolve(p"$prefix$suffix"))
-    val pathBuilder = maxSize match {
+    val pathBuilder = maxBytes match {
       case Some(size) => new MaxSizePathBuilder(size, (p: Path) => {
         val name = p.getFileName.toString
         val pre = name.substring(0, name.length - suffix.length)
@@ -132,7 +132,7 @@ object FileWriter {
            suffix: String = ".log",
            directory: Path = Paths.get("logs"),
            maxLogs: Option[Int] = None,
-           maxSize: Option[Long] = None,
+           maxBytes: Option[Long] = None,
            gzip: Boolean = false,
            formatter: Long => String = format.daily,
            mode: LogFileMode = LogFileMode.IO,
@@ -147,7 +147,7 @@ object FileWriter {
       }.toList.sortBy(Files.getLastModifiedTime(_)).reverse
     }
     val dateFormattedPathBuilder = new DateFormattedPathBuilder(directory, (l: Long) => p"$prefix${formatter(l)}$suffix")
-    val pathBuilder = maxSize match {
+    val pathBuilder = maxBytes match {
       case Some(size) => new MaxSizePathBuilder(size, (p: Path) => {
         val name = p.getFileName.toString
         val pre = name.substring(0, name.length - suffix.length)
