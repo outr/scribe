@@ -61,8 +61,13 @@ class LogFile(val key: String,
   def rename(fileName: String): LogFile = rename(path.getParent.resolve(fileName))
 
   def rename(newPath: Path): LogFile = {
-    dispose()
-    Files.move(path, newPath)
+    if (Files.exists(newPath)) {
+      Files.delete(newPath)
+    }
+    if (Files.exists(path)) {
+      dispose()
+      Files.move(path, newPath)
+    }
     LogFile(newPath, append, autoFlush, charset, mode)
   }
 
