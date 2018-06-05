@@ -32,6 +32,32 @@ case class FileWriter(pathBuilder: PathBuilder,
 
     logFile.foreach(_.dispose())
   }
+
+  def withPath(fileName: String = "app.log", directory: Path = Paths.get("logs")): FileWriter = {
+    copy(pathBuilder = new FlatPathBuilder(directory.resolve(fileName)))
+  }
+
+  def withIO: FileWriter = withMode(LogFileMode.IO)
+  def withNIO: FileWriter = withMode(LogFileMode.NIO)
+  def withMode(mode: LogFileMode): FileWriter = if (this.mode == mode) {
+    this
+  } else {
+    copy(mode = mode)
+  }
+
+  def withAppend(append: Boolean = true): FileWriter = if (this.append == append) this else copy(append = append)
+
+  def withAutoFlush(autoFlush: Boolean = false): FileWriter = if (this.autoFlush == autoFlush) {
+    this
+  } else {
+    copy(autoFlush = autoFlush)
+  }
+
+  def withCharset(charset: Charset = Charset.defaultCharset()): FileWriter = if (this.charset == charset) {
+    this
+  } else {
+    copy(charset = charset)
+  }
 }
 
 object FileWriter {
@@ -41,19 +67,24 @@ object FileWriter {
     }
   }
 
+  /**
+    * Default FileWriter using `logs/app.log` as the flat path to write to. Can be used as a base builder to create more
+    * customized instances via the `with` methods.
+    */
+  lazy val default: FileWriter = FileWriter(new FlatPathBuilder(Paths.get("logs").resolve("app.log")))
+
   def simple(fileName: String = "app.log",
              directory: Path = Paths.get("logs"),
              mode: LogFileMode = LogFileMode.IO,
              append: Boolean = true,
              autoFlush: Boolean = false,
              charset: Charset = Charset.defaultCharset()): FileWriter = {
-    FileWriter(
-      new FlatPathBuilder(directory.resolve(fileName)),
-      mode = mode,
-      append = append,
-      autoFlush = autoFlush,
-      charset = charset
-    )
+    default
+      .withPath(fileName, directory)
+      .withMode(mode)
+      .withAppend(append)
+      .withAutoFlush(autoFlush)
+      .withCharset(charset)
   }
 
   def flat(prefix: String = "app",
