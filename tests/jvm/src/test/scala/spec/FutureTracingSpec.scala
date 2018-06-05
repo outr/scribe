@@ -10,7 +10,6 @@ class FutureTracingSpec extends WordSpec with Matchers {
     "using scribe implicits" should {
       "include trace back" in {
         val exception = intercept[RuntimeException](Await.result(FutureTesting.position(), Duration.Inf))
-        exception.printStackTrace()
         val trace = exception.getStackTrace
         trace(0).getFileName should be("FutureTesting.scala")
         trace(0).getLineNumber should be(27)
