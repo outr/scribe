@@ -46,7 +46,7 @@ object Position {
     stack.headOption
   }
 
-  def stack: List[Position] = threadLocal.get()
+  def stack: List[Position] = threadLocal.get().distinct
 
   def stack_=(stack: List[Position]): Unit = threadLocal.set(stack)
 
