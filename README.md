@@ -64,7 +64,9 @@ asynchronous logging support completely removes logging impact from your applica
 * [Performance / Benchmarks](https://github.com/outr/scribe/wiki/benchmarks)
 * [Library Dependencies](https://github.com/outr/scribe/wiki/library-dependencies)
 * [Getting Started](https://github.com/outr/scribe/wiki/getting-started)
-* [Advanced Topics](https://github.com/outr/scribe/wiki/advanced)
+
+## Advanced Topics
+* [Asycnhronous Tracing](https://github.com/outr/scribe/wiki/asynchronous-tracing)
 
 ## Optional Modules
 * [SLF4J integration](https://github.com/outr/scribe/wiki/slf4j)
