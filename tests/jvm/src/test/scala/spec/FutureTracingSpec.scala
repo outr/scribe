@@ -1,11 +1,14 @@
 package spec
 
-import org.scalatest.{AsyncWordSpec, Matchers}
+import java.lang.Thread.UncaughtExceptionHandler
+
+import org.scalatest.{AsyncWordSpec, Matchers, WordSpec}
 import scribe.Position
 
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
-class FutureTracingSpec extends AsyncWordSpec with Matchers {
+class FutureTracingSpec extends WordSpec with Matchers {
   "Future tracing" when {
 //    "using standard implicits" should {
 //      "not include any trace back" in {
@@ -16,9 +19,14 @@ class FutureTracingSpec extends AsyncWordSpec with Matchers {
 //    }
     "using scribe implicits" should {
       "include trace back" in {
-        FutureTesting.position().map { stack =>
-          scribe.info(stack)
-          stack.length should be(4)
+        try {
+          val result = Await.result(FutureTesting.position(), Duration.Inf)
+          println(result)
+        } catch {
+          case t: Throwable => {
+            println(s"CAUGHT! ${t.getMessage} / ${Position.stack}")
+            t.printStackTrace()
+          }
         }
       }
     }

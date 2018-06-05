@@ -10,7 +10,9 @@ object Loggable {
   }
 
   implicit object PositionListLoggable extends Loggable[List[Position]] {
-    override def apply(value: List[Position]): String = ???
+    override def apply(value: List[Position]): String = {
+      value.reverse.map(_.toString).mkString(s"${Platform.lineSeparator}\t")
+    }
   }
 
   implicit object ThrowableLoggable extends Loggable[Throwable] {
