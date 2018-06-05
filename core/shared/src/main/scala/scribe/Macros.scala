@@ -97,10 +97,10 @@ object Macros {
        import scala.concurrent.Future
        implicit def executionContext: scala.concurrent.ExecutionContext = $context
 
-       val future = Future($f)
-       future.recover {
+       val future = Future($f)(executionContext)
+       future.recover({
          case throwable: Throwable => throw scribe.Position.fix(throwable)
-       }
+       })(executionContext)
      """
   }
 

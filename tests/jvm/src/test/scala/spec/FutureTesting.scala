@@ -3,22 +3,23 @@ package spec
 import scribe.Position
 
 import scala.concurrent.Future
+import scribe.Execution.global
 
 object FutureTesting {
   def position(): Future[List[Position]] = scribe.future {
     Test1.one()
-  }.flatten
+  }.flatMap(identity)
 
   object Test1 {
     def one(): Future[List[Position]] = scribe.future {
       Test2.two()
-    }.flatten
+    }.flatMap(identity)
   }
 
   object Test2 {
     def two(): Future[List[Position]] = scribe.future {
       Test3.three()
-    }.flatten
+    }.flatMap(identity)
   }
 
   object Test3 {
