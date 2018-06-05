@@ -8,6 +8,7 @@ package object format {
 
   def date: FormatBlock = FormatBlock.Date.Standard
   def timeStamp: FormatBlock = FormatBlock.TimeStamp
+  def time: FormatBlock = FormatBlock.Time
   def threadName: FormatBlock = FormatBlock.ThreadName
   def threadNameAbbreviated: FormatBlock = threadName.abbreviate(
     maxLength = ThreadNameAbbreviationLength,
