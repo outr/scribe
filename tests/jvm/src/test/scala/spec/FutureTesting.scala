@@ -3,28 +3,27 @@ package spec
 import scribe.Position
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 object FutureTesting {
-  def position(): Future[List[Position]] = Future {
-    Test1.doSomething()
+  def position(): Future[List[Position]] = scribe.future {
+    Test1.one()
   }.flatten
 
   object Test1 {
-    def doSomething(): Future[List[Position]] = Future {
-      Test2.doSomething()
+    def one(): Future[List[Position]] = scribe.future {
+      Test2.two()
     }.flatten
   }
 
   object Test2 {
-    def doSomething(): Future[List[Position]] = Future {
-      Test3.doSomething()
+    def two(): Future[List[Position]] = scribe.future {
+      Test3.three()
     }.flatten
   }
 
   object Test3 {
-    def doSomething(): Future[List[Position]] = Future {
-      throw Position.fix(new RuntimeException("Failure!"))
+    def three(): Future[List[Position]] = scribe.future {
+      throw new RuntimeException("Failure!")
     }
   }
 }

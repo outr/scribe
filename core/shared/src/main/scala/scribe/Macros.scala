@@ -89,6 +89,21 @@ object Macros {
     }
   }
 
+  def future[Return](c: blackbox.Context)(f: c.Tree): c.Tree = {
+    import c.universe._
+
+    val context = executionContext(c)
+    q"""
+       import scala.concurrent.Future
+       implicit def executionContext: scala.concurrent.ExecutionContext = $context
+
+       val future = Future($f)
+       future.recover {
+         case throwable: Throwable => throw scribe.Position.fix(throwable)
+       }
+     """
+  }
+
   def pushPosition(c: blackbox.Context)(): c.Expr[Unit] = {
     import c.universe._
 
