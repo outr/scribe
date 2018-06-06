@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.5.0-SNAPSHOT"
+version in ThisBuild := "2.5.0"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -49,7 +49,7 @@ val log4sVersion: String = "1.6.1"
 val sourceMapSettings = List(
   scalacOptions ++= git.gitHeadCommit.value.map { headCommit =>
     val local = baseDirectory.value.toURI
-    val remote = s"https://raw.githubusercontent.com/outr/scribe/${headCommit}/"
+    val remote = s"https://raw.githubusercontent.com/outr/scribe/$headCommit/"
     s"-P:scalajs:mapSourceURI:$local->$remote"
   }
 )
