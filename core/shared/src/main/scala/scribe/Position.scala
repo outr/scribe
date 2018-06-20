@@ -51,8 +51,9 @@ object Position {
   def stack_=(stack: List[Position]): Unit = threadLocal.set(stack)
 
   def fix(throwable: Throwable): Throwable = {
-    val original = throwable.getStackTrace.toList
-    val trace = original.head :: stack.reverse.map(_.toTraceElement) ::: original.tail
+    val positionTrace = stack.reverse.map(_.toTraceElement)
+    val original = throwable.getStackTrace.toList.filterNot(positionTrace.contains)
+    val trace = original.head :: positionTrace ::: original.tail
     throwable.setStackTrace(trace.toArray)
     throwable
   }

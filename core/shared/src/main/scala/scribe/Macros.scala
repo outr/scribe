@@ -82,14 +82,14 @@ object Macros {
     try {
       c.Expr[ExecutionContext](
         q"""
-          new scribe.LoggingExecutionContext(scala.concurrent.ExecutionContext.global, List(..$stack))
+          new scribe.LoggingExecutionContext(_root_.scala.concurrent.ExecutionContext.global, List(..$stack))
        """)
     } finally {
       Position.pop()
     }
   }
 
-  def async[Return](c: blackbox.Context)(f: c.Tree): c.Tree = {
+  def async[Return](c: blackbox.Context)(f: c.Tree)(implicit r: c.WeakTypeTag[Return]): c.Tree = {
     import c.universe._
 
     q"""
@@ -97,7 +97,7 @@ object Macros {
          $f match {
            case future: Future[_] => future.recover({
              case throwable: Throwable => throw scribe.Position.fix(throwable)
-           })(scribe.Execution.global)
+           })(scribe.Execution.global).asInstanceOf[$r]
            case result => result
          }
        } catch {
@@ -111,8 +111,8 @@ object Macros {
 
     val context = executionContext(c)
     q"""
-       import scala.concurrent.Future
-       implicit def executionContext: scala.concurrent.ExecutionContext = $context
+       import _root_.scala.concurrent.Future
+       implicit def executionContext: _root_.scala.concurrent.ExecutionContext = $context
 
        val future = Future($f)(executionContext)
        future.recover({
