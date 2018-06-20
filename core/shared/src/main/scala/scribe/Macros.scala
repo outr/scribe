@@ -89,6 +89,23 @@ object Macros {
     }
   }
 
+  def async[Return](c: blackbox.Context)(f: c.Tree): c.Tree = {
+    import c.universe._
+
+    q"""
+       try {
+         $f match {
+           case future: Future[_] => future.recover({
+             case throwable: Throwable => throw scribe.Position.fix(throwable)
+           })(scribe.Execution.global)
+           case result => result
+         }
+       } catch {
+         case t: Throwable => throw scribe.Position.fix(t)
+       }
+     """
+  }
+
   def future[Return](c: blackbox.Context)(f: c.Tree): c.Tree = {
     import c.universe._
 

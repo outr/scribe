@@ -6,7 +6,7 @@ import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
 @compileTimeOnly("Enable macros to expand")
-object FormatterMacros {
+object ScribeMacros {
   def formatter(c: blackbox.Context)(args: c.Tree*): c.Tree = {
     import c.universe._
 

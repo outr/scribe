@@ -27,11 +27,7 @@ package object scribe extends LoggerSupport {
     * @param f the functional that may throw a `Throwable`
     * @tparam Return the return type of the wrapped function
     */
-  def async[Return](f: => Return): Return = try {
-    f
-  } catch {
-    case t: Throwable => throw Position.fix(t)
-  }
+  def async[Return](f: => Return): Return = macro Macros.async[Return]
 
   /**
     * Convenience method to create a `Future` with the Scribe `ExecutionContext` to properly track tracing up the chain

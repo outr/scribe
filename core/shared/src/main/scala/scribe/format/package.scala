@@ -30,6 +30,6 @@ package object format {
   def mdc(key: String): FormatBlock = FormatBlock.MDCReference(key)
 
   implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
-    def formatter(args: Any*): Formatter = macro FormatterMacros.formatter
+    def formatter(args: Any*): Formatter = macro ScribeMacros.formatter
   }
 }
