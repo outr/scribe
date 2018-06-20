@@ -92,9 +92,11 @@ object Macros {
   def async[Return](c: blackbox.Context)(f: c.Tree)(implicit r: c.WeakTypeTag[Return]): c.Tree = {
     import c.universe._
 
+    val function = c.typecheck(q"() => $f")
+    c.internal.changeOwner(f, c.internal.enclosingOwner, function.symbol)
     q"""
        try {
-         $f match {
+         $function() match {
            case future: Future[_] => future.recover({
              case throwable: Throwable => throw scribe.Position.fix(throwable)
            })(scribe.Execution.global).asInstanceOf[$r]
@@ -110,11 +112,13 @@ object Macros {
     import c.universe._
 
     val context = executionContext(c)
+    val function = c.typecheck(q"() => $f")
+    c.internal.changeOwner(f, c.internal.enclosingOwner, function.symbol)
     q"""
        import _root_.scala.concurrent.Future
        implicit def executionContext: _root_.scala.concurrent.ExecutionContext = $context
 
-       val future = Future($f)(executionContext)
+       val future = Future($function())(executionContext)
        future.recover({
          case throwable: Throwable => throw scribe.Position.fix(throwable)
        })(executionContext)
