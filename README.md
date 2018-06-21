@@ -21,7 +21,13 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe-slf4j" % "2.5.0"
+libraryDependencies += "com.outr" %%% "scribe" % "2.5.1"
+```
+
+Or, if you want interoperability with SLF4J (for those silly projects that haven't switched to Scribe yet):
+
+```scala
+libraryDependencies += "com.outr" %%% "scribe-slf4j" % "2.5.1"
 ```
 
 ### Usage

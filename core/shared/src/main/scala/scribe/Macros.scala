@@ -45,6 +45,7 @@ object Macros {
 
     val logger = c.prefix.tree
     val EnclosingType(className, methodName) = enclosingType(c)
+    // TODO: use Position instead and expose `column`
     val line = c.enclosingPosition.line match {
       case -1 => None
       case n => Some(n)
