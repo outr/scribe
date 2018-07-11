@@ -28,6 +28,7 @@ package object format {
   def message: FormatBlock = FormatBlock.Message
   def newLine: FormatBlock = FormatBlock.NewLine
   def mdc(key: String): FormatBlock = FormatBlock.MDCReference(key)
+  def mdc: FormatBlock = FormatBlock.MDCAll
 
   implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
     def formatter(args: Any*): Formatter = macro ScribeMacros.formatter

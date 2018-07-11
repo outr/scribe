@@ -144,6 +144,19 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): String = MDC.get(key).orNull
   }
 
+  object MDCAll extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = {
+      val map = MDC.map
+      if (map.nonEmpty) {
+        MDC.map.map {
+          case (key, value) => p"$key: $value"
+        }.mkString(" (", ", ", ")")
+      } else {
+        ""
+      }
+    }
+  }
+
   object NewLine extends FormatBlock {
     override def format[M](record: LogRecord[M]): String = "\n"
   }

@@ -1,7 +1,7 @@
 package spec
 
 import org.scalatest.{Matchers, WordSpec}
-import org.slf4j.LoggerFactory
+import org.slf4j.{LoggerFactory, MDC}
 import scribe.handler.LogHandler
 import scribe.modify.LogModifier
 import scribe.{Level, LogRecord, Logger, Priority}
@@ -37,6 +37,11 @@ class SLF4JSpec extends WordSpec with Matchers {
       r.level should be(Level.Info)
       r.message should be("Hello World!")
       logs = Nil
+    }
+    "use MDC" in {
+      MDC.put("name", "John Doe")
+      val logger = LoggerFactory.getLogger(getClass)
+      logger.info("A generic name")
     }
   }
 }
