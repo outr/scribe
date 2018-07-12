@@ -10,7 +10,7 @@ import scala.annotation.tailrec
 import scala.util.Try
 
 object LogFile {
-  val AsynchronousFlushDelay: Long = 100L
+  val AsynchronousFlushDelay: Long = 1000L
 
   private[file] var map = Map.empty[String, LogFile]
 

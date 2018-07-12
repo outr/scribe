@@ -26,7 +26,7 @@ developers in ThisBuild := List(
 )
 
 // Core
-val perfolationVersion: String = "1.0.2"
+val perfolationVersion: String = "1.0.3"
 val scalatestVersion: String = "3.0.5"
 
 // SLF4J
