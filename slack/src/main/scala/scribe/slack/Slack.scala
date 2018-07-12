@@ -11,7 +11,7 @@ import scribe.handler.LogHandler
 import scala.concurrent.Future
 
 class Slack(serviceHash: String, botName: String) {
-  private lazy val client = new HttpClient
+  private lazy val client = HttpClient()
   private lazy val url: URL = URL(s"https://hooks.slack.com/services/$serviceHash")
 
   def request(message: String,

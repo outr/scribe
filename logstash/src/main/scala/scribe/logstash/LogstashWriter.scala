@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 case class LogstashWriter(url: URL,
                           service: String,
                           asynchronous: Boolean = true) extends Writer {
-  private lazy val client = new HttpClient()
+  private lazy val client = HttpClient()
 
   override def write[M](record: LogRecord[M], output: String): Unit = {
     val future = log(record)
