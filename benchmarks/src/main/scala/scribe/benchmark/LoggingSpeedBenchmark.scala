@@ -145,7 +145,7 @@ class LoggingSpeedBenchmark {
     }
   }
 
-  @annotations.Benchmark
+  /*@annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
 //  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -156,7 +156,7 @@ class LoggingSpeedBenchmark {
       println("test")
       i += 1
     }
-  }
+  }*/
 
   @annotations.TearDown
   def tearDown(): Unit = {

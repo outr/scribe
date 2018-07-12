@@ -10,6 +10,8 @@ import scala.annotation.tailrec
 import scala.util.Try
 
 object LogFile {
+  val AsynchronousFlushDelay: Long = 100L
+
   private[file] var map = Map.empty[String, LogFile]
 
   def apply(path: Path,
@@ -47,6 +49,7 @@ class LogFile(val key: String,
     Files.createDirectories(path.getParent)
     mode.createWriter(this)
   }
+  private lazy val flusher = new AsynchronousFlusher(this, LogFile.AsynchronousFlushDelay)
 
   def size: Long = sizeCounter.get()
 
@@ -54,6 +57,8 @@ class LogFile(val key: String,
     writer.write(output)
     if (autoFlush) {
       writer.flush()
+    } else {
+      flusher.written()
     }
     sizeCounter.addAndGet(output.length)
   }
