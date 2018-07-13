@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.5.3-SNAPSHOT"
+version in ThisBuild := "2.5.3"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -26,7 +26,7 @@ developers in ThisBuild := List(
 )
 
 // Core
-val perfolationVersion: String = "1.0.3"
+val perfolationVersion: String = "1.0.4"
 val scalatestVersion: String = "3.0.5"
 
 // SLF4J
