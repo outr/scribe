@@ -6,6 +6,7 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/scribe)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.12)
 [![Latest version](https://index.scala-lang.org/outr/scribe/scribe/latest.svg)](https://index.scala-lang.org/outr/scribe)
+[![Javadocs](https://javadoc.io/badge/com.outr/scribe_2.12.svg)](https://javadoc.io/doc/com.outr/scribe_2.12)
 
 Scribe is a completely different way of thinking about logging. Instead of wrapping around existing logging frameworks
 and bearing their performance and design flaws, Scribe is built from the ground up to provide fast and effective logging
