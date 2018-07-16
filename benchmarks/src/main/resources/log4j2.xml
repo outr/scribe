@@ -7,21 +7,21 @@
         </Console>
     </Appenders>
     <Appenders>
-        <File name="log4j" fileName="logs/log4j.log">
+        <RandomAccessFile name="log4j" fileName="logs/log4j.log" immediateFlush="false" append="false">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
             </PatternLayout>
-        </File>
-        <File name="log4s" fileName="logs/log4s.log">
+        </RandomAccessFile>
+        <RandomAccessFile name="log4s" fileName="logs/log4s.log" immediateFlush="false" append="false">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
             </PatternLayout>
-        </File>
-        <File name="TraceFile" fileName="logs/log4j-trace.log">
+        </RandomAccessFile>
+        <RandomAccessFile name="TraceFile" fileName="logs/log4j-trace.log" immediateFlush="false" append="false">
             <PatternLayout>
                 <Pattern>%d{ISO8601}{GMT} %-5p %C{2} (%F:%L) - %m%n</Pattern>
             </PatternLayout>
-        </File>
+        </RandomAccessFile>
         <Async name="Async">
             <AppenderRef ref="log4j"/>
         </Async>
