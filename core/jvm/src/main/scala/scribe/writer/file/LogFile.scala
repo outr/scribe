@@ -50,6 +50,7 @@ class LogFile(val key: String,
     mode.createWriter(this)
   }
   private lazy val flusher = new AsynchronousFlusher(this, LogFile.AsynchronousFlushDelay)
+  @volatile private var disposed = false
 
   def size: Long = sizeCounter.get()
 
@@ -105,9 +106,14 @@ class LogFile(val key: String,
     }
   }
 
+  def isActive: Boolean = !disposed
+
+  def isDisposed: Boolean = disposed
+
   def flush(): Unit = writer.flush()
 
   def dispose(): Unit = {
+    disposed = true
     LogFile.synchronized {
       LogFile.map -= key
     }
