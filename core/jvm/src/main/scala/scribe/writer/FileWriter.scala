@@ -146,7 +146,7 @@ object FileWriter {
         name.startsWith(prefix) && name.endsWith(ending)
       }.toList.sortBy(Files.getLastModifiedTime(_)).reverse
     }
-    val dateFormattedPathBuilder = new DateFormattedPathBuilder(directory, (l: Long) => p"$prefix${formatter(l)}$suffix")
+    val dateFormattedPathBuilder = new DateFormattedPathBuilder(directory, (l: Long) => p"$prefix.${formatter(l)}$suffix")
     val pathBuilder = maxBytes match {
       case Some(size) => new MaxSizePathBuilder(size, (p: Path) => {
         val name = p.getFileName.toString
