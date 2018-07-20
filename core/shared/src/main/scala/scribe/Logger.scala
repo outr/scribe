@@ -33,7 +33,7 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
 
   override def includes(level: Level): Boolean = {
     super.includes(level) &&
-      (handlers.exists(_.includes(level)) || parentId.map(Logger.apply).forall(_.includes(level)))
+      (handlers.exists(_.includes(level)) || parentId.map(Logger.apply).exists(_.includes(level)))
   }
 
   override def log[M](record: LogRecord[M]): Unit = {
