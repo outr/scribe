@@ -46,7 +46,9 @@ class LogFile(val key: String,
               val charset: Charset,
               val mode: LogFileMode) {
   private lazy val sizeCounter = new AtomicLong(0L)
+  @volatile private var active: Boolean = false
   private lazy val writer = {
+    active = true
     Files.createDirectories(path.getParent)
     mode.createWriter(this)
   }
@@ -64,6 +66,12 @@ class LogFile(val key: String,
     }
     sizeCounter.addAndGet(output.length)
   }
+
+  def replace(path: Path = path,
+              append: Boolean = append,
+              autoFlush: Boolean = autoFlush,
+              charset: Charset = charset,
+              mode: LogFileMode = mode): LogFile = LogFile(path, append, autoFlush, charset, mode)
 
   def rename(fileName: String): LogFile = rename(path.getParent.resolve(fileName))
 
@@ -107,7 +115,7 @@ class LogFile(val key: String,
     }
   }
 
-  def isActive: Boolean = !disposed
+  def isActive: Boolean = active && !isDisposed
 
   def isDisposed: Boolean = disposed
 
@@ -118,10 +126,12 @@ class LogFile(val key: String,
     LogFile.synchronized {
       LogFile.map -= key
     }
-    try {
-      writer.dispose()
-    } catch {
-      case _: Throwable => // Ignore
+    if (isActive) {
+      try {
+        writer.dispose()
+      } catch {
+        case _: Throwable => // Ignore
+      }
     }
   }
 

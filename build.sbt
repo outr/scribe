@@ -117,7 +117,7 @@ lazy val slf4j = project.in(file("slf4j"))
 lazy val slf4j18 = project.in(file("slf4j18"))
   .dependsOn(coreJVM)
   .settings(
-    name := "scribe-swlf4j18",
+    name := "scribe-slf4j18",
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j18Version,

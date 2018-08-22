@@ -17,6 +17,7 @@ class AsynchronousFlusher(logFile: LogFile, delay: Long) {
     dirty.set(true)
   }
 
+  // TODO: avoid using the global ExecutionContext
   private def flush(): Unit = Future {
     try {
       val delay = this.delay - (System.currentTimeMillis() - lastFlush.get())

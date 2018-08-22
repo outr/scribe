@@ -1,41 +1,58 @@
 package scribe.writer
 
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, Paths}
 
 import scribe._
-import scribe.writer.file.LogFile
-import scribe.writer.file.action.Action
+import scribe.writer.file.{LogFile, LogFileMode}
+import scribe.writer.action.{Action, FileModeAction, UpdatePathAction}
 
-class FileWriter(actions: List[Action], allowNone: Boolean = false) extends Writer {
-  // TODO: `logFile` should not be an Option
-  @volatile private[writer] var logFile: Option[LogFile] = None
+class FileWriter(actions: List[Action]) extends Writer {
+  @volatile private[writer] var logFile: LogFile = LogFile(FileWriter.DefaultPath)
 
-  protected def validate(actions: List[Action], allowNone: Boolean): Unit = {
-    val updated = Action(actions, logFile, None)
+  protected def validate(actions: List[Action]): FileWriter = {
+    val updated = Action(actions, logFile, logFile)
     if (updated != logFile) {
-      logFile.foreach(_.dispose())
+      if (logFile.isActive) {
+        logFile.dispose()
+      }
       logFile = updated
-      if (!allowNone && logFile.isEmpty) throw new RuntimeException("FileWriter actions resulted in no LogFile being returned!")
     }
+    this
   }
 
   override def write[M](record: LogRecord[M], output: String): Unit = synchronized {
-    validate(actions, allowNone)
-    logFile.foreach(_.write(output))
+    validate(actions)
+    logFile.write(output)
   }
 
-  def nio: FileWriter = validate()
+  def nio: FileWriter = validate(List(FileModeAction(LogFileMode.NIO)))
 
-  def flush(): Unit = logFile.foreach(_.flush())
+  def io: FileWriter = validate(List(FileModeAction(LogFileMode.IO)))
+
+  def path(path: => Path, checkRate: Long = 10L): FileWriter = validate(List(UpdatePathAction(_ => path, checkRate)))
+  def path(path: Long => Path, checkRate: Long = 10L): FileWriter = validate(List(UpdatePathAction(path, checkRate)))
+
+  def withActions(actions: Action*): FileWriter = {
+    dispose()
+    new FileWriter(this.actions ::: actions.toList)
+  }
+
+  def rolling() // TODO: implement
+
+  def flush(): Unit = logFile.flush()
 
   override def dispose(): Unit = {
     super.dispose()
 
-    logFile.foreach(_.dispose())
+    logFile.dispose()
   }
 }
 
-object FileWriter extends FileWriter(Nil, allowNone = false) {
+object FileWriter {
+  lazy val DefaultPath: Path = Paths.get("app.log")
+
+  def apply(): FileWriter = new FileWriter(Nil)
+
   def isSamePath(oldPath: Option[Path], newPath: Path): Boolean = oldPath match {
     case Some(current) => if (current == newPath) {
       true
