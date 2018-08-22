@@ -11,6 +11,7 @@ import scala.util.Try
 
 object LogFile {
   val AsynchronousFlushDelay: Long = 1000L
+  val BufferSize: Int = 1024
 
   private[file] var map = Map.empty[String, LogFile]
 
@@ -81,7 +82,7 @@ class LogFile(val key: String,
                  deleteOriginal: Boolean = true): Unit = {
     flush()
     dispose()
-    val buffer = new Array[Byte](1024)
+    val buffer = new Array[Byte](LogFile.BufferSize)
     val file = path.toAbsolutePath.toFile
     val outputFile = new File(file.getParentFile, destination)
     val input = new GZIPInputStream(new FileInputStream(file))
