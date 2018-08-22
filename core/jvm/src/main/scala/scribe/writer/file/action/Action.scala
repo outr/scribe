@@ -44,3 +44,7 @@ trait UpdateLogFileAction extends Action {
     }
   }
 }
+
+object NIOFileAction extends UpdateLogFileAction {
+  override def update(current: LogFile): LogFile = current.
+}

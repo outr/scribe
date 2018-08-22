@@ -7,9 +7,10 @@ import scribe.writer.file.LogFile
 import scribe.writer.file.action.Action
 
 class FileWriter(actions: List[Action], allowNone: Boolean = false) extends Writer {
+  // TODO: `logFile` should not be an Option
   @volatile private[writer] var logFile: Option[LogFile] = None
 
-  protected def validate(): Unit = {
+  protected def validate(actions: List[Action], allowNone: Boolean): Unit = {
     val updated = Action(actions, logFile, None)
     if (updated != logFile) {
       logFile.foreach(_.dispose())
@@ -19,9 +20,11 @@ class FileWriter(actions: List[Action], allowNone: Boolean = false) extends Writ
   }
 
   override def write[M](record: LogRecord[M], output: String): Unit = synchronized {
-    validate()
+    validate(actions, allowNone)
     logFile.foreach(_.write(output))
   }
+
+  def nio: FileWriter = validate()
 
   def flush(): Unit = logFile.foreach(_.flush())
 
