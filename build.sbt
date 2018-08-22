@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.5.4-SNAPSHOT"
+version in ThisBuild := "2.6.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -34,10 +34,10 @@ val slf4jVersion: String = "1.7.25"
 val slf4j18Version: String = "1.8.0-beta2"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.9.0-M16"
+val youiVersion: String = "0.9.0-M17"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.11.0"
+val log4jVersion: String = "2.11.1"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
 val typesafeConfigVersion: String = "1.3.3"
