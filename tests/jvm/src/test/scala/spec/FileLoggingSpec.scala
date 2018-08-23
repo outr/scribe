@@ -13,7 +13,7 @@ import scala.io.Source
 class FileLoggingSpec extends WordSpec with Matchers {
   private var fileLogger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
-  lazy val writer: FileWriter = FileWriter().nio.path(logFile)
+  lazy val writer: FileWriter = FileWriter().nio.path(_ => logFile)
 
   "File Logging" should {
     "configure logging to a temporary file" in {

@@ -3,13 +3,13 @@ package scribe.writer
 import java.nio.file.{Files, Path, Paths}
 
 import scribe._
-import scribe.writer.file.{LogFile, LogFileMode}
-import scribe.writer.action.{Action, FileModeAction, UpdatePathAction}
+import scribe.writer.file.{LogFile, LogFileMode, LogPath}
+import scribe.writer.action.{Action, FileModeAction, RenamePathAction, UpdatePathAction}
 
 class FileWriter(actions: List[Action]) extends Writer {
-  @volatile private[writer] var logFile: LogFile = LogFile(FileWriter.DefaultPath)
+  @volatile private[writer] var logFile: LogFile = LogFile(LogPath.default(0L))
 
-  protected def validate(actions: List[Action]): FileWriter = {
+  def invoke(actions: List[Action]): FileWriter = {
     val updated = Action(actions, logFile, logFile)
     if (updated != logFile) {
       if (logFile.isActive) {
@@ -21,23 +21,26 @@ class FileWriter(actions: List[Action]) extends Writer {
   }
 
   override def write[M](record: LogRecord[M], output: String): Unit = synchronized {
-    validate(actions)
+    invoke(actions)
     logFile.write(output)
   }
 
-  def nio: FileWriter = validate(List(FileModeAction(LogFileMode.NIO)))
+  def nio: FileWriter = invoke(List(FileModeAction(LogFileMode.NIO)))
 
-  def io: FileWriter = validate(List(FileModeAction(LogFileMode.IO)))
+  def io: FileWriter = invoke(List(FileModeAction(LogFileMode.IO)))
 
-  def path(path: => Path, checkRate: Long = 10L): FileWriter = validate(List(UpdatePathAction(_ => path, checkRate)))
-  def path(path: Long => Path, checkRate: Long = 10L): FileWriter = validate(List(UpdatePathAction(path, checkRate)))
+  def path(path: Long => Path, gzip: Boolean = false, checkRate: Long = 10L): FileWriter = {
+    invoke(List(UpdatePathAction(path, gzip, checkRate)))
+  }
 
   def withActions(actions: Action*): FileWriter = {
     dispose()
     new FileWriter(this.actions ::: actions.toList)
   }
 
-  def rolling() // TODO: implement
+  def rolling(path: Long => Path, gzip: Boolean = false, checkRate: Long = 10L): FileWriter = {
+    withActions(RenamePathAction(path, gzip, checkRate))
+  }
 
   def flush(): Unit = logFile.flush()
 
@@ -49,8 +52,6 @@ class FileWriter(actions: List[Action]) extends Writer {
 }
 
 object FileWriter {
-  lazy val DefaultPath: Path = Paths.get("app.log")
-
   def apply(): FileWriter = new FileWriter(Nil)
 
   def isSamePath(oldPath: Option[Path], newPath: Path): Boolean = oldPath match {

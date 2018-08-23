@@ -2,6 +2,7 @@ package scribe
 
 import scala.annotation.tailrec
 import perfolation._
+import scribe.util.Time
 
 trait LogRecord[M] {
   def level: Level
@@ -46,7 +47,7 @@ object LogRecord {
                methodName: Option[String],
                lineNumber: Option[Int],
                thread: Thread = Thread.currentThread(),
-               timeStamp: Long = System.currentTimeMillis()): LogRecord[M] = {
+               timeStamp: Long = Time()): LogRecord[M] = {
     SimpleLogRecord(level, value, messageValue, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 
@@ -57,7 +58,7 @@ object LogRecord {
              lineNumber: Option[Int] = None,
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
-             timeStamp: Long = System.currentTimeMillis()): LogRecord[String] = {
+             timeStamp: Long = Time()): LogRecord[String] = {
     apply[String](level, level.value, messageValue, Loggable.StringLoggable, None, fileName, className, methodName, lineNumber, thread, timeStamp)
   }
 

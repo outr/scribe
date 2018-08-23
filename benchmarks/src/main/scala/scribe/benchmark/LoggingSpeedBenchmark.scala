@@ -1,5 +1,6 @@
 package scribe.benchmark
 
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
 import com.typesafe.config.ConfigFactory
@@ -16,7 +17,7 @@ import scribe.handler.AsynchronousLogHandler
 class LoggingSpeedBenchmark {
   assert(LogManager.getRootLogger.isInfoEnabled, "INFO is not enabled in log4j!")
 
-  private lazy val asynchronousWriter = writer.FileWriter.simple("scribe-async.log")
+  private lazy val asynchronousWriter = writer.FileWriter().path(_ => Paths.get("scribe-async.log"))
   private lazy val asynchronousHandler = AsynchronousLogHandler(Formatter.default, asynchronousWriter)
 
   @annotations.Setup(annotations.Level.Trial)
@@ -36,7 +37,7 @@ class LoggingSpeedBenchmark {
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withScribe(): Unit = {
-    val fileWriter = writer.FileWriter.simple("scribe.log")
+    val fileWriter = writer.FileWriter().path(_ => Paths.get("scribe.log"))
     val logger = Logger.empty.orphan().withHandler(writer = fileWriter)
 
     var i = 0

@@ -1,12 +1,10 @@
 package scribe.writer.action
 
-import java.nio.file.Path
+import java.nio.file.{Files, Path}
 
+import scribe.util.Time
 import scribe.writer.FileWriter
 import scribe.writer.file.{LogFile, LogFileMode}
-
-// TODO: class FileWriter(actions: List[Action], allowNone: Boolean = false)
-// TODO: DSL actions applied immediately or added to `actions`
 
 trait Action {
   def apply(previous: LogFile, current: LogFile): LogFile
@@ -59,18 +57,57 @@ case class FileModeAction(mode: LogFileMode) extends UpdateLogFileAction {
   }
 }
 
-case class UpdatePathAction(path: Long => Path, checkRate: Long) extends UpdateLogFileAction {
+case class UpdatePathAction(path: Long => Path, gzip: Boolean, checkRate: Long) extends UpdateLogFileAction {
   private var lastCheck: Long = 0L
 
   override def update(current: LogFile): LogFile = {
-    val now = System.currentTimeMillis()
+    val now = Time()
     try {
       if (now - lastCheck >= checkRate) {
         val newPath = path(now)
         if (FileWriter.isSamePath(Some(current.path), newPath)) {
           current
         } else {
-          current.replace(path = newPath)
+          val replacement = current.replace(path = newPath)
+          if (gzip) {
+            current.gzip()
+          }
+          replacement
+        }
+      } else {
+        current
+      }
+    } finally {
+      lastCheck = now
+    }
+  }
+}
+
+case class RenamePathAction(path: Long => Path, gzip: Boolean, checkRate: Long) extends Action {
+  private var lastCheck: Long = 0L
+  @volatile private var currentFileStamp: Long = 0L
+
+  override def apply(previous: LogFile, current: LogFile): LogFile = {
+    val now = Time()
+    try {
+      if (now - lastCheck >= checkRate) {
+        if ((current != previous && !FileWriter.isSamePath(Some(previous.path), current.path)) || currentFileStamp == 0L) {
+          if (Files.exists(current.path)) {
+            currentFileStamp = Files.getLastModifiedTime(current.path).toMillis
+          }
+          current
+        } else {
+          val previousPath = path(currentFileStamp)
+          val currentPath = path(Time())
+          if (!FileWriter.isSamePath(Some(previousPath), currentPath)) {
+            val renamed = current.rename(currentPath)
+            if (gzip) {
+              renamed.gzip()
+            }
+            current.replace()
+          } else {
+            current
+          }
         }
       } else {
         current

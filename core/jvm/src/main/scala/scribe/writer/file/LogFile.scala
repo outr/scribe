@@ -49,7 +49,7 @@ class LogFile(val key: String,
   @volatile private var active: Boolean = false
   private lazy val writer = {
     active = true
-    Files.createDirectories(path.getParent)
+    Option(path.getParent).foreach(Files.createDirectories(_))
     mode.createWriter(this)
   }
   private lazy val flusher = new AsynchronousFlusher(this, LogFile.AsynchronousFlushDelay)
