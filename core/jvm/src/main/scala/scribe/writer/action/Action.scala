@@ -82,7 +82,7 @@ case class UpdatePathAction(path: Long => Path, gzip: Boolean, checkRate: Long) 
   }
 }
 
-case class RenamePathAction(path: Long => Path, gzip: Boolean, checkRate: Long) extends Action {
+case class PathResolvingAction(path: Long => Path, gzip: Boolean, checkRate: Long) extends Action {
   @volatile private var currentFileStamp: Long = 0L
 
   override def apply(previous: LogFile, current: LogFile): LogFile = rateDelayed(checkRate, current) {
@@ -131,5 +131,17 @@ object MaxLogFilesAction {
     val directory = Option(path.toAbsolutePath.getParent)
       .getOrElse(throw new RuntimeException(s"No parent found for ${path.toAbsolutePath.toString}"))
     Files.list(directory).iterator().asScala.filter(MatchLogAndGZ).toList.sortBy(Files.getLastModifiedTime(_)).reverse
+  }
+}
+
+case class MaxLogSizeAction(maxSizeInBytes: Long,
+                            actions: List[Action],
+                            checkRate: Long) extends Action {
+  override def apply(previous: LogFile, current: LogFile): LogFile = rateDelayed(checkRate, current) {
+    if (current.size >= maxSizeInBytes) {
+      Action(actions, previous, current)
+    } else {
+      current
+    }
   }
 }

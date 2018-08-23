@@ -50,6 +50,9 @@ class LogFile(val key: String,
   private lazy val writer = {
     active = true
     Option(path.getParent).foreach(Files.createDirectories(_))
+    if (Files.exists(path)) {
+      sizeCounter.set(Files.size(path))
+    }
     mode.createWriter(this)
   }
   private lazy val flusher = new AsynchronousFlusher(this, LogFile.AsynchronousFlushDelay)

@@ -35,6 +35,8 @@ class FileLoggingSpec extends WordSpec with Matchers {
         Files.delete(logFile)
       }
     }
+    // TODO: replace Time.function
+    // TODO: proper testing of various file logging features
     "close and release the file handle" in {
       writer.dispose()
     }

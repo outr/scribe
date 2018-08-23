@@ -9,7 +9,7 @@ import scribe.writer.action._
 class FileWriter(actions: List[Action]) extends Writer {
   @volatile private[writer] var logFile: LogFile = LogFile(LogPath.default(0L))
 
-  def invoke(actions: List[Action]): FileWriter = {
+  def invoke(actions: List[Action]): FileWriter = synchronized {
     val updated = Action(actions, logFile, logFile)
     if (updated != logFile) {
       if (logFile.isActive) {
@@ -47,13 +47,17 @@ class FileWriter(actions: List[Action]) extends Writer {
   }
 
   def rolling(path: Long => Path, gzip: Boolean = false, checkRate: Long = 10L): FileWriter = {
-    withActions(RenamePathAction(path, gzip, checkRate))
+    withActions(PathResolvingAction(path, gzip, checkRate))
   }
 
   def maxLogs(max: Int,
               lister: Path => List[Path] = MaxLogFilesAction.MatchLogAndGZInSameDirectory,
               checkRate: Long = 10L): FileWriter = {
     withActions(MaxLogFilesAction(max, lister, checkRate))
+  }
+
+  def maxSize(maxSizeInBytes: Long, actions: List[Action], checkRate: Long = 10L): FileWriter = {
+    withActions(MaxLogSizeAction(maxSizeInBytes, actions, checkRate))
   }
 
   def flush(): Unit = logFile.flush()
