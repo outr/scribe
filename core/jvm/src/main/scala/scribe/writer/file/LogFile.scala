@@ -57,6 +57,10 @@ class LogFile(val key: String,
 
   def size: Long = sizeCounter.get()
 
+  def differentPath(that: LogFile): Boolean = scribe.writer.FileWriter.differentPath(this.path, that.path)
+
+  def samePath(that: LogFile): Boolean = scribe.writer.FileWriter.samePath(this.path, that.path)
+
   final def write(output: String): Unit = {
     writer.write(output)
     if (autoFlush) {
@@ -71,7 +75,18 @@ class LogFile(val key: String,
               append: Boolean = append,
               autoFlush: Boolean = autoFlush,
               charset: Charset = charset,
-              mode: LogFileMode = mode): LogFile = LogFile(path, append, autoFlush, charset, mode)
+              mode: LogFileMode = mode): LogFile = {
+    if (isDisposed ||
+        this.path != path ||
+        this.append != append ||
+        this.autoFlush != autoFlush ||
+        this.charset != charset ||
+        this.mode != mode) {
+      LogFile(path, append, autoFlush, charset, mode)
+    } else {
+      this
+    }
+  }
 
   def rename(fileName: String): LogFile = rename(path.getParent.resolve(fileName))
 

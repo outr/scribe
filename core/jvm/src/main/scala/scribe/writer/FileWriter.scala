@@ -1,10 +1,10 @@
 package scribe.writer
 
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 
 import scribe._
 import scribe.writer.file.{LogFile, LogFileMode, LogPath}
-import scribe.writer.action.{Action, FileModeAction, RenamePathAction, UpdatePathAction}
+import scribe.writer.action._
 
 class FileWriter(actions: List[Action]) extends Writer {
   @volatile private[writer] var logFile: LogFile = LogFile(LogPath.default(0L))
@@ -25,13 +25,21 @@ class FileWriter(actions: List[Action]) extends Writer {
     logFile.write(output)
   }
 
-  def nio: FileWriter = invoke(List(FileModeAction(LogFileMode.NIO)))
+  def withMode(mode: LogFileMode): FileWriter = invoke(List(UpdateLogFileAction(_.replace(mode = mode))))
 
-  def io: FileWriter = invoke(List(FileModeAction(LogFileMode.IO)))
+  def nio: FileWriter = withMode(LogFileMode.NIO)
+
+  def io: FileWriter = withMode(LogFileMode.IO)
 
   def path(path: Long => Path, gzip: Boolean = false, checkRate: Long = 10L): FileWriter = {
     invoke(List(UpdatePathAction(path, gzip, checkRate)))
   }
+
+  def append: FileWriter = invoke(List(UpdateLogFileAction(_.replace(append = true))))
+
+  def replace: FileWriter = invoke(List(UpdateLogFileAction(_.replace(append = false))))
+
+  def autoFlush: FileWriter = invoke(List(UpdateLogFileAction(_.replace(autoFlush = true))))
 
   def withActions(actions: Action*): FileWriter = {
     dispose()
@@ -40,6 +48,12 @@ class FileWriter(actions: List[Action]) extends Writer {
 
   def rolling(path: Long => Path, gzip: Boolean = false, checkRate: Long = 10L): FileWriter = {
     withActions(RenamePathAction(path, gzip, checkRate))
+  }
+
+  def maxLogs(max: Int,
+              lister: Path => List[Path] = MaxLogFilesAction.MatchLogAndGZInSameDirectory,
+              checkRate: Long = 10L): FileWriter = {
+    withActions(MaxLogFilesAction(max, lister, checkRate))
   }
 
   def flush(): Unit = logFile.flush()
@@ -54,18 +68,19 @@ class FileWriter(actions: List[Action]) extends Writer {
 object FileWriter {
   def apply(): FileWriter = new FileWriter(Nil)
 
-  def isSamePath(oldPath: Option[Path], newPath: Path): Boolean = oldPath match {
-    case Some(current) => if (current == newPath) {
-      true
-    } else if (Files.exists(current)) {
-      if (Files.exists(newPath)) {
-        Files.isSameFile(current, newPath)
+  def differentPath(p1: Path, p2: Path): Boolean = {
+    if (p1 == p2) {
+      false
+    } else if (Files.exists(p1)) {
+      if (Files.exists(p2)) {
+        !Files.isSameFile(p1, p2)
       } else {
-        false
+        true
       }
     } else {
-      current.toAbsolutePath.toString == newPath.toAbsolutePath.toString
+      p1.toAbsolutePath.toString != p2.toAbsolutePath.toString
     }
-    case None => false
   }
+
+  def samePath(p1: Path, p2: Path): Boolean = !differentPath(p1, p2)
 }
