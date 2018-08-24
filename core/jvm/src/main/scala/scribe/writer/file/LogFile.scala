@@ -111,7 +111,7 @@ class LogFile(val key: String,
     val buffer = new Array[Byte](LogFile.BufferSize)
     val file = path.toAbsolutePath.toFile
     val outputFile = new File(file.getParentFile, destination)
-    val input = new GZIPInputStream(new FileInputStream(file))
+    val input = new FileInputStream(file)
     val output = new GZIPOutputStream(new FileOutputStream(outputFile))
     try {
       stream(input, output, buffer)
@@ -119,6 +119,11 @@ class LogFile(val key: String,
     } finally {
       Try(input.close())
       Try(output.close())
+      if (deleteOriginal) {
+        if (!file.delete()) {
+          file.deleteOnExit()
+        }
+      }
     }
   }
 

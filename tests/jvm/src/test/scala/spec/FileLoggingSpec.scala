@@ -88,7 +88,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "verify rolling log 1" in {
       val path = Paths.get("logs/rolling.log")
-      Files.exists(path)
+      Files.exists(path) should be(true)
       Files.lines(path).iterator().asScala.toList should be(List("Rolling 1"))
     }
     "increment date and roll file" in {
@@ -118,7 +118,31 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.lines(rolled1).iterator().asScala.toList should be(List("Rolling 1"))
       Files.lines(rolled2).iterator().asScala.toList should be(List("Rolling 2"))
     }
-    // TODO: testing of gzipping files
+    "configure daily path with gzipping" in {
+      setDate("2018-01-01")
+      setWriter(FileWriter().path(LogPath.daily("gzip"), gzip = true, checkRate = 0L))
+    }
+    "log a record pre gzip" in {
+      logger.info("Gzip 1")
+    }
+    "verify gzipping log 1" in {
+      val path = Paths.get("logs/gzip-2018-01-01.log")
+      Files.exists(path) should be(true)
+      Files.lines(path).iterator().asScala.toList should be(List("Gzip 1"))
+    }
+    "modify date to create gzip" in {
+      setDate("2018-01-02")
+      logger.info("Gzip 2")
+    }
+    "verify gzipping log 2" in {
+      val path = Paths.get("logs/gzip-2018-01-02.log")
+      val gzipped = Paths.get("logs/gzip-2018-01-01.log.gz")
+      val unGzipped = Paths.get("logs/gzip-2018-01-01.log")
+      Files.exists(path) should be(true)
+      Files.exists(gzipped) should be(true)
+      Files.exists(unGzipped) should be(false)
+      Files.lines(path).iterator().asScala.toList should be(List("Gzip 2"))
+    }
     // TODO: testing of max size logs
     // TODO: testing of max number of logs
     "tear down" in {

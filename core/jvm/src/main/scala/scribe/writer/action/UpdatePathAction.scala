@@ -1,6 +1,6 @@
 package scribe.writer.action
 
-import java.nio.file.Path
+import java.nio.file.{Files, Path}
 
 import scribe.util.Time
 import scribe.writer.FileWriter
@@ -13,7 +13,7 @@ case class UpdatePathAction(path: Long => Path, gzip: Boolean, checkRate: Long) 
       current
     } else {
       val replacement = current.replace(path = newPath)
-      if (gzip) {
+      if (gzip && Files.exists(current.path) && Files.size(current.path) > 0L) {
         current.gzip()
       }
       replacement

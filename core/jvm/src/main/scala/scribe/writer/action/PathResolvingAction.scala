@@ -7,14 +7,12 @@ import scribe.writer.FileWriter
 import scribe.writer.file.LogFile
 
 case class PathResolvingAction(path: Long => Path, gzip: Boolean, checkRate: Long) extends Action {
-  @volatile private var currentFileStamp: Long = 0L
+  @volatile private var currentFileStamp: Long = Time()
 
   override def apply(previous: LogFile, current: LogFile): LogFile = rateDelayed(checkRate, current) {
     if ((current != previous && previous.differentPath(current)) || currentFileStamp == 0L) {
       if (Files.exists(current.path)) {
         currentFileStamp = Files.getLastModifiedTime(current.path).toMillis
-      } else {
-        currentFileStamp = Time()
       }
       current
     } else {
