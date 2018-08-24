@@ -143,11 +143,27 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.exists(unGzipped) should be(false)
       Files.lines(path).iterator().asScala.toList should be(List("Gzip 2"))
     }
-//    "configure maximum sized log files" in {
-//      setDate("2018-01-1")
-//      setWriter(FileWriter().path(LogPath.default).maxSize())
-//    }
-    // TODO: testing of max size logs
+    "configure maximum sized log files" in {
+      setWriter(FileWriter()
+        .path(LogPath.simple("max.sized.log"))
+        .maxSize(1L, checkRate = 0.millis))
+    }
+    "write three log records across three log files" in {
+      logger.info("Record 1")
+      logger.info("Record 2")
+      logger.info("Record 3")
+    }
+    "verify three log files exist with the proper records" in {
+      val p1 = Paths.get("logs/max.sized.log")
+      val p2 = Paths.get("logs/max.sized.1.log")
+      val p3 = Paths.get("logs/max.sized.2.log")
+      Files.exists(p1) should be(true)
+      Files.exists(p2) should be(true)
+      Files.exists(p3) should be(true)
+      Files.lines(p1).iterator().asScala.toList should be(List("Record 3"))
+      Files.lines(p2).iterator().asScala.toList should be(List("Record 2"))
+      Files.lines(p3).iterator().asScala.toList should be(List("Record 1"))
+    }
     // TODO: testing of max number of logs
     "tear down" in {
       Time.reset()

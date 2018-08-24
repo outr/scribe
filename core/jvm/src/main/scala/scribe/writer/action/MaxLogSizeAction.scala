@@ -5,11 +5,11 @@ import scribe.writer.file.LogFile
 import scala.concurrent.duration.FiniteDuration
 
 case class MaxLogSizeAction(maxSizeInBytes: Long,
-                            actions: List[Action],
+                            action: Action,
                             checkRate: FiniteDuration) extends Action {
   override def apply(previous: LogFile, current: LogFile): LogFile = rateDelayed(checkRate, current) {
     if (current.size >= maxSizeInBytes) {
-      Action(actions, previous, current)
+      Action(List(action), previous, current)
     } else {
       current
     }

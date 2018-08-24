@@ -60,9 +60,9 @@ class FileWriter(actions: List[Action]) extends Writer {
   }
 
   def maxSize(maxSizeInBytes: Long,
-              actions: List[Action] = List(DeletePathAction),
+              action: Action = BackupPathAction,
               checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
-    withActions(MaxLogSizeAction(maxSizeInBytes, actions, checkRate))
+    withActions(MaxLogSizeAction(maxSizeInBytes, action, checkRate))
   }
 
   def flush(): Unit = logFile.flush()
