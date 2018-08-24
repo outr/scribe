@@ -3,6 +3,7 @@ package scribe.writer.action
 import java.nio.file.{Files, Path}
 
 import scribe.writer.file.LogFile
+import scala.collection.JavaConverters._
 
 case class MaxLogFilesAction(max: Int,
                              lister: Path => List[Path],

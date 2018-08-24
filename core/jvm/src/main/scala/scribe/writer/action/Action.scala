@@ -1,11 +1,7 @@
 package scribe.writer.action
 
-import java.nio.file.{Files, Path}
-
 import scribe.util.Time
-import scribe.writer.FileWriter
-import scribe.writer.file.{LogFile, LogFileMode}
-import scala.collection.JavaConverters._
+import scribe.writer.file.LogFile
 
 trait Action {
   def apply(previous: LogFile, current: LogFile): LogFile

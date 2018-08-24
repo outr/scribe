@@ -14,7 +14,7 @@ object LogPath {
             separator: String = "-",
             extension: String = "log",
             directory: => Path = Paths.get("logs")): Long => Path = {
-    apply(prefix, separator, (l: Long) => p"${l.t.Y}-${l.t.m}-${l.t.d}", extension, directory)
+    apply(prefix, separator, (l: Long) => p"${l.t.Y}$separator${l.t.m}$separator${l.t.d}", extension, directory)
   }
 
   def apply(prefix: => String = "app",

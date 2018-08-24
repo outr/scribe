@@ -31,10 +31,6 @@ class FileWriter(actions: List[Action]) extends Writer {
 
   def io: FileWriter = withMode(LogFileMode.IO)
 
-  def path(path: Long => Path, gzip: Boolean = false, checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
-    invoke(List(UpdatePathAction(path, gzip, checkRate)))
-  }
-
   def append: FileWriter = invoke(List(UpdateLogFileAction(_.replace(append = true))))
 
   def replace: FileWriter = invoke(List(UpdateLogFileAction(_.replace(append = false))))
@@ -44,6 +40,10 @@ class FileWriter(actions: List[Action]) extends Writer {
   def withActions(actions: Action*): FileWriter = {
     dispose()
     new FileWriter(this.actions ::: actions.toList)
+  }
+
+  def path(path: Long => Path, gzip: Boolean = false, checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
+    withActions(UpdatePathAction(path, gzip, checkRate))
   }
 
   def rolling(path: Long => Path, gzip: Boolean = false, checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
