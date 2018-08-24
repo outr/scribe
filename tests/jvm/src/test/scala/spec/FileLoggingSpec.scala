@@ -20,6 +20,10 @@ class FileLoggingSpec extends WordSpec with Matchers {
 
   private var timeStamp: Long = new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-01").getTime
 
+  private def setDate(date: String): Unit = {
+    timeStamp = new SimpleDateFormat("yyyy-MM-dd").parse(date).getTime
+  }
+
   private def setWriter(writer: FileWriter): Unit = {
     logger = logger.clearHandlers().withHandler(formatter = Formatter.simple, writer = writer)
   }
@@ -75,7 +79,45 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.lines(day1).iterator().asScala.toList should be(List("Testing date formatted file", "Testing mid-day"))
       Files.lines(logFile).iterator().asScala.toList should be(List("Testing File Logger"))
     }
-    // TODO: testing of rolling files
+    "configure rolling files" in {
+      setDate("2018-01-01")
+      setWriter(FileWriter().path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0L))
+    }
+    "log a record to the rolling file" in {
+      logger.info("Rolling 1")
+    }
+    "verify rolling log 1" in {
+      val path = Paths.get("logs/rolling.log")
+      Files.exists(path)
+      Files.lines(path).iterator().asScala.toList should be(List("Rolling 1"))
+    }
+    "increment date and roll file" in {
+      setDate("2018-01-02")
+      logger.info("Rolling 2")
+    }
+    "verify rolling log 2" in {
+      val path = Paths.get("logs/rolling.log")
+      val rolled = Paths.get("logs/rolling-2018-01-01.log")
+      Files.exists(path) should be(true)
+      Files.exists(rolled) should be(true)
+      Files.lines(path).iterator().asScala.toList should be(List("Rolling 2"))
+      Files.lines(rolled).iterator().asScala.toList should be(List("Rolling 1"))
+    }
+    "increment date and roll file again" in {
+      setDate("2018-01-03")
+      logger.info("Rolling 3")
+    }
+    "verify rolling log 3" in {
+      val path = Paths.get("logs/rolling.log")
+      val rolled1 = Paths.get("logs/rolling-2018-01-01.log")
+      val rolled2 = Paths.get("logs/rolling-2018-01-02.log")
+      Files.exists(path) should be(true)
+      Files.exists(rolled1) should be(true)
+      Files.exists(rolled2) should be(true)
+      Files.lines(path).iterator().asScala.toList should be(List("Rolling 3"))
+      Files.lines(rolled1).iterator().asScala.toList should be(List("Rolling 1"))
+      Files.lines(rolled2).iterator().asScala.toList should be(List("Rolling 2"))
+    }
     // TODO: testing of gzipping files
     // TODO: testing of max size logs
     // TODO: testing of max number of logs

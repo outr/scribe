@@ -13,16 +13,20 @@ case class PathResolvingAction(path: Long => Path, gzip: Boolean, checkRate: Lon
     if ((current != previous && previous.differentPath(current)) || currentFileStamp == 0L) {
       if (Files.exists(current.path)) {
         currentFileStamp = Files.getLastModifiedTime(current.path).toMillis
+      } else {
+        currentFileStamp = Time()
       }
       current
     } else {
       val previousPath = path(currentFileStamp)
-      val currentPath = path(Time())
+      val now = Time()
+      val currentPath = path(now)
       if (FileWriter.differentPath(previousPath, currentPath)) {
-        val renamed = current.rename(currentPath)
+        val renamed = current.rename(previousPath)
         if (gzip) {
           renamed.gzip()
         }
+        currentFileStamp = now
         current.replace()
       } else {
         current
