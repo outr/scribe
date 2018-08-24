@@ -6,7 +6,7 @@ import org.scalatest.{Matchers, WordSpec}
 import scribe.Logger
 import scribe.format.Formatter
 import scribe.writer.FileWriter
-import scribe.writer.file.LogFileMode
+import scribe.writer.action._
 
 import scala.io.Source
 

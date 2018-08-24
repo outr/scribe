@@ -31,7 +31,7 @@ class FileWriter(actions: List[Action]) extends Writer {
 
   def io: FileWriter = withMode(LogFileMode.IO)
 
-  def path(path: Long => Path, gzip: Boolean = false, checkRate: Long = 10L): FileWriter = {
+  def path(path: Long => Path, gzip: Boolean = false, checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
     invoke(List(UpdatePathAction(path, gzip, checkRate)))
   }
 
@@ -46,7 +46,7 @@ class FileWriter(actions: List[Action]) extends Writer {
     new FileWriter(this.actions ::: actions.toList)
   }
 
-  def rolling(path: Long => Path, gzip: Boolean = false, checkRate: Long = 10L): FileWriter = {
+  def rolling(path: Long => Path, gzip: Boolean = false, checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
     withActions(PathResolvingAction(path, gzip, checkRate))
   }
 
@@ -56,7 +56,7 @@ class FileWriter(actions: List[Action]) extends Writer {
     withActions(MaxLogFilesAction(max, lister, checkRate))
   }
 
-  def maxSize(maxSizeInBytes: Long, actions: List[Action], checkRate: Long = 10L): FileWriter = {
+  def maxSize(maxSizeInBytes: Long, actions: List[Action], checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
     withActions(MaxLogSizeAction(maxSizeInBytes, actions, checkRate))
   }
 
@@ -70,6 +70,8 @@ class FileWriter(actions: List[Action]) extends Writer {
 }
 
 object FileWriter {
+  val DefaultCheckRate: Long = 100L
+
   def apply(): FileWriter = new FileWriter(Nil)
 
   def differentPath(p1: Path, p2: Path): Boolean = {
