@@ -8,6 +8,7 @@ object BackupPathAction extends Action {
   override def apply(previous: LogFile, current: LogFile): LogFile = {
     current.dispose()
     pushBackups(current.path)
+    Files.createFile(current.path)
     current.replace()
   }
 
@@ -17,7 +18,9 @@ object BackupPathAction extends Action {
       pushBackups(path, increment + 1)
     }
     val current = backupPath(path, increment - 1)
+    val lastModified = Files.getLastModifiedTime(current)
     Files.move(current, backup)
+    Files.setLastModifiedTime(backup, lastModified)
   }
 
   private def backupPath(path: Path, increment: Int): Path = if (increment > 0) {

@@ -53,7 +53,7 @@ class FileWriter(actions: List[Action]) extends Writer {
   }
 
   def maxLogs(max: Int,
-              lister: Path => List[Path] = MaxLogFilesAction.MatchLogAndGZInSameDirectory,
+              lister: LogFile => List[Path] = MaxLogFilesAction.MatchLogAndGZInSameDirectory,
               logManager: Path => Unit = Files.deleteIfExists(_),
               checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
     withActions(MaxLogFilesAction(max, lister, logManager, checkRate))

@@ -8,7 +8,6 @@ import scribe.Logger
 import scribe.format.Formatter
 import scribe.util.Time
 import scribe.writer.FileWriter
-import scribe.writer.action._
 import scribe.writer.file.LogPath
 
 import scala.collection.JavaConverters._
@@ -146,7 +145,8 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "configure maximum sized log files" in {
       setWriter(FileWriter()
         .path(LogPath.simple("max.sized.log"))
-        .maxSize(1L, checkRate = 0.millis))
+        .maxSize(1L, checkRate = 0.millis)
+      )
     }
     "write three log records across three log files" in {
       logger.info("Record 1")
@@ -164,7 +164,35 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.lines(p2).iterator().asScala.toList should be(List("Record 2"))
       Files.lines(p3).iterator().asScala.toList should be(List("Record 1"))
     }
-    // TODO: testing of max number of logs
+    "configure maximum number of log files" in {
+      setWriter(FileWriter()
+        .path(LogPath.simple("maxlogs.log"))
+        .maxSize(1L, checkRate = 0.millis)
+        .maxLogs(3, checkRate = 0.millis)
+      )
+    }
+    "write four log records for a maximum of three log files" in {
+      logger.info("Record 1")
+      Thread.sleep(1.second.toMillis)
+      logger.info("Record 2")
+      Thread.sleep(1.second.toMillis)
+      logger.info("Record 3")
+      Thread.sleep(1.second.toMillis)
+      logger.info("Record 4")
+    }
+    "verify only three log files exist" in {
+      val p1 = Paths.get("logs/maxlogs.log")
+      val p2 = Paths.get("logs/maxlogs.1.log")
+      val p3 = Paths.get("logs/maxlogs.2.log")
+      val p4 = Paths.get("logs/maxlogs.3.log")
+      Files.exists(p1) should be(true)
+      Files.exists(p2) should be(true)
+      Files.exists(p3) should be(true)
+      Files.exists(p4) should be(false)
+      Files.lines(p1).iterator().asScala.toList should be(List("Record 4"))
+      Files.lines(p2).iterator().asScala.toList should be(List("Record 3"))
+      Files.lines(p3).iterator().asScala.toList should be(List("Record 2"))
+    }
     "tear down" in {
       Time.reset()
     }
