@@ -32,8 +32,11 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Time.function = () => timeStamp
     }
     "configure logging to a temporary file" in {
-      Files.newDirectoryStream(Paths.get("logs")).iterator().asScala.foreach { path =>
-        Files.delete(path)
+      val directory = Paths.get("logs")
+      if (Files.exists(directory)) {
+        Files.newDirectoryStream(directory).iterator().asScala.foreach { path =>
+          Files.delete(path)
+        }
       }
       setWriter(FileWriter().nio.path(_ => logFile))
     }
