@@ -11,8 +11,8 @@ import scribe.writer.FileWriter
 import scribe.writer.action._
 import scribe.writer.file.LogPath
 
-import scala.io.Source
 import scala.collection.JavaConverters._
+import scala.concurrent.duration._
 
 class FileLoggingSpec extends WordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
@@ -81,7 +81,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "configure rolling files" in {
       setDate("2018-01-01")
-      setWriter(FileWriter().path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0L))
+      setWriter(FileWriter().path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
     }
     "log a record to the rolling file" in {
       logger.info("Rolling 1")
@@ -120,7 +120,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "configure daily path with gzipping" in {
       setDate("2018-01-01")
-      setWriter(FileWriter().path(LogPath.daily("gzip"), gzip = true, checkRate = 0L))
+      setWriter(FileWriter().path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))
     }
     "log a record pre gzip" in {
       logger.info("Gzip 1")
@@ -143,6 +143,10 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.exists(unGzipped) should be(false)
       Files.lines(path).iterator().asScala.toList should be(List("Gzip 2"))
     }
+//    "configure maximum sized log files" in {
+//      setDate("2018-01-1")
+//      setWriter(FileWriter().path(LogPath.default).maxSize())
+//    }
     // TODO: testing of max size logs
     // TODO: testing of max number of logs
     "tear down" in {

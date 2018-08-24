@@ -6,7 +6,9 @@ import scribe.util.Time
 import scribe.writer.FileWriter
 import scribe.writer.file.LogFile
 
-case class PathResolvingAction(path: Long => Path, gzip: Boolean, checkRate: Long) extends Action {
+import scala.concurrent.duration.FiniteDuration
+
+case class PathResolvingAction(path: Long => Path, gzip: Boolean, checkRate: FiniteDuration) extends Action {
   @volatile private var currentFileStamp: Long = Time()
 
   override def apply(previous: LogFile, current: LogFile): LogFile = rateDelayed(checkRate, current) {

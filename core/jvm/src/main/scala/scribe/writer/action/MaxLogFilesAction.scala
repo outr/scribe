@@ -3,17 +3,18 @@ package scribe.writer.action
 import java.nio.file.{Files, Path}
 
 import scribe.writer.file.LogFile
+
 import scala.collection.JavaConverters._
+import scala.concurrent.duration.FiniteDuration
 
 case class MaxLogFilesAction(max: Int,
                              lister: Path => List[Path],
-                             checkRate: Long) extends Action {
+                             logManager: Path => Unit,
+                             checkRate: FiniteDuration) extends Action {
   override def apply(previous: LogFile, current: LogFile): LogFile = rateDelayed(checkRate, current) {
     val logs = lister(current.path)
     if (logs.length > max) {
-      logs.take(logs.length - max).foreach { path =>
-        Files.deleteIfExists(path)
-      }
+      logs.take(logs.length - max).foreach(logManager)
     }
     current
   }

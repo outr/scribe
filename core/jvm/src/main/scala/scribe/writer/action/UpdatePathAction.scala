@@ -6,7 +6,9 @@ import scribe.util.Time
 import scribe.writer.FileWriter
 import scribe.writer.file.LogFile
 
-case class UpdatePathAction(path: Long => Path, gzip: Boolean, checkRate: Long) extends UpdateLogFileAction {
+import scala.concurrent.duration.FiniteDuration
+
+case class UpdatePathAction(path: Long => Path, gzip: Boolean, checkRate: FiniteDuration) extends UpdateLogFileAction {
   override def update(current: LogFile): LogFile = rateDelayed(checkRate, current) {
     val newPath = path(Time())
     if (FileWriter.samePath(current.path, newPath)) {

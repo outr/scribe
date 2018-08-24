@@ -3,13 +3,15 @@ package scribe.writer.action
 import scribe.util.Time
 import scribe.writer.file.LogFile
 
+import scala.concurrent.duration.FiniteDuration
+
 trait Action {
   def apply(previous: LogFile, current: LogFile): LogFile
 
   @volatile private var lastCall: Long = 0L
-  protected def rateDelayed(rate: Long, current: LogFile)(f: => LogFile): LogFile = {
+  protected def rateDelayed(rate: FiniteDuration, current: LogFile)(f: => LogFile): LogFile = {
     val now = Time()
-    if (now - lastCall >= rate) {
+    if (now - lastCall >= rate.toMillis) {
       lastCall = now
       f
     } else {

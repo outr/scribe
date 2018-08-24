@@ -6,6 +6,8 @@ import scribe._
 import scribe.writer.file.{LogFile, LogFileMode, LogPath}
 import scribe.writer.action._
 
+import scala.concurrent.duration._
+
 class FileWriter(actions: List[Action]) extends Writer {
   @volatile private[writer] var logFile: LogFile = LogFile(LogPath.default(0L))
 
@@ -42,21 +44,24 @@ class FileWriter(actions: List[Action]) extends Writer {
     new FileWriter(this.actions ::: actions.toList)
   }
 
-  def path(path: Long => Path, gzip: Boolean = false, checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
+  def path(path: Long => Path, gzip: Boolean = false, checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
     withActions(UpdatePathAction(path, gzip, checkRate))
   }
 
-  def rolling(path: Long => Path, gzip: Boolean = false, checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
+  def rolling(path: Long => Path, gzip: Boolean = false, checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
     withActions(PathResolvingAction(path, gzip, checkRate))
   }
 
   def maxLogs(max: Int,
               lister: Path => List[Path] = MaxLogFilesAction.MatchLogAndGZInSameDirectory,
-              checkRate: Long = 10L): FileWriter = {
-    withActions(MaxLogFilesAction(max, lister, checkRate))
+              logManager: Path => Unit = Files.deleteIfExists(_),
+              checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
+    withActions(MaxLogFilesAction(max, lister, logManager, checkRate))
   }
 
-  def maxSize(maxSizeInBytes: Long, actions: List[Action], checkRate: Long = FileWriter.DefaultCheckRate): FileWriter = {
+  def maxSize(maxSizeInBytes: Long,
+              actions: List[Action] = List(DeletePathAction),
+              checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
     withActions(MaxLogSizeAction(maxSizeInBytes, actions, checkRate))
   }
 
@@ -70,7 +75,7 @@ class FileWriter(actions: List[Action]) extends Writer {
 }
 
 object FileWriter {
-  val DefaultCheckRate: Long = 100L
+  val DefaultCheckRate: FiniteDuration = 100.millis
 
   def apply(): FileWriter = new FileWriter(Nil)
 
