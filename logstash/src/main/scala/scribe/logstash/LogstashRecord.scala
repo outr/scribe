@@ -8,7 +8,7 @@ case class LogstashRecord(message: String,
                           fileName: String,
                           className: String,
                           methodName: Option[String],
-                          lineNumber: Option[Int],
+                          line: Option[Int],
                           thread: String,
                           `@timestamp`: String,
                           mdc: Map[String, String])

@@ -13,7 +13,7 @@ trait LogRecord[M] {
   def fileName: String
   def className: String
   def methodName: Option[String]
-  def lineNumber: Option[Int]
+  def line: Option[Int]
   def thread: Thread
   def timeStamp: Long
 
@@ -30,7 +30,7 @@ trait LogRecord[M] {
            fileName: String = fileName,
            className: String = className,
            methodName: Option[String] = methodName,
-           lineNumber: Option[Int] = lineNumber,
+           line: Option[Int] = line,
            thread: Thread = thread,
            timeStamp: Long = timeStamp): LogRecord[M]
 
@@ -46,21 +46,21 @@ object LogRecord {
                fileName: String,
                className: String,
                methodName: Option[String],
-               lineNumber: Option[Int],
+               line: Option[Int],
                thread: Thread = Thread.currentThread(),
                timeStamp: Long = Time()): LogRecord[M] = {
-    SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+    SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, line, thread, timeStamp)
   }
 
   def simple(messageFunction: () => String,
              fileName: String,
              className: String,
              methodName: Option[String] = None,
-             lineNumber: Option[Int] = None,
+             line: Option[Int] = None,
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = Time()): LogRecord[String] = {
-    apply[String](level, level.value, messageFunction, Loggable.StringLoggable, None, fileName, className, methodName, lineNumber, thread, timeStamp)
+    apply[String](level, level.value, messageFunction, Loggable.StringLoggable, None, fileName, className, methodName, line, thread, timeStamp)
   }
 
   /**
@@ -123,7 +123,7 @@ object LogRecord {
                                 fileName: String,
                                 className: String,
                                 methodName: Option[String],
-                                lineNumber: Option[Int],
+                                line: Option[Int],
                                 thread: Thread,
                                 timeStamp: Long) extends LogRecord[M] {
     override lazy val m: M = messageFunction()
@@ -144,10 +144,10 @@ object LogRecord {
              fileName: String = fileName,
              className: String = className,
              methodName: Option[String] = methodName,
-             lineNumber: Option[Int] = lineNumber,
+             line: Option[Int] = line,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[M] = {
-      SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+      SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, line, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}
