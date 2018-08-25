@@ -7,6 +7,7 @@ import scribe.LogRecord
 import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
+import perfolation._
 
 import scala.language.implicitConversions
 
@@ -61,7 +62,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
           }
           true
         }
-        case Overflow.Error => throw new LogOverflowException(s"Queue filled (max: $maxBuffer) while attempting to asynchronously log")
+        case Overflow.Error => throw new LogOverflowException(p"Queue filled (max: $maxBuffer) while attempting to asynchronously log")
       }
     } else {
       true

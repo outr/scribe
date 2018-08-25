@@ -4,10 +4,11 @@ import java.io._
 import java.nio.charset.Charset
 import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicLong
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+import java.util.zip.GZIPOutputStream
 
 import scala.annotation.tailrec
 import scala.util.Try
+import perfolation._
 
 object LogFile {
   val AsynchronousFlushDelay: Long = 1000L
@@ -20,7 +21,7 @@ object LogFile {
             autoFlush: Boolean = true,
             charset: Charset = Charset.defaultCharset(),
             mode: LogFileMode = LogFileMode.IO): LogFile = synchronized {
-    val key = s"${mode.key}.${path.normalize().toFile.getCanonicalPath}"
+    val key = p"${mode.key}.${path.normalize().toFile.getCanonicalPath}"
     map.get(key) match {
       case Some(lf) if append != lf.append || autoFlush != lf.autoFlush || charset != lf.charset => {
         lf.dispose()
@@ -104,7 +105,7 @@ class LogFile(val key: String,
     LogFile(newPath, append, autoFlush, charset, mode)
   }
 
-  final def gzip(destination: String = s"${path.getFileName.toString}.gz",
+  final def gzip(destination: String = p"${path.getFileName.toString}.gz",
                  deleteOriginal: Boolean = true): Unit = {
     flush()
     dispose()

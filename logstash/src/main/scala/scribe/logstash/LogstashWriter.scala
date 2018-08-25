@@ -27,7 +27,7 @@ case class LogstashWriter(url: URL,
 
   def log[M](record: LogRecord[M]): Future[HttpResponse] = {
     val l = record.timeStamp
-    val timestamp = s"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
+    val timestamp = p"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
     val r = LogstashRecord(
       message = record.message,
       service = service,

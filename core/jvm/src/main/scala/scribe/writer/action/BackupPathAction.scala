@@ -3,6 +3,7 @@ package scribe.writer.action
 import java.nio.file.{Files, Path, Paths}
 
 import scribe.writer.file.LogFile
+import perfolation._
 
 object BackupPathAction extends Action {
   override def apply(previous: LogFile, current: LogFile): LogFile = {
@@ -26,7 +27,7 @@ object BackupPathAction extends Action {
   private def backupPath(path: Path, increment: Int): Path = if (increment > 0) {
     val absolute = path.toAbsolutePath.toString
     val idx = absolute.lastIndexOf('.')
-    val absolutePath = s"${absolute.substring(0, idx)}.$increment.${absolute.substring(idx + 1)}"
+    val absolutePath = p"${absolute.substring(0, idx)}.$increment.${absolute.substring(idx + 1)}"
     Paths.get(absolutePath)
   } else {
     path

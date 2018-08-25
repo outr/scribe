@@ -6,6 +6,7 @@ import scribe.writer.file.LogFile
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.FiniteDuration
+import perfolation._
 
 case class MaxLogFilesAction(max: Int,
                              lister: LogFile => List[Path],
@@ -36,7 +37,7 @@ object MaxLogFilesAction {
       fileName.substring(0, fileName.indexOf('.'))
     }
     val directory = Option(path.toAbsolutePath.getParent)
-      .getOrElse(throw new RuntimeException(s"No parent found for ${path.toAbsolutePath.toString}"))
+      .getOrElse(throw new RuntimeException(p"No parent found for ${path.toAbsolutePath.toString}"))
     Files
       .newDirectoryStream(directory)
       .iterator()
