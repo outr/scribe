@@ -53,6 +53,10 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       Logger.root.error("Error Log 1")
       testingModifier.records.length should be(3)
     }
+    "log using no arguments" in {
+      logger.info()
+      testingModifier.records.length should be(4)
+    }
     "log using 's' interpolation" in {
       val message = "Wahoo!"
       logger.info(s"It works! $message")
