@@ -17,6 +17,7 @@ trait LogRecord[M] {
   def thread: Thread
   def timeStamp: Long
 
+  def m: M
   def message: String
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(value))
@@ -125,8 +126,10 @@ object LogRecord {
                                 lineNumber: Option[Int],
                                 thread: Thread,
                                 timeStamp: Long) extends LogRecord[M] {
+    override lazy val m: M = messageFunction()
+
     override lazy val message: String = {
-      val msg = loggable(messageFunction())
+      val msg = loggable(m)
       throwable match {
         case Some(t) => throwable2String(Option(msg), t)
         case None => loggable(messageFunction())
