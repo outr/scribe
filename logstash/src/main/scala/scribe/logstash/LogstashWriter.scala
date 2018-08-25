@@ -1,5 +1,6 @@
 package scribe.logstash
 
+import io.circe.Json
 import io.youi.client.HttpClient
 import io.youi.http.{Content, HttpRequest, HttpResponse, Method}
 import io.youi.net._
@@ -13,6 +14,7 @@ import scala.concurrent.duration._
 
 case class LogstashWriter(url: URL,
                           service: String,
+                          additionalFields: Map[String, String] = Map.empty,
                           asynchronous: Boolean = true) extends Writer {
   private lazy val client = HttpClient()
 
@@ -40,7 +42,13 @@ case class LogstashWriter(url: URL,
       `@timestamp` = timestamp,
       mdc = MDC.map
     )
-    val json = JsonUtil.toJsonString(r)
+
+    val jsonObj = JsonUtil.toJson(r).asObject.get
+    val jsonWithFields = additionalFields.foldLeft(jsonObj) { (obj, field) =>
+      obj.add(field._1, Json.fromString(field._2))
+    }
+    val json = Json.fromJsonObject(jsonWithFields).noSpaces
+
     val content = Content.string(json, ContentType.`application/json`)
     val request = HttpRequest(
       method = Method.Post,
