@@ -158,6 +158,6 @@ object FormatBlock {
   }
 
   object NewLine extends FormatBlock {
-    override def format[M](record: LogRecord[M]): String = "\n"
+    override def format[M](record: LogRecord[M]): String = System.lineSeparator
   }
 }
