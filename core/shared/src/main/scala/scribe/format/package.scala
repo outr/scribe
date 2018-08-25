@@ -19,6 +19,7 @@ package object format {
   def levelPaddedRight: FormatBlock = FormatBlock.Level.PaddedRight
   def fileName: FormatBlock = FormatBlock.FileName
   def line: FormatBlock = FormatBlock.LineNumber
+  def column: FormatBlock = FormatBlock.ColumnNumber
   def position: FormatBlock = FormatBlock.Position
   def positionAbbreviated: FormatBlock = position.abbreviate(
     maxLength = PositionAbbreviationLength,

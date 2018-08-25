@@ -113,7 +113,12 @@ object FormatBlock {
       } else {
         ""
       }
-      p"${ClassAndMethodName.format(record)}$line"
+      val column = if (record.column.nonEmpty) {
+        p":${ColumnNumber.format(record)}"
+      } else {
+        ""
+      }
+      p"${ClassAndMethodName.format(record)}$line$column"
     }
 
     override def abbreviate(maxLength: Int,
@@ -127,13 +132,22 @@ object FormatBlock {
       } else {
         ""
       }
+      val column = if (record.column.nonEmpty) {
+        p":${ColumnNumber.format(record)}"
+      } else {
+        ""
+      }
       val v = Abbreviator(classAndMethodName, maxLength - line.length, separator, removeEntries, abbreviateName)
-      p"$v$line"
+      p"$v$line$column"
     }
   }
 
   object LineNumber extends FormatBlock {
     override def format[M](record: LogRecord[M]): String = record.line.fold("")(_.toString)
+  }
+
+  object ColumnNumber extends FormatBlock {
+    override def format[M](record: LogRecord[M]): String = record.column.fold("")(_.toString)
   }
 
   object Message extends FormatBlock {
