@@ -1,2 +1,2 @@
 install:
-   - sbt +publishM2
+  - sbt +macrosJS/publishM2 +macrosJVM/publishM2 +coreJS/publishM2 +coreJVM/publishM2 +slf4j/publishM2 +slf4j18/publishM2 +slack/publishM2 +logstash/publishM2
