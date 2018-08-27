@@ -38,7 +38,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
           Files.delete(path)
         }
       }
-      setWriter(FileWriter().nio.path(_ => logFile))
+      setWriter(FileWriter().autoFlush.nio.path(_ => logFile))
     }
     "log to the file" in {
       logger.info("Testing File Logger")
@@ -48,7 +48,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.lines(logFile).iterator().asScala.toList should be(List("Testing File Logger"))
     }
     "configure date formatted log files" in {
-      setWriter(FileWriter().path(LogPath.daily()))
+      setWriter(FileWriter().autoFlush.path(LogPath.daily()))
     }
     "log to date formatted file" in {
       logger.info("Testing date formatted file")
@@ -83,7 +83,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "configure rolling files" in {
       setDate("2018-01-01")
-      setWriter(FileWriter().path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
+      setWriter(FileWriter().autoFlush.path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
     }
     "log a record to the rolling file" in {
       logger.info("Rolling 1")
@@ -122,7 +122,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "configure daily path with gzipping" in {
       setDate("2018-01-01")
-      setWriter(FileWriter().path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))
+      setWriter(FileWriter().autoFlush.path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))
     }
     "log a record pre gzip" in {
       logger.info("Gzip 1")
@@ -147,6 +147,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "configure maximum sized log files" in {
       setWriter(FileWriter()
+        .autoFlush
         .path(LogPath.simple("max.sized.log"))
         .maxSize(1L, checkRate = 0.millis)
       )
@@ -169,6 +170,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "configure maximum number of log files" in {
       setWriter(FileWriter()
+        .autoFlush
         .path(LogPath.simple("maxlogs.log"))
         .maxSize(1L, checkRate = 0.millis)
         .maxLogs(3, checkRate = 0.millis)
