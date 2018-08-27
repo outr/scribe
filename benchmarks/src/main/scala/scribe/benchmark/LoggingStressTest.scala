@@ -10,7 +10,12 @@ import scribe.writer.file.LogFileMode
 
 object LoggingStressTest {
   def main(args: Array[String]): Unit = {
-    val iterations = 1000000
+    val oneMillion = 1000000
+    val oneHundredMillion = 100000000
+    timed(oneHundredMillion, fileLogger(Formatter.default, LogFileMode.IO))
+  }
+
+  def stressAll(iterations: Int): Unit = {
     val types = List(
       "Null" -> nullLogger(),
       "NIO Simple" -> fileLogger(Formatter.simple, LogFileMode.NIO),

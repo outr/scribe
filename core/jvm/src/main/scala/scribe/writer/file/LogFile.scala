@@ -18,7 +18,7 @@ object LogFile {
 
   def apply(path: Path,
             append: Boolean = true,
-            autoFlush: Boolean = true,
+            autoFlush: Boolean = false,
             charset: Charset = Charset.defaultCharset(),
             mode: LogFileMode = LogFileMode.IO): LogFile = synchronized {
     val key = p"${mode.key}.${path.normalize().toFile.getCanonicalPath}"
