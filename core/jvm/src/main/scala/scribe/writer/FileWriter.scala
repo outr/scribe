@@ -1,187 +1,97 @@
 package scribe.writer
 
-import java.nio.charset.Charset
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 
 import scribe._
-import scribe.writer.file.{LogFile, LogFileManager, LogFileMode}
-import perfolation._
+import scribe.writer.file.{LogFile, LogFileMode, LogPath}
+import scribe.writer.action._
 
-import scala.collection.JavaConverters._
+import scala.concurrent.duration._
 
-case class FileWriter(pathBuilder: PathBuilder,
-                      manager: LogFileManager = LogFileManager.Dispose,
-                      mode: LogFileMode = LogFileMode.IO,
-                      append: Boolean = true,
-                      autoFlush: Boolean = false,
-                      charset: Charset = Charset.defaultCharset()) extends Writer {
-  @volatile private[writer] var logFile: Option[LogFile] = None
+class FileWriter(actions: List[Action]) extends Writer {
+  @volatile private[writer] var logFile: LogFile = LogFile(LogPath.default(0L))
 
-  override def write[M](record: LogRecord[M], output: String): Unit = synchronized {
-    pathBuilder.derivePath(this, record).foreach { newLogFile =>
-      manager.replace(logFile, newLogFile)
-      logFile = Some(newLogFile)
+  def invoke(actions: List[Action]): FileWriter = synchronized {
+    val updated = Action(actions, logFile, logFile)
+    if (updated != logFile) {
+      if (logFile.isActive) {
+        logFile.dispose()
+      }
+      logFile = updated
     }
-    logFile.foreach(_.write(output))
+    this
   }
 
-  def flush(): Unit = logFile.foreach(_.flush())
+  override def write[M](record: LogRecord[M], output: String): Unit = synchronized {
+    invoke(actions)
+    logFile.write(output)
+  }
+
+  def withMode(mode: LogFileMode): FileWriter = invoke(List(UpdateLogFileAction(_.replace(mode = mode))))
+
+  def nio: FileWriter = withMode(LogFileMode.NIO)
+
+  def io: FileWriter = withMode(LogFileMode.IO)
+
+  def append: FileWriter = invoke(List(UpdateLogFileAction(_.replace(append = true))))
+
+  def replace: FileWriter = invoke(List(UpdateLogFileAction(_.replace(append = false))))
+
+  def autoFlush: FileWriter = invoke(List(UpdateLogFileAction(_.replace(autoFlush = true))))
+
+  def withActions(actions: Action*): FileWriter = {
+    dispose()
+    new FileWriter(this.actions ::: actions.toList)
+  }
+
+  def path(path: Long => Path, gzip: Boolean = false, checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
+    withActions(UpdatePathAction(path, gzip, checkRate))
+  }
+
+  def rolling(path: Long => Path, gzip: Boolean = false, checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
+    withActions(PathResolvingAction(path, gzip, checkRate))
+  }
+
+  def maxLogs(max: Int,
+              lister: LogFile => List[Path] = MaxLogFilesAction.MatchLogAndGZInSameDirectory,
+              logManager: Path => Unit = Files.deleteIfExists(_),
+              checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
+    withActions(MaxLogFilesAction(max, lister, logManager, checkRate))
+  }
+
+  def maxSize(maxSizeInBytes: Long,
+              action: Action = BackupPathAction,
+              checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {
+    withActions(MaxLogSizeAction(maxSizeInBytes, action, checkRate))
+  }
+
+  def flush(): Unit = logFile.flush()
 
   override def dispose(): Unit = {
     super.dispose()
 
-    logFile.foreach(_.dispose())
-  }
-
-  def withPath(fileName: String = "app.log", directory: Path = Paths.get("logs")): FileWriter = {
-    copy(pathBuilder = new FlatPathBuilder(directory.resolve(fileName)))
-  }
-
-  def withIO: FileWriter = withMode(LogFileMode.IO)
-  def withNIO: FileWriter = withMode(LogFileMode.NIO)
-  def withMode(mode: LogFileMode): FileWriter = if (this.mode == mode) {
-    this
-  } else {
-    copy(mode = mode)
-  }
-
-  def withAppend(append: Boolean = true): FileWriter = if (this.append == append) this else copy(append = append)
-
-  def withAutoFlush(autoFlush: Boolean = false): FileWriter = if (this.autoFlush == autoFlush) {
-    this
-  } else {
-    copy(autoFlush = autoFlush)
-  }
-
-  def withCharset(charset: Charset = Charset.defaultCharset()): FileWriter = if (this.charset == charset) {
-    this
-  } else {
-    copy(charset = charset)
+    logFile.dispose()
   }
 }
 
 object FileWriter {
-  object format {
-    lazy val daily: Long => String = (l: Long) => {
-      p"${l.t.Y}-${l.t.m}-${l.t.d}"
-    }
-  }
+  val DefaultCheckRate: FiniteDuration = 100.millis
 
-  /**
-    * Default FileWriter using `logs/app.log` as the flat path to write to. Can be used as a base builder to create more
-    * customized instances via the `with` methods.
-    */
-  lazy val default: FileWriter = FileWriter(new FlatPathBuilder(Paths.get("logs").resolve("app.log")))
+  def apply(): FileWriter = new FileWriter(Nil)
 
-  def simple(fileName: String = "app.log",
-             directory: Path = Paths.get("logs"),
-             mode: LogFileMode = LogFileMode.IO,
-             append: Boolean = true,
-             autoFlush: Boolean = false,
-             charset: Charset = Charset.defaultCharset()): FileWriter = {
-    default
-      .withPath(fileName, directory)
-      .withMode(mode)
-      .withAppend(append)
-      .withAutoFlush(autoFlush)
-      .withCharset(charset)
-  }
-
-  def flat(prefix: String = "app",
-           suffix: String = ".log",
-           directory: Path = Paths.get("logs"),
-           maxLogs: Option[Int] = None,
-           maxBytes: Option[Long] = None,
-           gzip: Boolean = false,
-           mode: LogFileMode = LogFileMode.IO,
-           append: Boolean = true,
-           autoFlush: Boolean = false,
-           charset: Charset = Charset.defaultCharset()): FileWriter = {
-    val pathLister = (_: Path) => {
-      Files.list(directory).iterator().asScala.filter { p =>
-        val name = p.getFileName.toString
-        val ending = if (gzip) s"$suffix.gz" else suffix
-        name.startsWith(prefix) && name.endsWith(ending)
-      }.toList.sortBy(Files.getLastModifiedTime(_)).reverse
-    }
-    val flatPathBuilder = new FlatPathBuilder(directory.resolve(p"$prefix$suffix"))
-    val pathBuilder = maxBytes match {
-      case Some(size) => new MaxSizePathBuilder(size, (p: Path) => {
-        val name = p.getFileName.toString
-        val pre = name.substring(0, name.length - suffix.length)
-        val generator = (i: Int) => p"$pre.$i$suffix"
-        MaxSizePathBuilder.findNext(directory, generator)
-      }, flatPathBuilder)
-      case None => flatPathBuilder
-    }
-    FileWriter(
-      pathBuilder = pathBuilder,
-      manager = LogFileManager.Grouped(List(
-        Some(LogFileManager.Dispose),
-        if (gzip) Some(LogFileManager.GZip()) else None,
-        maxLogs.map(max => LogFileManager.MaximumLogs(max, pathLister))
-      ).flatten),
-      mode = mode,
-      append = append,
-      autoFlush = autoFlush,
-      charset = charset
-    )
-  }
-
-  def date(prefix: String = "app",
-           suffix: String = ".log",
-           directory: Path = Paths.get("logs"),
-           maxLogs: Option[Int] = None,
-           maxBytes: Option[Long] = None,
-           gzip: Boolean = false,
-           formatter: Long => String = format.daily,
-           mode: LogFileMode = LogFileMode.IO,
-           append: Boolean = true,
-           autoFlush: Boolean = false,
-           charset: Charset = Charset.defaultCharset()): FileWriter = {
-    val pathLister = (_: Path) => {
-      Files.list(directory).iterator().asScala.filter { p =>
-        val name = p.getFileName.toString
-        val ending = if (gzip) s"$suffix.gz" else suffix
-        name.startsWith(prefix) && name.endsWith(ending)
-      }.toList.sortBy(Files.getLastModifiedTime(_)).reverse
-    }
-    val dateFormattedPathBuilder = new DateFormattedPathBuilder(directory, (l: Long) => p"$prefix.${formatter(l)}$suffix")
-    val pathBuilder = maxBytes match {
-      case Some(size) => new MaxSizePathBuilder(size, (p: Path) => {
-        val name = p.getFileName.toString
-        val pre = name.substring(0, name.length - suffix.length)
-        val generator = (i: Int) => p"$pre.$i$suffix"
-        MaxSizePathBuilder.findNext(directory, generator)
-      }, dateFormattedPathBuilder)
-      case None => dateFormattedPathBuilder
-    }
-    FileWriter(
-      pathBuilder = pathBuilder,
-      manager = LogFileManager.Grouped(List(
-        Some(LogFileManager.Dispose),
-        if (gzip) Some(LogFileManager.GZip()) else None,
-        maxLogs.map(max => LogFileManager.MaximumLogs(max, pathLister))
-      ).flatten),
-      mode = mode,
-      append = append,
-      autoFlush = autoFlush,
-      charset = charset
-    )
-  }
-
-  def isSamePath(oldPath: Option[Path], newPath: Path): Boolean = oldPath match {
-    case Some(current) => if (current == newPath) {
-      true
-    } else if (Files.exists(current)) {
-      if (Files.exists(newPath)) {
-        Files.isSameFile(current, newPath)
+  def differentPath(p1: Path, p2: Path): Boolean = {
+    if (p1 == p2) {
+      false
+    } else if (Files.exists(p1)) {
+      if (Files.exists(p2)) {
+        !Files.isSameFile(p1, p2)
       } else {
-        false
+        true
       }
     } else {
-      current.toAbsolutePath.toString == newPath.toAbsolutePath.toString
+      p1.toAbsolutePath.toString != p2.toAbsolutePath.toString
     }
-    case None => false
   }
+
+  def samePath(p1: Path, p2: Path): Boolean = !differentPath(p1, p2)
 }

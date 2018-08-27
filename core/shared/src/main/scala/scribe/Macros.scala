@@ -19,8 +19,18 @@ object Macros {
     }
   }
 
-  def autoLevel[M](c: blackbox.Context)(message: c.Tree)(loggable: c.Expr[Loggable[M]])
-                  (implicit m: c.WeakTypeTag[M]): c.Tree = {
+  def autoLevel0(c: blackbox.Context)
+                (): c.Tree = {
+    import c.universe._
+
+    val level = getLevel(c)
+    log(c)(level, q"""""""", reify[Option[Throwable]](None))(c.Expr[Loggable[String]](q"scribe.Loggable.StringLoggable"))
+  }
+
+  def autoLevel1[M](c: blackbox.Context)
+                   (message: c.Tree)
+                   (loggable: c.Expr[Loggable[M]])
+                   (implicit m: c.WeakTypeTag[M]): c.Tree = {
     import c.universe._
 
     val level = getLevel(c)
@@ -44,31 +54,23 @@ object Macros {
     import c.universe._
 
     val logger = c.prefix.tree
-    val EnclosingType(className, methodName) = enclosingType(c)
-    // TODO: use Position instead and expose `column`
-    val line = c.enclosingPosition.line match {
-      case -1 => None
-      case n => Some(n)
-    }
-    val fileName = c.enclosingPosition.source.path
-    val dcn = if (logger.tpe =:= typeOf[Logger]) {
-      q"$logger.overrideClassName.getOrElse($className)"
-    } else {
-      q"$className"
-    }
-    val dmn = if (logger.tpe =:= typeOf[Logger]) {
-      q"if ($logger.overrideClassName.nonEmpty) None else $methodName"
-    } else {
-      q"$methodName"
-    }
-    val dln = if (logger.tpe =:= typeOf[Logger]) {
-      q"if ($logger.overrideClassName.nonEmpty) None else $line"
-    } else {
-      q"$line"
-    }
+    val p = position(c)
     val messageFunction = c.typecheck(q"() => $message")
     c.internal.changeOwner(message, c.internal.enclosingOwner, messageFunction.symbol)
-    q"$logger.log(_root_.scribe.LogRecord[$m]($level, $level.value, $messageFunction, $loggable, $throwable, $fileName, $dcn, $dmn, $dln))"
+    q"""
+       $logger.log(_root_.scribe.LogRecord[$m](
+        level = $level,
+        value = $level.value,
+        messageFunction = $messageFunction,
+        loggable = $loggable,
+        throwable = $throwable,
+        fileName = ${p.fileName},
+        className = ${p.className},
+        methodName = ${p.methodName},
+        line = ${p.line},
+        column = ${p.column}
+       ))
+     """
   }
 
   def executionContext(c: blackbox.Context): c.Expr[ExecutionContext] = {

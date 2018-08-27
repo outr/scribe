@@ -7,12 +7,13 @@ import profig.JsonUtil
 import scribe._
 import scribe.format._
 import scribe.handler.LogHandler
+import perfolation._
 
 import scala.concurrent.Future
 
 class Slack(serviceHash: String, botName: String) {
   private lazy val client = HttpClient()
-  private lazy val url: URL = URL(s"https://hooks.slack.com/services/$serviceHash")
+  private lazy val url: URL = URL(p"https://hooks.slack.com/services/$serviceHash")
 
   def request(message: String,
               markdown: Boolean = true,

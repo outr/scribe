@@ -2,6 +2,8 @@ package scribe.writer.file
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicLong}
 
+import scribe.util.Time
+
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -17,15 +19,16 @@ class AsynchronousFlusher(logFile: LogFile, delay: Long) {
     dirty.set(true)
   }
 
+  // TODO: avoid using the global ExecutionContext
   private def flush(): Unit = Future {
     try {
-      val delay = this.delay - (System.currentTimeMillis() - lastFlush.get())
+      val delay = this.delay - (Time() - lastFlush.get())
       if (delay > 0L) {
         Thread.sleep(delay)
       }
       logFile.flush()
     } finally {
-      lastFlush.set(System.currentTimeMillis())
+      lastFlush.set(Time())
       if (dirty.compareAndSet(true, false)) {
         flush()
       } else {

@@ -8,14 +8,14 @@ class ImplicitLoggingSpec extends WordSpec with Matchers {
       ImplicitLoggingTestObject.initialize()
     }
     "properly log a simple message" in {
-      val lineNumber = Some(19)
+      val line = Some(19)
 
       ImplicitLoggingTestObject.doSomething()
       ImplicitLoggingTestObject.testingModifier.records.length should be(1)
       val record = ImplicitLoggingTestObject.testingModifier.records.head
       record.className should be("specs.ImplicitLoggingTestObject")
       record.methodName should be(Some("doSomething"))
-      record.lineNumber should be(lineNumber)
+      record.line should be(line)
     }
   }
 }

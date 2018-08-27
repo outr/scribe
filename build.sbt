@@ -2,7 +2,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.6.0-SNAPSHOT"
+version in ThisBuild := "2.6.0"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -24,6 +24,7 @@ scmInfo in ThisBuild := Some(
 developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
+parallelExecution in ThisBuild := false
 
 // Core
 val perfolationVersion: String = "1.0.4"
@@ -117,7 +118,7 @@ lazy val slf4j = project.in(file("slf4j"))
 lazy val slf4j18 = project.in(file("slf4j18"))
   .dependsOn(coreJVM)
   .settings(
-    name := "scribe-swlf4j18",
+    name := "scribe-slf4j18",
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j18Version,

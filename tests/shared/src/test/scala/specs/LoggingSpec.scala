@@ -53,6 +53,10 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       Logger.root.error("Error Log 1")
       testingModifier.records.length should be(3)
     }
+    "log using no arguments" in {
+      logger.info()
+      testingModifier.records.length should be(4)
+    }
     "log using 's' interpolation" in {
       val message = "Wahoo!"
       logger.info(s"It works! $message")
@@ -66,33 +70,33 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logger.info(p"It works! ${d.f()}")
     }
     "write a detailed log message" in {
-      val lineNumber = Some(14)
+      val line = Some(14)
       testingModifier.clear()
       testObject.testLogger()
       testingModifier.records.length should be(1)
       testingModifier.records.head.methodName should be(Some("testLogger"))
       testingModifier.records.head.className should be("specs.LoggingTestObject")
-      testingModifier.records.head.lineNumber should be(lineNumber)
+      testingModifier.records.head.line should be(line)
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }
     "write a log message with an anonymous function" in {
-      val lineNumber = Some(10)
+      val line = Some(10)
       testingModifier.clear()
       testObject.testAnonymous()
       testingModifier.records.length should be(1)
       testingModifier.records.head.methodName should be(None)
       testingModifier.records.head.className should be("specs.LoggingTestObject.anonymous")
-      testingModifier.records.head.lineNumber should be(lineNumber)
+      testingModifier.records.head.line should be(line)
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }
     "write an exception" in {
-      val lineNumber = Some(22)
+      val line = Some(22)
       testingModifier.clear()
       testObject.testException()
       testingModifier.records.length should be(1)
       testingModifier.records.head.methodName should be(Some("testException"))
       testingModifier.records.head.className should be("specs.LoggingTestObject")
-      testingModifier.records.head.lineNumber should be(lineNumber)
+      testingModifier.records.head.line should be(line)
       testingModifier.records.head.message should startWith("java.lang.RuntimeException: Testing")
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }

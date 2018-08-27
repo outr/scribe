@@ -7,7 +7,6 @@ import org.scalatest.{AsyncWordSpec, Matchers}
 import perfolation._
 import scribe.{LogRecord, Logger}
 import scribe.format._
-import scribe.writer.file.LogFileMode
 import scribe.writer.{FileWriter, Writer}
 
 import scala.collection.JavaConverters._
@@ -17,7 +16,7 @@ import scala.io.Source
 class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
   private val Regex = """(\d+) - (.+)""".r
   private val threads = "abcdefghijklmnopqrstuvwxyz"
-  private val iterations = 10000
+  private val iterations = 10
   private val total = threads.length * iterations
 
   "Asynchronous Logging" should {
@@ -39,7 +38,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       }).map { _ =>
         var previous = 0L
         queue.iterator().asScala.foreach {
-          case Regex(ts, message) => {
+          case Regex(ts, _) => {
             val timeStamp = ts.toLong
             timeStamp should be >= previous
             previous = timeStamp
@@ -52,7 +51,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       val file = new File("logs/app.log")
       file.delete()
 
-      val fileWriter = FileWriter.simple(mode = LogFileMode.NIO)
+      val fileWriter = FileWriter().nio
       val logger = Logger.empty.orphan().withHandler(
         formatter = AsynchronousLoggingSpec.format,
         writer = fileWriter

@@ -2,33 +2,37 @@ package scribe
 
 import scala.annotation.tailrec
 import perfolation._
+import scribe.util.Time
 
 trait LogRecord[M] {
   def level: Level
   def value: Double
-  def messageValue: () => M
+  def messageFunction: () => M
   def loggable: Loggable[M]
   def throwable: Option[Throwable]
   def fileName: String
   def className: String
   def methodName: Option[String]
-  def lineNumber: Option[Int]
+  def line: Option[Int]
+  def column: Option[Int]
   def thread: Thread
   def timeStamp: Long
 
+  def m: M
   def message: String
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(value))
 
   def copy(level: Level = level,
            value: Double = value,
-           messageValue: () => M = messageValue,
+           messageFunction: () => M = messageFunction,
            loggable: Loggable[M] = loggable,
            throwable: Option[Throwable] = throwable,
            fileName: String = fileName,
            className: String = className,
            methodName: Option[String] = methodName,
-           lineNumber: Option[Int] = lineNumber,
+           line: Option[Int] = line,
+           column: Option[Int] = column,
            thread: Thread = thread,
            timeStamp: Long = timeStamp): LogRecord[M]
 
@@ -38,27 +42,29 @@ trait LogRecord[M] {
 object LogRecord {
   def apply[M](level: Level,
                value: Double,
-               messageValue: () => M,
+               messageFunction: () => M,
                loggable: Loggable[M],
                throwable: Option[Throwable],
                fileName: String,
                className: String,
                methodName: Option[String],
-               lineNumber: Option[Int],
+               line: Option[Int],
+               column: Option[Int],
                thread: Thread = Thread.currentThread(),
-               timeStamp: Long = System.currentTimeMillis()): LogRecord[M] = {
-    SimpleLogRecord(level, value, messageValue, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+               timeStamp: Long = Time()): LogRecord[M] = {
+    SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
-  def simple(messageValue: () => String,
+  def simple(messageFunction: () => String,
              fileName: String,
              className: String,
              methodName: Option[String] = None,
-             lineNumber: Option[Int] = None,
+             line: Option[Int] = None,
+             column: Option[Int] = None,
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
-             timeStamp: Long = System.currentTimeMillis()): LogRecord[String] = {
-    apply[String](level, level.value, messageValue, Loggable.StringLoggable, None, fileName, className, methodName, lineNumber, thread, timeStamp)
+             timeStamp: Long = Time()): LogRecord[String] = {
+    apply[String](level, level.value, messageFunction, Loggable.StringLoggable, None, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
   /**
@@ -69,7 +75,7 @@ object LogRecord {
                              t: Throwable,
                              primaryCause: Boolean = true,
                              b: StringBuilder = new StringBuilder): String = {
-    message.foreach(m => b.append(p"$m${Platform.lineSeparator}"))
+    message.foreach(m => b.append(p"$m${scribe.lineSeparator}"))
     if (!primaryCause) {
       b.append("Caused by: ")
     }
@@ -78,7 +84,7 @@ object LogRecord {
       b.append(": ")
       b.append(t.getLocalizedMessage)
     }
-    b.append(Platform.lineSeparator)
+    b.append(scribe.lineSeparator)
     writeStackTrace(b, t.getStackTrace)
     if (Option(t.getCause).isEmpty) {
       b.toString()
@@ -107,7 +113,7 @@ object LogRecord {
           }
         }
         b.append(')')
-        b.append(Platform.lineSeparator)
+        b.append(scribe.lineSeparator)
         writeStackTrace(b, elements.tail)
       }
     }
@@ -115,35 +121,39 @@ object LogRecord {
 
   case class SimpleLogRecord[M](level: Level,
                                 value: Double,
-                                messageValue: () => M,
+                                messageFunction: () => M,
                                 loggable: Loggable[M],
                                 throwable: Option[Throwable],
                                 fileName: String,
                                 className: String,
                                 methodName: Option[String],
-                                lineNumber: Option[Int],
+                                line: Option[Int],
+                                column: Option[Int],
                                 thread: Thread,
                                 timeStamp: Long) extends LogRecord[M] {
+    override lazy val m: M = messageFunction()
+
     override lazy val message: String = {
-      val msg = loggable(messageValue())
+      val msg = loggable(m)
       throwable match {
         case Some(t) => throwable2String(Option(msg), t)
-        case None => loggable(messageValue())
+        case None => loggable(messageFunction())
       }
     }
 
     def copy(level: Level = level,
              value: Double = value,
-             messageValue: () => M = messageValue,
+             messageFunction: () => M = messageFunction,
              loggable: Loggable[M],
              throwable: Option[Throwable],
              fileName: String = fileName,
              className: String = className,
              methodName: Option[String] = methodName,
-             lineNumber: Option[Int] = lineNumber,
+             line: Option[Int] = line,
+             column: Option[Int] = column,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[M] = {
-      SimpleLogRecord(level, value, messageValue, loggable, throwable, fileName, className, methodName, lineNumber, thread, timeStamp)
+      SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}

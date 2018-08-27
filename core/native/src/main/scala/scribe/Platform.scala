@@ -1,7 +1,7 @@
 package scribe
 
 object Platform {
-  val lineSeparator: String = System.getProperty("line.separator")
-
+  def isJVM: Boolean = false
   def isJS: Boolean = false
+  def isNative: Boolean = true
 }

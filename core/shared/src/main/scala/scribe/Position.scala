@@ -1,6 +1,7 @@
 package scribe
 
 import scala.language.experimental.macros
+import perfolation._
 
 case class Position(className: String,
                     methodName: Option[String],
@@ -17,15 +18,15 @@ case class Position(className: String,
   }
 
   override def toString: String = {
-    val mn = methodName.map(m => s":$m").getOrElse("")
-    val ln = line.map(l => s":$l").getOrElse("")
-    val cn = column.map(c => s":$c").getOrElse("")
+    val mn = methodName.map(m => p":$m").getOrElse("")
+    val ln = line.map(l => p":$l").getOrElse("")
+    val cn = column.map(c => p":$c").getOrElse("")
     val fn = if (fileName.indexOf('/') != -1) {
       fileName.substring(fileName.lastIndexOf('/') + 1)
     } else {
       fileName
     }
-    s"$className$mn$ln$cn ($fn)"
+    p"$className$mn$ln$cn ($fn)"
   }
 }
 
@@ -53,7 +54,7 @@ object Position {
   def fix[T <: Throwable](throwable: T): T = {
     val positionTrace = stack.reverse.map(_.toTraceElement).distinct
     val original = throwable.getStackTrace.toList.filterNot(positionTrace.contains)
-    val trace = original.head :: positionTrace ::: original.tail
+    val trace = (original.head :: positionTrace ::: original.tail).distinct
     throwable.setStackTrace(trace.toArray)
     throwable
   }

@@ -22,7 +22,8 @@ case class SynchronousLogHandler(formatter: Formatter = Formatter.default,
 object SynchronousLogHandler {
   def log[M](handler: LogHandler, record: LogRecord[M]): Unit = {
     handler.modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
-      handler.writer.write(record, handler.formatter.format(r))
+      val formatted = handler.formatter.format(r)
+      handler.writer.write(record, formatted)
     }
   }
 }
