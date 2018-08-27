@@ -17,7 +17,7 @@ import scribe.handler.AsynchronousLogHandler
 class LoggingSpeedBenchmark {
   assert(LogManager.getRootLogger.isInfoEnabled, "INFO is not enabled in log4j!")
 
-  private lazy val asynchronousWriter = writer.FileWriter().path(_ => Paths.get("scribe-async.log"))
+  private lazy val asynchronousWriter = writer.FileWriter().path(_ => Paths.get("logs/scribe-async.log"))
   private lazy val asynchronousHandler = AsynchronousLogHandler(Formatter.default, asynchronousWriter)
 
   @annotations.Setup(annotations.Level.Trial)
@@ -37,8 +37,9 @@ class LoggingSpeedBenchmark {
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
   def withScribe(): Unit = {
-    val fileWriter = writer.FileWriter().path(_ => Paths.get("scribe.log"))
-    val logger = Logger.empty.orphan().withHandler(writer = fileWriter)
+    val fileWriter = writer.FileWriter().path(_ => Paths.get("logs/scribe.log"))
+    val formatter = formatter"$date $levelPaddedRight [$threadName] $message$newLine"
+    val logger = Logger.empty.orphan().withHandler(formatter = formatter, writer = fileWriter)
 
     var i = 0
     while (i < 1000) {
