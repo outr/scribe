@@ -11,6 +11,8 @@ package object scribe extends LoggerSupport {
 
   def dispose(): Unit = disposables.foreach(d => d())
 
+  implicit def level2Double(level: Level): Double = level.value
+
   implicit class AnyLogging(value: Any) {
     def logger: Logger = Logger(value.getClass.getName)
   }

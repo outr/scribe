@@ -45,7 +45,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "verify the file was logged to" in {
       Files.exists(logFile) should be(true)
-      Files.lines(logFile).iterator().asScala.toList should be(List("Testing File Logger"))
+      linesFor(logFile) should be(List("Testing File Logger"))
     }
     "configure date formatted log files" in {
       setWriter(FileWriter().autoFlush.path(LogPath.daily()))
@@ -56,8 +56,8 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify the date formatted file was logged to" in {
       val path = Paths.get("logs/app-2018-01-01.log")
       Files.exists(path) should be(true)
-      Files.lines(path).iterator().asScala.toList should be(List("Testing date formatted file"))
-      Files.lines(logFile).iterator().asScala.toList should be(List("Testing File Logger"))
+      linesFor(path) should be(List("Testing date formatted file"))
+      linesFor(logFile) should be(List("Testing File Logger"))
     }
     "change the timeStamp and write another log record" in {
       timeStamp += 1000 * 60 * 60 * 12
@@ -66,8 +66,8 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify that two records are in the date formatted file" in {
       val path = Paths.get("logs/app-2018-01-01.log")
       Files.exists(path) should be(true)
-      Files.lines(path).iterator().asScala.toList should be(List("Testing date formatted file", "Testing mid-day"))
-      Files.lines(logFile).iterator().asScala.toList should be(List("Testing File Logger"))
+      linesFor(path) should be(List("Testing date formatted file", "Testing mid-day"))
+      linesFor(logFile) should be(List("Testing File Logger"))
     }
     "increment timeStamp to the next day" in {
       timeStamp += 1000 * 60 * 60 * 12
@@ -77,9 +77,9 @@ class FileLoggingSpec extends WordSpec with Matchers {
       val day1 = Paths.get("logs/app-2018-01-01.log")
       val day2 = Paths.get("logs/app-2018-01-02.log")
       Files.exists(day2) should be(true)
-      Files.lines(day2).iterator().asScala.toList should be(List("Testing next day"))
-      Files.lines(day1).iterator().asScala.toList should be(List("Testing date formatted file", "Testing mid-day"))
-      Files.lines(logFile).iterator().asScala.toList should be(List("Testing File Logger"))
+      linesFor(day2) should be(List("Testing next day"))
+      linesFor(day1) should be(List("Testing date formatted file", "Testing mid-day"))
+      linesFor(logFile) should be(List("Testing File Logger"))
     }
     "configure rolling files" in {
       setDate("2018-01-01")
@@ -91,7 +91,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify rolling log 1" in {
       val path = Paths.get("logs/rolling.log")
       Files.exists(path) should be(true)
-      Files.lines(path).iterator().asScala.toList should be(List("Rolling 1"))
+      linesFor(path) should be(List("Rolling 1"))
     }
     "increment date and roll file" in {
       setDate("2018-01-02")
@@ -102,8 +102,8 @@ class FileLoggingSpec extends WordSpec with Matchers {
       val rolled = Paths.get("logs/rolling-2018-01-01.log")
       Files.exists(path) should be(true)
       Files.exists(rolled) should be(true)
-      Files.lines(path).iterator().asScala.toList should be(List("Rolling 2"))
-      Files.lines(rolled).iterator().asScala.toList should be(List("Rolling 1"))
+      linesFor(path) should be(List("Rolling 2"))
+      linesFor(rolled) should be(List("Rolling 1"))
     }
     "increment date and roll file again" in {
       setDate("2018-01-03")
@@ -116,9 +116,9 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.exists(path) should be(true)
       Files.exists(rolled1) should be(true)
       Files.exists(rolled2) should be(true)
-      Files.lines(path).iterator().asScala.toList should be(List("Rolling 3"))
-      Files.lines(rolled1).iterator().asScala.toList should be(List("Rolling 1"))
-      Files.lines(rolled2).iterator().asScala.toList should be(List("Rolling 2"))
+      linesFor(path) should be(List("Rolling 3"))
+      linesFor(rolled1) should be(List("Rolling 1"))
+      linesFor(rolled2) should be(List("Rolling 2"))
     }
     "configure daily path with gzipping" in {
       setDate("2018-01-01")
@@ -130,7 +130,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify gzipping log 1" in {
       val path = Paths.get("logs/gzip-2018-01-01.log")
       Files.exists(path) should be(true)
-      Files.lines(path).iterator().asScala.toList should be(List("Gzip 1"))
+      linesFor(path) should be(List("Gzip 1"))
     }
     "modify date to create gzip" in {
       setDate("2018-01-02")
@@ -143,7 +143,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.exists(path) should be(true)
       Files.exists(gzipped) should be(true)
       Files.exists(unGzipped) should be(false)
-      Files.lines(path).iterator().asScala.toList should be(List("Gzip 2"))
+      linesFor(path) should be(List("Gzip 2"))
     }
     "configure maximum sized log files" in {
       setWriter(FileWriter()
@@ -164,9 +164,9 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.exists(p1) should be(true)
       Files.exists(p2) should be(true)
       Files.exists(p3) should be(true)
-      Files.lines(p1).iterator().asScala.toList should be(List("Record 3"))
-      Files.lines(p2).iterator().asScala.toList should be(List("Record 2"))
-      Files.lines(p3).iterator().asScala.toList should be(List("Record 1"))
+      linesFor(p1) should be(List("Record 3"))
+      linesFor(p2) should be(List("Record 2"))
+      linesFor(p3) should be(List("Record 1"))
     }
     "configure maximum number of log files" in {
       setWriter(FileWriter()
@@ -194,12 +194,16 @@ class FileLoggingSpec extends WordSpec with Matchers {
       Files.exists(p2) should be(true)
       Files.exists(p3) should be(true)
       Files.exists(p4) should be(false)
-      Files.lines(p1).iterator().asScala.toList should be(List("Record 4"))
-      Files.lines(p2).iterator().asScala.toList should be(List("Record 3"))
-      Files.lines(p3).iterator().asScala.toList should be(List("Record 2"))
+      linesFor(p1) should be(List("Record 4"))
+      linesFor(p2) should be(List("Record 3"))
+      linesFor(p3) should be(List("Record 2"))
     }
     "tear down" in {
       Time.reset()
     }
+  }
+
+  private def linesFor(path: Path): List[String] = {
+    linesFor(path)
   }
 }
