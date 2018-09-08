@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 class FileWriter(actions: List[Action]) extends Writer {
   @volatile private[writer] var logFile: LogFile = LogFile(LogPath.default(0L))
 
-  def invoke(actions: List[Action]): FileWriter = synchronized {
+  def invoke(actions: List[Action] = actions): FileWriter = synchronized {
     val updated = Action(actions, logFile, logFile)
     if (updated != logFile) {
       if (logFile.isActive) {

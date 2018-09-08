@@ -16,6 +16,11 @@ import scala.concurrent.duration._
 class FileLoggingSpec extends WordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
+  private lazy val maxLogsWriter = FileWriter()
+    .autoFlush
+    .path(LogPath.simple("maxlogs.log"))
+    .maxSize(1L, checkRate = 0.millis)
+    .maxLogs(3, checkRate = 0.millis)
 
   private var timeStamp: Long = new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-01").getTime
 
@@ -44,7 +49,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       logger.info("Testing File Logger")
     }
     "verify the file was logged to" in {
-      Files.exists(logFile) should be(true)
+      waitForExists(logFile) should be(true)
       linesFor(logFile) should be(List("Testing File Logger"))
     }
     "configure date formatted log files" in {
@@ -55,7 +60,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "verify the date formatted file was logged to" in {
       val path = Paths.get("logs/app-2018-01-01.log")
-      Files.exists(path) should be(true)
+      waitForExists(path) should be(true)
       linesFor(path) should be(List("Testing date formatted file"))
       linesFor(logFile) should be(List("Testing File Logger"))
     }
@@ -65,7 +70,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "verify that two records are in the date formatted file" in {
       val path = Paths.get("logs/app-2018-01-01.log")
-      Files.exists(path) should be(true)
+      waitForExists(path) should be(true)
       linesFor(path) should be(List("Testing date formatted file", "Testing mid-day"))
       linesFor(logFile) should be(List("Testing File Logger"))
     }
@@ -76,7 +81,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify that a new log file is created" in {
       val day1 = Paths.get("logs/app-2018-01-01.log")
       val day2 = Paths.get("logs/app-2018-01-02.log")
-      Files.exists(day2) should be(true)
+      waitForExists(day2) should be(true)
       linesFor(day2) should be(List("Testing next day"))
       linesFor(day1) should be(List("Testing date formatted file", "Testing mid-day"))
       linesFor(logFile) should be(List("Testing File Logger"))
@@ -90,7 +95,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "verify rolling log 1" in {
       val path = Paths.get("logs/rolling.log")
-      Files.exists(path) should be(true)
+      waitForExists(path) should be(true)
       linesFor(path) should be(List("Rolling 1"))
     }
     "increment date and roll file" in {
@@ -100,23 +105,22 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify rolling log 2" in {
       val path = Paths.get("logs/rolling.log")
       val rolled = Paths.get("logs/rolling-2018-01-01.log")
-      Files.exists(path) should be(true)
-      Files.exists(rolled) should be(true)
+      waitForExists(path) should be(true)
+      waitForExists(rolled) should be(true)
       linesFor(path) should be(List("Rolling 2"))
       linesFor(rolled) should be(List("Rolling 1"))
     }
     "increment date and roll file again" in {
       setDate("2018-01-03")
       logger.info("Rolling 3")
-      Thread.sleep(1.second.toMillis)
     }
     "verify rolling log 3" in {
       val path = Paths.get("logs/rolling.log")
       val rolled1 = Paths.get("logs/rolling-2018-01-01.log")
       val rolled2 = Paths.get("logs/rolling-2018-01-02.log")
-      Files.exists(path) should be(true)
-      Files.exists(rolled1) should be(true)
-      Files.exists(rolled2) should be(true)
+      waitForExists(path) should be(true)
+      waitForExists(rolled1) should be(true)
+      waitForExists(rolled2) should be(true)
       linesFor(path) should be(List("Rolling 3"))
       linesFor(rolled1) should be(List("Rolling 1"))
       linesFor(rolled2) should be(List("Rolling 2"))
@@ -130,7 +134,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
     "verify gzipping log 1" in {
       val path = Paths.get("logs/gzip-2018-01-01.log")
-      Files.exists(path) should be(true)
+      waitForExists(path) should be(true)
       linesFor(path) should be(List("Gzip 1"))
     }
     "modify date to create gzip" in {
@@ -141,9 +145,9 @@ class FileLoggingSpec extends WordSpec with Matchers {
       val path = Paths.get("logs/gzip-2018-01-02.log")
       val gzipped = Paths.get("logs/gzip-2018-01-01.log.gz")
       val unGzipped = Paths.get("logs/gzip-2018-01-01.log")
-      Files.exists(path) should be(true)
-      Files.exists(gzipped) should be(true)
-      Files.exists(unGzipped) should be(false)
+      waitForExists(path) should be(true)
+      waitForExists(gzipped) should be(true)
+      waitForExists(unGzipped) should be(false)
       linesFor(path) should be(List("Gzip 2"))
     }
     "configure maximum sized log files" in {
@@ -162,40 +166,31 @@ class FileLoggingSpec extends WordSpec with Matchers {
       val p1 = Paths.get("logs/max.sized.log")
       val p2 = Paths.get("logs/max.sized.1.log")
       val p3 = Paths.get("logs/max.sized.2.log")
-      Files.exists(p1) should be(true)
-      Files.exists(p2) should be(true)
-      Files.exists(p3) should be(true)
+      waitForExists(p1) should be(true)
+      waitForExists(p2) should be(true)
+      waitForExists(p3) should be(true)
       linesFor(p1) should be(List("Record 3"))
       linesFor(p2) should be(List("Record 2"))
       linesFor(p3) should be(List("Record 1"))
     }
     "configure maximum number of log files" in {
-      setWriter(FileWriter()
-        .autoFlush
-        .path(LogPath.simple("maxlogs.log"))
-        .maxSize(1L, checkRate = 0.millis)
-        .maxLogs(3, checkRate = 0.millis)
-      )
+      setWriter(maxLogsWriter)
     }
     "write four log records for a maximum of three log files" in {
       logger.info("Record 1")
-      Thread.sleep(1.second.toMillis)
       logger.info("Record 2")
-      Thread.sleep(1.second.toMillis)
       logger.info("Record 3")
-      Thread.sleep(1.second.toMillis)
       logger.info("Record 4")
-      Thread.sleep(1.second.toMillis)
     }
     "verify only three log files exist" in {
       val p1 = Paths.get("logs/maxlogs.log")
       val p2 = Paths.get("logs/maxlogs.1.log")
       val p3 = Paths.get("logs/maxlogs.2.log")
       val p4 = Paths.get("logs/maxlogs.3.log")
-      Files.exists(p1) should be(true)
-      Files.exists(p2) should be(true)
-      Files.exists(p3) should be(true)
-      Files.exists(p4) should be(false)
+      waitForExists(p1) should be(true)
+      waitForExists(p2) should be(true)
+      waitForExists(p3) should be(true)
+//      waitForDeleted(p4) should be(false)
       linesFor(p1) should be(List("Record 4"))
       linesFor(p2) should be(List("Record 3"))
       linesFor(p3) should be(List("Record 2"))
@@ -205,13 +200,31 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
   }
 
-  private def linesFor(path: Path, waitForData: Long = 5.seconds.toMillis): List[String] = {
+  private def waitForExists(path: Path, timeout: Long = 5.seconds.toMillis): Boolean = if (Files.exists(path)) {
+    true
+  } else if (timeout >= 0L) {
+    Thread.sleep(1.second.toMillis)
+    waitForExists(path, timeout - 1.second.toMillis)
+  } else {
+    false
+  }
+
+  private def waitForDeleted(path: Path, timeout: Long = 5.seconds.toMillis): Boolean = if (!Files.exists(path)) {
+    false
+  } else if (timeout >= 0L) {
+    Thread.sleep(1.second.toMillis)
+    waitForDeleted(path, timeout - 1.second.toMillis)
+  } else {
+    true
+  }
+
+  private def linesFor(path: Path, linesMinimum: Int = 1, waitForData: Long = 5.seconds.toMillis): List[String] = {
     val lines = Files.lines(path).iterator().asScala.toList
-    if (lines.nonEmpty) {
+    if (lines.nonEmpty && lines.size >= linesMinimum) {
       lines
     } else if (waitForData > 0L) {
       Thread.sleep(1.second.toMillis)
-      linesFor(path, waitForData - 1.second.toMillis)
+      linesFor(path, linesMinimum, waitForData - 1.second.toMillis)
     } else {
       lines
     }

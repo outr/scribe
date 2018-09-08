@@ -16,6 +16,12 @@ object LogFile {
 
   private[file] var map = Map.empty[String, LogFile]
 
+  Runtime.getRuntime.addShutdownHook(new Thread {
+    override def run(): Unit = {
+      dispose()
+    }
+  })
+
   def apply(path: Path,
             append: Boolean = true,
             autoFlush: Boolean = false,
@@ -36,6 +42,12 @@ object LogFile {
         map += key -> lf
         lf
       }
+    }
+  }
+
+  def dispose(): Unit = {
+    map.values.foreach { logFile =>
+      logFile.dispose()
     }
   }
 }
@@ -152,6 +164,7 @@ class LogFile(val key: String,
     }
     if (isActive) {
       try {
+        writer.flush()
         writer.dispose()
       } catch {
         case _: Throwable => // Ignore
