@@ -204,6 +204,6 @@ class FileLoggingSpec extends WordSpec with Matchers {
   }
 
   private def linesFor(path: Path): List[String] = {
-    linesFor(path)
+    Files.lines(path).iterator().asScala.toList
   }
 }

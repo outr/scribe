@@ -169,6 +169,9 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full)
     publishLocal := {},
     publishArtifact := false
   )
+  .jvmSettings(
+    fork := true
+  )
 
 lazy val testsJVM = tests.jvm
 lazy val testsJS = tests.js
