@@ -11,7 +11,7 @@ import perfolation._
 import scala.collection.mutable.ListBuffer
 
 class LoggingSpec extends WordSpec with Matchers with Logging {
-  val expectedTestFileName = "tests/shared/src/test/scala/specs/LoggingTestObject.scala"
+  val expectedTestFileName = "shared/src/test/scala/specs/LoggingTestObject.scala"
 
   "Logging" should {
     val testingModifier = new TestingModifier

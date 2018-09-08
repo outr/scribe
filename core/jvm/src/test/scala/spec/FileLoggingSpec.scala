@@ -108,6 +108,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "increment date and roll file again" in {
       setDate("2018-01-03")
       logger.info("Rolling 3")
+      Thread.sleep(1.second.toMillis)
     }
     "verify rolling log 3" in {
       val path = Paths.get("logs/rolling.log")
@@ -184,6 +185,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       logger.info("Record 3")
       Thread.sleep(1.second.toMillis)
       logger.info("Record 4")
+      Thread.sleep(1.second.toMillis)
     }
     "verify only three log files exist" in {
       val p1 = Paths.get("logs/maxlogs.log")
@@ -203,7 +205,15 @@ class FileLoggingSpec extends WordSpec with Matchers {
     }
   }
 
-  private def linesFor(path: Path): List[String] = {
-    Files.lines(path).iterator().asScala.toList
+  private def linesFor(path: Path, waitForData: Long = 5.seconds.toMillis): List[String] = {
+    val lines = Files.lines(path).iterator().asScala.toList
+    if (lines.nonEmpty) {
+      lines
+    } else if (waitForData > 0L) {
+      Thread.sleep(1.second.toMillis)
+      linesFor(path, waitForData - 1.second.toMillis)
+    } else {
+      lines
+    }
   }
 }

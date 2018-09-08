@@ -1,6 +1,6 @@
 -Xms1024M
 -Xmx4096M
--Xss2M
+-Xss256M
 -XX:MaxMetaspaceSize=4096M
 -XX:MaxPermSize=2048M
 -XX:ReservedCodeCacheSize=500M

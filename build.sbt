@@ -1,4 +1,5 @@
-import sbtcrossproject.{CrossType, crossProject}
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
+import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
@@ -28,14 +29,18 @@ parallelExecution in ThisBuild := false
 
 // Core
 val perfolationVersion: String = "1.0.4"
-val scalatestVersion: String = "3.0.5"
+
+// Testing
+val scalatestVersion = "3.2.0-SNAP10"
+val scalacheckVersion = "1.14.0"
+val testInterfaceVersion = "0.3.7"
 
 // SLF4J
 val slf4jVersion: String = "1.7.25"
 val slf4j18Version: String = "1.8.0-beta2"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.9.0-M17"
+val youiVersion: String = "0.9.0-M18"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.11.1"
@@ -59,7 +64,6 @@ lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
-    testsJS, testsJVM,
     slf4j, slf4j18, slack, logstash, benchmarks)
   .settings(
     name := "scribe",
@@ -91,13 +95,25 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     name := "scribe",
     libraryDependencies ++= Seq(
       "com.outr" %%% "perfolation" % perfolationVersion,
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
     publishArtifact in Test := false
   )
   .jsSettings(sourceMapSettings)
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+      "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
+    )
+  )
   .nativeSettings(
+    nativeLinkStubs := true,
+    libraryDependencies ++= Seq(
+      "org.scala-native" %%% "test-interface" % testInterfaceVersion % Test
+    ),
     scalaVersion := "2.11.12",
+    crossScalaVersions := Seq("2.11.12"),
+    test := {}
   )
 
 lazy val coreJS = core.js
@@ -111,7 +127,8 @@ lazy val slf4j = project.in(file("slf4j"))
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test,
+      "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
     )
   )
 
@@ -122,7 +139,8 @@ lazy val slf4j18 = project.in(file("slf4j18"))
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j18Version,
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test,
+      "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
     )
   )
 
@@ -160,18 +178,3 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "org.log4s" %% "log4s" % log4sVersion
     )
   )
-
-lazy val tests = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full)
-  .dependsOn(core)
-  .settings(
-    libraryDependencies += "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
-    publish := {},
-    publishLocal := {},
-    publishArtifact := false
-  )
-  .jvmSettings(
-    fork := true
-  )
-
-lazy val testsJVM = tests.jvm
-lazy val testsJS = tests.js
