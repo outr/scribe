@@ -71,7 +71,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
     "verify that two records are in the date formatted file" in {
       val path = Paths.get("logs/app-2018-01-01.log")
       waitForExists(path) should be(true)
-      linesFor(path) should be(List("Testing date formatted file", "Testing mid-day"))
+      linesFor(path, linesMinimum = 2) should be(List("Testing date formatted file", "Testing mid-day"))
       linesFor(logFile) should be(List("Testing File Logger"))
     }
     "increment timeStamp to the next day" in {
@@ -186,7 +186,7 @@ class FileLoggingSpec extends WordSpec with Matchers {
       val p1 = Paths.get("logs/maxlogs.log")
       val p2 = Paths.get("logs/maxlogs.1.log")
       val p3 = Paths.get("logs/maxlogs.2.log")
-      val p4 = Paths.get("logs/maxlogs.3.log")
+//      val p4 = Paths.get("logs/maxlogs.3.log")
       waitForExists(p1) should be(true)
       waitForExists(p2) should be(true)
       waitForExists(p3) should be(true)
