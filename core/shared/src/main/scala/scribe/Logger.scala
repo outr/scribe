@@ -65,7 +65,7 @@ object Logger {
   private var name2Id: Map[String, Long] = Map.empty
 
   // Configure the root logger to filter anything under Info and write to the console
-  root.orphan().withMinimumLevel(Level.Info).withHandler().replace(Some("root"))
+  root.orphan().withHandler(minimumLevel = Some(Level.Info)).replace(Some("root"))
 
   def empty: Logger = Logger()
   def root: Logger = apply(rootId)
