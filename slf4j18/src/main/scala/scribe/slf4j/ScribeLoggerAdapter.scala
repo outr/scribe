@@ -3,13 +3,10 @@ package scribe.slf4j
 import org.slf4j.Logger
 import org.slf4j.helpers.{FormattingTuple, MarkerIgnoringBase, MessageFormatter}
 import org.slf4j.spi.LocationAwareLogger
-import scribe.{Level, Logger => ScribeLogger}
+import scribe.Loggable.StringLoggable
+import scribe.{Level, LogRecord, Logger => ScribeLogger}
 
 class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
-  private def logger = ScribeLogger(name)
-
-  logger.withClassNameOverride(name).replace(Some(name))
-
   def scribeLevel(level: Int): Level = level match {
     case LocationAwareLogger.TRACE_INT => Level.Trace
     case LocationAwareLogger.DEBUG_INT => Level.Debug
@@ -18,22 +15,35 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     case LocationAwareLogger.ERROR_INT => Level.Error
   }
 
-  def log(level: Level, msg: String, t: Throwable): Unit = Option(msg) match {
-    case Some(message) => logger.log(level, message, Option(t))
-    case None => logger.log(level, t, None)
+  def log(level: Level, msg: String, t: Option[Throwable]): Unit = {
+    val record = LogRecord(
+      level = level,
+      value = level.value,
+      messageFunction = () => msg,
+      loggable = StringLoggable,
+      throwable = t,
+      fileName = "",
+      className = name,
+      methodName = None,
+      line = None,
+      column = None
+    )
+    ScribeLogger(name).log(record)
   }
 
-  override def isTraceEnabled: Boolean = logger.includes(Level.Trace)
+  def includes(level: Level): Boolean = ScribeLogger(name).includes(level)
 
-  override def isDebugEnabled: Boolean = logger.includes(Level.Debug)
+  override def isTraceEnabled: Boolean = includes(Level.Trace)
 
-  override def isInfoEnabled: Boolean = logger.includes(Level.Info)
+  override def isDebugEnabled: Boolean = includes(Level.Debug)
 
-  override def isWarnEnabled: Boolean = logger.includes(Level.Warn)
+  override def isInfoEnabled: Boolean = includes(Level.Info)
 
-  override def isErrorEnabled: Boolean = logger.includes(Level.Error)
+  override def isWarnEnabled: Boolean = includes(Level.Warn)
 
-  override def trace(msg: String): Unit = logger.trace(msg)
+  override def isErrorEnabled: Boolean = includes(Level.Error)
+
+  override def trace(msg: String): Unit = trace(msg)
 
   override def trace(format: String, arg: scala.Any): Unit = {
     logTuple(Level.Trace, MessageFormatter.format(format, arg))
@@ -47,9 +57,9 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     logTuple(Level.Trace, MessageFormatter.arrayFormat(format, arguments.toArray))
   }
 
-  override def trace(msg: String, t: Throwable): Unit = log(Level.Trace, msg, t)
+  override def trace(msg: String, t: Throwable): Unit = log(Level.Trace, msg, Option(t))
 
-  override def debug(msg: String): Unit = logger.debug(msg)
+  override def debug(msg: String): Unit = log(Level.Debug, msg, None)
 
   override def debug(format: String, arg: scala.Any): Unit = {
     logTuple(Level.Debug, MessageFormatter.format(format, arg))
@@ -63,9 +73,9 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     logTuple(Level.Debug, MessageFormatter.arrayFormat(format, arguments.toArray))
   }
 
-  override def debug(msg: String, t: Throwable): Unit = log(Level.Debug, msg, t)
+  override def debug(msg: String, t: Throwable): Unit = log(Level.Debug, msg, Option(t))
 
-  override def info(msg: String): Unit = logger.info(msg)
+  override def info(msg: String): Unit = log(Level.Info, msg, None)
 
   override def info(format: String, arg: scala.Any): Unit = {
     logTuple(Level.Info, MessageFormatter.format(format, arg))
@@ -79,9 +89,9 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     logTuple(Level.Info, MessageFormatter.arrayFormat(format, arguments.toArray))
   }
 
-  override def info(msg: String, t: Throwable): Unit = log(Level.Info, msg, t)
+  override def info(msg: String, t: Throwable): Unit = log(Level.Info, msg, Option(t))
 
-  override def warn(msg: String): Unit = logger.warn(msg)
+  override def warn(msg: String): Unit = log(Level.Warn, msg, None)
 
   override def warn(format: String, arg: scala.Any): Unit = {
     logTuple(Level.Warn, MessageFormatter.format(format, arg))
@@ -95,9 +105,9 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     logTuple(Level.Warn, MessageFormatter.arrayFormat(format, arguments.toArray))
   }
 
-  override def warn(msg: String, t: Throwable): Unit = log(Level.Warn, msg, t)
+  override def warn(msg: String, t: Throwable): Unit = log(Level.Warn, msg, Option(t))
 
-  override def error(msg: String): Unit = logger.error(msg)
+  override def error(msg: String): Unit = log(Level.Error, msg, None)
 
   override def error(format: String, arg: scala.Any): Unit = {
     logTuple(Level.Error, MessageFormatter.format(format, arg))
@@ -111,9 +121,9 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     logTuple(Level.Error, MessageFormatter.arrayFormat(format, arguments.toArray))
   }
 
-  override def error(msg: String, t: Throwable): Unit = log(Level.Error, msg, t)
+  override def error(msg: String, t: Throwable): Unit = log(Level.Error, msg, Option(t))
 
   private def logTuple(level: Level, tuple: FormattingTuple): Unit = {
-    logger.log(level, tuple.getMessage, Option(tuple.getThrowable))
+    log(level, tuple.getMessage, Option(tuple.getThrowable))
   }
 }
