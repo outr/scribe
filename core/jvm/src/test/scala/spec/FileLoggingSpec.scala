@@ -16,11 +16,6 @@ import scala.concurrent.duration._
 class FileLoggingSpec extends WordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
-  private lazy val maxLogsWriter = FileWriter()
-    .autoFlush
-    .path(LogPath.simple("maxlogs.log"))
-    .maxSize(1L, checkRate = 0.millis)
-    .maxLogs(3, checkRate = 0.millis)
 
   private var timeStamp: Long = new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-01").getTime
 
@@ -174,7 +169,11 @@ class FileLoggingSpec extends WordSpec with Matchers {
       linesFor(p3) should be(List("Record 1"))
     }
     "configure maximum number of log files" in {
-      setWriter(maxLogsWriter)
+      setWriter(FileWriter()
+        .autoFlush
+        .path(LogPath.simple("maxlogs.log"))
+        .maxSize(1L, checkRate = 0.millis)
+        .maxLogs(3, checkRate = 0.millis))
     }
     "write four log records for a maximum of three log files" in {
       logger.info("Record 1")

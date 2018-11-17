@@ -3,21 +3,23 @@ package scribe.writer
 import java.nio.file.{Files, Path}
 
 import scribe._
-import scribe.writer.file.{LogFile, LogFileMode, LogPath}
+import scribe.writer.file.{FlushMode, LogFile, LogFileMode, LogPath}
 import scribe.writer.action._
 
 import scala.concurrent.duration._
 
-class FileWriter(actions: List[Action]) extends Writer {
-  @volatile private[writer] var logFile: LogFile = LogFile(LogPath.default(0L))
+class FileWriter(actions: List[Action],
+                 @volatile private[writer] var _logFile: LogFile = LogFile(LogPath.default(0L))) extends Writer {
+  def logFile: LogFile = _logFile
 
   def invoke(actions: List[Action] = actions): FileWriter = synchronized {
     val updated = Action(actions, logFile, logFile)
     if (updated != logFile) {
+      logFile.flush()
       if (logFile.isActive) {
         logFile.dispose()
       }
-      logFile = updated
+      _logFile = updated
     }
     this
   }
@@ -37,11 +39,13 @@ class FileWriter(actions: List[Action]) extends Writer {
 
   def replace: FileWriter = invoke(List(UpdateLogFileAction(_.replace(append = false))))
 
-  def autoFlush: FileWriter = invoke(List(UpdateLogFileAction(_.replace(autoFlush = true))))
+  def withFlushMode(flushMode: FlushMode): FileWriter = invoke(List(UpdateLogFileAction(_.replace(flushMode = flushMode))))
+
+  def autoFlush: FileWriter = withFlushMode(FlushMode.AlwaysFlush)
 
   def withActions(actions: Action*): FileWriter = {
     dispose()
-    new FileWriter(this.actions ::: actions.toList)
+    new FileWriter(this.actions ::: actions.toList, logFile).invoke()
   }
 
   def path(path: Long => Path, gzip: Boolean = false, checkRate: FiniteDuration = FileWriter.DefaultCheckRate): FileWriter = {

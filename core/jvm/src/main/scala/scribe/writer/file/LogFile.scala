@@ -24,21 +24,21 @@ object LogFile {
 
   def apply(path: Path,
             append: Boolean = true,
-            autoFlush: Boolean = false,
+            flushMode: FlushMode = FlushMode.AsynchronousFlush(),
             charset: Charset = Charset.defaultCharset(),
             mode: LogFileMode = LogFileMode.IO): LogFile = synchronized {
     val key = p"${mode.key}.${path.normalize().toFile.getCanonicalPath}"
     map.get(key) match {
-      case Some(lf) if append != lf.append || autoFlush != lf.autoFlush || charset != lf.charset => {
+      case Some(lf) if append != lf.append || flushMode != lf.flushMode || charset != lf.charset => {
         lf.dispose()
 
-        val nlf = new LogFile(key, path, append, autoFlush, charset, mode)
+        val nlf = new LogFile(key, path, append, flushMode, charset, mode)
         map += key -> nlf
         nlf
       }
       case Some(lf) => lf
       case None => {
-        val lf = new LogFile(key, path, append, autoFlush, charset, mode)
+        val lf = new LogFile(key, path, append, flushMode, charset, mode)
         map += key -> lf
         lf
       }
@@ -55,7 +55,7 @@ object LogFile {
 class LogFile(val key: String,
               val path: Path,
               val append: Boolean,
-              val autoFlush: Boolean,
+              val flushMode: FlushMode,
               val charset: Charset,
               val mode: LogFileMode) {
   private lazy val sizeCounter = new AtomicLong(0L)
@@ -68,7 +68,6 @@ class LogFile(val key: String,
     }
     mode.createWriter(this)
   }
-  private lazy val flusher = new AsynchronousFlusher(this, LogFile.AsynchronousFlushDelay)
   @volatile private var disposed = false
 
   def size: Long = sizeCounter.get()
@@ -79,26 +78,22 @@ class LogFile(val key: String,
 
   final def write(output: String): Unit = {
     writer.write(output)
-    if (autoFlush) {
-      writer.flush()
-    } else {
-      flusher.written()
-    }
+    flushMode.dataWritten(this, writer)
     sizeCounter.addAndGet(output.length)
   }
 
   def replace(path: Path = path,
               append: Boolean = append,
-              autoFlush: Boolean = autoFlush,
+              flushMode: FlushMode = flushMode,
               charset: Charset = charset,
               mode: LogFileMode = mode): LogFile = {
     if (isDisposed ||
         this.path != path ||
         this.append != append ||
-        this.autoFlush != autoFlush ||
+        this.flushMode != flushMode ||
         this.charset != charset ||
         this.mode != mode) {
-      LogFile(path, append, autoFlush, charset, mode)
+      LogFile(path, append, flushMode, charset, mode)
     } else {
       this
     }
@@ -114,7 +109,7 @@ class LogFile(val key: String,
       dispose()
       Files.move(path, newPath)
     }
-    LogFile(newPath, append, autoFlush, charset, mode)
+    LogFile(newPath, append, flushMode, charset, mode)
   }
 
   final def gzip(destination: String = p"${path.getFileName.toString}.gz",
