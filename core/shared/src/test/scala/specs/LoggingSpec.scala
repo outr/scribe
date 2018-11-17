@@ -127,6 +127,30 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       pos += 1
       logs(pos) should be("null, null - E")
     }
+    "utilize MDC functional logging" in {
+      val logs = ListBuffer.empty[String]
+      val logger = Logger.empty.withHandler(
+        formatter = Formatter.simple,
+        writer = new Writer {
+          override def write[M](record: LogRecord[M], output: String): Unit = logs += output
+        }
+      )
+
+      logger.info("A")
+      var name = "Name 1"
+      MDC("name") = name
+      logger.info("B")
+      name = "Name 2"
+      logger.info("C")
+      MDC.remove("name")
+
+      var pos = 0
+      logs(pos) should be("A\n")
+      pos += 1
+      logs(pos) should be("B (name: Name 1)\n")
+      pos += 1
+      logs(pos) should be("C (name: Name 2)\n")
+    }
   }
 }
 

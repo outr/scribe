@@ -40,7 +40,9 @@ case class LogstashWriter(url: URL,
       line = record.line,
       thread = record.thread.getName,
       `@timestamp` = timestamp,
-      mdc = MDC.map
+      mdc = MDC.map.map {
+        case (key, function) => key -> function()
+      }
     )
 
     val jsonObj = JsonUtil.toJson(r).asObject.get

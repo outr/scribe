@@ -163,7 +163,7 @@ object FormatBlock {
       val map = MDC.map
       if (map.nonEmpty) {
         MDC.map.map {
-          case (key, value) => p"$key: $value"
+          case (key, value) => p"$key: ${value()}"
         }.mkString(" (", ", ", ")")
       } else {
         ""

@@ -15,7 +15,9 @@ object ScribeMDCAdapter extends MDCAdapter {
 
   override def clear(): Unit = MDC.clear()
 
-  override def getCopyOfContextMap: util.Map[String, String] = MDC.map.asJava
+  override def getCopyOfContextMap: util.Map[String, String] = MDC.map.map {
+    case (key, function) => key -> function()
+  }.asJava
 
   override def setContextMap(contextMap: util.Map[String, String]): Unit = {
     clear()
