@@ -143,6 +143,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       name = "Name 2"
       logger.info("C")
       MDC.remove("name")
+      logger.info("D")
 
       var pos = 0
       logs(pos) should be("A\n")
@@ -150,6 +151,37 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logs(pos) should be("B (name: Name 1)\n")
       pos += 1
       logs(pos) should be("C (name: Name 2)\n")
+      pos += 1
+      logs(pos) should be("D\n")
+    }
+    "utilize MDC elapsed" in {
+      val logs = ListBuffer.empty[String]
+      val logger = Logger.empty.withHandler(
+        formatter = Formatter.simple,
+        writer = new Writer {
+          override def write[M](record: LogRecord[M], output: String): Unit = logs += output
+        }
+      )
+
+      var elapsed = 0L
+      MDC.elapsed("timer", () => elapsed)
+
+      logger.info("A")
+      elapsed += 1000L
+      logger.info("B")
+      elapsed += 500L
+      logger.info("C")
+      MDC.remove("timer")
+      logger.info("D")
+
+      var pos = 0
+      logs(pos) should be("A (timer: 0.00 seconds elapsed)\n")
+      pos += 1
+      logs(pos) should be("B (timer: 1.00 seconds elapsed)\n")
+      pos += 1
+      logs(pos) should be("C (timer: 1.50 seconds elapsed)\n")
+      pos += 1
+      logs(pos) should be("D\n")
     }
   }
 }

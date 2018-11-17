@@ -1,5 +1,7 @@
 package scribe
 
+import scribe.util.Time
+
 object MDC {
   private val threadLocal: InheritableThreadLocal[MDC] = new InheritableThreadLocal[MDC] {
     override def initialValue(): MDC = new MDC(None)
@@ -23,6 +25,7 @@ object MDC {
   def get(key: String): Option[String] = instance.get(key).map(_())
   def update(key: String, value: => String): Unit = instance(key) = value
   def contextualize[Return](key: String, value: => String)(f: => Return): Return = instance.contextualize(key, value)(f)
+  def elapsed(key: String, timeFunction: () => Long = Time.function): Unit = instance.elapsed(key, timeFunction)
   def remove(key: String): Unit = instance.remove(key)
   def clear(): Unit = instance.clear()
 }
@@ -43,6 +46,12 @@ class MDC(parent: Option[MDC]) {
     } finally{
       remove(key)
     }
+  }
+
+  def elapsed(key: String, timeFunction: () => Long = Time.function): Unit = {
+    val start = timeFunction()
+    import perfolation._
+    update(key, p"${((timeFunction() - start) / 1000.0).f()} seconds elapsed")
   }
 
   def remove(key: String): Unit = _map = _map - key
