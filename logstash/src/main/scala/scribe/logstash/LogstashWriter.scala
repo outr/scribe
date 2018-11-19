@@ -8,6 +8,7 @@ import profig.JsonUtil
 import scribe.{LogRecord, MDC}
 import scribe.writer.Writer
 import perfolation._
+import scribe.output.LogOutput
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -18,7 +19,7 @@ case class LogstashWriter(url: URL,
                           asynchronous: Boolean = true) extends Writer {
   private lazy val client = HttpClient()
 
-  override def write[M](record: LogRecord[M], output: String): Unit = {
+  override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
     val future = log(record)
     if (!asynchronous) {
       Await.result(future, 10.seconds)

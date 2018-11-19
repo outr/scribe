@@ -6,7 +6,7 @@ import scribe.util.Time
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scribe.Execution.global
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait FlushMode {
   def dataWritten(logFile: LogFile, writer: LogFileWriter): Unit

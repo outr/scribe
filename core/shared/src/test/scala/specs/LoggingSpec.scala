@@ -7,6 +7,7 @@ import scribe.modify.LogBooster
 import scribe.writer.{NullWriter, Writer}
 import scribe.format._
 import perfolation._
+import scribe.output.LogOutput
 
 import scala.collection.mutable.ListBuffer
 
@@ -105,7 +106,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = LoggingSpec.mdcFormatter,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: String): Unit = logs += output
+          override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
         }
       )
 
@@ -132,7 +133,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: String): Unit = logs += output
+          override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
         }
       )
 
@@ -159,7 +160,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: String): Unit = logs += output
+          override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
         }
       )
 

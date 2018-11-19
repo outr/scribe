@@ -3,6 +3,7 @@ package scribe.writer
 import java.nio.file.{Files, Path}
 
 import scribe._
+import scribe.output.LogOutput
 import scribe.writer.file.{FlushMode, LogFile, LogFileMode, LogPath}
 import scribe.writer.action._
 
@@ -24,9 +25,10 @@ class FileWriter(actions: List[Action],
     this
   }
 
-  override def write[M](record: LogRecord[M], output: String): Unit = synchronized {
+  override def write[M](record: LogRecord[M], output: LogOutput): Unit = synchronized {
     invoke(actions)
-    logFile.write(output)
+    // TODO: Support non-plaintext output
+    logFile.write(output.plainText)
   }
 
   def withMode(mode: LogFileMode): FileWriter = invoke(List(UpdateLogFileAction(_.replace(mode = mode))))

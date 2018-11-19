@@ -1,9 +1,10 @@
 package scribe.format
 
 import scribe.LogRecord
+import scribe.output.LogOutput
 
 trait Formatter {
-  def format[M](record: LogRecord[M]): String
+  def format[M](record: LogRecord[M]): LogOutput
 }
 
 object Formatter {
