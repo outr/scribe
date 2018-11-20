@@ -10,6 +10,7 @@ trait Formatter {
 object Formatter {
   lazy val simple: Formatter = formatter"$message$mdc$newLine"
   lazy val default: Formatter = formatter"$date $level $position - $message$mdc$newLine"
+  lazy val advanced: Formatter = formatter"$date $levelColored ${cyan(position)} - ${gray(message)}$mdc$newLine"
   lazy val strict: Formatter = formatter"$date [$threadNameAbbreviated] $levelPaddedRight $positionAbbreviated - $message$mdc$newLine"
 
   def fromBlocks(blocks: FormatBlock*): Formatter = new FormatBlocksFormatter(blocks.toList)

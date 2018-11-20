@@ -10,7 +10,7 @@ class CompositeOutput(val entries: List[LogOutput]) extends LogOutput {
   override lazy val plainText: String = entries.map(_.plainText).mkString
 }
 
-class ColoredOutput(color: Color, output: LogOutput) extends LogOutput {
+class ColoredOutput(val color: Color, val output: LogOutput) extends LogOutput {
   override lazy val plainText: String = output.plainText
 }
 
@@ -25,4 +25,13 @@ object Color {
   case object Red extends Color
   case object White extends Color
   case object Yellow extends Color
+
+  case object Gray extends Color
+  case object BrightBlue extends Color
+  case object BrightCyan extends Color
+  case object BrightGreen extends Color
+  case object BrightMagenta extends Color
+  case object BrightRed extends Color
+  case object BrightWhite extends Color
+  case object BrightYellow extends Color
 }

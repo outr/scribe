@@ -8,8 +8,6 @@ import scribe.util.Abbreviator
 trait FormatBlock {
   def format[M](record: LogRecord[M]): LogOutput
 
-//  def map(f: String => String): FormatBlock = FormatBlock.Mapped(this, f)
-
   def abbreviate(maxLength: Int,
                  padded: Boolean = false,
                  separator: Char = '.',
@@ -30,10 +28,6 @@ object FormatBlock {
   def apply(f: LogRecord[_] => LogOutput): FormatBlock = new FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = f(record)
   }
-
-//  case class Mapped(block: FormatBlock, f: LogOutput => LogOutput) extends FormatBlock {
-//    override def format[M](record: LogRecord[M]): String = f(block.format(record))
-//  }
 
   case class RawString(s: String) extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(s)
