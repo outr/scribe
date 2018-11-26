@@ -1,7 +1,11 @@
 package scribe
 
-object Platform {
+import scribe.writer.{NativeConsoleWriter, Writer}
+
+object Platform extends PlatformImplementation {
   def isJVM: Boolean = false
   def isJS: Boolean = false
   def isNative: Boolean = true
+
+  override def consoleWriter: Writer = NativeConsoleWriter
 }

@@ -101,6 +101,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     publishArtifact in Test := false
   )
   .jsSettings(sourceMapSettings)
+  .jsSettings(
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+  )
   .jvmSettings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
