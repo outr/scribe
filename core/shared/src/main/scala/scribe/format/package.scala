@@ -1,5 +1,6 @@
 package scribe
 
+import scribe.format.FormatBlock.RawString
 import scribe.output.{Color, ColoredOutput}
 
 import scala.language.experimental.macros
@@ -8,6 +9,7 @@ package object format {
   private val ThreadNameAbbreviationLength = 10
   private val PositionAbbreviationLength = 25
 
+  def string(value: String): FormatBlock = RawString(value)
   def date: FormatBlock = FormatBlock.Date.Standard
   def timeStamp: FormatBlock = FormatBlock.TimeStamp
   def time: FormatBlock = FormatBlock.Time
@@ -30,6 +32,17 @@ package object format {
     new ColoredOutput(color, level.format(logRecord))
   }
   def levelPaddedRight: FormatBlock = FormatBlock.Level.PaddedRight
+  def levelColoredPaddedRight: FormatBlock = FormatBlock { logRecord =>
+    val color = logRecord.level match {
+      case Level.Trace => Color.White
+      case Level.Debug => Color.Green
+      case Level.Info => Color.Blue
+      case Level.Warn => Color.Yellow
+      case Level.Error => Color.Red
+      case _ => Color.Cyan
+    }
+    new ColoredOutput(color, FormatBlock.Level.PaddedRight.format(logRecord))
+  }
   def fileName: FormatBlock = FormatBlock.FileName
   def line: FormatBlock = FormatBlock.LineNumber
   def column: FormatBlock = FormatBlock.ColumnNumber
