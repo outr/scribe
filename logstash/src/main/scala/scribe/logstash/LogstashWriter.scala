@@ -8,7 +8,7 @@ import profig.JsonUtil
 import scribe.{LogRecord, MDC}
 import scribe.writer.Writer
 import perfolation._
-import scribe.output.LogOutput
+import scribe.output.{EmptyOutput, LogOutput}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -30,11 +30,11 @@ case class LogstashWriter(url: URL,
     val l = record.timeStamp
     val timestamp = p"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
     val r = LogstashRecord(
-      message = record.message,
+      message = record.message.plainText,
       service = service,
       level = record.level.name,
       value = record.value,
-      throwable = record.throwable.map(LogRecord.throwable2String(None, _)),
+      throwable = record.throwable.map(LogRecord.throwable2LogOutput(EmptyOutput, _).plainText),
       fileName = record.fileName,
       className = record.className,
       methodName = record.methodName,

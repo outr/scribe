@@ -39,7 +39,7 @@ class SLF4JSpec extends WordSpec with Matchers {
       logs.size should be(1)
       val r = logs.head
       r.level should be(Level.Info)
-      r.message should be("Hello World!")
+      r.message.plainText should be("Hello World!")
       r.className should be("spec.SLF4JSpec")
       logs = Nil
     }

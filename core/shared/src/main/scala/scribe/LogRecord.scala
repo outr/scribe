@@ -2,6 +2,7 @@ package scribe
 
 import scala.annotation.tailrec
 import perfolation._
+import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.util.Time
 
 trait LogRecord[M] {
@@ -19,7 +20,7 @@ trait LogRecord[M] {
   def timeStamp: Long
 
   def m: M
-  def message: String
+  def message: LogOutput
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(value))
 
@@ -71,11 +72,10 @@ object LogRecord {
     * Converts a Throwable to a String representation for output in logging.
     */
   @tailrec
-  final def throwable2String(message: Option[String],
-                             t: Throwable,
-                             primaryCause: Boolean = true,
-                             b: StringBuilder = new StringBuilder): String = {
-    message.foreach(m => b.append(p"$m${scribe.lineSeparator}"))
+  final def throwable2LogOutput(message: LogOutput,
+                                t: Throwable,
+                                primaryCause: Boolean = true,
+                                b: StringBuilder = new StringBuilder): LogOutput = {
     if (!primaryCause) {
       b.append("Caused by: ")
     }
@@ -87,9 +87,14 @@ object LogRecord {
     b.append(scribe.lineSeparator)
     writeStackTrace(b, t.getStackTrace)
     if (Option(t.getCause).isEmpty) {
-      b.toString()
+      val output = new TextOutput(b.toString())
+      if (message == EmptyOutput) {
+        output
+      } else {
+        new CompositeOutput(List(message, new TextOutput(scribe.lineSeparator), output))
+      }
     } else {
-      throwable2String(None, t.getCause, primaryCause = false, b = b)
+      throwable2LogOutput(message, t.getCause, primaryCause = false, b = b)
     }
   }
 
@@ -133,10 +138,10 @@ object LogRecord {
                                 timeStamp: Long) extends LogRecord[M] {
     override lazy val m: M = messageFunction()
 
-    override lazy val message: String = {
+    override lazy val message: LogOutput = {
       val msg = loggable(m)
       throwable match {
-        case Some(t) => throwable2String(Option(msg), t)
+        case Some(t) => throwable2LogOutput(msg, t)
         case None => loggable(messageFunction())
       }
     }

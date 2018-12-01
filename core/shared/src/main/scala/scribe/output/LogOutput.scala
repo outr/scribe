@@ -4,6 +4,10 @@ trait LogOutput extends Any {
   def plainText: String
 }
 
+object EmptyOutput extends LogOutput {
+  override val plainText: String = ""
+}
+
 class TextOutput(val plainText: String) extends AnyVal with LogOutput
 
 class CompositeOutput(val entries: List[LogOutput]) extends LogOutput {

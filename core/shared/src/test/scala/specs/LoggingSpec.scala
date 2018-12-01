@@ -98,7 +98,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       testingModifier.records.head.methodName should be(Some("testException"))
       testingModifier.records.head.className should be("specs.LoggingTestObject")
       testingModifier.records.head.line should be(line)
-      testingModifier.records.head.message should startWith("java.lang.RuntimeException: Testing")
+      testingModifier.records.head.message.plainText should startWith("java.lang.RuntimeException: Testing")
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }
     "utilize MDC logging" in {

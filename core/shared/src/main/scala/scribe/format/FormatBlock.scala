@@ -146,7 +146,7 @@ object FormatBlock {
   }
 
   object Message extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.message)
+    override def format[M](record: LogRecord[M]): LogOutput = record.message
   }
 
   case class MDCReference(key: String) extends FormatBlock {
