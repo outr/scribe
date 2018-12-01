@@ -11,14 +11,23 @@ object ANSI {
   object bg {
     private def create(value: String): ANSI = ANSI(value, "bg", AnsiColor.RESET)
 
-    lazy val Black: ANSI = create(AnsiColor.BLACK_B)
-    lazy val Blue: ANSI = create(AnsiColor.BLUE_B)
-    lazy val Cyan: ANSI = create(AnsiColor.CYAN_B)
-    lazy val Green: ANSI = create(AnsiColor.GREEN_B)
-    lazy val Magenta: ANSI = create(AnsiColor.MAGENTA_B)
-    lazy val Red: ANSI = create(AnsiColor.RED_B)
-    lazy val White: ANSI = create(AnsiColor.WHITE_B)
-    lazy val Yellow: ANSI = create(AnsiColor.YELLOW_B)
+    lazy val Black: ANSI = create("\u001b[40m")
+    lazy val Blue: ANSI = create("\u001b[44m")
+    lazy val Cyan: ANSI = create("\u001b[46m")
+    lazy val Green: ANSI = create("\u001b[42m")
+    lazy val Magenta: ANSI = create("\u001b[45m")
+    lazy val Red: ANSI = create("\u001b[41m")
+    lazy val White: ANSI = create("\u001b[47m")
+    lazy val Yellow: ANSI = create("\u001b[43m")
+
+    lazy val Gray: ANSI = create("\u001b[40;1m")
+    lazy val BrightBlue: ANSI = create("\u001b[44;1m")
+    lazy val BrightCyan: ANSI = create("\u001b[46;1m")
+    lazy val BrightGreen: ANSI = create("\u001b[42;1m")
+    lazy val BrightMagenta: ANSI = create("\u001b[45;1m")
+    lazy val BrightRed: ANSI = create("\u001b[41;1m")
+    lazy val BrightWhite: ANSI = create("\u001b[47;1m")
+    lazy val BrightYellow: ANSI = create("\u001b[43;1m")
   }
 
   object ctrl {

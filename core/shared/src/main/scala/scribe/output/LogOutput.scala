@@ -18,6 +18,10 @@ class ColoredOutput(val color: Color, val output: LogOutput) extends LogOutput {
   override lazy val plainText: String = output.plainText
 }
 
+class BackgroundColoredOutput(val color: Color, val output: LogOutput) extends LogOutput {
+  override lazy val plainText: String = output.plainText
+}
+
 sealed trait Color
 
 object Color {

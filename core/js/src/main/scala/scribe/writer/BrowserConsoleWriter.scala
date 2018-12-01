@@ -10,32 +10,43 @@ import scala.scalajs.js
 object BrowserConsoleWriter extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
     val b = new StringBuilder
-    val fgColors = ListBuffer.empty[String]
-    recurse(b, fgColors, None, output)
-    val args = fgColors.map(c => js.Any.fromString(s"color: $c")).toList
+    val args = ListBuffer.empty[String]
+    recurse(b, args, None, None, output)
+    val jsArgs = args.map(js.Any.fromString).toList
 
     if (record.level >= Level.Error) {
-      console.error(b.toString(), args: _*)
+      console.error(b.toString(), jsArgs: _*)
     } else if (record.level >= Level.Warn) {
-      console.warn(b.toString(), args: _*)
+      console.warn(b.toString(), jsArgs: _*)
     } else {
-      console.log(b.toString(), args: _*)
+      console.log(b.toString(), jsArgs: _*)
     }
   }
 
   private def recurse(b: StringBuilder,
-                      fgColors: ListBuffer[String],
+                      args: ListBuffer[String],
                       fg: Option[String],
+                      bg: Option[String],
                       output: LogOutput): Unit = output match {
     case o: TextOutput => b.append(o.plainText)
-    case o: CompositeOutput => o.entries.foreach(recurse(b, fgColors, fg, _))
+    case o: CompositeOutput => o.entries.foreach(recurse(b, args, fg, bg, _))
     case o: ColoredOutput => {
       val color = color2CSS(o.color)
       b.append("%c")
-      fgColors += color
-      recurse(b, fgColors, Some(color), o.output)
+      val css = s"color: $color"
+      args += css
+      recurse(b, args, Some(css), bg, o.output)
       b.append("%c")
-      fgColors += fg.getOrElse(color2CSS(Color.Black))
+      args += fg.getOrElse(s"color: ${color2CSS(Color.Black)}")
+    }
+    case o: BackgroundColoredOutput => {
+      val color = color2CSS(o.color)
+      b.append("%c")
+      val css = s"background-color: $color"
+      args += css
+      recurse(b, args, fg, Some(css), o.output)
+      b.append("%c")
+      args += bg.getOrElse(s"background-color: ${color2CSS(Color.White)}")
     }
     case _ => b.append(output.plainText)
   }

@@ -1,7 +1,7 @@
 package scribe
 
 import scribe.format.FormatBlock.RawString
-import scribe.output.{Color, ColoredOutput}
+import scribe.output.{BackgroundColoredOutput, Color, ColoredOutput}
 
 import scala.language.experimental.macros
 
@@ -76,6 +76,26 @@ package object format {
   def brightRed(block: FormatBlock): FormatBlock = colored(Color.BrightRed, block)
   def brightWhite(block: FormatBlock): FormatBlock = colored(Color.BrightWhite, block)
   def brightYellow(block: FormatBlock): FormatBlock = colored(Color.BrightYellow, block)
+
+  def background(color: Color, block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+    new BackgroundColoredOutput(color, block.format(logRecord))
+  }
+  def bgBlack(block: FormatBlock): FormatBlock = background(Color.Black, block)
+  def bgBlue(block: FormatBlock): FormatBlock = background(Color.Blue, block)
+  def bgCyan(block: FormatBlock): FormatBlock = background(Color.Cyan, block)
+  def bgGreen(block: FormatBlock): FormatBlock = background(Color.Green, block)
+  def bgMagenta(block: FormatBlock): FormatBlock = background(Color.Magenta, block)
+  def bgRed(block: FormatBlock): FormatBlock = background(Color.Red, block)
+  def bgWhite(block: FormatBlock): FormatBlock = background(Color.White, block)
+  def bgYellow(block: FormatBlock): FormatBlock = background(Color.Yellow, block)
+  def bgGray(block: FormatBlock): FormatBlock = background(Color.Gray, block)
+  def bgBrightBlue(block: FormatBlock): FormatBlock = background(Color.BrightBlue, block)
+  def bgBrightCyan(block: FormatBlock): FormatBlock = background(Color.BrightCyan, block)
+  def bgBrightGreen(block: FormatBlock): FormatBlock = background(Color.BrightGreen, block)
+  def bgBrightMagenta(block: FormatBlock): FormatBlock = background(Color.BrightMagenta, block)
+  def bgBrightRed(block: FormatBlock): FormatBlock = background(Color.BrightRed, block)
+  def bgBrightWhite(block: FormatBlock): FormatBlock = background(Color.BrightWhite, block)
+  def bgBrightYellow(block: FormatBlock): FormatBlock = background(Color.BrightYellow, block)
 
   implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
     def formatter(args: Any*): Formatter = macro ScribeMacros.formatter
