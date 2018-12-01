@@ -12,6 +12,10 @@ object Loggable {
     def apply(value: String): LogOutput = new TextOutput(value)
   }
 
+  implicit object LogOutputLoggable extends Loggable[LogOutput] {
+    override def apply(value: LogOutput): LogOutput = value
+  }
+
   implicit object PositionListLoggable extends Loggable[List[Position]] {
     override def apply(value: List[Position]): LogOutput = {
       new TextOutput(value.reverse.map(_.toString).mkString(p"${scribe.lineSeparator}\t"))
