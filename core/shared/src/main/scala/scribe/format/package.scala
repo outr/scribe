@@ -1,7 +1,7 @@
 package scribe
 
 import scribe.format.FormatBlock.RawString
-import scribe.output.{BackgroundColoredOutput, Color, ColoredOutput, URLOutput}
+import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, ItalicOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
 
 import scala.language.experimental.macros
 import scala.language.implicitConversions
@@ -110,6 +110,18 @@ package object format {
 
   def url(url: String, block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
     new URLOutput(url, block.format(logRecord))
+  }
+  def bold(block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+    new BoldOutput(block.format(logRecord))
+  }
+  def italic(block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+    new ItalicOutput(block.format(logRecord))
+  }
+  def underline(block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+    new UnderlineOutput(block.format(logRecord))
+  }
+  def strikethrough(block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+    new StrikethroughOutput(block.format(logRecord))
   }
 
   implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {

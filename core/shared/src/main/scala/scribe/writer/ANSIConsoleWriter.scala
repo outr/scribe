@@ -9,6 +9,10 @@ object ANSIConsoleWriter extends Writer {
   private object ansi {
     var fg: Option[ANSI] = None
     var bg: Option[ANSI] = None
+    var bold: Boolean = false
+    var italic: Boolean = false
+    var underline: Boolean = false
+    var strikethrough: Boolean = false
   }
 
   override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
@@ -32,8 +36,7 @@ object ANSIConsoleWriter extends Writer {
         writeOutput(o.output, stream)
       } finally {
         ansi.fg = previous
-        stream.print(ansi.fg.map(_.ansi).getOrElse(color.default))
-        ansi.bg.map(_.ansi).foreach(stream.print)
+        reset(stream)
       }
     }
     case o: BackgroundColoredOutput => {
@@ -45,8 +48,7 @@ object ANSIConsoleWriter extends Writer {
         writeOutput(o.output, stream)
       } finally {
         ansi.bg = previous
-        stream.print(ansi.bg.map(_.ansi).getOrElse(color.default))
-        ansi.fg.map(_.ansi).foreach(stream.print)
+        reset(stream)
       }
     }
     case o: URLOutput => {
@@ -60,7 +62,61 @@ object ANSIConsoleWriter extends Writer {
       }
       stream.print("""\u001b]8;;\u001b\""")
     }
+    case o: BoldOutput => {
+      val previous = ansi.bold
+      ansi.bold = true
+      try {
+        stream.print(ANSI.fx.Bold.ansi)
+        writeOutput(o.output, stream)
+      } finally {
+        ansi.bold = previous
+        reset(stream)
+      }
+    }
+    case o: ItalicOutput => {
+      val previous = ansi.italic
+      ansi.italic = true
+      try {
+        stream.print(ANSI.fx.Italic.ansi)
+        writeOutput(o.output, stream)
+      } finally {
+        ansi.italic = previous
+        reset(stream)
+      }
+    }
+    case o: UnderlineOutput => {
+      val previous = ansi.underline
+      ansi.underline = true
+      try {
+        stream.print(ANSI.fx.Underline.ansi)
+        writeOutput(o.output, stream)
+      } finally {
+        ansi.underline = previous
+        reset(stream)
+      }
+    }
+    case o: StrikethroughOutput => {
+      val previous = ansi.strikethrough
+      ansi.strikethrough = true
+      try {
+        stream.print(ANSI.fx.Strikethrough.ansi)
+        writeOutput(o.output, stream)
+      } finally {
+        ansi.strikethrough = previous
+        reset(stream)
+      }
+    }
     case _ => stream.print(output.plainText)      // TODO: support warning unsupported
+  }
+
+  private def reset(stream: PrintStream): Unit = {
+    stream.print(ANSI.ctrl.Reset)
+    ansi.fg.map(_.ansi).foreach(stream.print)
+    ansi.bg.map(_.ansi).foreach(stream.print)
+    if (ansi.bold) stream.print(ANSI.fx.Bold.ansi)
+    if (ansi.italic) stream.print(ANSI.fx.Italic.ansi)
+    if (ansi.underline) stream.print(ANSI.fx.Underline.ansi)
+    if (ansi.strikethrough) stream.print(ANSI.fx.Strikethrough.ansi)
   }
 
   private def color2fg(color: Color): ANSI = color match {

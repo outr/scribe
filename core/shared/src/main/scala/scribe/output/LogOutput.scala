@@ -26,6 +26,22 @@ class URLOutput(val url: String, val output: LogOutput) extends LogOutput {
   override def plainText: String = output.plainText
 }
 
+class BoldOutput(val output: LogOutput) extends AnyVal with LogOutput {
+  override def plainText: String = output.plainText
+}
+
+class ItalicOutput(val output: LogOutput) extends AnyVal with LogOutput {
+  override def plainText: String = output.plainText
+}
+
+class UnderlineOutput(val output: LogOutput) extends AnyVal with LogOutput {
+  override def plainText: String = output.plainText
+}
+
+class StrikethroughOutput(val output: LogOutput) extends AnyVal with LogOutput {
+  override def plainText: String = output.plainText
+}
+
 sealed trait Color
 
 object Color {

@@ -74,11 +74,13 @@ object ANSI {
   object fx {
     private def create(value: String): ANSI = ANSI(value, "fx", AnsiColor.RESET)
 
-    lazy val Blink: ANSI = create(AnsiColor.BLINK)
-    lazy val Bold: ANSI = create(AnsiColor.BOLD)
-    lazy val Invisible: ANSI = create(AnsiColor.INVISIBLE)
-    lazy val Reversed: ANSI = create(AnsiColor.REVERSED)
-    lazy val Underlined: ANSI = create(AnsiColor.UNDERLINED)
+    lazy val Blink: ANSI = create("\u001b[5m")
+    lazy val Bold: ANSI = create("\u001b[1m")
+    lazy val Invisible: ANSI = create("\u001b[8m")
+    lazy val Italic: ANSI = create("\u001b[3m")
+    lazy val Reversed: ANSI = create("\u001b[7m")
+    lazy val Strikethrough: ANSI = create("\u001b[9m")
+    lazy val Underline: ANSI = create("\u001b[4m")
   }
 }
 

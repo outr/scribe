@@ -12,21 +12,17 @@ package object output {
     def bg(out: LogOutput*): LogOutput = output.bg(color, out: _*)
   }
 
-  def out(entries: LogOutput*): LogOutput = new CompositeOutput(entries.toList)
+  def out(entries: LogOutput*): LogOutput = if (entries.length == 1) {
+    entries.head
+  } else {
+    new CompositeOutput(entries.toList)
+  }
 
   def color(color: Color, output: LogOutput*): LogOutput = fg(color, output: _*)
 
-  def fg(color: Color, output: LogOutput*): LogOutput = if (output.length == 1) {
-    new ColoredOutput(color, output.head)
-  } else {
-    new ColoredOutput(color, out(output: _*))
-  }
+  def fg(color: Color, output: LogOutput*): LogOutput = new ColoredOutput(color, out(output: _*))
 
-  def bg(color: Color, output: LogOutput*): LogOutput = if (output.length == 1) {
-    new BackgroundColoredOutput(color, output.head)
-  } else {
-    new BackgroundColoredOutput(color, out(output: _*))
-  }
+  def bg(color: Color, output: LogOutput*): LogOutput = new BackgroundColoredOutput(color, out(output: _*))
 
   def black(output: LogOutput*): LogOutput = fg(Color.Black, output: _*)
   def blue(output: LogOutput*): LogOutput = fg(Color.Blue, output: _*)
@@ -63,4 +59,8 @@ package object output {
   def bgBrightYellow(output: LogOutput*): LogOutput = bg(Color.BrightYellow, output: _*)
 
   def url(url: String, output: LogOutput): LogOutput = new URLOutput(url, output)
+  def bold(output: LogOutput*): LogOutput = new BoldOutput(out(output: _*))
+  def italic(output: LogOutput*): LogOutput = new ItalicOutput(out(output: _*))
+  def underline(output: LogOutput*): LogOutput = new UnderlineOutput(out(output: _*))
+  def strikethrough(output: LogOutput*): LogOutput = new StrikethroughOutput(out(output: _*))
 }
