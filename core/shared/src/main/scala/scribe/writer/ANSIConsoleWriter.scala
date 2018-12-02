@@ -49,6 +49,17 @@ object ANSIConsoleWriter extends Writer {
         ansi.fg.map(_.ansi).foreach(stream.print)
       }
     }
+    case o: URLOutput => {
+      stream.print("""\u001b]8;;""")
+      stream.print(o.url)
+      stream.print("""\u001b\""")
+      if (o.output == EmptyOutput) {
+        stream.print(o.url)
+      } else {
+        writeOutput(o.output, stream)
+      }
+      stream.print("""\u001b]8;;\u001b\""")
+    }
     case _ => stream.print(output.plainText)      // TODO: support warning unsupported
   }
 

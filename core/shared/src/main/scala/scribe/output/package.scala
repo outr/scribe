@@ -61,4 +61,6 @@ package object output {
   def bgBrightRed(output: LogOutput*): LogOutput = bg(Color.BrightRed, output: _*)
   def bgBrightWhite(output: LogOutput*): LogOutput = bg(Color.BrightWhite, output: _*)
   def bgBrightYellow(output: LogOutput*): LogOutput = bg(Color.BrightYellow, output: _*)
+
+  def url(url: String, output: LogOutput): LogOutput = new URLOutput(url, output)
 }

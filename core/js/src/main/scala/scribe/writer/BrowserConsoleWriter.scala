@@ -48,6 +48,12 @@ object BrowserConsoleWriter extends Writer {
       b.append("%c")
       args += bg.getOrElse(s"background-color: ${color2CSS(Color.White)}")
     }
+    case o: URLOutput => {
+      b.append("%o (")
+      args += o.url
+      recurse(b, args, fg, bg, o.output)
+      b.append(")")
+    }
     case _ => b.append(output.plainText)
   }
 
