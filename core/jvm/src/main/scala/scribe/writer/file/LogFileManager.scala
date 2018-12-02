@@ -7,7 +7,6 @@ trait LogFileManager {
   def replace(oldLogFile: Option[LogFile], newLogFile: LogFile): Unit
 }
 
-// TODO: Support chaining
 object LogFileManager {
   case class MaximumLogs(max: Int, list: Path => List[Path]) extends LogFileManager {
     override def replace(oldLogFile: Option[LogFile], newLogFile: LogFile): Unit = {

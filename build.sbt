@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.0-SNAPSHOT"
+version in ThisBuild := "2.7.0"
 scalaVersion in ThisBuild := "2.12.7"
 crossScalaVersions in ThisBuild := List("2.12.7", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -101,6 +101,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     publishArtifact in Test := false
   )
   .jsSettings(sourceMapSettings)
+  .jsSettings(
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+  )
   .jvmSettings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test

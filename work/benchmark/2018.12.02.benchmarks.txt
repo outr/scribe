@@ -1,0 +1,9 @@
+[info] Benchmark                               Mode  Cnt      Score    Error  Units
+[info] LoggingSpeedBenchmark.withLog4j         avgt  200   1701.044 ± 11.777  ns/op
+[info] LoggingSpeedBenchmark.withLog4jTrace    avgt  200  28466.191 ± 63.818  ns/op
+[info] LoggingSpeedBenchmark.withLog4s         avgt  200  19485.302 ± 41.434  ns/op
+[info] LoggingSpeedBenchmark.withLogback       avgt  200  21443.637 ± 39.421  ns/op
+[info] LoggingSpeedBenchmark.withScalaLogging  avgt  200  19813.989 ± 40.043  ns/op
+[info] LoggingSpeedBenchmark.withScribe        avgt  200    645.822 ±  9.181  ns/op
+[info] LoggingSpeedBenchmark.withScribeAsync   avgt  200     57.716 ±  0.264  ns/op
+[info] LoggingSpeedBenchmark.withTinyLog       avgt  200   3637.637 ± 14.074  ns/op

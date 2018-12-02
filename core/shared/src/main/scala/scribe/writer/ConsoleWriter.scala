@@ -1,11 +1,8 @@
 package scribe.writer
 
 import scribe._
+import scribe.output._
 
 object ConsoleWriter extends Writer {
-  override def write[M](record: LogRecord[M], output: String): Unit = if (record.level <= Level.Info) {
-    Logger.system.out.print(output)
-  } else {
-    Logger.system.err.print(output)
-  }
+  override def write[M](record: LogRecord[M], output: LogOutput): Unit = Platform.consoleWriter.write[M](record, output)
 }

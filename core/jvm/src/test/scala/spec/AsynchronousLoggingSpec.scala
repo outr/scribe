@@ -7,6 +7,7 @@ import org.scalatest.{AsyncWordSpec, Matchers}
 import perfolation._
 import scribe.{LogRecord, Logger}
 import scribe.format._
+import scribe.output.LogOutput
 import scribe.writer.{FileWriter, Writer}
 
 import scala.collection.JavaConverters._
@@ -25,7 +26,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       val logger = Logger.empty.orphan().withHandler(
         formatter = AsynchronousLoggingSpec.format,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: String): Unit = queue.add(output.trim)
+          override def write[M](record: LogRecord[M], output: LogOutput): Unit = queue.add(output.plainText.trim)
         }
       )
 
