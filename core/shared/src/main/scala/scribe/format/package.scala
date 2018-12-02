@@ -4,6 +4,7 @@ import scribe.format.FormatBlock.RawString
 import scribe.output.{BackgroundColoredOutput, Color, ColoredOutput}
 
 import scala.language.experimental.macros
+import scala.language.implicitConversions
 
 package object format {
   private val ThreadNameAbbreviationLength = 10
@@ -57,45 +58,55 @@ package object format {
   def mdc(key: String): FormatBlock = FormatBlock.MDCReference(key)
   def mdc: FormatBlock = FormatBlock.MDCAll
 
-  def colored(color: Color, block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+  implicit class EnhancedColor(color: Color) {
+    def apply(block: FormatBlock): FormatBlock = fg(block)
+    def fg(block: FormatBlock): FormatBlock = format.fg(color, block)
+    def bg(block: FormatBlock): FormatBlock = format.bg(color, block)
+  }
+
+  def color(color: Color, block: FormatBlock): FormatBlock = fg(color, block)
+
+  def fg(color: Color, block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
     new ColoredOutput(color, block.format(logRecord))
   }
-  def black(block: FormatBlock): FormatBlock = colored(Color.Black, block)
-  def blue(block: FormatBlock): FormatBlock = colored(Color.Blue, block)
-  def cyan(block: FormatBlock): FormatBlock = colored(Color.Cyan, block)
-  def green(block: FormatBlock): FormatBlock = colored(Color.Green, block)
-  def magenta(block: FormatBlock): FormatBlock = colored(Color.Magenta, block)
-  def red(block: FormatBlock): FormatBlock = colored(Color.Red, block)
-  def white(block: FormatBlock): FormatBlock = colored(Color.White, block)
-  def yellow(block: FormatBlock): FormatBlock = colored(Color.Yellow, block)
-  def gray(block: FormatBlock): FormatBlock = colored(Color.Gray, block)
-  def brightBlue(block: FormatBlock): FormatBlock = colored(Color.BrightBlue, block)
-  def brightCyan(block: FormatBlock): FormatBlock = colored(Color.BrightCyan, block)
-  def brightGreen(block: FormatBlock): FormatBlock = colored(Color.BrightGreen, block)
-  def brightMagenta(block: FormatBlock): FormatBlock = colored(Color.BrightMagenta, block)
-  def brightRed(block: FormatBlock): FormatBlock = colored(Color.BrightRed, block)
-  def brightWhite(block: FormatBlock): FormatBlock = colored(Color.BrightWhite, block)
-  def brightYellow(block: FormatBlock): FormatBlock = colored(Color.BrightYellow, block)
 
-  def background(color: Color, block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+  def bg(color: Color, block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
     new BackgroundColoredOutput(color, block.format(logRecord))
   }
-  def bgBlack(block: FormatBlock): FormatBlock = background(Color.Black, block)
-  def bgBlue(block: FormatBlock): FormatBlock = background(Color.Blue, block)
-  def bgCyan(block: FormatBlock): FormatBlock = background(Color.Cyan, block)
-  def bgGreen(block: FormatBlock): FormatBlock = background(Color.Green, block)
-  def bgMagenta(block: FormatBlock): FormatBlock = background(Color.Magenta, block)
-  def bgRed(block: FormatBlock): FormatBlock = background(Color.Red, block)
-  def bgWhite(block: FormatBlock): FormatBlock = background(Color.White, block)
-  def bgYellow(block: FormatBlock): FormatBlock = background(Color.Yellow, block)
-  def bgGray(block: FormatBlock): FormatBlock = background(Color.Gray, block)
-  def bgBrightBlue(block: FormatBlock): FormatBlock = background(Color.BrightBlue, block)
-  def bgBrightCyan(block: FormatBlock): FormatBlock = background(Color.BrightCyan, block)
-  def bgBrightGreen(block: FormatBlock): FormatBlock = background(Color.BrightGreen, block)
-  def bgBrightMagenta(block: FormatBlock): FormatBlock = background(Color.BrightMagenta, block)
-  def bgBrightRed(block: FormatBlock): FormatBlock = background(Color.BrightRed, block)
-  def bgBrightWhite(block: FormatBlock): FormatBlock = background(Color.BrightWhite, block)
-  def bgBrightYellow(block: FormatBlock): FormatBlock = background(Color.BrightYellow, block)
+
+  def black(block: FormatBlock): FormatBlock = fg(Color.Black, block)
+  def blue(block: FormatBlock): FormatBlock = fg(Color.Blue, block)
+  def cyan(block: FormatBlock): FormatBlock = fg(Color.Cyan, block)
+  def green(block: FormatBlock): FormatBlock = fg(Color.Green, block)
+  def magenta(block: FormatBlock): FormatBlock = fg(Color.Magenta, block)
+  def red(block: FormatBlock): FormatBlock = fg(Color.Red, block)
+  def white(block: FormatBlock): FormatBlock = fg(Color.White, block)
+  def yellow(block: FormatBlock): FormatBlock = fg(Color.Yellow, block)
+  def gray(block: FormatBlock): FormatBlock = fg(Color.Gray, block)
+  def brightBlue(block: FormatBlock): FormatBlock = fg(Color.BrightBlue, block)
+  def brightCyan(block: FormatBlock): FormatBlock = fg(Color.BrightCyan, block)
+  def brightGreen(block: FormatBlock): FormatBlock = fg(Color.BrightGreen, block)
+  def brightMagenta(block: FormatBlock): FormatBlock = fg(Color.BrightMagenta, block)
+  def brightRed(block: FormatBlock): FormatBlock = fg(Color.BrightRed, block)
+  def brightWhite(block: FormatBlock): FormatBlock = fg(Color.BrightWhite, block)
+  def brightYellow(block: FormatBlock): FormatBlock = fg(Color.BrightYellow, block)
+
+  def bgBlack(block: FormatBlock): FormatBlock = bg(Color.Black, block)
+  def bgBlue(block: FormatBlock): FormatBlock = bg(Color.Blue, block)
+  def bgCyan(block: FormatBlock): FormatBlock = bg(Color.Cyan, block)
+  def bgGreen(block: FormatBlock): FormatBlock = bg(Color.Green, block)
+  def bgMagenta(block: FormatBlock): FormatBlock = bg(Color.Magenta, block)
+  def bgRed(block: FormatBlock): FormatBlock = bg(Color.Red, block)
+  def bgWhite(block: FormatBlock): FormatBlock = bg(Color.White, block)
+  def bgYellow(block: FormatBlock): FormatBlock = bg(Color.Yellow, block)
+  def bgGray(block: FormatBlock): FormatBlock = bg(Color.Gray, block)
+  def bgBrightBlue(block: FormatBlock): FormatBlock = bg(Color.BrightBlue, block)
+  def bgBrightCyan(block: FormatBlock): FormatBlock = bg(Color.BrightCyan, block)
+  def bgBrightGreen(block: FormatBlock): FormatBlock = bg(Color.BrightGreen, block)
+  def bgBrightMagenta(block: FormatBlock): FormatBlock = bg(Color.BrightMagenta, block)
+  def bgBrightRed(block: FormatBlock): FormatBlock = bg(Color.BrightRed, block)
+  def bgBrightWhite(block: FormatBlock): FormatBlock = bg(Color.BrightWhite, block)
+  def bgBrightYellow(block: FormatBlock): FormatBlock = bg(Color.BrightYellow, block)
 
   implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
     def formatter(args: Any*): Formatter = macro ScribeMacros.formatter
