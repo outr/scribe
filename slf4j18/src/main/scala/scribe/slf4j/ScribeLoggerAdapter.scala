@@ -43,7 +43,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
 
   override def isErrorEnabled: Boolean = includes(Level.Error)
 
-  override def trace(msg: String): Unit = trace(msg)
+  override def trace(msg: String): Unit = log(Level.Trace, msg, None)
 
   override def trace(format: String, arg: scala.Any): Unit = {
     logTuple(Level.Trace, MessageFormatter.format(format, arg))
