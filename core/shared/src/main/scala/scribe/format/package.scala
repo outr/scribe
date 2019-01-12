@@ -8,6 +8,7 @@ import scala.language.implicitConversions
 
 package object format {
   private val ThreadNameAbbreviationLength = 10
+  private val ClassNameAbbreviationLength = 15
   private val PositionAbbreviationLength = 25
 
   def string(value: String): FormatBlock = RawString(value)
@@ -47,6 +48,12 @@ package object format {
   def fileName: FormatBlock = FormatBlock.FileName
   def line: FormatBlock = FormatBlock.LineNumber
   def column: FormatBlock = FormatBlock.ColumnNumber
+  def className: FormatBlock = FormatBlock.ClassName
+  def classNameAbbreviated: FormatBlock = className.abbreviate(
+    maxLength = ClassNameAbbreviationLength,
+    padded = true
+  )
+  def methodName: FormatBlock = FormatBlock.MethodName
   def position: FormatBlock = FormatBlock.Position
   def positionAbbreviated: FormatBlock = position.abbreviate(
     maxLength = PositionAbbreviationLength,
