@@ -9,7 +9,7 @@ object Platform extends PlatformImplementation {
   def isJS: Boolean = true
   def isNative: Boolean = false
   
-  def console: JavaScriptConsole = js.Dynamic.global.window.console.asInstanceOf[JavaScriptConsole]
+  def console: JavaScriptConsole = js.Dynamic.global.console.asInstanceOf[JavaScriptConsole]
 
   override def consoleWriter: Writer = BrowserConsoleWriter
 }

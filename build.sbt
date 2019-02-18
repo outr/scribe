@@ -3,9 +3,9 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.1"
-scalaVersion in ThisBuild := "2.12.7"
-crossScalaVersions in ThisBuild := List("2.12.7", "2.11.12")
+version in ThisBuild := "2.7.2-SNAPSHOT"
+scalaVersion in ThisBuild := "2.12.8"
+crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
