@@ -46,5 +46,6 @@ package object scribe extends LoggerSupport {
 
   object Execution {
     implicit def global: ExecutionContext = macro Macros.executionContext
+    def custom(context: ExecutionContext): ExecutionContext = macro Macros.executionContextCustom
   }
 }

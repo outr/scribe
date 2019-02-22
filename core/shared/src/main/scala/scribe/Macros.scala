@@ -76,6 +76,12 @@ object Macros {
   def executionContext(c: blackbox.Context): c.Expr[ExecutionContext] = {
     import c.universe._
 
+    executionContextCustom(c)(c.Expr[ExecutionContext](q"_root_.scala.concurrent.ExecutionContext.global"))
+  }
+
+  def executionContextCustom(c: blackbox.Context)(context: c.Expr[ExecutionContext]): c.Expr[ExecutionContext] = {
+    import c.universe._
+
     implicit val liftablePosition: c.universe.Liftable[scribe.Position] = new Liftable[scribe.Position] {
       override def apply(p: scribe.Position): c.universe.Tree = q"scribe.Position(${p.className}, ${p.methodName}, ${p.line}, ${p.column}, ${p.fileName})"
     }
@@ -85,7 +91,7 @@ object Macros {
     try {
       c.Expr[ExecutionContext](
         q"""
-          new scribe.LoggingExecutionContext(_root_.scala.concurrent.ExecutionContext.global, List(..$stack))
+          new scribe.LoggingExecutionContext($context, List(..$stack))
        """)
     } finally {
       Position.pop()
