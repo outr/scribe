@@ -83,5 +83,5 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
 }
 
 object AsynchronousLoggingSpec {
-  val format = formatter"$timeStamp - $message$newLine"
+  val format = formatter"$timeStamp - $message"
 }

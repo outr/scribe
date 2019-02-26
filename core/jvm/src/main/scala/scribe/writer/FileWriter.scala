@@ -29,6 +29,7 @@ class FileWriter(actions: List[Action],
     invoke(actions)
     // TODO: Support non-plaintext output
     logFile.write(output.plainText)
+    logFile.write(System.lineSeparator())
   }
 
   def withMode(mode: LogFileMode): FileWriter = invoke(List(UpdateLogFileAction(_.replace(mode = mode))))

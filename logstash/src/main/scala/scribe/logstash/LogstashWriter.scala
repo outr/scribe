@@ -2,7 +2,8 @@ package scribe.logstash
 
 import io.circe.Json
 import io.youi.client.HttpClient
-import io.youi.http.{Content, HttpRequest, HttpResponse, Method}
+import io.youi.http.content.Content
+import io.youi.http.{HttpRequest, HttpResponse, Method}
 import io.youi.net._
 import profig.JsonUtil
 import scribe.{LogRecord, MDC}

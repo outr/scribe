@@ -1,7 +1,8 @@
 package scribe.slack
 
 import io.youi.client.HttpClient
-import io.youi.http.{Content, HttpRequest, HttpResponse, Method}
+import io.youi.http.content.Content
+import io.youi.http.{HttpRequest, HttpResponse, Method}
 import io.youi.net.{ContentType, URL}
 import profig.JsonUtil
 import scribe._
@@ -46,7 +47,7 @@ object Slack {
                 loggerName: String = "slack",
                 level: Level = Level.Error): Unit = {
     val slack = new Slack(serviceHash, botName)
-    val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $message$newLine"
+    val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $message"
 
     val handler = LogHandler(
       minimumLevel = Some(level),
