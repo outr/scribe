@@ -38,7 +38,7 @@ class LoggingSpeedBenchmark {
   @annotations.OperationsPerInvocation(1000)
   def withScribe(): Unit = {
     val fileWriter = writer.FileWriter().path(_ => Paths.get("logs/scribe.log"))
-    val formatter = formatter"$date $levelPaddedRight [$threadName] $message$newLine"
+    val formatter = formatter"$date $levelPaddedRight [$threadName] $message"
     val logger = Logger.empty.orphan().withHandler(formatter = formatter, writer = fileWriter)
 
     var i = 0

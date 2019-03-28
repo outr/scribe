@@ -22,5 +22,5 @@ class LoggingExecutionContext(context: ExecutionContext, stack: List[Position]) 
     context.execute(r)
   }
 
-  override def reportFailure(cause: Throwable): Unit = scribe.error(cause)
+  override def reportFailure(cause: Throwable): Unit = context.reportFailure(cause)
 }

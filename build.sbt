@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.3-SNAPSHOT"
+version in ThisBuild := "2.7.3"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -28,28 +28,28 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.0.4"
+val perfolationVersion: String = "1.1.1"
 
 // Testing
 val scalatestVersion = "3.2.0-SNAP10"
 val scalacheckVersion = "1.14.0"
-val testInterfaceVersion = "0.3.7"
+val testInterfaceVersion = "0.3.8"
 
 // SLF4J
-val slf4jVersion: String = "1.7.25"
-val slf4j18Version: String = "1.8.0-beta2"
+val slf4jVersion: String = "1.7.26"
+val slf4j18Version: String = "1.8.0-beta4"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.9.4"
+val youiVersion: String = "0.10.12"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.11.1"
+val log4jVersion: String = "2.11.2"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
 val typesafeConfigVersion: String = "1.3.3"
-val scalaLoggingVersion: String = "3.9.0"
-val tinyLogVersion: String = "1.3.5"
-val log4sVersion: String = "1.6.1"
+val scalaLoggingVersion: String = "3.9.2"
+val tinyLogVersion: String = "1.3.6"
+val log4sVersion: String = "1.7.0"
 
 // set source map paths from local directories to github path
 val sourceMapSettings = List(
@@ -64,7 +64,7 @@ lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
-    slf4j, slf4j18, slack, logstash, benchmarks)
+    slf4j, slf4j18, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},

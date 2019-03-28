@@ -2,7 +2,8 @@ package scribe.logstash
 
 import io.circe.Json
 import io.youi.client.HttpClient
-import io.youi.http.{Content, HttpRequest, HttpResponse, Method}
+import io.youi.http.content.Content
+import io.youi.http.HttpResponse
 import io.youi.net._
 import profig.JsonUtil
 import scribe.{LogRecord, MDC}
@@ -12,12 +13,13 @@ import scribe.output.{EmptyOutput, LogOutput}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scribe.Execution.global
 
 case class LogstashWriter(url: URL,
                           service: String,
                           additionalFields: Map[String, String] = Map.empty,
                           asynchronous: Boolean = true) extends Writer {
-  private lazy val client = HttpClient()
+  private lazy val client = HttpClient.url(url).post
 
   override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
     val future = log(record)
@@ -53,11 +55,6 @@ case class LogstashWriter(url: URL,
     val json = Json.fromJsonObject(jsonWithFields).noSpaces
 
     val content = Content.string(json, ContentType.`application/json`)
-    val request = HttpRequest(
-      method = Method.Post,
-      url = url,
-      content = Some(content)
-    )
-    client.send(request)
+    client.content(content).send()
   }
 }

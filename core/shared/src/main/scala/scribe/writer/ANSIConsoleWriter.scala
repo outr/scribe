@@ -22,6 +22,7 @@ object ANSIConsoleWriter extends Writer {
       Logger.system.err
     }
     writeOutput(output, stream)
+    stream.println()
   }
 
   private def writeOutput(output: LogOutput, stream: PrintStream): Unit = output match {

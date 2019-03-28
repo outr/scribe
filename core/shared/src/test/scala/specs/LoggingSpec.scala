@@ -147,13 +147,13 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logger.info("D")
 
       var pos = 0
-      logs(pos) should be("A\n")
+      logs(pos) should be("A")
       pos += 1
-      logs(pos) should be("B (name: Name 1)\n")
+      logs(pos) should be("B (name: Name 1)")
       pos += 1
-      logs(pos) should be("C (name: Name 2)\n")
+      logs(pos) should be("C (name: Name 2)")
       pos += 1
-      logs(pos) should be("D\n")
+      logs(pos) should be("D")
     }
     "utilize MDC elapsed" in {
       val logs = ListBuffer.empty[String]
@@ -176,13 +176,13 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logger.info("D")
 
       var pos = 0
-      logs(pos) should be("A (timer: 0.00 seconds elapsed)\n")
+      logs(pos) should be("A (timer: 0.00 seconds elapsed)")
       pos += 1
-      logs(pos) should be("B (timer: 1.00 seconds elapsed)\n")
+      logs(pos) should be("B (timer: 1.00 seconds elapsed)")
       pos += 1
-      logs(pos) should be("C (timer: 1.50 seconds elapsed)\n")
+      logs(pos) should be("C (timer: 1.50 seconds elapsed)")
       pos += 1
-      logs(pos) should be("D\n")
+      logs(pos) should be("D")
     }
   }
 }
