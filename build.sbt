@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.3-SNAPSHOT"
+version in ThisBuild := "2.7.3"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -64,7 +64,7 @@ lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
-    slf4j, slf4j18, slack, logstash, benchmarks)
+    slf4j, slf4j18, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
