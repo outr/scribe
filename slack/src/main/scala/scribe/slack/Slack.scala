@@ -2,7 +2,7 @@ package scribe.slack
 
 import io.youi.client.HttpClient
 import io.youi.http.content.Content
-import io.youi.http.{HttpRequest, HttpResponse, Method}
+import io.youi.http.HttpResponse
 import io.youi.net.{ContentType, URL}
 import profig.JsonUtil
 import scribe._
@@ -11,10 +11,10 @@ import scribe.handler.LogHandler
 import perfolation._
 
 import scala.concurrent.Future
+import scribe.Execution.global
 
 class Slack(serviceHash: String, botName: String) {
-  private lazy val client = HttpClient()
-  private lazy val url: URL = URL(p"https://hooks.slack.com/services/$serviceHash")
+  private lazy val client = HttpClient.url(URL(p"https://hooks.slack.com/services/$serviceHash")).post
 
   def request(message: String,
               markdown: Boolean = true,
@@ -29,12 +29,7 @@ class Slack(serviceHash: String, botName: String) {
     )
     val json = JsonUtil.toJsonString(m)
     val content = Content.string(json, ContentType.`application/json`)
-    val request = HttpRequest(
-      method = Method.Post,
-      url = url,
-      content = Some(content)
-    )
-    client.send(request)
+    client.content(content).send()
   }
 }
 

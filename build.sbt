@@ -28,28 +28,28 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.1.0"
+val perfolationVersion: String = "1.1.1"
 
 // Testing
 val scalatestVersion = "3.2.0-SNAP10"
 val scalacheckVersion = "1.14.0"
-val testInterfaceVersion = "0.3.7"
+val testInterfaceVersion = "0.3.8"
 
 // SLF4J
-val slf4jVersion: String = "1.7.25"
-val slf4j18Version: String = "1.8.0-beta2"
+val slf4jVersion: String = "1.7.26"
+val slf4j18Version: String = "1.8.0-beta4"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.10.6"
+val youiVersion: String = "0.10.12"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.11.1"
+val log4jVersion: String = "2.11.2"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
 val typesafeConfigVersion: String = "1.3.3"
-val scalaLoggingVersion: String = "3.9.0"
-val tinyLogVersion: String = "1.3.5"
-val log4sVersion: String = "1.6.1"
+val scalaLoggingVersion: String = "3.9.2"
+val tinyLogVersion: String = "1.3.6"
+val log4sVersion: String = "1.7.0"
 
 // set source map paths from local directories to github path
 val sourceMapSettings = List(
