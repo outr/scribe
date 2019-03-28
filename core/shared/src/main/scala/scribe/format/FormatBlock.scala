@@ -62,7 +62,13 @@ object FormatBlock {
         }
       }
     }
-
+    object Full extends FormatBlock {
+      override def format[M](record: LogRecord[M]): LogOutput = {
+        val l = record.timeStamp
+        val d = p"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}:${l.t.L}"
+        new TextOutput(d)
+      }
+    }
   }
 
   object ThreadName extends FormatBlock {
