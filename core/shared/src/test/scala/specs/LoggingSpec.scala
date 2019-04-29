@@ -1,5 +1,7 @@
 package specs
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import org.scalatest.{Matchers, WordSpec}
 import scribe._
 import scribe.handler.LogHandler
@@ -183,6 +185,14 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logs(pos) should be("C (timer: 1.50 seconds elapsed)")
       pos += 1
       logs(pos) should be("D")
+    }
+    "verify record evaluations occur exactly once" in {
+      val evaluated = new AtomicInteger(0)
+      def message(): String = {
+        evaluated.incrementAndGet().toString
+      }
+      scribe.info(message())
+      evaluated.get() should be(1)
     }
   }
 }
