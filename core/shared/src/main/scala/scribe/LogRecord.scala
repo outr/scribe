@@ -142,7 +142,7 @@ object LogRecord {
       val msg = loggable(m)
       throwable match {
         case Some(t) => throwable2LogOutput(msg, t)
-        case None => loggable(m)
+        case None => msg
       }
     }
 
