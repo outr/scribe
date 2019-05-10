@@ -194,6 +194,16 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       scribe.info(message())
       evaluated.get() should be(1)
     }
+    // TODO: fix always validated records bug
+    /*"verify record evaluation doesn't occur at all for filtered out" in {
+      val evaluated = new AtomicInteger(0)
+      def message(): String = {
+        new RuntimeException("Message!").printStackTrace()
+        evaluated.incrementAndGet().toString
+      }
+      scribe.debug(message())
+      evaluated.get() should be(0)
+    }*/
   }
 }
 
