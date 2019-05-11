@@ -4,11 +4,12 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.scalatest.{Matchers, WordSpec}
 import scribe._
+import scribe.filter._
 import scribe.handler.LogHandler
 import scribe.modify.LogBooster
 import scribe.writer.{NullWriter, Writer}
-import scribe.format._
 import perfolation._
+import scribe.format.Formatter
 import scribe.output.LogOutput
 
 import scala.collection.mutable.ListBuffer
@@ -131,6 +132,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logs(pos) should be("null, null - E")
     }
     "utilize MDC functional logging" in {
+      import scribe.format._
       val logs = ListBuffer.empty[String]
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
@@ -158,6 +160,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       logs(pos) should be("D")
     }
     "utilize MDC elapsed" in {
+      import scribe.format._
       val logs = ListBuffer.empty[String]
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
@@ -204,9 +207,66 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       scribe.debug(message())
       evaluated.get() should be(0)
     }*/
+    "filter via DSL" in {
+      val logs = ListBuffer.empty[String]
+      val logger = Logger
+        .empty
+        .orphan()
+        .withModifier(
+          select(packageName.startsWith("org.apache.flink.api"))
+            .exclude(level < Level.Warn)
+            .priority(Priority.High)
+        )
+        .withHandler(
+          formatter = Formatter.simple,
+          writer = new Writer {
+            override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+          }
+        )
+      logger.log(LogRecord(
+        level = Level.Warn,
+        value = Level.Warn.value,
+        messageFunction = () => "Included",
+        loggable = Loggable.StringLoggable,
+        throwable = None,
+        fileName = "test",
+        className = "org.apache.flink.api.Included",
+        methodName = None,
+        line = None,
+        column = None
+      ))
+      logs.toList should be(List("Included"))
+      logger.log(LogRecord(
+        level = Level.Info,
+        value = Level.Info.value,
+        messageFunction = () => "Excluded",
+        loggable = Loggable.StringLoggable,
+        throwable = None,
+        fileName = "test",
+        className = "org.apache.flink.api.Excluded",
+        methodName = None,
+        line = None,
+        column = None
+      ))
+      logs.toList should be(List("Included"))
+      logger.log(LogRecord(
+        level = Level.Info,
+        value = Level.Info.value,
+        messageFunction = () => "Ignored",
+        loggable = Loggable.StringLoggable,
+        throwable = None,
+        fileName = "test",
+        className = "test.Ignored",
+        methodName = None,
+        line = None,
+        column = None
+      ))
+      logs.toList should be(List("Included", "Ignored"))
+    }
   }
 }
 
 object LoggingSpec {
+  import scribe.format._
   val mdcFormatter: Formatter = formatter"${mdc("test1")}, ${mdc("test2")} - $message"
 }
