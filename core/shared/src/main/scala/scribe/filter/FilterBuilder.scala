@@ -6,10 +6,14 @@ import scribe.{LogRecord, Priority}
 case class FilterBuilder(priority: Priority = Priority.Normal,
                          select: List[Filter] = Nil,
                          include: List[Filter] = Nil,
-                         exclude: List[Filter] = Nil) extends LogModifier {
+                         exclude: List[Filter] = Nil,
+                         _excludeUnselected: Boolean = false) extends LogModifier {
   def select(filters: Filter*): FilterBuilder = copy(select = select ::: filters.toList)
   def include(filters: Filter*): FilterBuilder = copy(include = include ::: filters.toList)
   def exclude(filters: Filter*): FilterBuilder = copy(exclude = exclude ::: filters.toList)
+
+  def excludeUnselected: FilterBuilder = copy(_excludeUnselected = true)
+  def includeUnselected: FilterBuilder = copy(_excludeUnselected = false)
 
   def priority(priority: Priority): FilterBuilder = copy(priority = priority)
 
@@ -22,6 +26,8 @@ case class FilterBuilder(priority: Priority = Priority.Normal,
       } else {
         None
       }
+    } else if (_excludeUnselected) {
+      None
     } else {
       Some(record)
     }
