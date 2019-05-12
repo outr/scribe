@@ -10,7 +10,8 @@ import scribe.writer.action._
 import scala.concurrent.duration._
 
 class FileWriter(actions: List[Action],
-                 @volatile private[writer] var _logFile: LogFile = LogFile(LogPath.default(0L))) extends Writer {
+                 @volatile private[writer] var _logFile: LogFile = LogFile(LogPath.default(0L)),
+                 plainText: Boolean = true) extends Writer {
   def logFile: LogFile = _logFile
 
   def invoke(actions: List[Action] = actions): FileWriter = synchronized {
@@ -27,9 +28,22 @@ class FileWriter(actions: List[Action],
 
   override def write[M](record: LogRecord[M], output: LogOutput): Unit = synchronized {
     invoke(actions)
-    // TODO: Support non-plaintext output
-    logFile.write(output.plainText)
+    if (plainText) {
+      logFile.write(output.plainText)
+    } else {
+      ANSIConsoleWriter(output, logFile.write)
+    }
     logFile.write(System.lineSeparator())
+  }
+
+  def plain: FileWriter = {
+    dispose()
+    new FileWriter(actions, logFile, plainText = false)
+  }
+
+  def ansi: FileWriter = {
+    dispose()
+    new FileWriter(actions, logFile, plainText = false)
   }
 
   def withMode(mode: LogFileMode): FileWriter = invoke(List(UpdateLogFileAction(_.replace(mode = mode))))

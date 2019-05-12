@@ -1,7 +1,5 @@
 package scribe.writer
 
-import java.io.PrintStream
-
 import scribe.output._
 import scribe.{ANSI, Level, LogRecord, Logger}
 
@@ -21,20 +19,20 @@ object ANSIConsoleWriter extends Writer {
     } else {
       Logger.system.err
     }
-    writeOutput(output, stream)
+    apply(output, stream.print)
     stream.println()
   }
 
-  private def writeOutput(output: LogOutput, stream: PrintStream): Unit = output match {
-    case o: TextOutput => stream.print(o.plainText)
-    case o: CompositeOutput => o.entries.foreach(writeOutput(_, stream))
+  def apply(output: LogOutput, stream: String => ()): Unit = output match {
+    case o: TextOutput => stream(o.plainText)
+    case o: CompositeOutput => o.entries.foreach(apply(_, stream))
     case o: ColoredOutput => {
       val color = color2fg(o.color)
-      stream.print(color.ansi)
+      stream(color.ansi)
       val previous = ansi.fg
       ansi.fg = Some(color)
       try {
-        writeOutput(o.output, stream)
+        apply(o.output, stream)
       } finally {
         ansi.fg = previous
         reset(stream)
@@ -42,33 +40,33 @@ object ANSIConsoleWriter extends Writer {
     }
     case o: BackgroundColoredOutput => {
       val color = color2bg(o.color)
-      stream.print(color.ansi)
+      stream(color.ansi)
       val previous = ansi.bg
       ansi.bg = Some(color)
       try {
-        writeOutput(o.output, stream)
+        apply(o.output, stream)
       } finally {
         ansi.bg = previous
         reset(stream)
       }
     }
     case o: URLOutput => {
-      stream.print("""\u001b]8;;""")
-      stream.print(o.url)
-      stream.print("""\u001b\""")
+      stream("""\u001b]8;;""")
+      stream(o.url)
+      stream("""\u001b\""")
       if (o.output == EmptyOutput) {
-        stream.print(o.url)
+        stream(o.url)
       } else {
-        writeOutput(o.output, stream)
+        apply(o.output, stream)
       }
-      stream.print("""\u001b]8;;\u001b\""")
+      stream("""\u001b]8;;\u001b\""")
     }
     case o: BoldOutput => {
       val previous = ansi.bold
       ansi.bold = true
       try {
-        stream.print(ANSI.fx.Bold.ansi)
-        writeOutput(o.output, stream)
+        stream(ANSI.fx.Bold.ansi)
+        apply(o.output, stream)
       } finally {
         ansi.bold = previous
         reset(stream)
@@ -78,8 +76,8 @@ object ANSIConsoleWriter extends Writer {
       val previous = ansi.italic
       ansi.italic = true
       try {
-        stream.print(ANSI.fx.Italic.ansi)
-        writeOutput(o.output, stream)
+        stream(ANSI.fx.Italic.ansi)
+        apply(o.output, stream)
       } finally {
         ansi.italic = previous
         reset(stream)
@@ -89,8 +87,8 @@ object ANSIConsoleWriter extends Writer {
       val previous = ansi.underline
       ansi.underline = true
       try {
-        stream.print(ANSI.fx.Underline.ansi)
-        writeOutput(o.output, stream)
+        stream(ANSI.fx.Underline.ansi)
+        apply(o.output, stream)
       } finally {
         ansi.underline = previous
         reset(stream)
@@ -100,24 +98,24 @@ object ANSIConsoleWriter extends Writer {
       val previous = ansi.strikethrough
       ansi.strikethrough = true
       try {
-        stream.print(ANSI.fx.Strikethrough.ansi)
-        writeOutput(o.output, stream)
+        stream(ANSI.fx.Strikethrough.ansi)
+        apply(o.output, stream)
       } finally {
         ansi.strikethrough = previous
         reset(stream)
       }
     }
-    case _ => stream.print(output.plainText)      // TODO: support warning unsupported
+    case _ => stream(output.plainText)      // TODO: support warning unsupported
   }
 
-  private def reset(stream: PrintStream): Unit = {
-    stream.print(ANSI.ctrl.Reset)
-    ansi.fg.map(_.ansi).foreach(stream.print)
-    ansi.bg.map(_.ansi).foreach(stream.print)
-    if (ansi.bold) stream.print(ANSI.fx.Bold.ansi)
-    if (ansi.italic) stream.print(ANSI.fx.Italic.ansi)
-    if (ansi.underline) stream.print(ANSI.fx.Underline.ansi)
-    if (ansi.strikethrough) stream.print(ANSI.fx.Strikethrough.ansi)
+  private def reset(stream: String => Unit): Unit = {
+    stream(ANSI.ctrl.Reset)
+    ansi.fg.map(_.ansi).foreach(stream)
+    ansi.bg.map(_.ansi).foreach(stream)
+    if (ansi.bold) stream(ANSI.fx.Bold.ansi)
+    if (ansi.italic) stream(ANSI.fx.Italic.ansi)
+    if (ansi.underline) stream(ANSI.fx.Underline.ansi)
+    if (ansi.strikethrough) stream(ANSI.fx.Strikethrough.ansi)
   }
 
   private def color2fg(color: Color): ANSI = color match {
