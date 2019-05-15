@@ -40,13 +40,13 @@ val slf4jVersion: String = "1.7.26"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.10.14"
+val youiVersion: String = "0.11.0"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.11.2"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
-val typesafeConfigVersion: String = "1.3.3"
+val typesafeConfigVersion: String = "1.3.4"
 val scalaLoggingVersion: String = "3.9.2"
 val tinyLogVersion: String = "1.3.6"
 val log4sVersion: String = "1.7.0"
