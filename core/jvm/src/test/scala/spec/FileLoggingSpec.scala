@@ -4,8 +4,8 @@ import java.nio.file.{Files, Path, Paths}
 import java.text.SimpleDateFormat
 
 import org.scalatest.{Matchers, WordSpec}
-import scribe.Logger
-import scribe.format.Formatter
+import scribe.{Level, Logger}
+import scribe.format._
 import scribe.util.Time
 import scribe.writer.FileWriter
 import scribe.writer.file.LogPath
@@ -194,6 +194,47 @@ class FileLoggingSpec extends WordSpec with Matchers {
       linesFor(p2) should be(List("Record 3"))
       linesFor(p3) should be(List("Record 2"))
     }
+    "rolling logging for an existing log file should roll properly" in {
+      val path1 = Paths.get("logs", "rolling1.log")
+      val path2 = Paths.get("logs", "rolling1.2018.01.01.log")
+      val path3 = Paths.get("logs", "rolling1.2018.01.02.log")
+      Files.deleteIfExists(path1)
+      Files.deleteIfExists(path2)
+      Files.deleteIfExists(path3)
+
+      setDate("2018-01-01")
+
+      val writer = FileWriter()
+        .path(_ => path1)
+        .rolling(path = LogPath.daily("rolling1", "."))
+        .autoFlush
+      writer.logFile.path should be(path1)
+      val logger = Logger
+        .empty
+        .orphan()
+        .withHandler(
+          formatter = Formatter.simple,
+          writer = writer,
+          minimumLevel = Some(Level.Trace)
+        )
+
+      logger.debug("Test 1")
+      linesFor(path1) should be(List("Test 1"))
+      linesFor(path2) should be(Nil)
+      linesFor(path3) should be(Nil)
+
+      setDate("2018-01-02")
+      logger.debug("Test 2")
+      linesFor(path1) should be(List("Test 2"))
+      linesFor(path2) should be(List("Test 1"))
+      linesFor(path3) should be(Nil)
+
+      setDate("2018-01-03")
+      logger.debug("Test 3")
+      linesFor(path1) should be(List("Test 3"))
+      linesFor(path2) should be(List("Test 1"))
+      linesFor(path3) should be(List("Test 2"))
+    }
     "tear down" in {
       Time.reset()
     }
@@ -218,14 +259,18 @@ class FileLoggingSpec extends WordSpec with Matchers {
   }
 
   private def linesFor(path: Path, linesMinimum: Int = 1, waitForData: Long = 5.seconds.toMillis): List[String] = {
-    val lines = Files.lines(path).iterator().asScala.toList
-    if (lines.nonEmpty && lines.size >= linesMinimum) {
-      lines
-    } else if (waitForData > 0L) {
-      Thread.sleep(1.second.toMillis)
-      linesFor(path, linesMinimum, waitForData - 1.second.toMillis)
+    if (Files.exists(path)) {
+      val lines = Files.lines(path).iterator().asScala.toList
+      if (lines.nonEmpty && lines.size >= linesMinimum) {
+        lines
+      } else if (waitForData > 0L) {
+        Thread.sleep(1.second.toMillis)
+        linesFor(path, linesMinimum, waitForData - 1.second.toMillis)
+      } else {
+        lines
+      }
     } else {
-      lines
+      Nil
     }
   }
 }

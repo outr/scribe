@@ -23,7 +23,7 @@ object ANSIConsoleWriter extends Writer {
     stream.println()
   }
 
-  def apply(output: LogOutput, stream: String => ()): Unit = output match {
+  def apply(output: LogOutput, stream: String => Unit): Unit = output match {
     case o: TextOutput => stream(o.plainText)
     case o: CompositeOutput => o.entries.foreach(apply(_, stream))
     case o: ColoredOutput => {

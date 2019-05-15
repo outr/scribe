@@ -150,7 +150,9 @@ class LogFile(val key: String,
 
   def isDisposed: Boolean = disposed
 
-  def flush(): Unit = writer.flush()
+  def flush(): Unit = if (active) {
+    writer.flush()
+  }
 
   def dispose(): Unit = {
     disposed = true
