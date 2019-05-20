@@ -263,6 +263,49 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
       ))
       logs.toList should be(List("Included", "Ignored"))
     }
+    "boost via DSL" in {
+      val logs = ListBuffer.empty[String]
+      val logger = Logger
+        .empty
+        .orphan()
+        .withModifier(
+          select(packageName.startsWith("org.apache.flink.api"))
+            .minimumLevel(Level.Info)
+        )
+        .withHandler(
+          formatter = Formatter.simple,
+          writer = new Writer {
+            override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+          },
+          minimumLevel = Some(Level.Info)
+        )
+      logger.log(LogRecord(
+        level = Level.Warn,
+        value = Level.Warn.value,
+        messageFunction = () => "Included 1",
+        loggable = Loggable.StringLoggable,
+        throwable = None,
+        fileName = "test",
+        className = "org.apache.flink.api.Included",
+        methodName = None,
+        line = None,
+        column = None
+      ))
+      logs.toList should be(List("Included 1"))
+      logger.log(LogRecord(
+        level = Level.Trace,
+        value = Level.Trace.value,
+        messageFunction = () => "Included 2",
+        loggable = Loggable.StringLoggable,
+        throwable = None,
+        fileName = "test",
+        className = "org.apache.flink.api.Included",
+        methodName = None,
+        line = None,
+        column = None
+      ))
+      logs.toList should be(List("Included 1", "Included 2"))
+    }
   }
 }
 

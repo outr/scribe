@@ -32,15 +32,14 @@ case class FilterBuilder(priority: Priority = Priority.Normal,
       val incl = include.forall(_.matches(record))
       val excl = exclude.exists(_.matches(record))
       if (incl && !excl) {
-        record.boost(booster)
-        Some(record)
+        Some(record.boost(booster))
       } else {
         None
       }
     } else if (_excludeUnselected) {
       None
     } else {
-      Some(record)
+      Some(record.boost(booster))
     }
   }
 }
