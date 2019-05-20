@@ -223,44 +223,11 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
             override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
           }
         )
-      logger.log(LogRecord(
-        level = Level.Warn,
-        value = Level.Warn.value,
-        messageFunction = () => "Included",
-        loggable = Loggable.StringLoggable,
-        throwable = None,
-        fileName = "test",
-        className = "org.apache.flink.api.Included",
-        methodName = None,
-        line = None,
-        column = None
-      ))
+      logger.logDirect(Level.Warn, "Included", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included"))
-      logger.log(LogRecord(
-        level = Level.Info,
-        value = Level.Info.value,
-        messageFunction = () => "Excluded",
-        loggable = Loggable.StringLoggable,
-        throwable = None,
-        fileName = "test",
-        className = "org.apache.flink.api.Excluded",
-        methodName = None,
-        line = None,
-        column = None
-      ))
+      logger.logDirect(Level.Info, "Excluded", className = "org.apache.flink.api.Excluded")
       logs.toList should be(List("Included"))
-      logger.log(LogRecord(
-        level = Level.Info,
-        value = Level.Info.value,
-        messageFunction = () => "Ignored",
-        loggable = Loggable.StringLoggable,
-        throwable = None,
-        fileName = "test",
-        className = "test.Ignored",
-        methodName = None,
-        line = None,
-        column = None
-      ))
+      logger.logDirect(Level.Info, "Ignored", className = "test.Ignored")
       logs.toList should be(List("Included", "Ignored"))
     }
     "boost via DSL" in {
@@ -279,45 +246,40 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
           },
           minimumLevel = Some(Level.Info)
         )
-      logger.log(LogRecord(
-        level = Level.Warn,
-        value = Level.Warn.value,
-        messageFunction = () => "Included 1",
-        loggable = Loggable.StringLoggable,
-        throwable = None,
-        fileName = "test",
-        className = "org.apache.flink.api.Included",
-        methodName = None,
-        line = None,
-        column = None
-      ))
+      logger.logDirect(Level.Warn, "Included 1", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1"))
-      logger.log(LogRecord(
-        level = Level.Trace,
-        value = Level.Trace.value,
-        messageFunction = () => "Included 2",
-        loggable = Loggable.StringLoggable,
-        throwable = None,
-        fileName = "test",
-        className = "org.apache.flink.api.Included",
-        methodName = None,
-        line = None,
-        column = None
-      ))
+      logger.logDirect(Level.Trace, "Included 2", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.log(LogRecord(
-        level = Level.Trace,
-        value = Level.Trace.value,
-        messageFunction = () => "Excluded",
-        loggable = Loggable.StringLoggable,
-        throwable = None,
-        fileName = "test",
-        className = "org.apache.flink.Excluded",
-        methodName = None,
-        line = None,
-        column = None
-      ))
+      logger.logDirect(Level.Trace, "Excluded", className = "org.apache.flink.Excluded")
       logs.toList should be(List("Included 1", "Included 2"))
+    }
+    "multiple filters via DSL" in {
+      val logs = ListBuffer.empty[String]
+      val logger = Logger
+        .empty
+        .orphan()
+        .withModifier(
+          select(
+            packageName.startsWith("org.package1"),
+            packageName.startsWith("org.package2")
+          ).boosted(Level.Trace, Level.Info)
+        )
+        .withModifier(select(className.startsWith("org.package3")).include(level >= Level.Error))
+        .withHandler(
+          formatter = Formatter.simple,
+          writer = new Writer {
+            override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+          },
+          minimumLevel = Some(Level.Info)
+        )
+      logger.logDirect(Level.Debug, "Included 1", className = "org.package1.Included")
+      logs.toList should be(List("Included 1"))
+      logger.logDirect(Level.Debug, "Included 2", className = "org.package2.Included")
+      logs.toList should be(List("Included 1", "Included 2"))
+      logger.logDirect(Level.Info, "Excluded 1", className = "org.package3.Excluded")
+      logs.toList should be(List("Included 1", "Included 2"))
+      logger.logDirect(Level.Error, "Included 3", className = "org.package3.Included")
+      logs.toList should be(List("Included 1", "Included 2", "Included 3"))
     }
   }
 }

@@ -1,6 +1,7 @@
 package scribe
 
 import scribe.modify.{LevelFilter, LogModifier}
+import scribe.util.Time
 
 trait LogSupport[L <: LogSupport[L]] {
   def modifiers: List[LogModifier]
@@ -19,4 +20,31 @@ trait LogSupport[L <: LogSupport[L]] {
   }
 
   def log[M](record: LogRecord[M]): Unit
+
+  def logDirect[M](level: Level,
+                   message: => M,
+                   throwable: Option[Throwable] = None,
+                   fileName: String = "",
+                   className: String = "",
+                   methodName: Option[String] = None,
+                   line: Option[Int] = None,
+                   column: Option[Int] = None,
+                   thread: Thread = Thread.currentThread(),
+                   timeStamp: Long = Time())
+                  (implicit loggable: Loggable[M]): Unit = {
+    log[M](LogRecord[M](
+      level = level,
+      value = level.value,
+      messageFunction = () => message,
+      loggable = loggable,
+      throwable = throwable,
+      fileName = fileName,
+      className = className,
+      methodName = methodName,
+      line = line,
+      column = column,
+      thread = thread,
+      timeStamp = timeStamp
+    ))
+  }
 }
