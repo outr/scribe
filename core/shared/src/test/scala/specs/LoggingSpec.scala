@@ -270,7 +270,7 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
         .orphan()
         .withModifier(
           select(packageName.startsWith("org.apache.flink.api"))
-            .minimumLevel(Level.Info)
+            .boosted(Level.Trace, Level.Info)
         )
         .withHandler(
           formatter = Formatter.simple,
