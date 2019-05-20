@@ -305,6 +305,19 @@ class LoggingSpec extends WordSpec with Matchers with Logging {
         column = None
       ))
       logs.toList should be(List("Included 1", "Included 2"))
+      logger.log(LogRecord(
+        level = Level.Trace,
+        value = Level.Trace.value,
+        messageFunction = () => "Excluded",
+        loggable = Loggable.StringLoggable,
+        throwable = None,
+        fileName = "test",
+        className = "org.apache.flink.Excluded",
+        methodName = None,
+        line = None,
+        column = None
+      ))
+      logs.toList should be(List("Included 1", "Included 2"))
     }
   }
 }

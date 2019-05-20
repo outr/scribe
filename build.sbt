@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.5"
+version in ThisBuild := "2.7.6-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")

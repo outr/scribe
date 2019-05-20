@@ -39,7 +39,7 @@ case class FilterBuilder(priority: Priority = Priority.Normal,
     } else if (_excludeUnselected) {
       None
     } else {
-      Some(record.boost(booster))
+      Some(record)
     }
   }
 }
