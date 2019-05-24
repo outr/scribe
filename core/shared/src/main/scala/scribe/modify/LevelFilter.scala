@@ -25,21 +25,21 @@ object LevelFilter {
   def >(level: Level): LevelFilter = new LevelFilter(
     include = _ > level.value,
     exclude = _ => false,
-    priority = Priority.High
+    priority = Priority.Low
   )
   def >=(level: Level): LevelFilter = new LevelFilter(
     include = _ >= level.value,
     exclude = _ => false,
-    priority = Priority.High
+    priority = Priority.Low
   )
   def <(level: Level): LevelFilter = new LevelFilter(
     include = _ < level.value,
     exclude = _ => false,
-    priority = Priority.High
+    priority = Priority.Low
   )
   def <=(level: Level): LevelFilter = new LevelFilter(
     include = _ <= level.value,
     exclude = _ => false,
-    priority = Priority.High
+    priority = Priority.Low
   )
 }

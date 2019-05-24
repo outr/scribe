@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 class TestingModifier extends LogModifier {
   override def id: String = "TestingModifier"
 
-  override def priority: Priority = Priority.Normal
+  override def priority: Priority = Priority.Lowest
 
   val records: ListBuffer[LogRecord[_]] = ListBuffer.empty[LogRecord[_]]
 
