@@ -38,13 +38,17 @@ object MaxLogFilesAction {
     }
     val directory = Option(path.toAbsolutePath.getParent)
       .getOrElse(throw new RuntimeException(p"No parent found for ${path.toAbsolutePath.toString}"))
-    Files
-      .newDirectoryStream(directory)
-      .iterator()
-      .asScala
-      .toList
-      .filter(MatchLogAndGZ)
-      .filter(_.getFileName.toString.startsWith(prefix))
-      .sortBy(Files.getLastModifiedTime(_))
+    val stream = Files.newDirectoryStream(directory)
+    try {
+      stream
+        .iterator()
+        .asScala
+        .toList
+        .filter(MatchLogAndGZ)
+        .filter(_.getFileName.toString.startsWith(prefix))
+        .sortBy(Files.getLastModifiedTime(_))
+    } finally {
+      stream.close()
+    }
   }
 }
