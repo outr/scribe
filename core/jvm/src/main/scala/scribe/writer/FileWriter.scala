@@ -18,9 +18,7 @@ class FileWriter(actions: List[Action],
     val updated = Action(actions, logFile, logFile)
     if (updated != logFile) {
       logFile.flush()
-      if (logFile.isActive) {
-        logFile.dispose()
-      }
+      logFile.dispose()
       _logFile = updated
     }
     this
