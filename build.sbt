@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.7-SNAPSHOT"
+version in ThisBuild := "2.7.7"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12", "2.13.0-RC2")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
@@ -153,8 +153,7 @@ lazy val slack = project.in(file("slack"))
     name := "scribe-slack",
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
-    ),
-    crossScalaVersions := List("2.12.8", "2.11.12")
+    )
   )
 
 lazy val logstash = project.in(file("logstash"))
@@ -163,8 +162,7 @@ lazy val logstash = project.in(file("logstash"))
     name := "scribe-logstash",
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
-    ),
-    crossScalaVersions := List("2.12.8", "2.11.12")
+    )
   )
 
 lazy val benchmarks = project.in(file("benchmarks"))
