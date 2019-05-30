@@ -10,7 +10,7 @@ trait Formatter {
 object Formatter {
   lazy val simple: Formatter = formatter"$message$mdc"
   lazy val classic: Formatter = formatter"$date [$threadNameAbbreviated] $level $position - $message$mdc"
-  lazy val default: Formatter = formatter"$date $level $position - $message$mdc"
+  lazy val default: Formatter = formatter"$date ${string("[")}$levelColored${string("]")} ${green(position)} - $message$mdc"
   lazy val enhanced: Formatter = formatter"$dateFull ${string("[")}$levelColoredPaddedRight${string("]")} ${green(position)} - ${gray(message)}$mdc"
   lazy val strict: Formatter = formatter"$date [$threadNameAbbreviated] $levelPaddedRight $positionAbbreviated - $message$mdc"
 

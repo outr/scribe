@@ -35,10 +35,10 @@ object ANSI {
 
     def Backspace(characters: Int = 1): String = create(characters, "\b")
     def ClearScreen: String = "\u001b[2J"
-    def CursorBack(characters: Int = 1): String = p"\033[${characters}D"
-    def CursorDown(lines: Int = 1): String = p"\033[${lines}B"
-    def CursorForward(characters: Int = 1): String = p"\033[${characters}C"
-    def CursorUp(lines: Int = 1): String = p"\033[${lines}A"
+    def CursorBack(characters: Int = 1): String = p"""\\033[${characters}D"""
+    def CursorDown(lines: Int = 1): String = p"\\033[${lines}B"
+    def CursorForward(characters: Int = 1): String = p"""\\033[${characters}C"""
+    def CursorUp(lines: Int = 1): String = p"""\\033[${lines}A"""
     def EraseLine: String = "\u001b[K"
     def FormFeed: String = "\f"
     def NewLine: String = "\n"

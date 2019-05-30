@@ -37,7 +37,7 @@ object Position {
 
   def push(position: Position): Unit = threadLocal.set(position :: threadLocal.get())
 
-  def push(): Unit = macro Macros.pushPosition
+  def push(): Unit = macro scribe.Macros.pushPosition
 
   def pop(): Option[Position] = {
     val stack = threadLocal.get()
