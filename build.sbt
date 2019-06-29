@@ -3,8 +3,8 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.8-SNAPSHOT"
-scalaVersion in ThisBuild := "2.13.0"
+version in ThisBuild := "2.7.8"
+scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.13.0", "2.12.8", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -40,7 +40,7 @@ val slf4jVersion: String = "1.7.26"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Slack and Logstash Dependencies
-//val youiVersion: String = "0.11.10"
+val youiVersion: String = "0.11.10"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.12.0"
@@ -64,7 +64,7 @@ lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
-    slf4j, slf4j18)//, slack, logstash)
+    slf4j, slf4j18, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
@@ -147,7 +147,6 @@ lazy val slf4j18 = project.in(file("slf4j18"))
     )
   )
 
-/*
 lazy val slack = project.in(file("slack"))
   .dependsOn(coreJVM)
   .settings(
@@ -181,4 +180,4 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "org.tinylog" % "tinylog" % tinyLogVersion,
       "org.log4s" %% "log4s" % log4sVersion
     )
-  )*/
+  )
