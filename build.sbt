@@ -3,9 +3,9 @@ import sbtcrossproject.CrossType
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.7"
-scalaVersion in ThisBuild := "2.12.8"
-crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12", "2.13.0-RC2")
+version in ThisBuild := "2.7.8-SNAPSHOT"
+scalaVersion in ThisBuild := "2.13.0"
+crossScalaVersions in ThisBuild := List("2.13.0", "2.12.8", "2.11.12")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
@@ -28,10 +28,10 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.1.2"
+val perfolationVersion: String = "1.1.4"
 
 // Testing
-val scalatestVersion = "3.1.0-SNAP11"
+val scalatestVersion = "3.1.0-SNAP13"
 val scalacheckVersion = "1.14.0"
 val testInterfaceVersion = "0.3.9"
 
@@ -40,16 +40,16 @@ val slf4jVersion: String = "1.7.26"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.11.2"
+//val youiVersion: String = "0.11.10"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.11.2"
+val log4jVersion: String = "2.12.0"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
 val typesafeConfigVersion: String = "1.3.4"
 val scalaLoggingVersion: String = "3.9.2"
 val tinyLogVersion: String = "1.3.6"
-val log4sVersion: String = "1.8.0"
+val log4sVersion: String = "1.8.2"
 
 // set source map paths from local directories to github path
 val sourceMapSettings = List(
@@ -64,7 +64,7 @@ lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
-    slf4j, slf4j18, slack, logstash)
+    slf4j, slf4j18)//, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
@@ -147,6 +147,7 @@ lazy val slf4j18 = project.in(file("slf4j18"))
     )
   )
 
+/*
 lazy val slack = project.in(file("slack"))
   .dependsOn(coreJVM)
   .settings(
@@ -180,4 +181,4 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "org.tinylog" % "tinylog" % tinyLogVersion,
       "org.log4s" %% "log4s" % log4sVersion
     )
-  )
+  )*/
