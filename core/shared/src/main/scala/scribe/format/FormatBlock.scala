@@ -21,12 +21,18 @@ trait FormatBlock {
     }
   }
 
+  def map(f: LogOutput => LogOutput): FormatBlock = FormatBlock.Mapped(this, f)
+
   def padRight(length: Int, padding: Char = ' '): FormatBlock = new RightPaddingBlock(this, length, padding)
 }
 
 object FormatBlock {
   def apply(f: LogRecord[_] => LogOutput): FormatBlock = new FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = f(record)
+  }
+
+  case class Mapped(block: FormatBlock, f: LogOutput => LogOutput) extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = f(block.format(record))
   }
 
   case class RawString(s: String) extends FormatBlock {
