@@ -2,44 +2,69 @@ package scribe.output
 
 trait LogOutput extends Any {
   def plainText: String
+
+  def map(f: String => String): LogOutput
 }
 
 object EmptyOutput extends LogOutput {
   override val plainText: String = ""
+
+  override def map(f: String => String): LogOutput = f(plainText) match {
+    case "" => EmptyOutput
+    case s => new TextOutput(s)
+  }
 }
 
-class TextOutput(val plainText: String) extends AnyVal with LogOutput
+class TextOutput(val plainText: String) extends AnyVal with LogOutput {
+  override def map(f: String => String): LogOutput = new TextOutput(f(plainText))
+}
 
 class CompositeOutput(val entries: List[LogOutput]) extends LogOutput {
   override lazy val plainText: String = entries.map(_.plainText).mkString
+
+  override def map(f: String => String): LogOutput = new CompositeOutput(entries.map(_.map(f)))
 }
 
 class ColoredOutput(val color: Color, val output: LogOutput) extends LogOutput {
   override lazy val plainText: String = output.plainText
+
+  override def map(f: String => String): LogOutput = new ColoredOutput(color, output.map(f))
 }
 
 class BackgroundColoredOutput(val color: Color, val output: LogOutput) extends LogOutput {
   override lazy val plainText: String = output.plainText
+
+  override def map(f: String => String): LogOutput = new BackgroundColoredOutput(color, output.map(f))
 }
 
 class URLOutput(val url: String, val output: LogOutput) extends LogOutput {
   override def plainText: String = output.plainText
+
+  override def map(f: String => String): LogOutput = new URLOutput(url, output.map(f))
 }
 
 class BoldOutput(val output: LogOutput) extends AnyVal with LogOutput {
   override def plainText: String = output.plainText
+
+  override def map(f: String => String): LogOutput = new BoldOutput(output.map(f))
 }
 
 class ItalicOutput(val output: LogOutput) extends AnyVal with LogOutput {
   override def plainText: String = output.plainText
+
+  override def map(f: String => String): LogOutput = new ItalicOutput(output.map(f))
 }
 
 class UnderlineOutput(val output: LogOutput) extends AnyVal with LogOutput {
   override def plainText: String = output.plainText
+
+  override def map(f: String => String): LogOutput = new UnderlineOutput(output.map(f))
 }
 
 class StrikethroughOutput(val output: LogOutput) extends AnyVal with LogOutput {
   override def plainText: String = output.plainText
+
+  override def map(f: String => String): LogOutput = new StrikethroughOutput(output.map(f))
 }
 
 sealed trait Color
