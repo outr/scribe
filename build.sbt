@@ -1,6 +1,6 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.11-SNAPSHOT"
+version in ThisBuild := "2.7.11"
 scalaVersion in ThisBuild := "2.13.1"
 crossScalaVersions in ThisBuild := List("2.13.1", "2.12.10")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
