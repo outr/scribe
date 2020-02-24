@@ -1,11 +1,8 @@
-import sbtcrossproject.CrossPlugin.autoImport.crossProject
-import sbtcrossproject.CrossType
-
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.10"
-scalaVersion in ThisBuild := "2.12.8"
-crossScalaVersions in ThisBuild := List("2.13.0", "2.12.8")
+version in ThisBuild := "2.7.11-SNAPSHOT"
+scalaVersion in ThisBuild := "2.13.1"
+crossScalaVersions in ThisBuild := List("2.13.1", "2.12.10")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
@@ -28,19 +25,19 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.1.5"
+val perfolationVersion: String = "1.1.6"
 
 // Testing
-val scalatestVersion = "3.1.0-SNAP13"
-val scalacheckVersion = "1.14.0"
-val testInterfaceVersion = "0.3.9"
+val scalatestVersion = "3.2.0-M2"
+val scalacheckVersion = "1.14.3"
+val testInterfaceVersion = "0.4.0-M2"
 
 // SLF4J
-val slf4jVersion: String = "1.7.26"
+val slf4jVersion: String = "1.7.30"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.11.26"
+val youiVersion: String = "0.12.13"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.12.0"
@@ -101,9 +98,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     publishArtifact in Test := false
   )
   .jsSettings(sourceMapSettings)
-  .jsSettings(
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
-  )
   .jvmSettings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
