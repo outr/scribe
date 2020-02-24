@@ -3,7 +3,8 @@ package spec
 import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
 
-import org.scalatest.{AsyncWordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import perfolation._
 import scribe.{LogRecord, Logger}
 import scribe.format._

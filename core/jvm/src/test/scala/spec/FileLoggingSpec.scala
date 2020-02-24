@@ -3,7 +3,8 @@ package spec
 import java.nio.file.{Files, Path, Paths}
 import java.text.SimpleDateFormat
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import scribe.{Level, Logger}
 import scribe.format._
 import scribe.util.Time
@@ -13,7 +14,7 @@ import scribe.writer.file.LogPath
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
-class FileLoggingSpec extends WordSpec with Matchers {
+class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
 

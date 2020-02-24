@@ -2,7 +2,8 @@ package specs
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import scribe._
 import scribe.filter._
 import scribe.handler.LogHandler
@@ -14,7 +15,7 @@ import scribe.output.LogOutput
 
 import scala.collection.mutable.ListBuffer
 
-class LoggingSpec extends WordSpec with Matchers with Logging {
+class LoggingSpec extends AnyWordSpec with Matchers with Logging {
   val expectedTestFileName = "shared/src/test/scala/specs/LoggingTestObject.scala"
 
   "Logging" should {

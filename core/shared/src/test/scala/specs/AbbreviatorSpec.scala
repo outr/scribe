@@ -1,9 +1,10 @@
 package specs
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import scribe.util.Abbreviator
 
-class AbbreviatorSpec extends WordSpec with Matchers {
+class AbbreviatorSpec extends AnyWordSpec with Matchers {
   "Abbreviator" should {
     val className1 = "mainPackage.sub.sample.Bar"
     val className2 = "mainPackage.sub.sample.FooBar"

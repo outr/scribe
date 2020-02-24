@@ -1,11 +1,12 @@
 package spec
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 
-class FutureTracingSpec extends WordSpec with Matchers {
+class FutureTracingSpec extends AnyWordSpec with Matchers {
   "Future tracing" when {
     "using scribe implicits" should {
       "future trace back" in {

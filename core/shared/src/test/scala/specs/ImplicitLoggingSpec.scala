@@ -1,8 +1,9 @@
 package specs
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ImplicitLoggingSpec extends WordSpec with Matchers {
+class ImplicitLoggingSpec extends AnyWordSpec with Matchers {
   "implicit logger" should {
     "config properly" in {
       ImplicitLoggingTestObject.initialize()
