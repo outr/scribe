@@ -28,8 +28,7 @@ parallelExecution in ThisBuild := false
 val perfolationVersion: String = "1.1.6"
 
 // Testing
-val scalatestVersion = "3.2.0-M2"
-val scalacheckVersion = "1.14.3"
+val scalatestVersion = "3.2.0-M3"
 val testInterfaceVersion = "0.4.0-M2"
 
 // SLF4J
@@ -57,6 +56,12 @@ val sourceMapSettings = List(
   }
 )
 
+val commonNativeSettings = Seq(
+  scalaVersion := "2.11.12",
+  crossScalaVersions := Seq("2.11.12"),
+  nativeLinkStubs := true
+)
+
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
@@ -69,7 +74,7 @@ lazy val root = project.in(file("."))
   )
 
 lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .crossType(CrossType.Full)
+  .crossType(CrossType.Pure)
   .in(file("macros"))
   .settings(
     name := "scribe-macros",
@@ -77,7 +82,7 @@ lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     publishArtifact in Test := false
   )
   .nativeSettings(
-    scalaVersion := "2.11.12",
+    commonNativeSettings
   )
 
 lazy val macrosJS = macros.js
@@ -86,31 +91,18 @@ lazy val macrosNative = macros.native
 
 lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
-  .in(file("core"))
   .dependsOn(macros)
   .settings(
     name := "scribe",
     libraryDependencies ++= Seq(
       "com.outr" %%% "perfolation" % perfolationVersion,
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
     publishArtifact in Test := false
   )
   .jsSettings(sourceMapSettings)
-  .jvmSettings(
-    libraryDependencies ++= Seq(
-      "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
-    )
-  )
   .nativeSettings(
-    nativeLinkStubs := true,
-    libraryDependencies ++= Seq(
-      "org.scala-native" %%% "test-interface" % testInterfaceVersion % Test
-    ),
-    scalaVersion := "2.11.12",
-    crossScalaVersions := Seq("2.11.12"),
-    test := {}
+    commonNativeSettings
   )
 
 lazy val coreJS = core.js
@@ -124,8 +116,7 @@ lazy val slf4j = project.in(file("slf4j"))
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test,
-      "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
   )
 
@@ -136,8 +127,7 @@ lazy val slf4j18 = project.in(file("slf4j18"))
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j18Version,
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test,
-      "org.scalacheck" %% "scalacheck" % scalacheckVersion % Test
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
     )
   )
 
