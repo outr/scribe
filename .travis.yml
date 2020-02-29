@@ -1,20 +1,19 @@
-sudo: required
+os: linux
 dist: xenial
 language: scala
-scala:
-  - 2.12.8
 jdk:
   - oraclejdk8
 before_script:
   - curl https://raw.githubusercontent.com/scala-native/scala-native/master/scripts/travis_setup.sh | bash -x
 script:
-  - sbt clean test
+  - sbt clean +test
   - sbt coverage coreJVM/test slf4j/test slf4j18/test
   - sbt coverageReport
   - sbt coverageAggregate
   - sbt codacyCoverage
 cache:
   directories:
+    - $HOME/.cache/coursier/v1
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot
 before_cache:
