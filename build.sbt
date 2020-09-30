@@ -1,12 +1,12 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.13-SNAPSHOT"
+version in ThisBuild := "2.7.13"
 scalaVersion in ThisBuild := "2.13.3"
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 
-publishTo in ThisBuild := sonatypePublishToBundle.value
+publishTo in ThisBuild := sonatypePublishTo.value
 sonatypeProfileName in ThisBuild := "com.outr"
 publishMavenStyle in ThisBuild := true
 licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
