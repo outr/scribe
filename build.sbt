@@ -1,13 +1,12 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.7.12"
-scalaVersion in ThisBuild := "2.13.1"
-crossScalaVersions in ThisBuild := List("2.13.1", "2.12.10")
+version in ThisBuild := "2.7.13-SNAPSHOT"
+scalaVersion in ThisBuild := "2.13.3"
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 
-publishTo in ThisBuild := sonatypePublishTo.value
+publishTo in ThisBuild := sonatypePublishToBundle.value
 sonatypeProfileName in ThisBuild := "com.outr"
 publishMavenStyle in ThisBuild := true
 licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
@@ -36,7 +35,7 @@ val slf4jVersion: String = "1.7.30"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.12.13"
+val youiVersion: String = "0.13.16"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.12.0"
@@ -79,7 +78,8 @@ lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     name := "scribe-macros",
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    publishArtifact in Test := false
+    publishArtifact in Test := false,
+    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
   )
   .nativeSettings(
     commonNativeSettings
@@ -98,7 +98,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "com.outr" %%% "perfolation" % perfolationVersion,
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
-    publishArtifact in Test := false
+    publishArtifact in Test := false,
+    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
   )
   .jsSettings(sourceMapSettings)
   .nativeSettings(
@@ -117,7 +118,8 @@ lazy val slf4j = project.in(file("slf4j"))
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
+    ),
+    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
   )
 
 lazy val slf4j18 = project.in(file("slf4j18"))
@@ -128,26 +130,29 @@ lazy val slf4j18 = project.in(file("slf4j18"))
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j18Version,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
+    ),
+    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
   )
 
 lazy val slack = project.in(file("slack"))
-  .dependsOn(coreJVM)
   .settings(
     name := "scribe-slack",
+    crossScalaVersions := List("2.13.3", "2.12.12"),
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
     )
   )
+  .dependsOn(coreJVM)
 
 lazy val logstash = project.in(file("logstash"))
-  .dependsOn(coreJVM)
   .settings(
     name := "scribe-logstash",
+    crossScalaVersions := List("2.13.3", "2.12.12"),
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
     )
   )
+  .dependsOn(coreJVM)
 
 lazy val benchmarks = project.in(file("benchmarks"))
   .dependsOn(coreJVM)

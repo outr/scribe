@@ -2,9 +2,6 @@
 -Xmx4096M
 -Xss256M
 -XX:MaxMetaspaceSize=4096M
--XX:MaxPermSize=2048M
 -XX:ReservedCodeCacheSize=500M
 -XX:+TieredCompilation
 -XX:-UseGCOverheadLimit
--XX:+CMSClassUnloadingEnabled
--XX:+UseConcMarkSweepGC
