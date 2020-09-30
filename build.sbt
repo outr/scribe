@@ -28,7 +28,6 @@ val perfolationVersion: String = "1.1.7"
 
 // Testing
 val scalatestVersion = "3.2.0-M3"
-val testInterfaceVersion = "0.4.0-M2"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"

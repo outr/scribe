@@ -2,15 +2,13 @@ os: linux
 dist: xenial
 language: scala
 jdk:
-  - oraclejdk8
-before_script:
-  - curl https://raw.githubusercontent.com/scala-native/scala-native/master/scripts/travis_setup.sh | bash -x
+  - openjdk8
 script:
   - sbt clean +test
   - sbt coverage coreJVM/test slf4j/test slf4j18/test
   - sbt coverageReport
   - sbt coverageAggregate
-  - sbt codacyCoverage
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
 cache:
   directories:
     - $HOME/.cache/coursier/v1
