@@ -57,6 +57,12 @@ object Macros {
     val p = position(c)
     val messageFunction = c.typecheck(q"() => $message")
     c.internal.changeOwner(message, c.internal.enclosingOwner, messageFunction.symbol)
+    val lastSlash = p.fileName.lastIndexOf('/')
+    val fileName = if (lastSlash != -1) {
+      p.fileName.substring(lastSlash + 1)
+    } else {
+      p.fileName
+    }
     q"""
        $logger.log(_root_.scribe.LogRecord[$m](
         level = $level,
@@ -64,7 +70,7 @@ object Macros {
         message = new _root_.scribe.LazyMessage[$m]($messageFunction),
         loggable = $loggable,
         throwable = $throwable,
-        fileName = ${p.fileName},
+        fileName = $fileName,
         className = ${p.className},
         methodName = ${p.methodName},
         line = ${p.line},
