@@ -25,7 +25,12 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
     "set up the logging" in {
       testingModifier.clear()
-      logger.orphan().withHandler(handler).replace()
+      logger.withHandler(handler).replace()
+      Logger("spec").orphan().replace()
+      loggerName should be("specs.LoggingSpec")
+    }
+    "confirm logging parentage" in {
+      Logger(logger.parentId.get) should be(Logger("specs"))
     }
     "have no logged entries yet" in {
       testingModifier.records.length should be(0)
@@ -102,7 +107,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       testingModifier.records.head.methodName should be(Some("testException"))
       testingModifier.records.head.className should be("specs.LoggingTestObject")
       testingModifier.records.head.line should be(line)
-      testingModifier.records.head.message.plainText should startWith("java.lang.RuntimeException: Testing")
+      testingModifier.records.head.logOutput.plainText should startWith("java.lang.RuntimeException: Testing")
       testingModifier.records.head.fileName should endWith(expectedTestFileName)
     }
     "utilize MDC logging" in {
@@ -198,16 +203,16 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       scribe.info(message())
       evaluated.get() should be(1)
     }
-    // TODO: fix always validated records bug
-    /*"verify record evaluation doesn't occur at all for filtered out" in {
+    "verify record evaluation doesn't occur at all for filtered out" in {
       val evaluated = new AtomicInteger(0)
       def message(): String = {
-        new RuntimeException("Message!").printStackTrace()
+        new RuntimeException("Should not ever be evaluated!").printStackTrace()
         evaluated.incrementAndGet().toString
       }
-      scribe.debug(message())
+      val logger = Logger().orphan().withHandler(minimumLevel = Some(Level.Info))
+      logger.debug(message())
       evaluated.get() should be(0)
-    }*/
+    }
     "filter via DSL" in {
       val logs = ListBuffer.empty[String]
       val logger = Logger

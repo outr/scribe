@@ -11,7 +11,7 @@ import scribe.format._
 import scribe.output.LogOutput
 import scribe.writer.{FileWriter, Writer}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.Future
 import scala.io.Source
 

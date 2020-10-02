@@ -78,7 +78,15 @@ object Logger {
     case Some(logger) => logger
     case None => synchronized {
       val n = fixName(name)
-      val logger = Logger()
+      val dotIndex = n.lastIndexOf('.')
+      val parentId = if (dotIndex > 0) {
+        val parentName = n.substring(0, dotIndex)
+        val parent = apply(parentName)
+        parent.id
+      } else {
+        rootId
+      }
+      val logger = Logger(parentId = Some(parentId))
       id2Logger += logger.id -> logger
       name2Id += n -> logger.id
       logger

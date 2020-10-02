@@ -61,7 +61,7 @@ object Macros {
        $logger.log(_root_.scribe.LogRecord[$m](
         level = $level,
         value = $level.value,
-        messageFunction = $messageFunction,
+        message = new _root_.scribe.LazyMessage[$m]($messageFunction),
         loggable = $loggable,
         throwable = $throwable,
         fileName = ${p.fileName},

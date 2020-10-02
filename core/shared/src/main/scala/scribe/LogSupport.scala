@@ -35,7 +35,7 @@ trait LogSupport[L <: LogSupport[L]] {
     log[M](LogRecord[M](
       level = level,
       value = level.value,
-      messageFunction = () => message,
+      message = new LazyMessage[M](() => message),
       loggable = loggable,
       throwable = throwable,
       fileName = fileName,

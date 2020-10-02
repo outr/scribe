@@ -11,7 +11,7 @@ import scribe.util.Time
 import scribe.writer.FileWriter
 import scribe.writer.file.LogPath
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.duration._
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {

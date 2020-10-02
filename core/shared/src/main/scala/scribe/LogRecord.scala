@@ -8,7 +8,7 @@ import scribe.util.Time
 trait LogRecord[M] {
   def level: Level
   def value: Double
-  def messageFunction: () => M
+  def message: LazyMessage[M]
   def loggable: Loggable[M]
   def throwable: Option[Throwable]
   def fileName: String
@@ -19,14 +19,13 @@ trait LogRecord[M] {
   def thread: Thread
   def timeStamp: Long
 
-  def m: M
-  def message: LogOutput
+  def logOutput: LogOutput
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(value))
 
   def copy(level: Level = level,
            value: Double = value,
-           messageFunction: () => M = messageFunction,
+           message: LazyMessage[M] = message,
            loggable: Loggable[M] = loggable,
            throwable: Option[Throwable] = throwable,
            fileName: String = fileName,
@@ -43,7 +42,7 @@ trait LogRecord[M] {
 object LogRecord {
   def apply[M](level: Level,
                value: Double,
-               messageFunction: () => M,
+               message: LazyMessage[M],
                loggable: Loggable[M],
                throwable: Option[Throwable],
                fileName: String,
@@ -53,10 +52,10 @@ object LogRecord {
                column: Option[Int],
                thread: Thread = Thread.currentThread(),
                timeStamp: Long = Time()): LogRecord[M] = {
-    SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
+    SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
-  def simple(messageFunction: () => String,
+  def simple(message: LazyMessage[String],
              fileName: String,
              className: String,
              methodName: Option[String] = None,
@@ -65,7 +64,7 @@ object LogRecord {
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = Time()): LogRecord[String] = {
-    apply[String](level, level.value, messageFunction, Loggable.StringLoggable, None, fileName, className, methodName, line, column, thread, timeStamp)
+    apply[String](level, level.value, message, Loggable.StringLoggable, None, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
   /**
@@ -126,7 +125,7 @@ object LogRecord {
 
   case class SimpleLogRecord[M](level: Level,
                                 value: Double,
-                                messageFunction: () => M,
+                                message: LazyMessage[M],
                                 loggable: Loggable[M],
                                 throwable: Option[Throwable],
                                 fileName: String,
@@ -136,10 +135,8 @@ object LogRecord {
                                 column: Option[Int],
                                 thread: Thread,
                                 timeStamp: Long) extends LogRecord[M] {
-    override lazy val m: M = messageFunction()
-
-    override lazy val message: LogOutput = {
-      val msg = loggable(m)
+    override lazy val logOutput: LogOutput = {
+      val msg = loggable(message.value)
       throwable match {
         case Some(t) => throwable2LogOutput(msg, t)
         case None => msg
@@ -148,7 +145,7 @@ object LogRecord {
 
     def copy(level: Level = level,
              value: Double = value,
-             messageFunction: () => M = messageFunction,
+             message: LazyMessage[M] = message,
              loggable: Loggable[M],
              throwable: Option[Throwable],
              fileName: String = fileName,
@@ -158,7 +155,7 @@ object LogRecord {
              column: Option[Int] = column,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[M] = {
-      SimpleLogRecord(level, value, messageFunction, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
+      SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
     }
 
     override def dispose(): Unit = {}
