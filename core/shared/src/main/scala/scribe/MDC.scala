@@ -3,10 +3,12 @@ package scribe
 import scribe.util.Time
 
 object MDC {
-  private val threadLocal: InheritableThreadLocal[MDC] = new InheritableThreadLocal[MDC] {
-    override def initialValue(): MDC = new MDC(None)
+  lazy val global: MDC = new MDC(None)
 
-    override def childValue(parentValue: MDC): MDC = new MDC(Option(parentValue))
+  private val threadLocal: InheritableThreadLocal[MDC] = new InheritableThreadLocal[MDC] {
+    override def initialValue(): MDC = new MDC(Some(global))
+
+    override def childValue(parentValue: MDC): MDC = new MDC(Option(parentValue).orElse(Some(global)))
   }
   def instance: MDC = threadLocal.get()
 
@@ -35,7 +37,7 @@ class MDC(parent: Option[MDC]) {
 
   def map: Map[String, () => String] = _map
 
-  def get(key: String): Option[() => String] = _map.get(key)
+  def get(key: String): Option[() => String] = _map.get(key).orElse(parent.flatMap(_.get(key)))
 
   def update(key: String, value: => String): Unit = _map = _map + (key -> (() => value))
 
