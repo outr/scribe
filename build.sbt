@@ -37,10 +37,10 @@ val slf4j18Version: String = "1.8.0-beta4"
 val youiVersion: String = "0.13.16"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.12.0"
+val log4jVersion: String = "2.13.3"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
-val typesafeConfigVersion: String = "1.3.4"
+val typesafeConfigVersion: String = "1.4.0"
 val scalaLoggingVersion: String = "3.9.2"
 val tinyLogVersion: String = "1.3.6"
 val log4sVersion: String = "1.8.2"
