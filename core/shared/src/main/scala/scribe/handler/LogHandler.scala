@@ -5,6 +5,12 @@ import scribe.modify.{LevelFilter, LogModifier}
 import scribe.writer.{ConsoleWriter, Writer}
 import scribe.{Level, LogRecord, LogSupport}
 
+/**
+ * LogHandler is responsible for causing some side-effect with a `LogRecord`. This usually includes formatting the record
+ * with a `Formatter` and writing it to a `Writer`, although some more creative implementations exist to do more advanced
+ * actions. LogHandlers are added to `Logger` instances via `withHandler`, although it's usually sufficient to use the
+ * `withHandler` method that takes a `Formatter` and `Writer` instead of defining a `LogHandler` manually.
+ */
 trait LogHandler extends LogSupport[LogHandler] {
   def formatter: Formatter
   def writer: Writer
