@@ -19,7 +19,6 @@ trait LogRecord[M] {
   def methodName: Option[String]
   def line: Option[Int]
   def column: Option[Int]
-  def owner: Logger
   def thread: Thread
   def timeStamp: Long
 
@@ -45,7 +44,6 @@ trait LogRecord[M] {
            methodName: Option[String] = methodName,
            line: Option[Int] = line,
            column: Option[Int] = column,
-           owner: Logger = owner,
            thread: Thread = thread,
            timeStamp: Long = timeStamp): LogRecord[M]
 
@@ -63,14 +61,12 @@ object LogRecord {
                methodName: Option[String],
                line: Option[Int],
                column: Option[Int],
-               owner: Logger,
                thread: Thread = Thread.currentThread(),
                timeStamp: Long = Time()): LogRecord[M] = {
-    new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, owner, thread, timeStamp)
+    new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
-  def simple(owner: Logger,
-             message: LazyMessage[String],
+  def simple(message: LazyMessage[String],
              fileName: String,
              className: String,
              methodName: Option[String] = None,
@@ -79,7 +75,7 @@ object LogRecord {
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = Time()): LogRecord[String] = {
-    apply[String](level, level.value, message, Loggable.StringLoggable, None, fileName, className, methodName, line, column, owner, thread, timeStamp)
+    apply[String](level, level.value, message, Loggable.StringLoggable, None, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
   /**
@@ -148,7 +144,6 @@ object LogRecord {
                            val methodName: Option[String],
                            val line: Option[Int],
                            val column: Option[Int],
-                           val owner: Logger,
                            val thread: Thread,
                            val timeStamp: Long) extends LogRecord[M] {
     override lazy val logOutput: LogOutput = {
@@ -169,10 +164,9 @@ object LogRecord {
              methodName: Option[String] = methodName,
              line: Option[Int] = line,
              column: Option[Int] = column,
-             owner: Logger = owner,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[M] = {
-      val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, owner, thread, timeStamp)
+      val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
       r.modifiers = this.modifiers
       r
     }

@@ -78,7 +78,6 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
       methodName = methodName,
       line = line,
       column = column,
-      owner = owner,
       thread = thread,
       timeStamp = timeStamp
     ))

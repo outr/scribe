@@ -74,8 +74,7 @@ object Macros {
         className = ${p.className},
         methodName = ${p.methodName},
         line = ${p.line},
-        column = ${p.column},
-        owner = _root_.scribe.Logger(${p.className})
+        column = ${p.column}
        ))
      """
   }

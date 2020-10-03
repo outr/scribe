@@ -27,8 +27,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
       className = name,
       methodName = None,
       line = None,
-      column = None,
-      owner = scribeLogger
+      column = None
     )
     scribeLogger.log(record)
   }
