@@ -1,7 +1,17 @@
+val scala213 = "2.13.3"
+val scala212 = "2.12.12"
+val scala211 = "2.11.12"
+val scala3 = "0.27.0-RC1"
+
+val jvmCrossVersions = List(scala213, scala212, scala211, scala3)
+val jsCrossVersions = List(scala213, scala212, scala211)
+val nativeCrossVersions = List(scala211)
+val dependencyCrossVersions = List(scala213, scala212)
+
 name := "scribe"
 organization in ThisBuild := "com.outr"
 version in ThisBuild := "2.8.0-SNAPSHOT"
-scalaVersion in ThisBuild := "2.13.3"
+scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
@@ -24,10 +34,10 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.1.7"
+val perfolationVersion: String = "1.2.0"
 
 // Testing
-val scalatestVersion = "3.2.0-M3"
+val scalatestVersion = "3.2.2"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
@@ -55,8 +65,8 @@ val sourceMapSettings = List(
 )
 
 val commonNativeSettings = Seq(
-  scalaVersion := "2.11.12",
-  crossScalaVersions := Seq("2.11.12"),
+  scalaVersion := scala211,
+  crossScalaVersions := nativeCrossVersions,
   nativeLinkStubs := true
 )
 
@@ -76,9 +86,26 @@ lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("macros"))
   .settings(
     name := "scribe-macros",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    libraryDependencies ++= {
+      if (isDotty.value) {
+        Nil
+      } else {
+        Seq("org.scala-lang" % "scala-reflect" % scalaVersion.value)
+      }
+    },
     publishArtifact in Test := false,
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    }
+  )
+  .jvmSettings(
+    crossScalaVersions := jvmCrossVersions
+  )
+  .jsSettings(
+    crossScalaVersions := jsCrossVersions
   )
   .nativeSettings(
     commonNativeSettings
@@ -98,9 +125,20 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
     publishArtifact in Test := false,
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    }
+  )
+  .jvmSettings(
+    crossScalaVersions := jvmCrossVersions
   )
   .jsSettings(sourceMapSettings)
+  .jsSettings(
+    crossScalaVersions := jsCrossVersions
+  )
   .nativeSettings(
     commonNativeSettings
   )
@@ -118,7 +156,13 @@ lazy val slf4j = project.in(file("slf4j"))
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    crossScalaVersions := jvmCrossVersions,
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    }
   )
 
 lazy val slf4j18 = project.in(file("slf4j18"))
@@ -130,26 +174,44 @@ lazy val slf4j18 = project.in(file("slf4j18"))
       "org.slf4j" % "slf4j-api" % slf4j18Version,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    crossScalaVersions := jvmCrossVersions,
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    }
   )
 
 lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
-    crossScalaVersions := List("2.13.3", "2.12.12"),
+    crossScalaVersions := dependencyCrossVersions,
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
-    )
+    ),
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    }
   )
   .dependsOn(coreJVM)
 
 lazy val logstash = project.in(file("logstash"))
   .settings(
     name := "scribe-logstash",
-    crossScalaVersions := List("2.13.3", "2.12.12"),
+    crossScalaVersions := dependencyCrossVersions,
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
-    )
+    ),
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    }
   )
   .dependsOn(coreJVM)
 
