@@ -3,7 +3,7 @@ package scribe.handler
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicLong
 
-import scribe.{LogContext, LogRecord}
+import scribe.LogRecord
 import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
@@ -19,19 +19,15 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
   private lazy val cached = new AtomicLong(0L)
 
   private lazy val queue = {
-    val q = new ConcurrentLinkedQueue[(LogRecord[_], LogContext)]
+    val q = new ConcurrentLinkedQueue[LogRecord[_]]
     val t = new Thread {
       setDaemon(true)
 
       override def run(): Unit = while (true) {
         Option(q.poll()) match {
-          case Some((record, context)) => {
-            try {
-              cached.decrementAndGet()
-              SynchronousLogHandler.log(modifiers, formatter, writer, record)
-            } finally {
-              context.release()
-            }
+          case Some(record) => {
+            cached.decrementAndGet()
+            SynchronousLogHandler.log(modifiers, formatter, writer, record)
             Thread.sleep(1L)
           }
           case None => Thread.sleep(10L)
@@ -52,7 +48,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   def setModifiers(modifiers: List[LogModifier]): AsynchronousLogHandler = copy(modifiers = modifiers)
 
-  override def log[M](record: LogRecord[M], context: LogContext): Unit = {
+  override def log[M](record: LogRecord[M]): Unit = {
     val add = if (!cached.incrementIfLessThan(maxBuffer)) {
       overflow match {
         case Overflow.DropOld => {
@@ -72,8 +68,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
       true
     }
     if (add) {
-      context.retain()
-      queue.add((record, context))
+      queue.add(record)
     }
   }
 }

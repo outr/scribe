@@ -43,18 +43,11 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
 
   def withMinimumLevel(level: Level): Logger = withModifier(LevelFilter >= level)
 
-  override def log[M](record: LogRecord[M], context: LogContext = None.orNull): Unit = {
-    val c = Option(context).getOrElse(LogContext())
-    try {
-      modifiers.foldLeft(Option(record)) {
-        case (r, lm) => r.flatMap(lr => c.run(lr, lm))
-      }.foreach { r =>
-        handlers.foreach(_.log(r, context))
-        parentId.map(Logger.apply).foreach(_.log(record, c))
-      }
-    } finally {
-      c.release()
-    }
+  override def log[M](record: LogRecord[M]): Unit = modifiers.foldLeft(Option(record)) {
+    case (r, lm) => r.flatMap(_.modify(lm))
+  }.foreach { r =>
+    handlers.foreach(_.log(r))
+    parentId.map(Logger.apply).foreach(_.log(record))
   }
 
   def replace(name: Option[String] = None): Logger = name match {

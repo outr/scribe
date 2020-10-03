@@ -7,7 +7,7 @@ package object scribe extends LoggerSupport {
 
   protected[scribe] var disposables = Set.empty[() => Unit]
 
-  override def log[M](record: LogRecord[M], context: LogContext = None.orNull): Unit = Logger(record.className).log(record, context)
+  override def log[M](record: LogRecord[M]): Unit = Logger(record.className).log(record)
 
   def dispose(): Unit = disposables.foreach(d => d())
 

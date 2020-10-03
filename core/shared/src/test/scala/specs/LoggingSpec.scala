@@ -23,7 +23,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     val testingModifier = new TestingModifier
     val testObject = new LoggingTestObject(testingModifier)
     val handler = new LogHandler {
-      override def log[M](record: LogRecord[M], context: LogContext): Unit = testingModifier(record)
+      override def log[M](record: LogRecord[M]): Unit = testingModifier(record)
     }
 
     "set up the logging" in {
@@ -300,7 +300,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       }
 
       val parent = Logger().orphan().withMinimumLevel(Level.Error).withHandler(new LogHandler {
-        override def log[M](record: LogRecord[M], context: LogContext): Unit = {
+        override def log[M](record: LogRecord[M]): Unit = {
           logged = record.logOutput.plainText :: logged
         }
       }).replace()

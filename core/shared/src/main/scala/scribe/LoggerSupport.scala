@@ -3,7 +3,7 @@ package scribe
 import scala.language.experimental.macros
 
 trait LoggerSupport {
-  def log[M](record: LogRecord[M], context: LogContext = None.orNull): Unit
+  def log[M](record: LogRecord[M]): Unit
 
   def log[M](level: Level, message: => M, throwable: Option[Throwable])
             (implicit loggable: Loggable[M]): Unit = macro Macros.log[M]

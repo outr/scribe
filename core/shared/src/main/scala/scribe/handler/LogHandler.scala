@@ -3,7 +3,7 @@ package scribe.handler
 import scribe.format.Formatter
 import scribe.modify.{LevelFilter, LogModifier}
 import scribe.writer.{ConsoleWriter, Writer}
-import scribe.{Level, LogContext, LogRecord}
+import scribe.{Level, LogRecord}
 
 /**
  * LogHandler is responsible for causing some side-effect with a `LogRecord`. This usually includes formatting the record
@@ -12,7 +12,7 @@ import scribe.{Level, LogContext, LogRecord}
  * `withHandler` method that takes a `Formatter` and `Writer` instead of defining a `LogHandler` manually.
  */
 trait LogHandler {
-  def log[M](record: LogRecord[M], context: LogContext): Unit
+  def log[M](record: LogRecord[M]): Unit
 }
 
 object LogHandler {

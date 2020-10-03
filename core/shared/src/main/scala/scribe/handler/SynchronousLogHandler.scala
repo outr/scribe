@@ -1,6 +1,6 @@
 package scribe.handler
 
-import scribe.{LogContext, LogRecord}
+import scribe.LogRecord
 import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
@@ -14,7 +14,7 @@ case class SynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   def setModifiers(modifiers: List[LogModifier]): LogHandler = copy(modifiers = modifiers)
 
-  override def log[M](record: LogRecord[M], context: LogContext): Unit = synchronized {
+  override def log[M](record: LogRecord[M]): Unit = synchronized {
     SynchronousLogHandler.log(modifiers, formatter, writer, record)
   }
 }
