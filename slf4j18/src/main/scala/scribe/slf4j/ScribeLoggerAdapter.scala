@@ -16,6 +16,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
   }
 
   def log(level: Level, msg: String, t: Option[Throwable]): Unit = {
+    val scribeLogger = ScribeLogger(name)
     val record = LogRecord(
       level = level,
       value = level.value,
@@ -26,9 +27,10 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
       className = name,
       methodName = None,
       line = None,
-      column = None
+      column = None,
+      owner = scribeLogger
     )
-    ScribeLogger(name).log(record)
+    scribeLogger.log(record)
   }
 
   def includes(level: Level): Boolean = ScribeLogger(name).includes(level)

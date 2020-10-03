@@ -21,7 +21,8 @@ trait LogSupport[L <: LogSupport[L]] {
 
   def log[M](record: LogRecord[M]): Unit
 
-  def logDirect[M](level: Level,
+  def logDirect[M](owner: Logger,
+                   level: Level,
                    message: => M,
                    throwable: Option[Throwable] = None,
                    fileName: String = "",
@@ -43,6 +44,7 @@ trait LogSupport[L <: LogSupport[L]] {
       methodName = methodName,
       line = line,
       column = column,
+      owner = owner,
       thread = thread,
       timeStamp = timeStamp
     ))

@@ -4,7 +4,7 @@ import java.util
 
 import org.slf4j.spi.MDCAdapter
 import scribe.MDC
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object ScribeMDCAdapter extends MDCAdapter {
   override def put(key: String, `val`: String): Unit = MDC(key) = `val`

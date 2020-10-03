@@ -2,13 +2,14 @@ package specs
 
 import java.util.concurrent.atomic.AtomicInteger
 
+import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe._
 import scribe.filter._
 import scribe.handler.LogHandler
-import scribe.modify.LogBooster
-import scribe.writer.{NullWriter, Writer}
+import scribe.modify.{LogBooster, LogModifier}
+import scribe.writer.{ConsoleWriter, NullWriter, Writer}
 import perfolation._
 import scribe.format.Formatter
 import scribe.output.LogOutput
@@ -16,7 +17,7 @@ import scribe.output.LogOutput
 import scala.collection.mutable.ListBuffer
 
 class LoggingSpec extends AnyWordSpec with Matchers with Logging {
-  val expectedTestFileName = "shared/src/test/scala/specs/LoggingTestObject.scala"
+  val expectedTestFileName = "LoggingTestObject.scala"
 
   "Logging" should {
     val testingModifier = new TestingModifier
@@ -87,7 +88,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       testingModifier.records.head.methodName should be(Some("testLogger"))
       testingModifier.records.head.className should be("specs.LoggingTestObject")
       testingModifier.records.head.line should be(line)
-      testingModifier.records.head.fileName should endWith(expectedTestFileName)
+      testingModifier.records.head.fileName should be(expectedTestFileName)
     }
     "write a log message with an anonymous function" in {
       val line = Some(10)
@@ -97,7 +98,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       testingModifier.records.head.methodName should be(None)
       testingModifier.records.head.className should be("specs.LoggingTestObject.anonymous")
       testingModifier.records.head.line should be(line)
-      testingModifier.records.head.fileName should endWith(expectedTestFileName)
+      testingModifier.records.head.fileName should be(expectedTestFileName)
     }
     "write an exception" in {
       val line = Some(22)
@@ -108,7 +109,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       testingModifier.records.head.className should be("specs.LoggingTestObject")
       testingModifier.records.head.line should be(line)
       testingModifier.records.head.logOutput.plainText should startWith("java.lang.RuntimeException: Testing")
-      testingModifier.records.head.fileName should endWith(expectedTestFileName)
+      testingModifier.records.head.fileName should be(expectedTestFileName)
     }
     "utilize MDC logging" in {
       val logs = ListBuffer.empty[String]
@@ -229,11 +230,11 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
             override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
           }
         )
-      logger.logDirect(Level.Warn, "Included", className = "org.apache.flink.api.Included")
+      logger.logDirect(logger, Level.Warn, "Included", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included"))
-      logger.logDirect(Level.Info, "Excluded", className = "org.apache.flink.api.Excluded")
+      logger.logDirect(logger, Level.Info, "Excluded", className = "org.apache.flink.api.Excluded")
       logs.toList should be(List("Included"))
-      logger.logDirect(Level.Info, "Ignored", className = "test.Ignored")
+      logger.logDirect(logger, Level.Info, "Ignored", className = "test.Ignored")
       logs.toList should be(List("Included", "Ignored"))
     }
     "boost via DSL" in {
@@ -252,11 +253,11 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
           },
           minimumLevel = Some(Level.Info)
         )
-      logger.logDirect(Level.Warn, "Included 1", className = "org.apache.flink.api.Included")
+      logger.logDirect(logger, Level.Warn, "Included 1", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1"))
-      logger.logDirect(Level.Trace, "Included 2", className = "org.apache.flink.api.Included")
+      logger.logDirect(logger, Level.Trace, "Included 2", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(Level.Trace, "Excluded", className = "org.apache.flink.Excluded")
+      logger.logDirect(logger, Level.Trace, "Excluded", className = "org.apache.flink.Excluded")
       logs.toList should be(List("Included 1", "Included 2"))
     }
     "multiple filters via DSL" in {
@@ -278,15 +279,53 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
           },
           minimumLevel = Some(Level.Info)
         )
-      logger.logDirect(Level.Debug, "Included 1", className = "org.package1.Included")
+      logger.logDirect(logger, Level.Debug, "Included 1", className = "org.package1.Included")
       logs.toList should be(List("Included 1"))
-      logger.logDirect(Level.Debug, "Included 2", className = "org.package2.Included")
+      logger.logDirect(logger, Level.Debug, "Included 2", className = "org.package2.Included")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(Level.Info, "Excluded 1", className = "org.package3.Excluded")
+      logger.logDirect(logger, Level.Info, "Excluded 1", className = "org.package3.Excluded")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(Level.Error, "Included 3", className = "org.package3.Included")
+      logger.logDirect(logger, Level.Error, "Included 3", className = "org.package3.Included")
       logs.toList should be(List("Included 1", "Included 2", "Included 3"))
     }
+    /*"validate minimum level override support" in {
+      var logged = List.empty[String]
+
+      def verify(expected: String*): Assertion = try {
+        logged should be(expected.toList)
+      } finally {
+        logged = Nil
+      }
+
+      val parent = Logger().orphan().withMinimumLevel(Level.Error).withHandler(new LogHandler {
+        override def formatter: Formatter = Formatter.classic
+
+        override def writer: Writer = ConsoleWriter
+
+        override def withFormatter(formatter: Formatter): LogHandler = ???
+
+        override def withWriter(writer: Writer): LogHandler = ???
+
+        override def modifiers: List[LogModifier] = Nil
+
+        override def setModifiers(modifiers: List[LogModifier]): LogHandler = this
+
+        override def log[M](record: LogRecord[M]): Unit = {
+          logged = record.logOutput.plainText :: logged
+        }
+      }).replace()
+
+      val child = Logger().withParent(parent).withMinimumLevel(Level.Info).replace()
+
+      println(s"Parent ID: ${parent.id}, Child ID: ${child.id}")
+      verify()
+      parent.info("1")
+      parent.error("2")
+      verify("2")
+      child.info("3")
+      child.error("4")
+      verify("4", "3")
+    }*/
   }
 }
 
