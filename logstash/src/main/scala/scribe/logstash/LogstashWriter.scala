@@ -32,7 +32,7 @@ case class LogstashWriter(url: URL,
     val l = record.timeStamp
     val timestamp = p"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
     val r = LogstashRecord(
-      message = record.message.plainText,
+      message = record.logOutput.plainText,
       service = service,
       level = record.level.name,
       value = record.value,
