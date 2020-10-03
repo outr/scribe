@@ -4,7 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.helpers.{FormattingTuple, MarkerIgnoringBase, MessageFormatter}
 import org.slf4j.spi.LocationAwareLogger
 import scribe.Loggable.StringLoggable
-import scribe.{Level, LogRecord, Logger => ScribeLogger}
+import scribe.{LazyMessage, Level, LogRecord, Logger => ScribeLogger}
 
 class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
   def scribeLevel(level: Int): Level = level match {
@@ -19,7 +19,7 @@ class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
     val record = LogRecord(
       level = level,
       value = level.value,
-      messageFunction = () => msg,
+      message = new LazyMessage(() => msg),
       loggable = StringLoggable,
       throwable = t,
       fileName = "",
