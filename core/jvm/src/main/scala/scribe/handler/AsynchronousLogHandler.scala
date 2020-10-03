@@ -19,15 +19,19 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
   private lazy val cached = new AtomicLong(0L)
 
   private lazy val queue = {
-    val q = new ConcurrentLinkedQueue[LogRecord[_]]
+    val q = new ConcurrentLinkedQueue[(LogRecord[_], LogContext)]
     val t = new Thread {
       setDaemon(true)
 
       override def run(): Unit = while (true) {
         Option(q.poll()) match {
-          case Some(record) => {
-            cached.decrementAndGet()
-            SynchronousLogHandler.log(modifiers, formatter, writer, record)
+          case Some((record, context)) => {
+            try {
+              cached.decrementAndGet()
+              SynchronousLogHandler.log(modifiers, formatter, writer, record)
+            } finally {
+              context.release()
+            }
             Thread.sleep(1L)
           }
           case None => Thread.sleep(10L)
@@ -68,7 +72,8 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
       true
     }
     if (add) {
-      queue.add(record)
+      context.retain()
+      queue.add((record, context))
     }
   }
 }
