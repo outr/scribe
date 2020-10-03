@@ -2,14 +2,13 @@ package specs
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe._
 import scribe.filter._
 import scribe.handler.LogHandler
-import scribe.modify.{LogBooster, LogModifier}
-import scribe.writer.{ConsoleWriter, NullWriter, Writer}
+import scribe.modify.LogBooster
+import scribe.writer.{NullWriter, Writer}
 import perfolation._
 import scribe.format.Formatter
 import scribe.output.LogOutput
@@ -22,7 +21,9 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
   "Logging" should {
     val testingModifier = new TestingModifier
     val testObject = new LoggingTestObject(testingModifier)
-    val handler = LogHandler(writer = NullWriter).withModifier(testingModifier)
+    val handler = new LogHandler {
+      override def log[M](record: LogRecord[M]): Unit = testingModifier(record)
+    }
 
     "set up the logging" in {
       testingModifier.clear()

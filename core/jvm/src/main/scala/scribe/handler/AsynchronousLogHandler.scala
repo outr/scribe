@@ -27,7 +27,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
         Option(q.poll()) match {
           case Some(record) => {
             cached.decrementAndGet()
-            SynchronousLogHandler.log(AsynchronousLogHandler.this, record)
+            SynchronousLogHandler.log(modifiers, formatter, writer, record)
             Thread.sleep(1L)
           }
           case None => Thread.sleep(10L)
@@ -42,11 +42,11 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   def withOverflow(overflow: Overflow): AsynchronousLogHandler = copy(overflow = overflow)
 
-  override def withFormatter(formatter: Formatter): AsynchronousLogHandler = copy(formatter = formatter)
+  def withFormatter(formatter: Formatter): AsynchronousLogHandler = copy(formatter = formatter)
 
-  override def withWriter(writer: Writer): AsynchronousLogHandler = copy(writer = writer)
+  def withWriter(writer: Writer): AsynchronousLogHandler = copy(writer = writer)
 
-  override def setModifiers(modifiers: List[LogModifier]): AsynchronousLogHandler = copy(modifiers = modifiers)
+  def setModifiers(modifiers: List[LogModifier]): AsynchronousLogHandler = copy(modifiers = modifiers)
 
   override def log[M](record: LogRecord[M]): Unit = {
     val add = if (!cached.incrementIfLessThan(maxBuffer)) {
