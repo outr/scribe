@@ -49,7 +49,7 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
       modifiers.foldLeft(Option(record)) {
         case (r, lm) => r.flatMap(lr => c.run(lr, lm))
       }.foreach { r =>
-        handlers.foreach(_.log(r))
+        handlers.foreach(_.log(r, context))
         parentId.map(Logger.apply).foreach(_.log(record, c))
       }
     } finally {

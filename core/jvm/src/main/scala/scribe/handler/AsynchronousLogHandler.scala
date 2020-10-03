@@ -3,7 +3,7 @@ package scribe.handler
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicLong
 
-import scribe.LogRecord
+import scribe.{LogContext, LogRecord}
 import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
@@ -48,7 +48,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   def setModifiers(modifiers: List[LogModifier]): AsynchronousLogHandler = copy(modifiers = modifiers)
 
-  override def log[M](record: LogRecord[M]): Unit = {
+  override def log[M](record: LogRecord[M], context: LogContext): Unit = {
     val add = if (!cached.incrementIfLessThan(maxBuffer)) {
       overflow match {
         case Overflow.DropOld => {
