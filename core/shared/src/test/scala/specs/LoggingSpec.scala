@@ -2,6 +2,7 @@ package specs
 
 import java.util.concurrent.atomic.AtomicInteger
 
+import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe._
@@ -289,7 +290,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.logDirect(logger, Level.Error, "Included 3", className = "org.package3.Included")
       logs.toList should be(List("Included 1", "Included 2", "Included 3"))
     }
-    /*"validate minimum level override support" in {
+    "validate minimum level override support" in {
       var logged = List.empty[String]
 
       def verify(expected: String*): Assertion = try {
@@ -299,18 +300,6 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       }
 
       val parent = Logger().orphan().withMinimumLevel(Level.Error).withHandler(new LogHandler {
-        override def formatter: Formatter = Formatter.classic
-
-        override def writer: Writer = ConsoleWriter
-
-        override def withFormatter(formatter: Formatter): LogHandler = ???
-
-        override def withWriter(writer: Writer): LogHandler = ???
-
-        override def modifiers: List[LogModifier] = Nil
-
-        override def setModifiers(modifiers: List[LogModifier]): LogHandler = this
-
         override def log[M](record: LogRecord[M]): Unit = {
           logged = record.logOutput.plainText :: logged
         }
@@ -318,7 +307,6 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
       val child = Logger().withParent(parent).withMinimumLevel(Level.Info).replace()
 
-      println(s"Parent ID: ${parent.id}, Child ID: ${child.id}")
       verify()
       parent.info("1")
       parent.error("2")
@@ -326,7 +314,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       child.info("3")
       child.error("4")
       verify("4", "3")
-    }*/
+    }
   }
 }
 
