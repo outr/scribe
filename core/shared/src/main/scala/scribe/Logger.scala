@@ -4,7 +4,8 @@ import java.io.PrintStream
 
 import scribe.format.Formatter
 import scribe.handler.LogHandler
-import scribe.modify.LogModifier
+import scribe.modify.{LevelFilter, LogModifier}
+import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
 
 import scala.util.Random
@@ -13,7 +14,7 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
                   modifiers: List[LogModifier] = Nil,
                   handlers: List[LogHandler] = Nil,
                   overrideClassName: Option[String] = None,
-                  id: Long = Random.nextLong()) extends LogSupport[Logger] with LoggerSupport {
+                  id: Long = Random.nextLong()) extends LoggerSupport {
   def reset(): Logger = copy(parentId = Some(Logger.rootId), Nil, Nil, None)
   def orphan(): Logger = copy(parentId = None)
   def withParent(name: String): Logger = copy(parentId = Some(Logger(name).id))
@@ -29,23 +30,57 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
   def clearHandlers(): Logger = copy(handlers = Nil)
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))
-  override def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers)
+  def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers)
+  def clearModifiers(): Logger = setModifiers(Nil)
 
-  override def includes(level: Level): Boolean = {
-    super.includes(level) &&
-      (handlers.exists(_.includes(level)) || parentId.map(Logger.apply).exists(_.includes(level)))
+  final def withModifier(modifier: LogModifier): Logger = setModifiers((modifiers.filterNot(_.id == modifier.id) ::: List(modifier)).sorted)
+  final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id))
+
+  def includes(level: Level): Boolean = {
+    modifiers.find(_.id == LevelFilter.Id).map(_.asInstanceOf[LevelFilter]).forall(_.accepts(level.value)) &&
+      parentId.map(Logger.apply).exists(_.includes(level))
   }
 
-  override def log[M](record: LogRecord[M]): Unit = {
-    modifiers.foldLeft(Option(record))((r, lm) => r.flatMap(lm.apply)).foreach { r =>
-      handlers.foreach(_.log(r))
-      parentId.map(Logger.apply).foreach(_.log(record))
-    }
+  def withMinimumLevel(level: Level): Logger = withModifier(LevelFilter >= level)
+
+  override def log[M](record: LogRecord[M]): Unit = modifiers.foldLeft(Option(record)) {
+    case (r, lm) => r.flatMap(_.modify(lm))
+  }.foreach { r =>
+    handlers.foreach(_.log(r))
+    parentId.map(Logger.apply).foreach(_.log(record))
   }
 
   def replace(name: Option[String] = None): Logger = name match {
     case Some(n) => Logger.replaceByName(n, this)
     case None => Logger.replace(this)
+  }
+
+  def logDirect[M](owner: Logger,
+                   level: Level,
+                   message: => M,
+                   throwable: Option[Throwable] = None,
+                   fileName: String = "",
+                   className: String = "",
+                   methodName: Option[String] = None,
+                   line: Option[Int] = None,
+                   column: Option[Int] = None,
+                   thread: Thread = Thread.currentThread(),
+                   timeStamp: Long = Time())
+                  (implicit loggable: Loggable[M]): Unit = {
+    log[M](LogRecord[M](
+      level = level,
+      value = level.value,
+      message = new LazyMessage[M](() => message),
+      loggable = loggable,
+      throwable = throwable,
+      fileName = fileName,
+      className = className,
+      methodName = methodName,
+      line = line,
+      column = column,
+      thread = thread,
+      timeStamp = timeStamp
+    ))
   }
 }
 

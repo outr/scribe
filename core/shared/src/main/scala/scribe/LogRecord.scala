@@ -2,10 +2,13 @@ package scribe
 
 import scala.annotation.tailrec
 import perfolation._
+import scribe.modify.LogModifier
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.util.Time
 
 trait LogRecord[M] {
+  protected var modifiers = Set.empty[String]
+
   def level: Level
   def value: Double
   def message: LazyMessage[M]
@@ -22,6 +25,14 @@ trait LogRecord[M] {
   def logOutput: LogOutput
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(value))
+  def modify(modifier: LogModifier): Option[LogRecord[M]] = if (modifiers.contains(modifier.id)) {
+    Some(this)
+  } else {
+    modifier(this).map { r =>
+      r.modifiers = r.modifiers + modifier.id
+      r
+    }
+  }
 
   def copy(level: Level = level,
            value: Double = value,
@@ -52,7 +63,7 @@ object LogRecord {
                column: Option[Int],
                thread: Thread = Thread.currentThread(),
                timeStamp: Long = Time()): LogRecord[M] = {
-    SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
+    new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
   def simple(message: LazyMessage[String],
@@ -123,18 +134,18 @@ object LogRecord {
     }
   }
 
-  case class SimpleLogRecord[M](level: Level,
-                                value: Double,
-                                message: LazyMessage[M],
-                                loggable: Loggable[M],
-                                throwable: Option[Throwable],
-                                fileName: String,
-                                className: String,
-                                methodName: Option[String],
-                                line: Option[Int],
-                                column: Option[Int],
-                                thread: Thread,
-                                timeStamp: Long) extends LogRecord[M] {
+  class SimpleLogRecord[M](val level: Level,
+                           val value: Double,
+                           val message: LazyMessage[M],
+                           val loggable: Loggable[M],
+                           val throwable: Option[Throwable],
+                           val fileName: String,
+                           val className: String,
+                           val methodName: Option[String],
+                           val line: Option[Int],
+                           val column: Option[Int],
+                           val thread: Thread,
+                           val timeStamp: Long) extends LogRecord[M] {
     override lazy val logOutput: LogOutput = {
       val msg = loggable(message.value)
       throwable match {
@@ -155,7 +166,9 @@ object LogRecord {
              column: Option[Int] = column,
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[M] = {
-      SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
+      val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
+      r.modifiers = this.modifiers
+      r
     }
 
     override def dispose(): Unit = {}

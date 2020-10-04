@@ -16,12 +16,16 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
 
   private var logs: List[LogRecord[_]] = Nil
   private var logOutput: List[String] = Nil
-  private val recordHolder = LogHandler.default.withMinimumLevel(Level.Info).withWriter(new Writer {
+  private val writer = new Writer {
     override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
       logs = record :: logs
       logOutput = output.plainText :: logOutput
     }
-  })
+  }
+  private val recordHolder = LogHandler(
+    writer = writer,
+    minimumLevel = Some(Level.Info)
+  )
 
   "SLF4J" should {
     "set the time to an arbitrary value" in {
@@ -44,7 +48,7 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
       logs.size should be(1)
       val r = logs.head
       r.level should be(Level.Info)
-      r.message.plainText should be("Hello World!")
+      r.logOutput.plainText should be("Hello World!")
       r.className should be("spec.SLF4JSpec")
       logs = Nil
     }
