@@ -35,10 +35,10 @@ object ANSI {
 
     def Backspace(characters: Int = 1): String = create(characters, "\b")
     def ClearScreen: String = "\u001b[2J"
-    def CursorBack(characters: Int = 1): String = p"""\\033[${characters}D"""
-    def CursorDown(lines: Int = 1): String = p"\\033[${lines}B"
-    def CursorForward(characters: Int = 1): String = p"""\\033[${characters}C"""
-    def CursorUp(lines: Int = 1): String = p"""\\033[${lines}A"""
+    def CursorBack(characters: Int = 1): String = s"""\\033[${characters}D"""
+    def CursorDown(lines: Int = 1): String = s"\\033[${lines}B"
+    def CursorForward(characters: Int = 1): String = s"""\\033[${characters}C"""
+    def CursorUp(lines: Int = 1): String = s"""\\033[${lines}A"""
     def EraseLine: String = "\u001b[K"
     def FormFeed: String = "\f"
     def NewLine: String = "\n"
@@ -91,12 +91,12 @@ case class ANSI(ansi: String, `type`: String, default: String) {
     ANSI.threadLocal.set(map + (`type` -> this))
     val reset = previous.map(_.ansi).getOrElse(default)
     val end = if (reset == AnsiColor.RESET) {
-      p"$reset${map.filterNot(_._1 == `type`).map(_._2.ansi).mkString}"
+      s"$reset${map.filterNot(_._1 == `type`).map(_._2.ansi).mkString}"
     } else {
       reset
     }
     try {
-      p"$ansi$value$end"
+      s"$ansi$value$end"
     } finally {
       ANSI.threadLocal.set(map)
     }

@@ -50,7 +50,7 @@ object FormatBlock {
   }
 
   object Time extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(p"${record.timeStamp.t.T}")
+    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(s"${record.timeStamp.t.T}")
   }
 
   object Date {
@@ -65,7 +65,7 @@ object FormatBlock {
       override def format[M](record: LogRecord[M]): LogOutput = {
         val l = record.timeStamp
         if (l - lastValue.get() > 1000L) {
-          val d = p"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}"
+          val d = s"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}"
           cache.set(d)
           lastValue.set(l)
           new TextOutput(d)
@@ -77,7 +77,7 @@ object FormatBlock {
     object Full extends FormatBlock {
       override def format[M](record: LogRecord[M]): LogOutput = {
         val l = record.timeStamp
-        val d = p"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}:${l.t.L}"
+        val d = s"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}:${l.t.L}"
         new TextOutput(d)
       }
     }
@@ -111,27 +111,27 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = {
       val className = ClassName.format(record).plainText
       val methodName = if (record.methodName.nonEmpty) {
-        p".${MethodName.format(record).plainText}"
+        s".${MethodName.format(record).plainText}"
       } else {
         ""
       }
-      new TextOutput(p"$className$methodName")
+      new TextOutput(s"$className$methodName")
     }
   }
 
   object Position extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = {
       val line = if (record.line.nonEmpty) {
-        p":${LineNumber.format(record).plainText}"
+        s":${LineNumber.format(record).plainText}"
       } else {
         ""
       }
       val column = if (record.column.nonEmpty) {
-        p":${ColumnNumber.format(record).plainText}"
+        s":${ColumnNumber.format(record).plainText}"
       } else {
         ""
       }
-      new TextOutput(p"${ClassAndMethodName.format(record).plainText}$line$column")
+      new TextOutput(s"${ClassAndMethodName.format(record).plainText}$line$column")
     }
 
     override def abbreviate(maxLength: Int,
@@ -141,17 +141,17 @@ object FormatBlock {
                             abbreviateName: Boolean = false): FormatBlock = apply { record =>
       val classAndMethodName = ClassAndMethodName.format(record).plainText
       val line = if (record.line.nonEmpty) {
-        p":${LineNumber.format(record).plainText}"
+        s":${LineNumber.format(record).plainText}"
       } else {
         ""
       }
       val column = if (record.column.nonEmpty) {
-        p":${ColumnNumber.format(record).plainText}"
+        s":${ColumnNumber.format(record).plainText}"
       } else {
         ""
       }
       val v = Abbreviator(classAndMethodName, maxLength - line.length, separator, removeEntries, abbreviateName)
-      new TextOutput(p"$v$line$column")
+      new TextOutput(s"$v$line$column")
     }
   }
 
@@ -176,7 +176,7 @@ object FormatBlock {
       val map = MDC.map
       if (map.nonEmpty) {
         new TextOutput(MDC.map.map {
-          case (key, value) => p"$key: ${value()}"
+          case (key, value) => s"$key: ${value()}"
         }.mkString(" (", ", ", ")"))
       } else {
         new TextOutput("")

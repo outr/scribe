@@ -14,7 +14,7 @@ import scala.concurrent.Future
 import scribe.Execution.global
 
 class Slack(serviceHash: String, botName: String) {
-  private lazy val client = HttpClient.url(URL(p"https://hooks.slack.com/services/$serviceHash")).post
+  private lazy val client = HttpClient.url(URL(s"https://hooks.slack.com/services/$serviceHash")).post
 
   def request(message: String,
               markdown: Boolean = true,

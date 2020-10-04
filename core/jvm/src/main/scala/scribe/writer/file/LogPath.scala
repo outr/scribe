@@ -14,7 +14,7 @@ object LogPath {
             separator: String = "-",
             extension: String = "log",
             directory: => Path = Paths.get("logs")): Long => Path = {
-    apply(prefix, separator, (l: Long) => p"${l.t.Y}$separator${l.t.m}$separator${l.t.d}", extension, directory)
+    apply(prefix, separator, (l: Long) => s"${l.t.Y}$separator${l.t.m}$separator${l.t.d}", extension, directory)
   }
 
   def apply(prefix: => String = "app",
@@ -22,6 +22,6 @@ object LogPath {
             distinction: Long => String,
             extension: String = "log",
             directory: => Path = Paths.get("logs")): Long => Path = {
-    l: Long => directory.resolve(p"$prefix$separator${distinction(l)}.$extension")
+    l: Long => directory.resolve(s"$prefix$separator${distinction(l)}.$extension")
   }
 }

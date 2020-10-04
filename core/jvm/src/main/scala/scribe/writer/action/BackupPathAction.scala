@@ -27,7 +27,7 @@ object BackupPathAction extends Action {
   private def backupPath(path: Path, increment: Int): Path = if (increment > 0) {
     val absolute = path.toAbsolutePath.toString
     val idx = absolute.lastIndexOf('.')
-    val absolutePath = p"${absolute.substring(0, idx)}.$increment.${absolute.substring(idx + 1)}"
+    val absolutePath = s"${absolute.substring(0, idx)}.$increment.${absolute.substring(idx + 1)}"
     Paths.get(absolutePath)
   } else {
     path

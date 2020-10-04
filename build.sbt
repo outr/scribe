@@ -24,7 +24,7 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.1.7"
+val perfolationVersion: String = "1.2.0"
 
 // Testing
 val scalatestVersion = "3.2.0-M3"

@@ -21,7 +21,7 @@ object Abbreviator {
     if (result.length > math.max(maxLength, 4) && abbreviateName) {
       val entry = entries.head
       val offset = math.max(maxLength - 3, 1)
-      entries = Array(p"${entry.substring(0, offset)}...")
+      entries = Array(s"${entry.substring(0, offset)}...")
     }
     result
   }

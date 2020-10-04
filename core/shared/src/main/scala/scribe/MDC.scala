@@ -53,7 +53,7 @@ class MDC(parent: Option[MDC]) {
   def elapsed(key: String, timeFunction: () => Long = Time.function): Unit = {
     val start = timeFunction()
     import perfolation._
-    update(key, p"${((timeFunction() - start) / 1000.0).f()} seconds elapsed")
+    update(key, s"${((timeFunction() - start) / 1000.0).f()} seconds elapsed")
   }
 
   def remove(key: String): Unit = _map = _map - key
