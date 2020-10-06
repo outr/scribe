@@ -28,7 +28,7 @@ object LogFileManager {
     }
   }
 
-  case class GZip(fileName: String => String = (fn: String) => p"$fn.gz",
+  case class GZip(fileName: String => String = (fn: String) => s"$fn.gz",
                   deleteOriginal: Boolean = true) extends LogFileManager {
     override def replace(oldLogFile: Option[LogFile], newLogFile: LogFile): Unit = {
       oldLogFile.foreach { logFile =>

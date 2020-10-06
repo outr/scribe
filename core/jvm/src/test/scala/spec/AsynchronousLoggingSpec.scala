@@ -34,7 +34,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       Future.sequence(threads.map { char =>
         Future {
           (0 until iterations).foreach { index =>
-            logger.info(p"$char:$index")
+            logger.info(s"$char:$index")
           }
         }
       }).map { _ =>
@@ -62,7 +62,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       Future.sequence(threads.map { char =>
         Future {
           (0 until iterations).foreach { index =>
-            logger.info(p"$char:$index")
+            logger.info(s"$char:$index")
           }
         }
       }).map { _ =>

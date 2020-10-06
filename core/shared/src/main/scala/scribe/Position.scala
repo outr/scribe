@@ -18,15 +18,15 @@ case class Position(className: String,
   }
 
   override def toString: String = {
-    val mn = methodName.map(m => p":$m").getOrElse("")
-    val ln = line.map(l => p":$l").getOrElse("")
-    val cn = column.map(c => p":$c").getOrElse("")
+    val mn = methodName.map(m => s":$m").getOrElse("")
+    val ln = line.map(l => s":$l").getOrElse("")
+    val cn = column.map(c => s":$c").getOrElse("")
     val fn = if (fileName.indexOf('/') != -1) {
       fileName.substring(fileName.lastIndexOf('/') + 1)
     } else {
       fileName
     }
-    p"$className$mn$ln$cn ($fn)"
+    s"$className$mn$ln$cn ($fn)"
   }
 }
 

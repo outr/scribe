@@ -37,7 +37,7 @@ object MaxLogFilesAction {
       fileName.substring(0, fileName.indexOf('.'))
     }
     val directory = Option(path.toAbsolutePath.getParent)
-      .getOrElse(throw new RuntimeException(p"No parent found for ${path.toAbsolutePath.toString}"))
+      .getOrElse(throw new RuntimeException(s"No parent found for ${path.toAbsolutePath.toString}"))
     val stream = Files.newDirectoryStream(directory)
     try {
       stream

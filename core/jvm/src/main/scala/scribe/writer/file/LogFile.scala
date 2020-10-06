@@ -27,7 +27,7 @@ object LogFile {
             flushMode: FlushMode = FlushMode.AsynchronousFlush(),
             charset: Charset = Charset.defaultCharset(),
             mode: LogFileMode = LogFileMode.IO): LogFile = synchronized {
-    val key = p"${mode.key}.${path.normalize().toFile.getCanonicalPath}"
+    val key = s"${mode.key}.${path.normalize().toFile.getCanonicalPath}"
     map.get(key) match {
       case Some(lf) if append != lf.append || flushMode != lf.flushMode || charset != lf.charset => {
         lf.dispose()
@@ -112,7 +112,7 @@ class LogFile(val key: String,
     LogFile(newPath, append, flushMode, charset, mode)
   }
 
-  final def gzip(destination: String = p"${path.getFileName.toString}.gz",
+  final def gzip(destination: String = s"${path.getFileName.toString}.gz",
                  deleteOriginal: Boolean = true): Unit = {
     flush()
     dispose()

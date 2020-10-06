@@ -10,7 +10,7 @@ val dependencyCrossVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.8.0-SNAPSHOT"
+version in ThisBuild := "3.0.0-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -35,9 +35,10 @@ parallelExecution in ThisBuild := false
 
 // Core
 val perfolationVersion: String = "1.2.0"
+val collectionCompat: String = "2.2.0"
 
 // Testing
-val scalatestVersion = "3.2.2"
+val scalatestVersion: String = "3.2.2"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
@@ -93,6 +94,7 @@ lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
         Seq("org.scala-lang" % "scala-reflect" % scalaVersion.value)
       }
     },
+    libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
     publishArtifact in Test := false,
     Compile / unmanagedSourceDirectories ++= {
       val major = if (isDotty.value) "-3" else "-2"

@@ -80,7 +80,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     }
     "log using perfolation formatting of Double" in {
       val d = 12.3456
-      logger.info(p"It works! ${d.f()}")
+      logger.info(s"It works! ${d.f()}")
     }
     "write a detailed log message" in {
       val line = Some(14)
