@@ -7,6 +7,8 @@ import scribe.Loggable.StringLoggable
 import scribe.{LazyMessage, Level, LogRecord, Logger => ScribeLogger}
 
 class ScribeLoggerAdapter(name: String) extends MarkerIgnoringBase with Logger {
+  override def getName: String = name
+
   def scribeLevel(level: Int): Level = level match {
     case LocationAwareLogger.TRACE_INT => Level.Trace
     case LocationAwareLogger.DEBUG_INT => Level.Debug
