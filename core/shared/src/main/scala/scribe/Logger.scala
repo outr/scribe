@@ -37,8 +37,17 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id))
 
   def includes(level: Level): Boolean = {
-    modifiers.find(_.id == LevelFilter.Id).map(_.asInstanceOf[LevelFilter]).forall(_.accepts(level.value)) &&
-      parentId.map(Logger.apply).exists(_.includes(level))
+    modifierById[LevelFilter](LevelFilter.Id, recursive = true).forall(_.accepts(level.value))
+  }
+
+  def modifierById[M <: LogModifier](id: String, recursive: Boolean): Option[M] = {
+    modifiers.find(_.id == id).orElse {
+      parentId match {
+        case _ if !recursive => None
+        case None => None
+        case Some(pId) => Logger(pId).modifierById(id, recursive)
+      }
+    }.map(_.asInstanceOf[M])
   }
 
   def withMinimumLevel(level: Level): Logger = withModifier(LevelFilter >= level)
