@@ -11,7 +11,7 @@ val dependencyCrossVersions = List(scala213, scala212)
 name := "scribe"
 organization in ThisBuild := "com.outr"
 version in ThisBuild := "3.0.0-SNAPSHOT"
-scalaVersion in ThisBuild := scala213
+scalaVersion in ThisBuild := scala3
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
@@ -72,17 +72,18 @@ val commonNativeSettings = Seq(
 )
 
 lazy val root = project.in(file("."))
-  .aggregate(
-    macrosJS, macrosJVM, macrosNative,
-    coreJS, coreJVM, coreNative,
-    slf4j, slf4j18, slack, logstash)
+  .aggregate(coreJVM, slf4j, slf4j18)
+//  .aggregate(
+//    macrosJS, macrosJVM, macrosNative,
+//    coreJS, coreJVM, coreNative,
+//    slf4j, slf4j18, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
     publishLocal := {}
   )
 
-lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+/*lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .in(file("macros"))
   .settings(
@@ -115,11 +116,11 @@ lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 
 lazy val macrosJS = macros.js
 lazy val macrosJVM = macros.jvm
-lazy val macrosNative = macros.native
+lazy val macrosNative = macros.native*/
 
-lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+lazy val core = crossProject(JVMPlatform) //, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
-  .dependsOn(macros)
+//  .dependsOn(macros)
   .settings(
     name := "scribe",
     libraryDependencies ++= Seq(
@@ -137,17 +138,17 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .jvmSettings(
     crossScalaVersions := jvmCrossVersions
   )
-  .jsSettings(sourceMapSettings)
-  .jsSettings(
-    crossScalaVersions := jsCrossVersions
-  )
-  .nativeSettings(
-    commonNativeSettings
-  )
+//  .jsSettings(sourceMapSettings)
+//  .jsSettings(
+//    crossScalaVersions := jsCrossVersions
+//  )
+//  .nativeSettings(
+//    commonNativeSettings
+//  )
 
-lazy val coreJS = core.js
+//lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
-lazy val coreNative = core.native
+//lazy val coreNative = core.native
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
@@ -185,7 +186,7 @@ lazy val slf4j18 = project.in(file("slf4j18"))
     }
   )
 
-lazy val slack = project.in(file("slack"))
+/*lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
     crossScalaVersions := dependencyCrossVersions,
@@ -232,4 +233,4 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "org.tinylog" % "tinylog" % tinyLogVersion,
       "org.log4s" %% "log4s" % log4sVersion
     )
-  )
+  )*/

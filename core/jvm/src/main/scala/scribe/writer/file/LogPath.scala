@@ -21,7 +21,7 @@ object LogPath {
             separator: String = "-",
             distinction: Long => String,
             extension: String = "log",
-            directory: => Path = Paths.get("logs")): Long => Path = {
-    l: Long => directory.resolve(s"$prefix$separator${distinction(l)}.$extension")
+            directory: => Path = Paths.get("logs")): Long => Path = { (l: Long) =>
+    directory.resolve(s"$prefix$separator${distinction(l)}.$extension")
   }
 }
