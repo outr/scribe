@@ -4,9 +4,9 @@ import java.util.concurrent.atomic.{AtomicBoolean, AtomicLong}
 
 import scribe.util.Time
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait FlushMode {
   def dataWritten(logFile: LogFile, writer: LogFileWriter): Unit

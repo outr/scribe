@@ -5,14 +5,14 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import perfolation._
 import scribe._
 import scribe.filter._
+import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.LogBooster
-import scribe.writer.{NullWriter, Writer}
-import perfolation._
-import scribe.format.Formatter
 import scribe.output.LogOutput
+import scribe.writer.{NullWriter, Writer}
 
 import scala.collection.mutable.ListBuffer
 

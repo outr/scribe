@@ -1,8 +1,8 @@
 package scribe.slf4j
 
 import org.slf4j.helpers.BasicMarkerFactory
-import org.slf4j.{ILoggerFactory, IMarkerFactory}
 import org.slf4j.spi.{MDCAdapter, SLF4JServiceProvider}
+import org.slf4j.{ILoggerFactory, IMarkerFactory}
 
 class ScribeServiceProvider extends SLF4JServiceProvider {
   private lazy val markerFactory = new BasicMarkerFactory

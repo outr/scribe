@@ -3,8 +3,8 @@ package spec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.concurrent.duration.Duration
 import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 class FutureTracingSpec extends AnyWordSpec with Matchers {
   "Future tracing" when {

@@ -2,7 +2,7 @@ package scribe.slf4j
 
 import java.util.concurrent.ConcurrentHashMap
 
-import org.slf4j.{Logger, ILoggerFactory}
+import org.slf4j.{ILoggerFactory, Logger}
 
 class ScribeLoggerFactory extends ILoggerFactory {
   private val map = new ConcurrentHashMap[String, Logger]

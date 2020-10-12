@@ -1,6 +1,7 @@
 package scribe.writer.file
 
 import java.nio.file.{Path, Paths}
+
 import perfolation._
 
 object LogPath {

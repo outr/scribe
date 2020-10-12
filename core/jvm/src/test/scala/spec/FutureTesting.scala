@@ -1,9 +1,9 @@
 package spec
 
+import scribe.Execution.global
 import scribe.Position
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 object FutureTesting {
   def position(): Future[List[Position]] = scribe.future {

@@ -5,14 +5,14 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
-import scribe.{LogRecord, Logger}
 import scribe.format._
 import scribe.output.LogOutput
 import scribe.writer.{FileWriter, Writer}
+import scribe.{LogRecord, Logger}
 
-import scala.jdk.CollectionConverters._
 import scala.concurrent.Future
 import scala.io.Source
+import scala.jdk.CollectionConverters._
 
 class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
   private val Regex = """(\d+) - (.+)""".r

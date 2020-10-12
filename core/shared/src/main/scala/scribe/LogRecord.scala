@@ -1,9 +1,10 @@
 package scribe
 
-import scala.annotation.tailrec
 import scribe.modify.LogModifier
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.util.Time
+
+import scala.annotation.tailrec
 
 trait LogRecord[M] {
   protected var modifiers = Set.empty[String]

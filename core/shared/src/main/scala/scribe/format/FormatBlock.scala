@@ -1,7 +1,7 @@
 package scribe.format
 
-import scribe._
 import perfolation._
+import scribe._
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Abbreviator
 

@@ -1,16 +1,16 @@
 package scribe.slack
 
 import io.youi.client.HttpClient
-import io.youi.http.content.Content
 import io.youi.http.HttpResponse
+import io.youi.http.content.Content
 import io.youi.net.{ContentType, URL}
 import profig.JsonUtil
+import scribe.Execution.global
 import scribe._
 import scribe.format._
 import scribe.handler.LogHandler
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class Slack(serviceHash: String, botName: String) {
   private lazy val client = HttpClient.url(URL(s"https://hooks.slack.com/services/$serviceHash")).post

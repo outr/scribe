@@ -4,8 +4,8 @@ import java.nio.file.{Files, Path}
 
 import scribe._
 import scribe.output.LogOutput
-import scribe.writer.file.{FlushMode, LogFile, LogFileMode, LogPath}
 import scribe.writer.action._
+import scribe.writer.file.{FlushMode, LogFile, LogFileMode, LogPath}
 
 import scala.concurrent.duration._
 

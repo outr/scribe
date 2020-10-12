@@ -2,18 +2,18 @@ package scribe.logstash
 
 import io.circe.Json
 import io.youi.client.HttpClient
-import io.youi.http.content.Content
 import io.youi.http.HttpResponse
+import io.youi.http.content.Content
 import io.youi.net._
-import profig.JsonUtil
-import scribe.{LogRecord, MDC}
-import scribe.writer.Writer
 import perfolation._
-import scribe.output.{EmptyOutput, LogOutput}
-
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import profig.JsonUtil
 import scribe.Execution.global
+import scribe.output.{EmptyOutput, LogOutput}
+import scribe.writer.Writer
+import scribe.{LogRecord, MDC}
+
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 case class LogstashWriter(url: URL,
                           service: String,

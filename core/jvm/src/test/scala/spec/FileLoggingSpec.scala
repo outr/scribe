@@ -5,14 +5,14 @@ import java.text.SimpleDateFormat
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scribe.{Level, Logger}
 import scribe.format._
 import scribe.util.Time
 import scribe.writer.FileWriter
 import scribe.writer.file.LogPath
+import scribe.{Level, Logger}
 
-import scala.jdk.CollectionConverters._
 import scala.concurrent.duration._
+import scala.jdk.CollectionConverters._
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()

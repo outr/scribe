@@ -1,7 +1,7 @@
 package scribe.writer
 
-import scribe._
 import scribe.Platform._
+import scribe._
 import scribe.output._
 
 import scala.collection.mutable.ListBuffer

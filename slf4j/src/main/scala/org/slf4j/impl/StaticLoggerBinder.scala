@@ -1,8 +1,8 @@
 package org.slf4j.impl
 
-import scribe.slf4j.ScribeLoggerFactory
 import org.slf4j.ILoggerFactory
 import org.slf4j.spi.LoggerFactoryBinder
+import scribe.slf4j.ScribeLoggerFactory
 
 class StaticLoggerBinder private() extends LoggerFactoryBinder {
   private val factory = new ScribeLoggerFactory

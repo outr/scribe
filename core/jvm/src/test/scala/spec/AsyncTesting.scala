@@ -1,7 +1,7 @@
 package spec
 
-import scribe.Position
 import scribe.Execution.global
+import scribe.Position
 
 import scala.concurrent.Future
 
