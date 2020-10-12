@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
-import perfolation._
 import scribe.{LogRecord, Logger}
 import scribe.format._
 import scribe.output.LogOutput

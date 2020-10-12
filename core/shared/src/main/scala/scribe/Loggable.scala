@@ -1,6 +1,5 @@
 package scribe
 
-import perfolation._
 import scribe.output.{EmptyOutput, LogOutput, TextOutput}
 
 trait Loggable[-T] {

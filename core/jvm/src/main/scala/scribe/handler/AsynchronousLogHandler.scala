@@ -7,7 +7,6 @@ import scribe.LogRecord
 import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
-import perfolation._
 
 import scala.language.implicitConversions
 

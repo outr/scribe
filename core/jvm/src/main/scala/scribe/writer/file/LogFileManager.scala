@@ -1,7 +1,6 @@
 package scribe.writer.file
 
 import java.nio.file.{Files, Path}
-import perfolation._
 
 trait LogFileManager {
   def replace(oldLogFile: Option[LogFile], newLogFile: LogFile): Unit

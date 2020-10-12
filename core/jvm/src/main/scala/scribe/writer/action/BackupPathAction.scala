@@ -3,7 +3,6 @@ package scribe.writer.action
 import java.nio.file.{Files, Path, Paths}
 
 import scribe.writer.file.LogFile
-import perfolation._
 
 object BackupPathAction extends Action {
   override def apply(previous: LogFile, current: LogFile): LogFile = {

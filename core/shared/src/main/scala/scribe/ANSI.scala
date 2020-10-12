@@ -1,7 +1,6 @@
 package scribe
 
 import scala.io.AnsiColor
-import perfolation._
 
 object ANSI {
   private lazy val threadLocal = new ThreadLocal[Map[String, ANSI]] {

@@ -8,7 +8,6 @@ import java.util.zip.GZIPOutputStream
 
 import scala.annotation.tailrec
 import scala.util.Try
-import perfolation._
 
 object LogFile {
   val AsynchronousFlushDelay: Long = 1000L

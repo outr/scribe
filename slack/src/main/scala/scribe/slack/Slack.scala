@@ -8,7 +8,6 @@ import profig.JsonUtil
 import scribe._
 import scribe.format._
 import scribe.handler.LogHandler
-import perfolation._
 
 import scala.concurrent.Future
 import scribe.Execution.global

@@ -4,9 +4,8 @@ import java.nio.file.{Files, Path}
 
 import scribe.writer.file.LogFile
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.duration.FiniteDuration
-import perfolation._
 
 case class MaxLogFilesAction(max: Int,
                              lister: LogFile => List[Path],

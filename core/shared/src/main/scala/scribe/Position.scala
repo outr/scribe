@@ -1,7 +1,6 @@
 package scribe
 
 import scala.language.experimental.macros
-import perfolation._
 
 case class Position(className: String,
                     methodName: Option[String],

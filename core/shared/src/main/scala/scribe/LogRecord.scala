@@ -1,7 +1,6 @@
 package scribe
 
 import scala.annotation.tailrec
-import perfolation._
 import scribe.modify.LogModifier
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.util.Time

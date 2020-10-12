@@ -1,6 +1,5 @@
 package scribe.util
 
-import perfolation._
 
 object Abbreviator {
   def apply(value: String,
