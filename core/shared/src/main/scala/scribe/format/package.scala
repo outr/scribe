@@ -30,6 +30,7 @@ package object format {
       case Level.Info => Color.Blue
       case Level.Warn => Color.Yellow
       case Level.Error => Color.Red
+      case Level.Fatal => Color.Magenta
       case _ => Color.Cyan
     }
     new ColoredOutput(color, level.format(logRecord))

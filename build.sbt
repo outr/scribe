@@ -1,6 +1,6 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.9.0-SNAPSHOT"
+version in ThisBuild := "2.8.3-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.3"
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -65,7 +65,7 @@ lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
-    slf4j, slf4j18, slack, logstash)
+    slf4j, slf4j18, migration, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
@@ -130,6 +130,17 @@ lazy val slf4j18 = project.in(file("slf4j18"))
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j18Version,
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
+    ),
+    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+  )
+
+lazy val migration = project.in(file("migration"))
+  .dependsOn(coreJVM)
+  .settings(
+    name := "scribe.migration",
+    publishArtifact in Test := false,
+    libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
     crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")

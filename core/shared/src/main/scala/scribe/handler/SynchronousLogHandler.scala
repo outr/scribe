@@ -14,7 +14,7 @@ case class SynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   def setModifiers(modifiers: List[LogModifier]): LogHandler = copy(modifiers = modifiers.sorted)
 
-  override def log[M](record: LogRecord[M]): Unit = synchronized {
+  override def log[M](record: LogRecord[M]): Unit = {
     SynchronousLogHandler.log(modifiers, formatter, writer, record)
   }
 }

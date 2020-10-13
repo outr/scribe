@@ -31,4 +31,5 @@ object Level {
   case object Info extends Level("INFO", 300.0)
   case object Warn extends Level("WARN", 400.0)
   case object Error extends Level("ERROR", 500.0)
+  case object Fatal extends Level("FATAL", 600.0)
 }
