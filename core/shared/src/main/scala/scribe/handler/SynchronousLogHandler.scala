@@ -12,7 +12,7 @@ case class SynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   def withWriter(writer: Writer): LogHandler = copy(writer = writer)
 
-  def setModifiers(modifiers: List[LogModifier]): LogHandler = copy(modifiers = modifiers)
+  def setModifiers(modifiers: List[LogModifier]): LogHandler = copy(modifiers = modifiers.sorted)
 
   override def log[M](record: LogRecord[M]): Unit = synchronized {
     SynchronousLogHandler.log(modifiers, formatter, writer, record)

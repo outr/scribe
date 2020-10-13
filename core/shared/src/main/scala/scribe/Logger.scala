@@ -30,10 +30,10 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
   def clearHandlers(): Logger = copy(handlers = Nil)
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))
-  def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers)
+  def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers.sorted)
   def clearModifiers(): Logger = setModifiers(Nil)
 
-  final def withModifier(modifier: LogModifier): Logger = setModifiers((modifiers.filterNot(_.id == modifier.id) ::: List(modifier)).sorted)
+  final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id) ::: List(modifier))
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id))
 
   def includes(level: Level): Boolean = {

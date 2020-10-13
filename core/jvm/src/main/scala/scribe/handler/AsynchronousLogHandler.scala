@@ -45,7 +45,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
 
   def withWriter(writer: Writer): AsynchronousLogHandler = copy(writer = writer)
 
-  def setModifiers(modifiers: List[LogModifier]): AsynchronousLogHandler = copy(modifiers = modifiers)
+  def setModifiers(modifiers: List[LogModifier]): AsynchronousLogHandler = copy(modifiers = modifiers.sorted)
 
   override def log[M](record: LogRecord[M]): Unit = {
     val add = if (!cached.incrementIfLessThan(maxBuffer)) {
