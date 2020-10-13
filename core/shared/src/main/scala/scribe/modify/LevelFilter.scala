@@ -22,24 +22,27 @@ class LevelFilter(include: Double => Boolean,
 object LevelFilter {
   val Id: String = "LevelFilter"
 
+  lazy val ExcludeAll: LevelFilter = new LevelFilter(include = _ => false, exclude = _ => true, Priority.Low)
+  lazy val IncludeAll: LevelFilter = new LevelFilter(include = _ => true, exclude = _ => false, Priority.Low)
+
   def >(level: Level): LevelFilter = new LevelFilter(
     include = _ > level.value,
     exclude = _ => false,
-    priority = Priority.Low
+    priority = Priority.High
   )
   def >=(level: Level): LevelFilter = new LevelFilter(
     include = _ >= level.value,
     exclude = _ => false,
-    priority = Priority.Low
+    priority = Priority.High
   )
   def <(level: Level): LevelFilter = new LevelFilter(
     include = _ < level.value,
     exclude = _ => false,
-    priority = Priority.Low
+    priority = Priority.High
   )
   def <=(level: Level): LevelFilter = new LevelFilter(
     include = _ <= level.value,
     exclude = _ => false,
-    priority = Priority.Low
+    priority = Priority.High
   )
 }

@@ -66,7 +66,7 @@ object LogRecord {
     new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
   }
 
-  def simple(message: LazyMessage[String],
+  def simple(message: String,
              fileName: String,
              className: String,
              methodName: Option[String] = None,
@@ -75,7 +75,20 @@ object LogRecord {
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              timeStamp: Long = Time()): LogRecord[String] = {
-    apply[String](level, level.value, message, Loggable.StringLoggable, None, fileName, className, methodName, line, column, thread, timeStamp)
+    apply[String](
+      level = level,
+      value = level.value,
+      message = new LazyMessage[String](() => message),
+      loggable = Loggable.StringLoggable,
+      throwable = None,
+      fileName = fileName,
+      className = className,
+      methodName = methodName,
+      line = line,
+      column = column,
+      thread = thread,
+      timeStamp = timeStamp
+    )
   }
 
   /**

@@ -21,12 +21,12 @@ object LogHandler {
   def apply(formatter: Formatter = Formatter.default,
             writer: Writer = ConsoleWriter,
             minimumLevel: Option[Level] = None,
-            modifiers: List[LogModifier] = Nil): LogHandler = {
-    val mods = minimumLevel.map(LevelFilter >= _).toList ::: modifiers
+            modifiers: List[LogModifier] = Nil): SynchronousLogHandler = {
+    val mods = (minimumLevel.map(LevelFilter >= _).toList ::: modifiers).sortBy(_.priority)
     SynchronousLogHandler(formatter, writer, mods)
   }
 
-  def apply(minimumLevel: Level)(f: LogRecord[_] => Unit): LogHandler = {
+  def apply(minimumLevel: Level)(f: LogRecord[_] => Unit): FunctionalLogHandler = {
     FunctionalLogHandler(f, List(LevelFilter >= minimumLevel))
   }
 }

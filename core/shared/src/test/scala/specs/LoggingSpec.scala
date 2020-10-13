@@ -315,6 +315,26 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       child.error("4")
       verify("4", "3")
     }
+    "validate log handler modifiers DSL" in {
+      var records = List.empty[String]
+      val h = LogHandler(
+        minimumLevel = Some(Level.Info),
+        writer = new Writer {
+          override def write[M](record: LogRecord[M], output: LogOutput): Unit = records = record.message.value.toString :: records
+        },
+        modifiers = List(
+          select(
+            packageName.startsWith("no.officenet"),
+            packageName.startsWith("com.visena")
+          )
+          .boosted(Level.Trace, Level.Info)
+          .priority(Priority.Important)
+        )
+      )
+      val l = Logger().orphan().withHandler(h)
+      l.log(LogRecord.simple("one", "test.scala", "no.officenet.example.One", level = Level.Trace))
+      records should be(List("one"))
+    }
   }
 }
 

@@ -27,5 +27,5 @@ trait LogModifier extends Ordered[LogModifier] {
    */
   def apply[M](record: LogRecord[M]): Option[LogRecord[M]]
 
-  override def compare(that: LogModifier): Int = that.priority.compare(priority)
+  override def compare(that: LogModifier): Int = this.priority.compare(that.priority)
 }

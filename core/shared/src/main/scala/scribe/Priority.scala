@@ -4,7 +4,7 @@ class Priority(val value: Double) extends AnyVal with Ordered[Priority] {
   def +(value: Double): Priority = new Priority(value + value)
   def -(value: Double): Priority = new Priority(value - value)
 
-  override def compare(that: Priority): Int = value.compare(that.value)
+  override def compare(that: Priority): Int = -value.compare(that.value)
 }
 
 object Priority {
