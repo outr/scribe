@@ -1,8 +1,9 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.8.3"
+version in ThisBuild := "2.8.4-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.3"
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
+javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 
