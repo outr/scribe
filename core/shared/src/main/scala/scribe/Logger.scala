@@ -4,7 +4,7 @@ import java.io.PrintStream
 
 import scribe.format.Formatter
 import scribe.handler.LogHandler
-import scribe.modify.{LevelFilter, LogModifier}
+import scribe.modify.{LevelFilter, LogBooster, LogModifier}
 import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
 
@@ -15,6 +15,8 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
                   handlers: List[LogHandler] = Nil,
                   overrideClassName: Option[String] = None,
                   id: Long = Random.nextLong()) extends LoggerSupport {
+  lazy val isEmpty: Boolean = modifiers.isEmpty && handlers.isEmpty
+
   def reset(): Logger = copy(parentId = Some(Logger.rootId), Nil, Nil, None)
   def orphan(): Logger = copy(parentId = None)
   def withParent(name: String): Logger = copy(parentId = Some(Logger(name).id))
@@ -51,6 +53,17 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
   }
 
   def withMinimumLevel(level: Level): Logger = withModifier(LevelFilter >= level)
+  def withBoost(booster: Double => Double, priority: Priority = Priority.Normal): Logger = {
+    withModifier(new LogBooster(booster, priority))
+  }
+  def withBoostOneLevel(): Logger = withBoost(_ + 100.0)
+  def withBoosted(minimumLevel: Level, destinationLevel: Level): Logger = {
+    withBoost(d => if (d >= minimumLevel.value && d <= destinationLevel.value) {
+      destinationLevel.value
+    } else {
+      d
+    })
+  }
 
   override def log[M](record: LogRecord[M]): Unit = modifiers.foldLeft(Option(record)) {
     case (r, lm) => r.flatMap(_.modify(lm))
@@ -64,8 +77,7 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
     case None => Logger.replace(this)
   }
 
-  def logDirect[M](owner: Logger,
-                   level: Level,
+  def logDirect[M](level: Level,
                    message: => M,
                    throwable: Option[Throwable] = None,
                    fileName: String = "",
