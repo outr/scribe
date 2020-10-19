@@ -9,6 +9,7 @@ import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
 
 import scala.util.Random
+import scala.reflect._
 
 case class Logger(parentId: Option[Long] = Some(Logger.rootId),
                   modifiers: List[LogModifier] = Nil,
@@ -69,7 +70,7 @@ case class Logger(parentId: Option[Long] = Some(Logger.rootId),
     case (r, lm) => r.flatMap(_.modify(lm))
   }.foreach { r =>
     handlers.foreach(_.log(r))
-    parentId.map(Logger.apply).foreach(_.log(record))
+    parentId.map(Logger.apply).foreach(_.log(r))
   }
 
   def replace(name: Option[String] = None): Logger = name match {
@@ -158,9 +159,13 @@ object Logger {
     }
   }
 
+  def apply[T](implicit t: ClassTag[T]): Logger = apply(t.runtimeClass.getName)
+
   def get(name: String): Option[Logger] = name2Id.get(fixName(name)).flatMap(id2Logger.get)
 
   def get(id: Long): Option[Logger] = id2Logger.get(id)
+
+  def get[T](implicit t: ClassTag[T]): Option[Logger] = get(t.runtimeClass.getName)
 
   def replace(logger: Logger): Logger = synchronized {
     id2Logger += logger.id -> logger
@@ -172,6 +177,10 @@ object Logger {
     name2Id += fixName(name) -> logger.id
     logger
   }
+
+  def namesFor(loggerId: Long): Set[String] = name2Id.collect {
+    case (name, id) if id == loggerId => name
+  }.toSet
 
   private def fixName(name: String): String = name.replaceAll("[$]", "")
 }

@@ -25,7 +25,6 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     val handler = new LogHandler {
       override def log[M](record: LogRecord[M]): Unit = testingModifier(record)
     }
-
     "set up the logging" in {
       testingModifier.clear()
       logger.withHandler(handler).replace()
@@ -232,11 +231,11 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
             override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
           }
         )
-      logger.logDirect(logger, Level.Warn, "Included", className = "org.apache.flink.api.Included")
+      logger.logDirect(Level.Warn, "Included", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included"))
-      logger.logDirect(logger, Level.Info, "Excluded", className = "org.apache.flink.api.Excluded")
+      logger.logDirect(Level.Info, "Excluded", className = "org.apache.flink.api.Excluded")
       logs.toList should be(List("Included"))
-      logger.logDirect(logger, Level.Info, "Ignored", className = "test.Ignored")
+      logger.logDirect(Level.Info, "Ignored", className = "test.Ignored")
       logs.toList should be(List("Included", "Ignored"))
     }
     "boost via DSL" in {
@@ -255,11 +254,11 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
           },
           minimumLevel = Some(Level.Info)
         )
-      logger.logDirect(logger, Level.Warn, "Included 1", className = "org.apache.flink.api.Included")
+      logger.logDirect(Level.Warn, "Included 1", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1"))
-      logger.logDirect(logger, Level.Trace, "Included 2", className = "org.apache.flink.api.Included")
+      logger.logDirect(Level.Trace, "Included 2", className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(logger, Level.Trace, "Excluded", className = "org.apache.flink.Excluded")
+      logger.logDirect(Level.Trace, "Excluded", className = "org.apache.flink.Excluded")
       logs.toList should be(List("Included 1", "Included 2"))
     }
     "multiple filters via DSL" in {
@@ -281,13 +280,13 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
           },
           minimumLevel = Some(Level.Info)
         )
-      logger.logDirect(logger, Level.Debug, "Included 1", className = "org.package1.Included")
+      logger.logDirect(Level.Debug, "Included 1", className = "org.package1.Included")
       logs.toList should be(List("Included 1"))
-      logger.logDirect(logger, Level.Debug, "Included 2", className = "org.package2.Included")
+      logger.logDirect(Level.Debug, "Included 2", className = "org.package2.Included")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(logger, Level.Info, "Excluded 1", className = "org.package3.Excluded")
+      logger.logDirect(Level.Info, "Excluded 1", className = "org.package3.Excluded")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(logger, Level.Error, "Included 3", className = "org.package3.Included")
+      logger.logDirect(Level.Error, "Included 3", className = "org.package3.Included")
       logs.toList should be(List("Included 1", "Included 2", "Included 3"))
     }
     "validate minimum level override support" in {
@@ -334,6 +333,31 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val l = Logger().orphan().withHandler(h)
       l.log(LogRecord.simple("one", "test.scala", "no.officenet.example.One", level = Level.Trace))
       records should be(List("one"))
+    }
+    "validate logger has proper parentage" in {
+      Logger.namesFor(logger.id) should be(Set("specs.LoggingSpec"))
+      logger should be(Logger[LoggingSpec])
+      val p1 = Logger(logger.parentId.get)
+      Logger.namesFor(p1.id) should be(Set("specs"))
+      val p2 = Logger(p1.parentId.get)
+      Logger.namesFor(p2.id) should be(Set("root"))
+      p2.parentId should be(None)
+    }
+    "validate a more complicated scenario" in {
+      var records = List.empty[String]
+      val base = Logger()
+        .orphan()
+        .withMinimumLevel(Level.Info)
+        .withHandler(new LogHandler {
+          override def log[M](record: LogRecord[M]): Unit = records = record.logOutput.plainText :: records
+        })
+        .replace()
+      Logger("com.example1").withParent(base.id).withModifier(boosted(Level.Trace, Level.Info)).replace()
+      val l2 = Logger("com.example1.Test").replace()
+      l2.info("One")
+      records should be(List("One"))
+      l2.trace("Two")
+      records should be(List("Two", "One"))
     }
   }
 }

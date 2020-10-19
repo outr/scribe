@@ -8,7 +8,11 @@ class LevelFilter(include: Double => Boolean,
                   override val priority: Priority) extends LogModifier with Filter {
   override def id: String = LevelFilter.Id
 
-  def accepts(level: Double): Boolean = include(level) && !exclude(level)
+  def accepts(level: Double): Boolean = {
+    val i = include(level)
+    val e = exclude(level)
+    i && !e
+  }
 
   override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = if (accepts(record.value)) {
     Some(record)

@@ -33,11 +33,12 @@ case class FilterBuilder(priority: Priority = Priority.Normal,
   def priority(priority: Priority): FilterBuilder = copy(priority = priority)
 
   override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = {
-    if (select.exists(_.matches(record))) {
+    if (select.isEmpty || select.exists(_.matches(record))) {
       val incl = include.forall(_.matches(record))
       val excl = exclude.exists(_.matches(record))
       if (incl && !excl) {
-        Some(record.boost(booster))
+        val boosted = record.boost(booster)
+        Some(boosted)
       } else {
         None
       }
