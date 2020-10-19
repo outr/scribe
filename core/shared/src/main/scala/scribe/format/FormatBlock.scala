@@ -91,7 +91,7 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.level.name)
 
     object PaddedRight extends FormatBlock {
-      override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.level.namePaddedRight)
+      override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.level.namePadded)
     }
   }
 

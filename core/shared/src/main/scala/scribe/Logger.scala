@@ -159,6 +159,10 @@ object Logger {
     }
   }
 
+  def minimumLevels(minimums: MinimumLevel*): Unit = minimums.foreach { m =>
+    m.logger.withMinimumLevel(m.minimumLevel).replace()
+  }
+
   def apply[T](implicit t: ClassTag[T]): Logger = apply(t.runtimeClass.getName)
 
   def get(name: String): Option[Logger] = name2Id.get(fixName(name)).flatMap(id2Logger.get)

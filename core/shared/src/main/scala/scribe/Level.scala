@@ -1,35 +1,36 @@
 package scribe
 
-class Level private(val name: String, val value: Double) extends Ordered[Double] {
-  private var _namePaddedRight: String = name.padTo(Level.maxLength, " ").mkString
-
-  def namePaddedRight: String = _namePaddedRight
-
-  override def compare(that: Double): Int = this.value.compare(that)
+case class Level(name: String, value: Double) {
+  def namePadded: String = Level.padded(this)
 }
 
 object Level {
-  private var maxLength = 5
+  private var maxLength = 0
 
-  private var levels: Map[String, Level] = Map.empty
+  private var map = Map.empty[String, Level]
+  private var padded = Map.empty[Level, String]
 
-  def apply(name: String, value: Double): Level = synchronized {
-    val length = name.length
+  implicit final val LevelOrdering: Ordering[Level] = Ordering.by[Level, Double](_.value).reverse
+
+  def add(level: Level): Unit = synchronized {
+    val length = level.name.length
+    map += level.name.toLowerCase -> level
     if (length > maxLength) {
       maxLength = length
-      levels.values.foreach { l =>
-        l._namePaddedRight = l.name.padTo(maxLength, " ").mkString
+      padded = map.map {
+        case (_, level) => level -> level.name.padTo(maxLength, " ").mkString
       }
     }
-    val level = new Level(name, value)
-    levels += level.name -> level
-    level
   }
 
-  case object Trace extends Level("TRACE", 100.0)
-  case object Debug extends Level("DEBUG", 200.0)
-  case object Info extends Level("INFO", 300.0)
-  case object Warn extends Level("WARN", 400.0)
-  case object Error extends Level("ERROR", 500.0)
-  case object Fatal extends Level("FATAL", 600.0)
+  def get(name: String): Option[Level] = map.get(name.toLowerCase)
+
+  def apply(name: String): Level = get(name).getOrElse(throw new RuntimeException(s"Level not found by name: $name"))
+
+  val Trace: Level = Level("TRACE", 100.0)
+  val Debug: Level = Level("DEBUG", 200.0)
+  val Info: Level = Level("INFO", 300.0)
+  val Warn: Level = Level("WARN", 400.0)
+  val Error: Level = Level("ERROR", 500.0)
+  val Fatal: Level = Level("FATAL", 600.0)
 }

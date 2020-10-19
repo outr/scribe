@@ -10,7 +10,7 @@ import scribe._
 import scribe.filter._
 import scribe.format.Formatter
 import scribe.handler.LogHandler
-import scribe.modify.LogBooster
+import scribe.modify.{LevelFilter, LogBooster}
 import scribe.output.LogOutput
 import scribe.writer.{NullWriter, Writer}
 
@@ -358,6 +358,19 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       records should be(List("One"))
       l2.trace("Two")
       records should be(List("Two", "One"))
+    }
+    "verify minimum levels convenience method" in {
+      import scribe._
+
+      Logger.minimumLevels(
+        "com.e1" -> Level.Info,
+        "specs" -> Level.Error,
+        classOf[Int] -> Level.Trace
+      )
+
+      Logger("com.e1").modifiers.head shouldBe a[LevelFilter]
+      Logger("specs").modifiers.head shouldBe a[LevelFilter]
+      Logger[Int].modifiers.head shouldBe a[LevelFilter]
     }
   }
 }
