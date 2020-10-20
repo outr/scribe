@@ -5,7 +5,8 @@ import scribe.{Level, LogRecord, Priority}
 
 class LevelFilter(include: Double => Boolean,
                   exclude: Double => Boolean,
-                  override val priority: Priority) extends LogModifier with Filter {
+                  override val priority: Priority,
+                  ignoreBoost: Boolean = false) extends LogModifier with Filter {
   override def id: String = LevelFilter.Id
 
   def accepts(level: Double): Boolean = {
@@ -14,13 +15,13 @@ class LevelFilter(include: Double => Boolean,
     i && !e
   }
 
-  override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = if (accepts(record.value)) {
+  override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = if (accepts(if (ignoreBoost) record.level.value else record.value)) {
     Some(record)
   } else {
     None
   }
 
-  override def matches[M](record: LogRecord[M]): Boolean = accepts(record.value)
+  override def matches[M](record: LogRecord[M]): Boolean = accepts(if (ignoreBoost) record.level.value else record.value)
 }
 
 object LevelFilter {
@@ -46,6 +47,11 @@ object LevelFilter {
   )
   def <=(level: Level): LevelFilter = new LevelFilter(
     include = _ <= level.value,
+    exclude = _ => false,
+    priority = Priority.High
+  )
+  def ===(level: Level): LevelFilter = new LevelFilter(
+    include = _ == level.value,
     exclude = _ => false,
     priority = Priority.High
   )
