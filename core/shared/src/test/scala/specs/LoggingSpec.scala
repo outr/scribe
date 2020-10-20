@@ -372,6 +372,9 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       Logger("specs").modifiers.head shouldBe a[LevelFilter]
       Logger[Int].modifiers.head shouldBe a[LevelFilter]
     }
+    "validate the default padded name for Level is correct" in {
+      Level.Info.namePadded should be("INFO ")
+    }
   }
 }
 
