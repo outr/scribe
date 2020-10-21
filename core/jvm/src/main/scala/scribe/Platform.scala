@@ -3,7 +3,7 @@ package scribe
 import java.io.FileDescriptor
 
 import jnr.posix.POSIXFactory
-import scribe.writer.{ANSIConsoleWriter, ASCIIConsoleWriter, Writer}
+import scribe.writer.{ANSIConsoleWriter, ASCIIConsoleWriter, ConsoleWriter, Writer}
 
 object Platform extends PlatformImplementation {
   def isJVM: Boolean = true
@@ -12,7 +12,7 @@ object Platform extends PlatformImplementation {
 
   private lazy val posix = POSIXFactory.getPOSIX
 
-  override def consoleWriter: Writer = if (posix.isatty(FileDescriptor.out)) {
+  override def consoleWriter: Writer = if (!ConsoleWriter.OnlyPlainText && posix.isatty(FileDescriptor.out)) {
     ANSIConsoleWriter
   } else {
     ASCIIConsoleWriter
