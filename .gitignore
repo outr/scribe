@@ -22,3 +22,5 @@ logs/
 .jvm/
 .js/
 .native/
+
+lowered.hnir
