@@ -5,7 +5,7 @@ import scribe.format.Formatter
 import scribe.modify.LogModifier
 import scribe.writer.{ConsoleWriter, Writer}
 
-case class SynchronousLogHandler(formatter: Formatter = Formatter.default,
+case class SynchronousLogHandler(formatter: Formatter = Formatter.enhanced,
                                  writer: Writer = ConsoleWriter,
                                  modifiers: List[LogModifier] = Nil) extends LogHandler {
   def withFormatter(formatter: Formatter): LogHandler = copy(formatter = formatter)

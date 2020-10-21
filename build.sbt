@@ -1,6 +1,6 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.8.5"
+version in ThisBuild := "2.8.6-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.3"
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -27,6 +27,7 @@ parallelExecution in ThisBuild := false
 // Core
 val perfolationVersion: String = "1.2.0"
 val collectionCompat: String = "2.2.0"
+val jnrVersion: String = "3.1.2"
 
 // Testing
 val scalatestVersion: String = "3.2.0-M3"
@@ -104,6 +105,11 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
   )
   .jsSettings(sourceMapSettings)
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.github.jnr" % "jnr-posix" % jnrVersion
+    )
+  )
   .nativeSettings(
     commonNativeSettings
   )

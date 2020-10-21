@@ -18,7 +18,7 @@ trait LogHandler {
 object LogHandler {
   lazy val default: SynchronousLogHandler = SynchronousLogHandler()
 
-  def apply(formatter: Formatter = Formatter.default,
+  def apply(formatter: Formatter = Formatter.enhanced,
             writer: Writer = ConsoleWriter,
             minimumLevel: Option[Level] = None,
             modifiers: List[LogModifier] = Nil): SynchronousLogHandler = {
