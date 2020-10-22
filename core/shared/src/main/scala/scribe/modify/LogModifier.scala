@@ -6,7 +6,7 @@ import scribe.{LogRecord, Priority}
  * LogModifier is attached to `Logger` instances in order to manipulate `LogRecord`s, before they are handled by a
  * `LogHandler`.
  */
-trait LogModifier extends Ordered[LogModifier] {
+trait LogModifier {
   /**
     * Represents a unique identifier for this type of modifier. This is used when adding a LogModifier to a Logger to
     * replace by type.
@@ -26,6 +26,8 @@ trait LogModifier extends Ordered[LogModifier] {
    * @return Some LogRecord that should continue to propagate or None if the logging action should be canceled
    */
   def apply[M](record: LogRecord[M]): Option[LogRecord[M]]
+}
 
-  override def compare(that: LogModifier): Int = this.priority.compare(that.priority)
+object LogModifier {
+  implicit final val LogModifierOrdering: Ordering[LogModifier] = Ordering.by(_.priority)
 }

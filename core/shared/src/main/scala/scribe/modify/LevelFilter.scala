@@ -15,13 +15,13 @@ class LevelFilter(include: Double => Boolean,
     i && !e
   }
 
-  override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = if (accepts(if (ignoreBoost) record.level.value else record.value)) {
+  override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = if (accepts(if (ignoreBoost) record.level.value else record.levelValue)) {
     Some(record)
   } else {
     None
   }
 
-  override def matches[M](record: LogRecord[M]): Boolean = accepts(if (ignoreBoost) record.level.value else record.value)
+  override def matches[M](record: LogRecord[M]): Boolean = accepts(if (ignoreBoost) record.level.value else record.levelValue)
 }
 
 object LevelFilter {

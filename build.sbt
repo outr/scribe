@@ -1,6 +1,6 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.8.6"
+version in ThisBuild := "2.9.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.3"
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")

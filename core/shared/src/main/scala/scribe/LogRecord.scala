@@ -7,10 +7,10 @@ import scribe.util.Time
 import scala.annotation.tailrec
 
 trait LogRecord[M] {
-  protected var modifiers = Set.empty[String]
+  protected var appliedModifierIds = Set.empty[String]
 
   def level: Level
-  def value: Double
+  def levelValue: Double
   def message: LazyMessage[M]
   def loggable: Loggable[M]
   def throwable: Option[Throwable]
@@ -24,18 +24,18 @@ trait LogRecord[M] {
 
   def logOutput: LogOutput
 
-  def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(value))
-  def modify(modifier: LogModifier): Option[LogRecord[M]] = if (modifiers.contains(modifier.id)) {
+  def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(levelValue))
+  def modify(modifier: LogModifier): Option[LogRecord[M]] = if (appliedModifierIds.contains(modifier.id)) {
     Some(this)
   } else {
     modifier(this).map { r =>
-      r.modifiers = r.modifiers + modifier.id
+      r.appliedModifierIds = r.appliedModifierIds + modifier.id
       r
     }
   }
 
   def copy(level: Level = level,
-           value: Double = value,
+           value: Double = levelValue,
            message: LazyMessage[M] = message,
            loggable: Loggable[M] = loggable,
            throwable: Option[Throwable] = throwable,
@@ -148,7 +148,7 @@ object LogRecord {
   }
 
   class SimpleLogRecord[M](val level: Level,
-                           val value: Double,
+                           val levelValue: Double,
                            val message: LazyMessage[M],
                            val loggable: Loggable[M],
                            val throwable: Option[Throwable],
@@ -168,7 +168,7 @@ object LogRecord {
     }
 
     def copy(level: Level = level,
-             value: Double = value,
+             value: Double = levelValue,
              message: LazyMessage[M] = message,
              loggable: Loggable[M],
              throwable: Option[Throwable],
@@ -180,7 +180,7 @@ object LogRecord {
              thread: Thread = thread,
              timeStamp: Long = timeStamp): LogRecord[M] = {
       val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
-      r.modifiers = this.modifiers
+      r.appliedModifierIds = this.appliedModifierIds
       r
     }
 

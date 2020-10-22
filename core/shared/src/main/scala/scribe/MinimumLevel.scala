@@ -25,7 +25,7 @@ object MinimumLevel {
     override def minimumLevel: Level = in._2
   }
 
-  implicit class FromId(in: (Long, Level)) extends MinimumLevel {
+  implicit class FromId(in: (LoggerId, Level)) extends MinimumLevel {
     override def logger: Logger = Logger(in._1)
 
     override def minimumLevel: Level = in._2

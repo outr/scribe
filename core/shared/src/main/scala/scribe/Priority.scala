@@ -1,13 +1,13 @@
 package scribe
 
-class Priority(val value: Double) extends AnyVal with Ordered[Priority] {
+class Priority(val value: Double) extends AnyVal {
   def +(value: Double): Priority = new Priority(value + value)
   def -(value: Double): Priority = new Priority(value - value)
-
-  override def compare(that: Priority): Int = -value.compare(that.value)
 }
 
 object Priority {
+  implicit final val PriorityOrdering: Ordering[Priority] = Ordering.by[Priority, Double](_.value).reverse
+
   lazy val Highest: Priority = new Priority(Double.MaxValue)
   lazy val Critical: Priority = new Priority(1000.0)
   lazy val Important: Priority = new Priority(100.0)

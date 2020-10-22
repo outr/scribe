@@ -11,18 +11,18 @@ import scribe.writer.{ConsoleWriter, Writer}
 import scala.util.Random
 import scala.reflect._
 
-case class Logger(parentId: Option[Long] = Some(Logger.rootId),
+case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                   modifiers: List[LogModifier] = Nil,
                   handlers: List[LogHandler] = Nil,
                   overrideClassName: Option[String] = None,
-                  id: Long = Random.nextLong()) extends LoggerSupport {
+                  id: LoggerId = LoggerId()) extends LoggerSupport {
   lazy val isEmpty: Boolean = modifiers.isEmpty && handlers.isEmpty
 
-  def reset(): Logger = copy(parentId = Some(Logger.rootId), Nil, Nil, None)
+  def reset(): Logger = copy(parentId = Some(Logger.RootId), Nil, Nil, None)
   def orphan(): Logger = copy(parentId = None)
   def withParent(name: String): Logger = copy(parentId = Some(Logger(name).id))
   def withParent(logger: Logger): Logger = copy(parentId = Some(logger.id))
-  def withParent(id: Long): Logger = copy(parentId = Some(id))
+  def withParent(id: LoggerId): Logger = copy(parentId = Some(id))
   def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))
   def withHandler(formatter: Formatter = Formatter.enhanced,
                   writer: Writer = ConsoleWriter,
@@ -116,16 +116,16 @@ object Logger {
     def err: PrintStream = systemErr
   }
 
-  val rootId: Long = 0L
+  val RootId: LoggerId = LoggerId(0L)
 
-  private var id2Logger: Map[Long, Logger] = Map.empty
-  private var name2Id: Map[String, Long] = Map.empty
+  private var id2Logger: Map[LoggerId, Logger] = Map.empty
+  private var name2Id: Map[String, LoggerId] = Map.empty
 
   // Configure the root logger to filter anything under Info and write to the console
   root.orphan().withHandler(minimumLevel = Some(Level.Info)).replace(Some("root"))
 
   def empty: Logger = Logger()
-  def root: Logger = apply(rootId)
+  def root: Logger = apply(RootId)
 
   def loggersByName: Map[String, Logger] = name2Id.map {
     case (name, id) => name -> id2Logger(id)
@@ -141,7 +141,7 @@ object Logger {
         val parent = apply(parentName)
         parent.id
       } else {
-        rootId
+        RootId
       }
       val logger = Logger(parentId = Some(parentId))
       id2Logger += logger.id -> logger
@@ -150,7 +150,7 @@ object Logger {
     }
   }
 
-  def apply(id: Long): Logger = get(id) match {
+  def apply(id: LoggerId): Logger = get(id) match {
     case Some(logger) => logger
     case None => synchronized {
       val logger = new Logger(id = id)
@@ -167,7 +167,7 @@ object Logger {
 
   def get(name: String): Option[Logger] = name2Id.get(fixName(name)).flatMap(id2Logger.get)
 
-  def get(id: Long): Option[Logger] = id2Logger.get(id)
+  def get(id: LoggerId): Option[Logger] = id2Logger.get(id)
 
   def get[T](implicit t: ClassTag[T]): Option[Logger] = get(t.runtimeClass.getName)
 
@@ -182,7 +182,7 @@ object Logger {
     logger
   }
 
-  def namesFor(loggerId: Long): Set[String] = name2Id.collect {
+  def namesFor(loggerId: LoggerId): Set[String] = name2Id.collect {
     case (name, id) if id == loggerId => name
   }.toSet
 
