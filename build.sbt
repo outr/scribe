@@ -1,6 +1,6 @@
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "2.9.0-SNAPSHOT"
+version in ThisBuild := "3.0.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.3"
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -26,11 +26,12 @@ parallelExecution in ThisBuild := false
 
 // Core
 val perfolationVersion: String = "1.2.0"
+val sourcecodeVersion: String = "0.2.1"
 val collectionCompat: String = "2.2.0"
 val jnrVersion: String = "3.1.2"
 
 // Testing
-val scalatestVersion: String = "3.2.0-M3"
+val scalatestVersion: String = "3.2.2"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
@@ -65,7 +66,6 @@ val commonNativeSettings = Seq(
 
 lazy val root = project.in(file("."))
   .aggregate(
-    macrosJS, macrosJVM, macrosNative,
     coreJS, coreJVM, coreNative,
     slf4j, slf4j18, migration, slack, logstash)
   .settings(
@@ -74,31 +74,15 @@ lazy val root = project.in(file("."))
     publishLocal := {}
   )
 
-lazy val macros = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .crossType(CrossType.Pure)
-  .in(file("macros"))
-  .settings(
-    name := "scribe-macros",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
-    publishArtifact in Test := false,
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
-  )
-  .nativeSettings(
-    commonNativeSettings
-  )
-
-lazy val macrosJS = macros.js
-lazy val macrosJVM = macros.jvm
-lazy val macrosNative = macros.native
-
 lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
-  .dependsOn(macros)
   .settings(
     name := "scribe",
     libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
       "com.outr" %%% "perfolation" % perfolationVersion,
+      "com.lihaoyi" %% "sourcecode" % sourcecodeVersion,
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
     publishArtifact in Test := false,

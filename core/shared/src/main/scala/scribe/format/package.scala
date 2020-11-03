@@ -3,6 +3,7 @@ package scribe
 import scribe.format.FormatBlock.RawString
 import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, ItalicOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
 
+import scala.collection.mutable.ListBuffer
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 
@@ -134,6 +135,20 @@ package object format {
   }
 
   implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
-    def formatter(args: Any*): Formatter = macro ScribeMacros.formatter
+    def formatter(args: Any*): Formatter = {
+      val list = ListBuffer.empty[FormatBlock]
+      val argsVector = args.toVector.asInstanceOf[Vector[FormatBlock]]
+      sc.parts.zipWithIndex.foreach {
+        case (part, index) => {
+          if (part.nonEmpty) {
+            list += string(part)
+          }
+          if (index < argsVector.size) {
+            list += argsVector(index)
+          }
+        }
+      }
+      Formatter.fromBlocks(list.toList: _*)
+    }
   }
 }
