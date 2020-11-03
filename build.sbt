@@ -1,7 +1,17 @@
+// Scala versions
+val scala213 = "2.13.3"
+val scala212 = "2.12.12"
+val scala211 = "2.11.12"
+val scala3 = "0.27.0-RC1"
+val allScalaVersions = List(scala213, scala212, scala211, scala3)
+val scala2Versions = List(scala213, scala212, scala211)
+val nativeScalaVersions = List(scala211)
+val compatScalaVersions = List(scala213, scala212)
+
 name := "scribe"
 organization in ThisBuild := "com.outr"
 version in ThisBuild := "3.0.0-SNAPSHOT"
-scalaVersion in ThisBuild := "2.13.3"
+scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -9,7 +19,6 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 
 publishTo in ThisBuild := sonatypePublishTo.value
 sonatypeProfileName in ThisBuild := "com.outr"
-publishMavenStyle in ThisBuild := true
 licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
 sonatypeProjectHosting in ThisBuild := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "scribe", "matt@outr.com"))
 homepage in ThisBuild := Some(url("https://github.com/outr/scribe"))
@@ -59,8 +68,8 @@ val sourceMapSettings = List(
 )
 
 val commonNativeSettings = Seq(
-  scalaVersion := "2.11.12",
-  crossScalaVersions := Seq("2.11.12"),
+  scalaVersion := scala211,
+  crossScalaVersions := nativeScalaVersions,
   nativeLinkStubs := true
 )
 
@@ -79,17 +88,25 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     name := "scribe",
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
       "com.outr" %%% "perfolation" % perfolationVersion,
       "com.lihaoyi" %%% "sourcecode" % sourcecodeVersion,
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
-    publishArtifact in Test := false,
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    libraryDependencies ++= (
+      if (isDotty.value) {
+        Nil
+      } else {
+        List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat)
+      }
+    ),
+    publishArtifact in Test := false
   )
   .jsSettings(sourceMapSettings)
+  .jsSettings(
+    crossScalaVersions := scala2Versions
+  )
   .jvmSettings(
+    crossScalaVersions := allScalaVersions,
     libraryDependencies ++= Seq(
       "com.github.jnr" % "jnr-posix" % jnrVersion
     )
@@ -111,7 +128,7 @@ lazy val slf4j = project.in(file("slf4j"))
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    crossScalaVersions := scala2Versions
   )
 
 lazy val slf4j18 = project.in(file("slf4j18"))
@@ -123,7 +140,7 @@ lazy val slf4j18 = project.in(file("slf4j18"))
       "org.slf4j" % "slf4j-api" % slf4j18Version,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    crossScalaVersions := scala2Versions
   )
 
 lazy val migration = project.in(file("migration"))
@@ -134,13 +151,13 @@ lazy val migration = project.in(file("migration"))
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
-    crossScalaVersions := List("2.13.3", "2.12.12", "2.11.12")
+    crossScalaVersions := allScalaVersions
   )
 
 lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
-    crossScalaVersions := List("2.13.3", "2.12.12"),
+    crossScalaVersions := compatScalaVersions,
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
     )
@@ -150,7 +167,7 @@ lazy val slack = project.in(file("slack"))
 lazy val logstash = project.in(file("logstash"))
   .settings(
     name := "scribe-logstash",
-    crossScalaVersions := List("2.13.3", "2.12.12"),
+    crossScalaVersions := compatScalaVersions,
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
     )

@@ -2,6 +2,8 @@ package scribe
 
 import scribe.util.Time
 
+import scala.language.implicitConversions
+
 object MDC {
   lazy val global: MDC = new MDC(None)
 

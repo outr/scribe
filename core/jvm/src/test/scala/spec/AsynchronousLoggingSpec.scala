@@ -14,6 +14,8 @@ import scala.concurrent.Future
 import scala.io.Source
 import scala.jdk.CollectionConverters._
 
+import scala.language.implicitConversions
+
 class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
   private val Regex = """(\d+) - (.+)""".r
   private val threads = "abcdefghijklmnopqrstuvwxyz"

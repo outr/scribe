@@ -4,6 +4,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.util.Abbreviator
 
+import scala.language.implicitConversions
+
 class AbbreviatorSpec extends AnyWordSpec with Matchers {
   "Abbreviator" should {
     val className1 = "mainPackage.sub.sample.Bar"

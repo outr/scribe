@@ -16,6 +16,8 @@ import scribe.writer.{NullWriter, Writer}
 
 import scala.collection.mutable.ListBuffer
 
+import scala.language.implicitConversions
+
 class LoggingSpec extends AnyWordSpec with Matchers with Logging {
   val expectedTestFileName = "LoggingTestObject.scala"
 

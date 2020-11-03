@@ -14,6 +14,8 @@ import scribe.{Level, Logger}
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 
+import scala.language.implicitConversions
+
 class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")

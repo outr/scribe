@@ -3,6 +3,9 @@ package scribe.writer
 import scribe.output._
 import scribe.{ANSI, Level, LogRecord, Logger}
 
+import scala.math.Ordering.Implicits._
+import scala.language.implicitConversions
+
 object ANSIConsoleWriter extends Writer {
   private object ansi {
     var fg: Option[ANSI] = None

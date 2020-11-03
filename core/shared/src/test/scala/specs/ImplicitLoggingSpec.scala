@@ -3,6 +3,8 @@ package specs
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.language.implicitConversions
+
 class ImplicitLoggingSpec extends AnyWordSpec with Matchers {
   "implicit logger" should {
     "config properly" in {

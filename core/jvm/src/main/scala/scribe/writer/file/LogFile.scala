@@ -9,6 +9,8 @@ import java.util.zip.GZIPOutputStream
 import scala.annotation.tailrec
 import scala.util.Try
 
+import scala.language.implicitConversions
+
 object LogFile {
   val AsynchronousFlushDelay: Long = 1000L
   val BufferSize: Int = 1024
@@ -78,7 +80,7 @@ class LogFile(val key: String,
   final def write(output: String): Unit = {
     writer.write(output)
     flushMode.dataWritten(this, writer)
-    sizeCounter.addAndGet(output.length)
+    sizeCounter.addAndGet(output.length.toLong)
   }
 
   def replace(path: Path = path,

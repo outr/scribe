@@ -5,6 +5,8 @@ import scribe._
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Abbreviator
 
+import scala.language.implicitConversions
+
 trait FormatBlock {
   def format[M](record: LogRecord[M]): LogOutput
 

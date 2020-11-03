@@ -4,6 +4,8 @@ import java.nio.file.{Path, Paths}
 
 import perfolation._
 
+import scala.language.implicitConversions
+
 object LogPath {
   lazy val default: Long => Path = simple()
 
@@ -23,6 +25,6 @@ object LogPath {
             distinction: Long => String,
             extension: String = "log",
             directory: => Path = Paths.get("logs")): Long => Path = {
-    l: Long => directory.resolve(s"$prefix$separator${distinction(l)}.$extension")
+    (l: Long) => directory.resolve(s"$prefix$separator${distinction(l)}.$extension")
   }
 }
