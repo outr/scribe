@@ -15,12 +15,6 @@ object Loggable {
     override def apply(value: LogOutput): LogOutput = value
   }
 
-  implicit object PositionListLoggable extends Loggable[List[Position]] {
-    override def apply(value: List[Position]): LogOutput = {
-      new TextOutput(value.reverse.map(_.toString).mkString(s"${scribe.lineSeparator}\t"))
-    }
-  }
-
   implicit object ThrowableLoggable extends Loggable[Throwable] {
     def apply(t: Throwable): LogOutput = LogRecord.throwable2LogOutput(EmptyOutput, t)
   }
