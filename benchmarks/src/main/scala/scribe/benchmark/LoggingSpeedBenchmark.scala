@@ -18,7 +18,7 @@ class LoggingSpeedBenchmark {
   assert(LogManager.getRootLogger.isInfoEnabled, "INFO is not enabled in log4j!")
 
   private lazy val asynchronousWriter = writer.FileWriter().path(_ => Paths.get("logs/scribe-async.log"))
-  private lazy val asynchronousHandler = AsynchronousLogHandler(Formatter.default, asynchronousWriter)
+  private lazy val asynchronousHandler = AsynchronousLogHandler(Formatter.classic, asynchronousWriter)
 
   @annotations.Setup(annotations.Level.Trial)
   def doSetup(): Unit = {

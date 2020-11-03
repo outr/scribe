@@ -26,8 +26,8 @@ object LoggingStressTest {
       "Null" -> nullLogger(),
       "NIO Simple" -> fileLogger(Formatter.simple, LogFileMode.NIO),
       "IO Simple" -> fileLogger(Formatter.simple, LogFileMode.IO),
-      "NIO Default" -> fileLogger(Formatter.default, LogFileMode.NIO),
-      "IO Default" -> fileLogger(Formatter.default, LogFileMode.IO)
+      "NIO Default" -> fileLogger(Formatter.classic, LogFileMode.NIO),
+      "IO Default" -> fileLogger(Formatter.classic, LogFileMode.IO)
     )
     types.foreach {
       case (name, logger) => {

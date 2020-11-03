@@ -97,7 +97,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       testObject.testAnonymous()
       testingModifier.records.length should be(1)
       testingModifier.records.head.methodName should be(None)
-      testingModifier.records.head.className should be("specs.LoggingTestObject.anonymous")
+      testingModifier.records.head.className should be("specs.LoggingTestObject")
       testingModifier.records.head.line should be(line)
       testingModifier.records.head.fileName should be(expectedTestFileName)
     }

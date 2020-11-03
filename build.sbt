@@ -82,7 +82,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
       "com.outr" %%% "perfolation" % perfolationVersion,
-      "com.lihaoyi" %% "sourcecode" % sourcecodeVersion,
+      "com.lihaoyi" %%% "sourcecode" % sourcecodeVersion,
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
     publishArtifact in Test := false,

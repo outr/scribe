@@ -8,7 +8,6 @@ import scribe.modify.{LevelFilter, LogBooster, LogModifier}
 import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
 
-import scala.util.Random
 import scala.reflect._
 
 case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
