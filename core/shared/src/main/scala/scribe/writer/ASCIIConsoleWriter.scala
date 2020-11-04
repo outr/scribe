@@ -13,6 +13,10 @@ object ASCIIConsoleWriter extends Writer {
     } else {
       Logger.system.err
     }
-    stream.println(output.plainText)
+    if (ConsoleWriter.SynchronizeWriting) {
+      synchronized(stream.println(output.plainText))
+    } else {
+      stream.println(output.plainText)
+    }
   }
 }

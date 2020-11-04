@@ -7,6 +7,14 @@ import scala.math.Ordering.Implicits._
 import scala.language.implicitConversions
 
 object ANSIConsoleWriter extends Writer {
+  val DefaultStringBuilderStartCapacity: Int = 512
+
+  var stringBuilderStartCapacity: Int = DefaultStringBuilderStartCapacity
+
+  private val stringBuilders = new ThreadLocal[StringBuilder] {
+    override def initialValue(): StringBuilder = new StringBuilder(stringBuilderStartCapacity)
+  }
+
   private object ansi {
     var fg: Option[ANSI] = None
     var bg: Option[ANSI] = None
@@ -22,8 +30,14 @@ object ANSIConsoleWriter extends Writer {
     } else {
       Logger.system.err
     }
-    apply(output, stream.print)
-    stream.println()
+    val sb = stringBuilders.get()
+    apply(output, s => sb.append(s))
+    if (ConsoleWriter.SynchronizeWriting) {
+      synchronized(stream.println(sb.toString()))
+    } else {
+      stream.println(sb.toString())
+    }
+    sb.clear()
   }
 
   def apply(output: LogOutput, stream: String => Unit): Unit = output match {
