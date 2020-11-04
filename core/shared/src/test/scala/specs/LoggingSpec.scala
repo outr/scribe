@@ -12,10 +12,10 @@ import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster}
 import scribe.output.LogOutput
+import scribe.util.Time
 import scribe.writer.{NullWriter, Writer}
 
 import scala.collection.mutable.ListBuffer
-
 import scala.language.implicitConversions
 
 class LoggingSpec extends AnyWordSpec with Matchers with Logging {
@@ -179,23 +179,29 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         }
       )
 
-      var elapsed = 0L
-      MDC.elapsed("timer", () => elapsed)
+      val original = Time.function
+      try {
+        var time = System.currentTimeMillis()
+        Time.function = () => time
 
-      logger.info("A")
-      elapsed += 1000L
-      logger.info("B")
-      elapsed += 500L
-      logger.info("C")
-      MDC.remove("timer")
-      logger.info("D")
+        logger.elapsed {
+          logger.info("A")
+          time += 1000L
+          logger.info("B")
+          time += 500L
+          logger.info("C")
+        }
+        logger.info("D")
+      } finally {
+        Time.function = original
+      }
 
       var pos = 0
-      logs(pos) should be("A (timer: 0.00 seconds elapsed)")
+      logs(pos) should be("A (elapsed: 0.00s)")
       pos += 1
-      logs(pos) should be("B (timer: 1.00 seconds elapsed)")
+      logs(pos) should be("B (elapsed: 1.00s)")
       pos += 1
-      logs(pos) should be("C (timer: 1.50 seconds elapsed)")
+      logs(pos) should be("C (elapsed: 1.50s)")
       pos += 1
       logs(pos) should be("D")
     }
