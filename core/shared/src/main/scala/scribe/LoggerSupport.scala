@@ -101,4 +101,15 @@ trait LoggerSupport {
                           fileName: sourcecode.FileName,
                           name: sourcecode.Name,
                           line: sourcecode.Line): Unit = log[M](Level.Error, message, Some(t))
+
+  def elapsed[Return](f: => Return): Return = {
+    val key = "elapsed"
+    val exists = MDC.contains(key)
+    if (!exists) MDC.elapsed(key)
+    try {
+      f
+    } finally {
+      if (!exists) MDC.remove(key)
+    }
+  }
 }

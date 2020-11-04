@@ -29,8 +29,9 @@ object MDC {
   def get(key: String): Option[String] = instance.get(key).map(_())
   def update(key: String, value: => String): Unit = instance(key) = value
   def contextualize[Return](key: String, value: => String)(f: => Return): Return = instance.contextualize(key, value)(f)
-  def elapsed(key: String, timeFunction: () => Long = Time.function): Unit = instance.elapsed(key, timeFunction)
+  def elapsed(key: String = "elapsed", timeFunction: () => Long = Time.function): Unit = instance.elapsed(key, timeFunction)
   def remove(key: String): Unit = instance.remove(key)
+  def contains(key: String): Boolean = instance.contains(key)
   def clear(): Unit = instance.clear()
 }
 
@@ -59,6 +60,8 @@ class MDC(parent: Option[MDC]) {
   }
 
   def remove(key: String): Unit = _map = _map - key
+
+  def contains(key: String): Boolean = map.contains(key)
 
   def clear(): Unit = _map = Map.empty
 }
