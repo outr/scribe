@@ -68,15 +68,15 @@ object ANSIConsoleWriter extends Writer {
       }
     }
     case o: URLOutput => {
-      stream("""\u001b]8;;""")
+      stream("""]8;;""")
       stream(o.url)
-      stream("""\u001b\""")
+      stream("""\""")
       if (o.output == EmptyOutput) {
         stream(o.url)
       } else {
         apply(o.output, stream)
       }
-      stream("""\u001b]8;;\u001b\""")
+      stream("""]8;;\""")
     }
     case o: BoldOutput => {
       val previous = ansi.bold
