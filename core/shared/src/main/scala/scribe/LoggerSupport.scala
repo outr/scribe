@@ -102,6 +102,11 @@ trait LoggerSupport {
                           name: sourcecode.Name,
                           line: sourcecode.Line): Unit = log[M](Level.Error, message, Some(t))
 
+  /**
+    * Includes MDC elapsed to show elapsed time within the block
+    *
+    * @param f the code block to time
+    */
   def elapsed[Return](f: => Return): Return = {
     val key = "elapsed"
     val exists = MDC.contains(key)
