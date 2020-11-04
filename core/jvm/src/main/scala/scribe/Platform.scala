@@ -10,9 +10,10 @@ object Platform extends PlatformImplementation {
   def isJS: Boolean = false
   def isNative: Boolean = false
 
-  private lazy val posix = POSIXFactory.getPOSIX
+  private val posix = POSIXFactory.getPOSIX
+  private val isAtty: Boolean = posix.isatty(FileDescriptor.out)
 
-  override def consoleWriter: Writer = if (!ConsoleWriter.OnlyPlainText && posix.isatty(FileDescriptor.out)) {
+  override def consoleWriter: Writer = if (!ConsoleWriter.OnlyPlainText && isAtty) {
     ANSIConsoleWriter
   } else {
     ASCIIConsoleWriter
