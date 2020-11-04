@@ -5,10 +5,9 @@ import scribe.output._
 
 object ConsoleWriter extends Writer {
   /**
-    * If true, will always write out plain text. If false, will detect platform and output support for rich output. This
-    * presumes that the `Formatter` is not already creating plain text. Defaults to false.
+    * Defaults to detect available content support.
     */
-  var OnlyPlainText: Boolean = false
+  var contentSupport: ContentSupport = Platform.contentSupport()
 
   /**
     * If true, will always synchronize writing to the console to avoid interleaved text. Most native consoles will
@@ -20,4 +19,11 @@ object ConsoleWriter extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
     Platform.consoleWriter.write[M](record, output)
   }
+}
+
+sealed trait ContentSupport
+
+object ContentSupport {
+  case object PlainText extends ContentSupport
+  case object Rich extends ContentSupport
 }

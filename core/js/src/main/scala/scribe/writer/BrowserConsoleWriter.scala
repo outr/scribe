@@ -11,10 +11,19 @@ object BrowserConsoleWriter extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
     val b = new StringBuilder
     val args = ListBuffer.empty[String]
-    if (ConsoleWriter.OnlyPlainText) {
-      b.append(output.plainText)
-    } else {
-      recurse(b, args, None, None, bold = false, italic = false, underline = false, strikethrough = false, output)
+    ConsoleWriter.contentSupport match {
+      case ContentSupport.PlainText => b.append(output.plainText)
+      case ContentSupport.Rich => recurse(
+        b = b,
+        args = args,
+        fg = None,
+        bg = None,
+        bold = false,
+        italic = false,
+        underline = false,
+        strikethrough = false,
+        output = output
+      )
     }
     val jsArgs = args.map(js.Any.fromString).toList
 
