@@ -37,7 +37,6 @@ parallelExecution in ThisBuild := false
 val perfolationVersion: String = "1.2.0"
 val sourcecodeVersion: String = "0.2.1"
 val collectionCompat: String = "2.2.0"
-val jnrVersion: String = "3.1.2"
 
 // Testing
 val scalatestVersion: String = "3.2.2"
@@ -106,10 +105,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     crossScalaVersions := scala2Versions
   )
   .jvmSettings(
-    crossScalaVersions := allScalaVersions,
-    libraryDependencies ++= Seq(
-      "com.github.jnr" % "jnr-posix" % jnrVersion
-    )
+    crossScalaVersions := allScalaVersions
   )
   .nativeSettings(
     commonNativeSettings
