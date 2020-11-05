@@ -124,7 +124,7 @@ trait LoggerSupport {
     * @param keyValues tuples of key/value pairs to set on MDC
     * @param f the context for which these MDC values are set
     */
-  def apply[Return](keyValues: (String, String)*)(f: => Return): Return = {
+  def apply[Return](keyValues: (String, Any)*)(f: => Return): Return = {
     keyValues.foreach {
       case (key, value) => MDC.update(key, value)
     }

@@ -25,10 +25,10 @@ object MDC {
     }
   }
 
-  def map: Map[String, () => String] = instance.map
-  def get(key: String): Option[String] = instance.get(key).map(_())
-  def update(key: String, value: => String): Unit = instance(key) = value
-  def contextualize[Return](key: String, value: => String)(f: => Return): Return = instance.contextualize(key, value)(f)
+  def map: Map[String, () => Any] = instance.map
+  def get(key: String): Option[Any] = instance.get(key).map(_())
+  def update(key: String, value: => Any): Unit = instance(key) = value
+  def contextualize[Return](key: String, value: => Any)(f: => Return): Return = instance.contextualize(key, value)(f)
   def elapsed(key: String = "elapsed", timeFunction: () => Long = Time.function): Unit = instance.elapsed(key, timeFunction)
   def remove(key: String): Unit = instance.remove(key)
   def contains(key: String): Boolean = instance.contains(key)
@@ -36,15 +36,15 @@ object MDC {
 }
 
 class MDC(parent: Option[MDC]) {
-  private var _map: Map[String, () => String] = Map.empty
+  private var _map: Map[String, () => Any] = Map.empty
 
-  def map: Map[String, () => String] = _map
+  def map: Map[String, () => Any] = _map
 
-  def get(key: String): Option[() => String] = _map.get(key).orElse(parent.flatMap(_.get(key)))
+  def get(key: String): Option[() => Any] = _map.get(key).orElse(parent.flatMap(_.get(key)))
 
-  def update(key: String, value: => String): Unit = _map = _map + (key -> (() => value))
+  def update(key: String, value: => Any): Unit = _map = _map + (key -> (() => value))
 
-  def contextualize[Return](key: String, value: => String)(f: => Return): Return = {
+  def contextualize[Return](key: String, value: => Any)(f: => Return): Return = {
     update(key, value)
     try {
       f
