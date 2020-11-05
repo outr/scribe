@@ -11,7 +11,7 @@ import scribe.filter._
 import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster}
-import scribe.output.LogOutput
+import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{NullWriter, Writer}
 
@@ -382,6 +382,41 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     }
     "validate the default padded name for Level is correct" in {
       Level.Info.namePadded should be("INFO ")
+    }
+    "log a special class" in {
+      var logged = List.empty[User]
+
+      case class User(name: String, age: Int)
+      val logger = Logger().orphan().withHandler(new LogHandler {
+        override def log[M](record: LogRecord[M]): Unit = record.message.value match {
+          case u: User => logged = u :: logged
+          case _ => // Ignore others
+        }
+      })
+
+      implicit val loggableUser: Loggable[User] = new Loggable[User] {
+        override def apply(value: User): LogOutput = new TextOutput(s"{name: ${value.name}, age: ${value.age}}")
+      }
+
+      logger.info(User("John Doe", 21))
+
+      logged should be(List(User("John Doe", 21)))
+    }
+    "access non-String values in MDC" in {
+      var logged = List.empty[User]
+
+      case class User(name: String, age: Int)
+      val logger = Logger().orphan().withHandler(new LogHandler {
+        override def log[M](record: LogRecord[M]): Unit = MDC.get("user").foreach {
+          case u: User => logged = u :: logged
+        }
+      })
+
+      logger("user" -> User("John Doe", 21)) {
+        logger.info("Hello")
+      }
+
+      logged should be(List(User("John Doe", 21)))
     }
   }
 }
