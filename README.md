@@ -25,19 +25,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.0.2"
+libraryDependencies += "com.outr" %% "scribe" % "3.0.3"
 ```
 
 For Cross-Platform projects:
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.0.2"
+libraryDependencies += "com.outr" %%% "scribe" % "3.0.3"
 ```
 
 Or, if you want interoperability with SLF4J (for those silly projects that haven't switched to Scribe yet):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.0.2"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.0.3"
 ```
 
 ### Usage
@@ -59,7 +59,7 @@ around Java logging frameworks (usually SLF4J, Log4J, or Logback). This comes wi
 5. Substantial cost logging method and line numbers
 6. Lack of programmatic configuration support
 
-A few of the main features that Scribe offers:
+A few of the main features that Scribe offers ([for a complete list](https://github.com/outr/scribe/wiki/Features)):
 
 1. Performance is a critical consideration. We leverage Macros to handle optimization of everything possible at
 compile-time to avoid logging slowing down your production application. As far as we are aware, Scribe is the fastest
@@ -77,6 +77,7 @@ any runtime cost.
 asynchronous logging support completely removes logging impact from your application's thread impact.
 
 ## Documentation
+* [Features](https://github.com/outr/scribe/wiki/Features)
 * [Performance / Benchmarks](https://github.com/outr/scribe/wiki/benchmarks)
 * [Library Dependencies](https://github.com/outr/scribe/wiki/library-dependencies)
 * [Getting Started](https://github.com/outr/scribe/wiki/getting-started)
