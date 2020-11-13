@@ -27,7 +27,7 @@ trait LoggerSupport {
       message = new LazyMessage[M](() => message),
       loggable = implicitly[Loggable[M]],
       throwable = throwable,
-      fileName = fileName.value,
+      fileName = fn,
       className = className,
       methodName = methodName,
       line = Some(line.value),
