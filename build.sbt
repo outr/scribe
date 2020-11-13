@@ -2,7 +2,7 @@
 val scala213 = "2.13.3"
 val scala212 = "2.12.12"
 val scala211 = "2.11.12"
-val scala3 = "0.27.0-RC1"
+val scala3 = "3.0.0-M1"
 val allScalaVersions = List(scala213, scala212, scala211, scala3)
 val scala2Versions = List(scala213, scala212, scala211)
 val nativeScalaVersions = List(scala211)
@@ -10,7 +10,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.1.0-SNAPSHOT"
+version in ThisBuild := "3.0.4-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -34,12 +34,12 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.2.0"
+val perfolationVersion: String = "1.2.2"
 val sourcecodeVersion: String = "0.2.1"
 val collectionCompat: String = "2.2.0"
 
 // Testing
-val scalatestVersion: String = "3.2.2"
+val scalatestVersion: String = "3.2.3"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"

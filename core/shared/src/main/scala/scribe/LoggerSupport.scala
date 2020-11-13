@@ -10,7 +10,13 @@ trait LoggerSupport {
                        fileName: sourcecode.FileName,
                        name: sourcecode.Name,
                        line: sourcecode.Line): Unit = {
-    val className = s"${pkg.value}.${fileName.value.substring(0, fileName.value.length - 6)}"
+    val backSlash = fileName.value.lastIndexOf('\\')
+    val fn = if (backSlash != -1) {
+      fileName.value.substring(backSlash + 1)
+    } else {
+      fileName.value
+    }
+    val className = s"${pkg.value}.${fn.substring(0, fn.length - 6)}"
     val methodName = name.value match {
       case "anonymous" | "" => None
       case v => Option(v)
