@@ -20,9 +20,12 @@ trait LogRecord[M] {
   def line: Option[Int]
   def column: Option[Int]
   def thread: Thread
+  def data: Map[String, () => Any]
   def timeStamp: Long
 
   def logOutput: LogOutput
+
+  def get(key: String): Option[Any] = data.get(key).map(_())
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(levelValue))
   def modify(modifier: LogModifier): Option[LogRecord[M]] = if (appliedModifierIds.contains(modifier.id)) {
@@ -45,6 +48,7 @@ trait LogRecord[M] {
            line: Option[Int] = line,
            column: Option[Int] = column,
            thread: Thread = thread,
+           data: Map[String, () => Any] = data,
            timeStamp: Long = timeStamp): LogRecord[M]
 
   def dispose(): Unit
@@ -62,8 +66,9 @@ object LogRecord {
                line: Option[Int],
                column: Option[Int],
                thread: Thread = Thread.currentThread(),
+               data: Map[String, () => Any] = Map.empty,
                timeStamp: Long = Time()): LogRecord[M] = {
-    new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
+    new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
   }
 
   def simple(message: String,
@@ -74,6 +79,7 @@ object LogRecord {
              column: Option[Int] = None,
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
+             data: Map[String, () => Any] = Map.empty,
              timeStamp: Long = Time()): LogRecord[String] = {
     apply[String](
       level = level,
@@ -87,6 +93,7 @@ object LogRecord {
       line = line,
       column = column,
       thread = thread,
+      data = data,
       timeStamp = timeStamp
     )
   }
@@ -158,6 +165,7 @@ object LogRecord {
                            val line: Option[Int],
                            val column: Option[Int],
                            val thread: Thread,
+                           val data: Map[String, () => Any],
                            val timeStamp: Long) extends LogRecord[M] {
     override lazy val logOutput: LogOutput = {
       val msg = loggable(message.value)
@@ -178,8 +186,9 @@ object LogRecord {
              line: Option[Int] = line,
              column: Option[Int] = column,
              thread: Thread = thread,
+             data: Map[String, () => Any] = data,
              timeStamp: Long = timeStamp): LogRecord[M] = {
-      val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, timeStamp)
+      val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
       r.appliedModifierIds = this.appliedModifierIds
       r
     }

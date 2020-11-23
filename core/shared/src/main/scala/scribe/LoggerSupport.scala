@@ -123,21 +123,4 @@ trait LoggerSupport {
       if (!exists) MDC.remove(key)
     }
   }
-
-  /**
-    * Contextualize key/value pairs set on MDC. This will be made avoid on each log record within
-    *
-    * @param keyValues tuples of key/value pairs to set on MDC
-    * @param f the context for which these MDC values are set
-    */
-  def apply[Return](keyValues: (String, Any)*)(f: => Return): Return = {
-    keyValues.foreach {
-      case (key, value) => MDC.update(key, value)
-    }
-    try {
-      f
-    } finally {
-      keyValues.foreach(t => MDC.remove(t._1))
-    }
-  }
 }
