@@ -1,20 +1,11 @@
-package scribe.writer
+package scribe.output.format
 
 import scribe.output._
-import scribe.{ANSI, Level, LogRecord, Logger}
+import scribe.ANSI
 
-import scala.math.Ordering.Implicits._
 import scala.language.implicitConversions
 
-object ANSIConsoleWriter extends Writer {
-  val DefaultStringBuilderStartCapacity: Int = 512
-
-  var stringBuilderStartCapacity: Int = DefaultStringBuilderStartCapacity
-
-  private val stringBuilders = new ThreadLocal[StringBuilder] {
-    override def initialValue(): StringBuilder = new StringBuilder(stringBuilderStartCapacity)
-  }
-
+object ANSIOutputFormat extends OutputFormat {
   private object ansi {
     var fg: Option[ANSI] = None
     var bg: Option[ANSI] = None
@@ -22,23 +13,6 @@ object ANSIConsoleWriter extends Writer {
     var italic: Boolean = false
     var underline: Boolean = false
     var strikethrough: Boolean = false
-  }
-
-  override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
-    val stream = if (record.level <= Level.Info) {
-      Logger.system.out
-    } else {
-      Logger.system.err
-    }
-    val sb = stringBuilders.get()
-    sb.append(ANSI.ctrl.Reset)
-    apply(output, s => sb.append(s))
-    if (ConsoleWriter.SynchronizeWriting) {
-      synchronized(stream.println(sb.toString()))
-    } else {
-      stream.println(sb.toString())
-    }
-    sb.clear()
   }
 
   def apply(output: LogOutput, stream: String => Unit): Unit = output match {

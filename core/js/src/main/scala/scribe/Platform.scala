@@ -1,6 +1,7 @@
 package scribe
 
-import scribe.writer.{BrowserConsoleWriter, ContentSupport, Writer}
+import scribe.output.format.{OutputFormat, RichBrowserOutputFormat}
+import scribe.writer.{BrowserConsoleWriter, Writer}
 
 import scala.scalajs.js
 
@@ -11,7 +12,7 @@ object Platform extends PlatformImplementation {
   
   def console: JavaScriptConsole = js.Dynamic.global.console.asInstanceOf[JavaScriptConsole]
 
-  def contentSupport(): ContentSupport = ContentSupport.Rich
+  def outputFormat(): OutputFormat = RichBrowserOutputFormat
 
   override def consoleWriter: Writer = BrowserConsoleWriter
 }

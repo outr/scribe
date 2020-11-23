@@ -2,6 +2,7 @@ package scribe.handler
 
 import scribe.format.Formatter
 import scribe.modify.{LevelFilter, LogModifier}
+import scribe.output.format.OutputFormat
 import scribe.writer.{ConsoleWriter, Writer}
 import scribe.{Level, LogRecord}
 
@@ -21,9 +22,10 @@ object LogHandler {
   def apply(formatter: Formatter = Formatter.enhanced,
             writer: Writer = ConsoleWriter,
             minimumLevel: Option[Level] = None,
-            modifiers: List[LogModifier] = Nil): SynchronousLogHandler = {
+            modifiers: List[LogModifier] = Nil,
+            outputFormat: OutputFormat = OutputFormat.default): SynchronousLogHandler = {
     val mods = (minimumLevel.map(LevelFilter >= _).toList ::: modifiers).sortBy(_.priority)
-    SynchronousLogHandler(formatter, writer, mods)
+    SynchronousLogHandler(formatter, writer, outputFormat, mods)
   }
 
   def apply(minimumLevel: Level)(f: LogRecord[_] => Unit): FunctionalLogHandler = {

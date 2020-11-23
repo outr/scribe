@@ -7,6 +7,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.slf4j.{LoggerFactory, MDC}
 import scribe.handler.LogHandler
 import scribe.output.LogOutput
+import scribe.output.format.OutputFormat
 import scribe.util.Time
 import scribe.writer.Writer
 import scribe.{Level, LogRecord, Logger}
@@ -17,7 +18,7 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
   private var logs: List[LogRecord[_]] = Nil
   private var logOutput: List[String] = Nil
   private val writer = new Writer {
-    override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
+    override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
       logs = record :: logs
       logOutput = output.plainText :: logOutput
     }

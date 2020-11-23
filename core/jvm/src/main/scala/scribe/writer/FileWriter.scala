@@ -4,6 +4,7 @@ import java.nio.file.{Files, Path}
 
 import scribe._
 import scribe.output.LogOutput
+import scribe.output.format.OutputFormat
 import scribe.writer.action._
 import scribe.writer.file.{FlushMode, LogFile, LogFileMode, LogPath}
 
@@ -24,13 +25,9 @@ class FileWriter(actions: List[Action],
     this
   }
 
-  override def write[M](record: LogRecord[M], output: LogOutput): Unit = synchronized {
+  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
     invoke(actions)
-    if (plainText) {
-      logFile.write(output.plainText)
-    } else {
-      ANSIConsoleWriter(output, logFile.write)
-    }
+    outputFormat(output, logFile.write)
     logFile.write(System.lineSeparator())
   }
 

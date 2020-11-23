@@ -6,12 +6,14 @@ import java.util.concurrent.atomic.AtomicLong
 import scribe.LogRecord
 import scribe.format.Formatter
 import scribe.modify.LogModifier
+import scribe.output.format.OutputFormat
 import scribe.writer.{ConsoleWriter, Writer}
 
 import scala.language.implicitConversions
 
 case class AsynchronousLogHandler(formatter: Formatter = Formatter.enhanced,
                                   writer: Writer = ConsoleWriter,
+                                  outputFormat: OutputFormat = OutputFormat.default,
                                   modifiers: List[LogModifier] = Nil,
                                   maxBuffer: Int = AsynchronousLogHandler.DefaultMaxBuffer,
                                   overflow: Overflow = Overflow.DropOld) extends LogHandler {
@@ -26,7 +28,7 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.enhanced,
         Option(q.poll()) match {
           case Some(record) => {
             cached.decrementAndGet()
-            SynchronousLogHandler.log(modifiers, formatter, writer, record)
+            SynchronousLogHandler.log(modifiers, formatter, writer, record, outputFormat)
             Thread.sleep(1L)
           }
           case None => Thread.sleep(10L)

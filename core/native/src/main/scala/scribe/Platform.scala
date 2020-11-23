@@ -1,16 +1,14 @@
 package scribe
 
-import scribe.writer.{ANSIConsoleWriter, ASCIIConsoleWriter, ConsoleWriter, ContentSupport, Writer}
+import scribe.output.format.{ANSIOutputFormat, OutputFormat}
+import scribe.writer.{SystemOutputWriter, Writer}
 
 object Platform extends PlatformImplementation {
   def isJVM: Boolean = false
   def isJS: Boolean = false
   def isNative: Boolean = true
 
-  def contentSupport(): ContentSupport = ContentSupport.Rich    // TODO: Support detection
+  def outputFormat(): OutputFormat = ANSIOutputFormat
 
-  override def consoleWriter: Writer = ConsoleWriter.contentSupport match {
-    case ContentSupport.PlainText => ASCIIConsoleWriter
-    case ContentSupport.Rich => ANSIConsoleWriter
-  }
+  override def consoleWriter: Writer = SystemOutputWriter
 }

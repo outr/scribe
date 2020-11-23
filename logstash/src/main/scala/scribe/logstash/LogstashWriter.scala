@@ -8,6 +8,7 @@ import io.youi.net._
 import perfolation._
 import profig.JsonUtil
 import scribe.Execution.global
+import scribe.output.format.OutputFormat
 import scribe.output.{EmptyOutput, LogOutput}
 import scribe.writer.Writer
 import scribe.{LogRecord, MDC}
@@ -21,7 +22,7 @@ case class LogstashWriter(url: URL,
                           asynchronous: Boolean = true) extends Writer {
   private lazy val client = HttpClient.url(url).post
 
-  override def write[M](record: LogRecord[M], output: LogOutput): Unit = {
+  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
     val future = log(record)
     if (!asynchronous) {
       Await.result(future, 10.seconds)

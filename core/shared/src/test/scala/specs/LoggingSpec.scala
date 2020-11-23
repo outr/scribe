@@ -11,6 +11,7 @@ import scribe.filter._
 import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster}
+import scribe.output.format.OutputFormat
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{NullWriter, Writer}
@@ -119,7 +120,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = LoggingSpec.mdcFormatter,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
         }
       )
 
@@ -147,7 +148,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
         }
       )
 
@@ -175,7 +176,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
         }
       )
 
@@ -236,7 +237,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .withHandler(
           formatter = Formatter.simple,
           writer = new Writer {
-            override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+            override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
           }
         )
       logger.logDirect(Level.Warn, "Included", className = "org.apache.flink.api.Included")
@@ -258,7 +259,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .withHandler(
           formatter = Formatter.simple,
           writer = new Writer {
-            override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+            override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
           },
           minimumLevel = Some(Level.Info)
         )
@@ -284,7 +285,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .withHandler(
           formatter = Formatter.simple,
           writer = new Writer {
-            override def write[M](record: LogRecord[M], output: LogOutput): Unit = logs += output.plainText
+            override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
           },
           minimumLevel = Some(Level.Info)
         )
@@ -327,7 +328,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val h = LogHandler(
         minimumLevel = Some(Level.Info),
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput): Unit = records = record.message.value.toString :: records
+          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = records = record.message.value.toString :: records
         },
         modifiers = List(
           select(

@@ -7,13 +7,13 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import scribe.format._
 import scribe.output.LogOutput
+import scribe.output.format.OutputFormat
 import scribe.writer.{FileWriter, Writer}
 import scribe.{LogRecord, Logger}
 
 import scala.concurrent.Future
 import scala.io.Source
 import scala.jdk.CollectionConverters._
-
 import scala.language.implicitConversions
 
 class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
@@ -28,7 +28,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       val logger = Logger.empty.orphan().withHandler(
         formatter = AsynchronousLoggingSpec.format,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput): Unit = queue.add(output.plainText.trim)
+          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = queue.add(output.plainText.trim)
         }
       )
 
