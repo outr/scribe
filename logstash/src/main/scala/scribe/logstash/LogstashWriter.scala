@@ -46,6 +46,9 @@ case class LogstashWriter(url: URL,
       `@timestamp` = timestamp,
       mdc = MDC.map.map {
         case (key, function) => key -> function().toString
+      },
+      data = record.data.map {
+        case (key, function) => key -> function().toString
       }
     )
 

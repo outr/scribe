@@ -11,4 +11,5 @@ case class LogstashRecord(message: String,
                           line: Option[Int],
                           thread: String,
                           `@timestamp`: String,
-                          mdc: Map[String, String])
+                          mdc: Map[String, String],
+                          data: Map[String, String])
