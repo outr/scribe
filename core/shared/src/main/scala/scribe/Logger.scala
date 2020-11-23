@@ -14,6 +14,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                   modifiers: List[LogModifier] = Nil,
                   handlers: List[LogHandler] = Nil,
                   overrideClassName: Option[String] = None,
+                  data: Map[String, () => Any] = Map.empty,
                   id: LoggerId = LoggerId()) extends LoggerSupport {
   lazy val isEmpty: Boolean = modifiers.isEmpty && handlers.isEmpty
 
@@ -34,6 +35,8 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))
   def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers.sorted)
   def clearModifiers(): Logger = setModifiers(Nil)
+  def apply(data: (String, Any)*): Logger = copy(data = this.data ++ data.map(t => t._1 -> (() => t._2)).toMap)
+  def withData(key: String, value: => Any): Logger = copy(data = this.data + (key -> (() => value)))
 
   final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id) ::: List(modifier))
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id))
@@ -65,11 +68,18 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     })
   }
 
-  override def log[M](record: LogRecord[M]): Unit = modifiers.foldLeft(Option(record)) {
-    case (r, lm) => r.flatMap(_.modify(lm))
-  }.foreach { r =>
-    handlers.foreach(_.log(r))
-    parentId.map(Logger.apply).foreach(_.log(r))
+  override def log[M](record: LogRecord[M]): Unit = {
+    val r = if (data.nonEmpty) {
+      record.copy(data = data ++ record.data)
+    } else {
+      record
+    }
+    modifiers.foldLeft(Option(r)) {
+      case (r, lm) => r.flatMap(_.modify(lm))
+    }.foreach { r =>
+      handlers.foreach(_.log(r))
+      parentId.map(Logger.apply).foreach(_.log(r))
+    }
   }
 
   def replace(name: Option[String] = None): Logger = name match {

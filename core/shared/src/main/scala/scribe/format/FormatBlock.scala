@@ -175,7 +175,7 @@ object FormatBlock {
 
   object MDCAll extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = {
-      val map = MDC.map
+      val map = MDC.map ++ record.data
       if (map.nonEmpty) {
         new TextOutput(MDC.map.map {
           case (key, value) => s"$key: ${value()}"
