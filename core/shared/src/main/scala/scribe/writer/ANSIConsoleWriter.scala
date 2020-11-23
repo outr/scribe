@@ -31,6 +31,7 @@ object ANSIConsoleWriter extends Writer {
       Logger.system.err
     }
     val sb = stringBuilders.get()
+    sb.append(ANSI.ctrl.Reset)
     apply(output, s => sb.append(s))
     if (ConsoleWriter.SynchronizeWriting) {
       synchronized(stream.println(sb.toString()))
