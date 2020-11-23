@@ -35,8 +35,8 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))
   def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers.sorted)
   def clearModifiers(): Logger = setModifiers(Nil)
-  def apply(data: (String, Any)*): Logger = copy(data = this.data ++ data.map(t => t._1 -> (() => t._2)).toMap)
-  def withData(key: String, value: => Any): Logger = copy(data = this.data + (key -> (() => value)))
+  def set(key: String, value: => Any): Logger = copy(data = this.data + (key -> (() => value)))
+  def get(key: String): Option[Any] = data.get(key).map(_())
 
   final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id) ::: List(modifier))
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id))

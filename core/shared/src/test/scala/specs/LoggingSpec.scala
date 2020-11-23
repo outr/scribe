@@ -407,12 +407,28 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
       case class User(name: String, age: Int)
       val logger = Logger().orphan().withHandler(new LogHandler {
+        override def log[M](record: LogRecord[M]): Unit = MDC.get("user").foreach {
+          case u: User => logged = u :: logged
+        }
+      })
+
+      logger("user" -> User("John Doe", 21)) {
+        logger.info("Hello")
+      }
+
+      logged should be(List(User("John Doe", 21)))
+    }
+    "access non-String values in `data`" in {
+      var logged = List.empty[User]
+
+      case class User(name: String, age: Int)
+      val logger = Logger().orphan().withHandler(new LogHandler {
         override def log[M](record: LogRecord[M]): Unit = record.get("user").foreach {
           case u: User => logged = u :: logged
         }
       })
 
-      logger("user" -> User("John Doe", 21)).info("Hello")
+      logger.set("user", User("John Doe", 21)).info("Hello")
 
       logged should be(List(User("John Doe", 21)))
     }
