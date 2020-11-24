@@ -5,6 +5,7 @@ import java.io.PrintStream
 import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
+import scribe.output.format.OutputFormat
 import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
 
@@ -27,8 +28,9 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   def withHandler(formatter: Formatter = Formatter.enhanced,
                   writer: Writer = ConsoleWriter,
                   minimumLevel: Option[Level] = None,
-                  modifiers: List[LogModifier] = Nil): Logger = {
-    withHandler(LogHandler(formatter, writer, minimumLevel, modifiers))
+                  modifiers: List[LogModifier] = Nil,
+                  outputFormat: OutputFormat = OutputFormat.default): Logger = {
+    withHandler(LogHandler(formatter, writer, minimumLevel, modifiers, outputFormat))
   }
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
   def clearHandlers(): Logger = copy(handlers = Nil)
@@ -195,5 +197,5 @@ object Logger {
     case (name, id) if id == loggerId => name
   }.toSet
 
-  private def fixName(name: String): String = name.replaceAll("[$]", "")
+  private def fixName(name: String): String = name.replace("$", "")
 }

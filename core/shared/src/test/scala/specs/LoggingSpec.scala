@@ -11,7 +11,7 @@ import scribe.filter._
 import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster}
-import scribe.output.format.OutputFormat
+import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{NullWriter, Writer}
@@ -432,6 +432,20 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.set("user", User("John Doe", 21)).info("Hello")
 
       logged should be(List(User("John Doe", 21)))
+    }
+    "use HTMLOutputFormat to log something" in {
+      val MomentInTime = 1606235160799L
+      Time.contextualize(MomentInTime) {
+        val b = new StringBuilder
+        val writer = new Writer {
+          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
+            outputFormat(output, b.append(_))
+          }
+        }
+        val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat)
+        logger.info("Hello, HTML!")
+        b.toString() should be("""<div class="record">2020.11.24 08:26:00:799 [<span style="color: blue">INFO </span>] <span style="color: green">specs.LoggingSpec.LoggingSpec:446</span> - <span style="color: gray">Hello, HTML!</span></div>""")
+      }
     }
   }
 }
