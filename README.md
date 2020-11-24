@@ -25,19 +25,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.0.4"
+libraryDependencies += "com.outr" %% "scribe" % "3.1.0"
 ```
 
 For Cross-Platform projects:
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.0.4"
+libraryDependencies += "com.outr" %%% "scribe" % "3.1.0"
 ```
 
-Or, if you want interoperability with SLF4J (for those silly projects that haven't switched to Scribe yet):
+Or, if you want interoperability with SLF4J (to allow better interoperability with existing libraries using other loggers):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.0.4"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.1.0"
 ```
 
 ### Usage
