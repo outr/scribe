@@ -8,6 +8,8 @@ object Platform extends PlatformImplementation {
   def isJS: Boolean = false
   def isNative: Boolean = true
 
+  def init(): Unit = {}
+
   def outputFormat(): OutputFormat = ANSIOutputFormat
 
   override def consoleWriter: Writer = SystemOutputWriter

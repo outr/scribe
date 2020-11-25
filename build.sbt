@@ -10,7 +10,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.1.1-SNAPSHOT"
+version in ThisBuild := "3.1.1"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -167,7 +167,7 @@ lazy val config = project.in(file("config"))
       "com.outr" %% "profig" % profigVersion,
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
-    crossScalaVersions := scala2Versions
+    crossScalaVersions := compatScalaVersions
   )
 
 lazy val slack = project.in(file("slack"))

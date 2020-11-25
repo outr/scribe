@@ -5,22 +5,30 @@ import java.net.URL
 import java.nio.file.{Files, Path, Paths}
 import java.util.Properties
 
+import moduload.Moduload
 import scribe.handler.{LogHandler, SynchronousLogHandler}
 import scribe.modify.LevelFilter
 import scribe.modify.LevelFilter._
 
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
-
 import scala.language.implicitConversions
 
-object Log4JMigration {
+object Log4JMigration extends Moduload {
   private val RootLoggerRegex = """log4j[.](rootLogger|rootCategory)""".r
   private val AppenderClass = """log4j[.]appender[.]([a-zA-Z0-9]+)""".r
   private val AppenderLayout = """log4j[.]appender[.]([a-zA-Z0-9]+)[.]layout""".r
   private val AppenderLayoutConversionPattern = """log4j[.]appender[.]([a-zA-Z0-9]+)[.]layout[.]ConversionPattern""".r
   private val LoggerRegex = """log4j[.]logger[.](.+)""".r
 
-  def load(): Int = {
+  override def load()(implicit ec: ExecutionContext): Future[Unit] = Future.successful {
+    apply()
+    ()
+  }
+
+  override def error(t: Throwable): Unit = scribe.error("Error loading Log4JMigration", t)
+
+  def apply(): Int = {
     // Load from classloader
     val loaded = (0 :: getClass.getClassLoader.getResources("log4j.properties").asScala.toList.map(load)).sum
     // Load from disk

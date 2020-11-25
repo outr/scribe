@@ -2,7 +2,6 @@ package scribe
 
 import java.io.PrintStream
 
-import moduload.Moduload
 import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
@@ -10,8 +9,6 @@ import scribe.output.format.OutputFormat
 import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 import scala.reflect._
 
 case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
@@ -138,8 +135,8 @@ object Logger {
   // Configure the root logger to filter anything under Info and write to the console
   root.orphan().withHandler(minimumLevel = Some(Level.Info)).replace(Some("root"))
 
-  // Load Moduload
-  Await.result(Moduload.load()(Execution.global), Duration.Inf)
+  // Initialize Platform-specific functionality
+  Platform.init()
 
   def empty: Logger = Logger()
   def root: Logger = apply(RootId)

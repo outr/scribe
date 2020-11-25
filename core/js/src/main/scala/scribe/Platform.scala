@@ -9,6 +9,8 @@ object Platform extends PlatformImplementation {
   def isJVM: Boolean = false
   def isJS: Boolean = true
   def isNative: Boolean = false
+
+  def init(): Unit = {}
   
   def console: JavaScriptConsole = js.Dynamic.global.console.asInstanceOf[JavaScriptConsole]
 
