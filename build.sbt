@@ -10,7 +10,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.1.0"
+version in ThisBuild := "3.1.1-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -37,7 +37,8 @@ parallelExecution in ThisBuild := false
 // Core
 val perfolationVersion: String = "1.2.0"
 val sourcecodeVersion: String = "0.2.1"
-val collectionCompat: String = "2.2.0"
+val collectionCompatVersion: String = "2.2.0"
+val moduloadVersion: String = "1.0.2"
 
 // Testing
 val scalatestVersion: String = "3.2.2"
@@ -45,6 +46,9 @@ val scalatestVersion: String = "3.2.2"
 // SLF4J
 val slf4jVersion: String = "1.7.30"
 val slf4j18Version: String = "1.8.0-beta4"
+
+// Config Dependencies
+val profigVersion: String = "3.0.4"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.13.18"
@@ -76,7 +80,7 @@ val commonNativeSettings = Seq(
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
-    slf4j, slf4j18, migration, slack, logstash)
+    slf4j, slf4j18, migration, config, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
@@ -96,7 +100,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       if (isDotty.value) {
         Nil
       } else {
-        List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat)
+        List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
       }
     ),
     publishArtifact in Test := false
@@ -106,6 +110,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     crossScalaVersions := scala2Versions
   )
   .jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.outr" %% "moduload" % moduloadVersion
+    ),
     crossScalaVersions := allScalaVersions
   )
   .nativeSettings(
@@ -143,12 +150,24 @@ lazy val slf4j18 = project.in(file("slf4j18"))
 lazy val migration = project.in(file("migration"))
   .dependsOn(coreJVM)
   .settings(
-    name := "scribe.migration",
+    name := "scribe-migration",
     publishArtifact in Test := false,
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % scalatestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
+  )
+
+lazy val config = project.in(file("config"))
+  .dependsOn(migration)
+  .settings(
+    name := "scribe-config",
+    publishArtifact in Test := false,
+    libraryDependencies ++= Seq(
+      "com.outr" %% "profig" % profigVersion,
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
+    ),
+    crossScalaVersions := scala2Versions
   )
 
 lazy val slack = project.in(file("slack"))
