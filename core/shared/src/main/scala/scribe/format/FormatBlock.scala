@@ -2,7 +2,7 @@ package scribe.format
 
 import perfolation._
 import scribe._
-import scribe.output.{LogOutput, TextOutput}
+import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.util.Abbreviator
 
 import scala.language.implicitConversions
@@ -169,8 +169,21 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = record.logOutput
   }
 
-  case class MDCReference(key: String, default: () => Any) extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(MDC.getOrElse(key, default()).toString)
+  case class MDCReference(key: String,
+                          default: () => Any,
+                          prefix: Option[LogOutput],
+                          postfix: Option[LogOutput]) extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = MDC.get(key) match {
+      case Some(value) => {
+        val text = new TextOutput(value.toString)
+        if (prefix.nonEmpty || postfix.nonEmpty) {
+          new CompositeOutput(List(prefix, Option(text), postfix).flatten)
+        } else {
+          text
+        }
+      }
+      case None => new TextOutput(default().toString)
+    }
   }
 
   object MDCAll extends FormatBlock {

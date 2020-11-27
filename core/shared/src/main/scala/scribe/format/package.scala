@@ -1,7 +1,7 @@
 package scribe
 
 import scribe.format.FormatBlock.RawString
-import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, ItalicOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
+import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, EmptyOutput, ItalicOutput, LogOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
 
 import scala.collection.mutable.ListBuffer
 import scala.language.experimental.macros
@@ -65,8 +65,14 @@ package object format {
   )
   def message: FormatBlock = FormatBlock.Message
   def newLine: FormatBlock = FormatBlock.NewLine
-  def mdc(key: String): FormatBlock = mdc(key, "")
-  def mdc(key: String, default: => Any): FormatBlock = FormatBlock.MDCReference(key, () => default)
+  def mdc(key: String,
+          default: => Any = "",
+          prefix: LogOutput = EmptyOutput,
+          postfix: LogOutput = EmptyOutput): FormatBlock = {
+    val pre = if (prefix eq EmptyOutput) None else Some(prefix)
+    val post = if (postfix eq EmptyOutput) None else Some(postfix)
+    FormatBlock.MDCReference(key, () => default, pre, post)
+  }
   def mdc: FormatBlock = FormatBlock.MDCAll
 
   implicit class EnhancedColor(color: Color) {
