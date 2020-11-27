@@ -69,8 +69,8 @@ package object format {
           default: => Any = "",
           prefix: LogOutput = EmptyOutput,
           postfix: LogOutput = EmptyOutput): FormatBlock = {
-    val pre = if (prefix eq EmptyOutput) None else Some(prefix)
-    val post = if (postfix eq EmptyOutput) None else Some(postfix)
+    val pre = if (prefix == EmptyOutput) None else Some(prefix)
+    val post = if (postfix == EmptyOutput) None else Some(postfix)
     FormatBlock.MDCReference(key, () => default, pre, post)
   }
   def mdc: FormatBlock = FormatBlock.MDCAll
