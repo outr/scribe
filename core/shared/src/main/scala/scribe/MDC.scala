@@ -27,6 +27,7 @@ object MDC {
 
   def map: Map[String, () => Any] = instance.map
   def get(key: String): Option[Any] = instance.get(key).map(_())
+  def getOrElse(key: String, default: => Any): Any= get(key).getOrElse(default)
   def update(key: String, value: => Any): Unit = instance(key) = value
   def contextualize[Return](key: String, value: => Any)(f: => Return): Return = instance.contextualize(key, value)(f)
   def elapsed(key: String = "elapsed", timeFunction: () => Long = Time.function): Unit = instance.elapsed(key, timeFunction)

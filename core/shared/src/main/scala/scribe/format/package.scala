@@ -65,7 +65,8 @@ package object format {
   )
   def message: FormatBlock = FormatBlock.Message
   def newLine: FormatBlock = FormatBlock.NewLine
-  def mdc(key: String): FormatBlock = FormatBlock.MDCReference(key)
+  def mdc(key: String): FormatBlock = mdc(key, "")
+  def mdc(key: String, default: => Any): FormatBlock = FormatBlock.MDCReference(key, () => default)
   def mdc: FormatBlock = FormatBlock.MDCAll
 
   implicit class EnhancedColor(color: Color) {

@@ -134,13 +134,13 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.info("E")
 
       var pos = 0
-      logs(pos) should be("null, null - A")
+      logs(pos) should be(", UNSET - A")
       pos += 1
       logs(pos) should be("First, Second - B")
       pos += 1
-      logs(pos) should be("null, Second - D")
+      logs(pos) should be(", Second - D")
       pos += 1
-      logs(pos) should be("null, null - E")
+      logs(pos) should be(", UNSET - E")
     }
     "utilize MDC functional logging" in {
       import scribe.format._
@@ -453,5 +453,5 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
 object LoggingSpec {
   import scribe.format._
-  val mdcFormatter: Formatter = formatter"${mdc("test1")}, ${mdc("test2")} - $message"
+  val mdcFormatter: Formatter = formatter"${mdc("test1")}, ${mdc("test2", "UNSET")} - $message"
 }

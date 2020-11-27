@@ -169,8 +169,8 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = record.logOutput
   }
 
-  case class MDCReference(key: String) extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(MDC.get(key).map(_.toString).orNull)
+  case class MDCReference(key: String, default: () => Any) extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(MDC.getOrElse(key, default()).toString)
   }
 
   object MDCAll extends FormatBlock {
