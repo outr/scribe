@@ -15,9 +15,10 @@ class NIOLogFileWriter(lf: LogFile) extends LogFileWriter {
   private lazy val channel: FileChannel = FileChannel.open(lf.path, options: _*)
 
   override def write(output: String): Unit = {
-    val o = Option(output) match {
-      case Some(o) => o
-      case None => "null"
+    val o = if (output == None.orNull) {
+      "null"
+    } else {
+      output
     }
     val bytes = o.getBytes(lf.charset)
     val buffer = ByteBuffer.wrap(bytes)
