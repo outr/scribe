@@ -13,6 +13,7 @@ import scribe.modify.LevelFilter._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
+import scala.util.Try
 
 object Log4JMigration extends Moduload {
   private val RootLoggerRegex = """log4j[.](rootLogger|rootCategory)""".r
@@ -30,7 +31,10 @@ object Log4JMigration extends Moduload {
 
   def apply(): Int = {
     // Load from classloader
-    val loaded = (0 :: getClass.getClassLoader.getResources("log4j.properties").asScala.toList.map(load)).sum
+    val loaded = Try(Option(getClass.getClassLoader.getResource("log4j.properties"))).toOption.flatten match {
+      case Some(url) => load(url)
+      case None => 0
+    }
     // Load from disk
     val path = Paths.get("log4j.properties")
     if (Files.exists(path)) {
@@ -108,7 +112,7 @@ class Log4JMigration private() {
     }
   }
 
-  private def levelFilter(value: String): LevelFilter = value match {
+  private def levelFilter(value: String): LevelFilter = value.toUpperCase match {
     case "OFF" => ExcludeAll
     case "TRACE" => >=(Level.Trace)
     case "DEBUG" => >=(Level.Debug)
