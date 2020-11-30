@@ -83,8 +83,13 @@ class Log4JMigration private() {
     case AppenderLayout(_) => false                                             // Ignore layouts
     case AppenderLayoutConversionPattern(_) => false                            // Ignore layouts
     case LoggerRegex(className) => {
-      val filter = levelFilter(value)
+      val list = value.split(',').map(_.trim).toList
+      val filter = levelFilter(list.head)
+      val handlers = list.tail.map(this.handlers.apply)
       Logger(className).withModifier(filter).replace()
+      handlers.foreach { h =>
+        Logger(className).withHandler(h).replace()
+      }
       true
     }
     case RootLoggerRegex(_) => {
@@ -111,7 +116,10 @@ class Log4JMigration private() {
     case "WARN" => >=(Level.Warn)
     case "ERROR" => >=(Level.Error)
     case "FATAL" => >=(Level.Fatal)
-    case _ => throw new RuntimeException(s"Unsupported level name: $value")
+    case _ => {
+      scribe.error(s"Unsupported level name: $value. Continuing with OFF.")
+      ExcludeAll
+    }
   }
 
   def finish(): Unit = {}
