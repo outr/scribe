@@ -12,6 +12,9 @@ package object format {
   private val ClassNameAbbreviationLength = 15
   private val PositionAbbreviationLength = 25
 
+  case object empty extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = EmptyOutput
+  }
   def string(value: String): FormatBlock = RawString(value)
   def date: FormatBlock = FormatBlock.Date.Standard
   def dateFull: FormatBlock = FormatBlock.Date.Full
@@ -67,10 +70,10 @@ package object format {
   def newLine: FormatBlock = FormatBlock.NewLine
   def mdc(key: String,
           default: => Any = "",
-          prefix: LogOutput = EmptyOutput,
-          postfix: LogOutput = EmptyOutput): FormatBlock = {
-    val pre = if (prefix == EmptyOutput) None else Some(prefix)
-    val post = if (postfix == EmptyOutput) None else Some(postfix)
+          prefix: FormatBlock = empty,
+          postfix: FormatBlock = empty): FormatBlock = {
+    val pre = if (prefix == empty) None else Some(prefix)
+    val post = if (postfix == empty) None else Some(postfix)
     FormatBlock.MDCReference(key, () => default, pre, post)
   }
   def mdc: FormatBlock = FormatBlock.MDCAll

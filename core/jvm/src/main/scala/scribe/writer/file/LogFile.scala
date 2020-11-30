@@ -77,7 +77,11 @@ class LogFile(val key: String,
 
   def samePath(that: LogFile): Boolean = scribe.writer.FileWriter.samePath(this.path, that.path)
 
-  final def write(output: String): Unit = {
+  final def write(output: String): Unit = if (output == None.orNull) {
+    writer.write("null")
+    flushMode.dataWritten(this, writer)
+    sizeCounter.addAndGet(4)
+  } else {
     writer.write(output)
     flushMode.dataWritten(this, writer)
     sizeCounter.addAndGet(output.length.toLong)

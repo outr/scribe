@@ -453,5 +453,5 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
 object LoggingSpec {
   import scribe.format._
-  val mdcFormatter: Formatter = formatter"${mdc("test1", prefix = "[", postfix = "], ")}${mdc("test2", "UNSET")} - $message"
+  val mdcFormatter: Formatter = formatter"${mdc("test1", prefix = string("["), postfix = string("], "))}${mdc("test2", "UNSET")} - $message"
 }

@@ -105,7 +105,9 @@ object LogRecord {
   final def throwable2LogOutput(message: LogOutput,
                                 t: Throwable,
                                 primaryCause: Boolean = true,
-                                b: StringBuilder = new StringBuilder): LogOutput = {
+                                b: StringBuilder = new StringBuilder): LogOutput = if (t == None.orNull) {
+    EmptyOutput
+  } else {
     if (!primaryCause) {
       b.append("Caused by: ")
     }

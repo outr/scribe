@@ -171,13 +171,13 @@ object FormatBlock {
 
   case class MDCReference(key: String,
                           default: () => Any,
-                          prefix: Option[LogOutput],
-                          postfix: Option[LogOutput]) extends FormatBlock {
+                          prefix: Option[FormatBlock],
+                          postfix: Option[FormatBlock]) extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = MDC.get(key) match {
       case Some(value) => {
         val text = new TextOutput(value.toString)
         if (prefix.nonEmpty || postfix.nonEmpty) {
-          new CompositeOutput(List(prefix, Option(text), postfix).flatten)
+          new CompositeOutput(List(prefix.map(_.format(record)), Option(text), postfix.map(_.format(record))).flatten)
         } else {
           text
         }
