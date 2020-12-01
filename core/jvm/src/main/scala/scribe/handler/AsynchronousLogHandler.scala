@@ -11,7 +11,7 @@ import scribe.writer.{ConsoleWriter, Writer}
 
 import scala.language.implicitConversions
 
-case class AsynchronousLogHandler(formatter: Formatter = Formatter.enhanced,
+case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
                                   writer: Writer = ConsoleWriter,
                                   outputFormat: OutputFormat = OutputFormat.default,
                                   modifiers: List[LogModifier] = Nil,

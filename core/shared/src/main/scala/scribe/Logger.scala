@@ -25,7 +25,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   def withParent(logger: Logger): Logger = copy(parentId = Some(logger.id))
   def withParent(id: LoggerId): Logger = copy(parentId = Some(id))
   def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))
-  def withHandler(formatter: Formatter = Formatter.enhanced,
+  def withHandler(formatter: Formatter = Formatter.default,
                   writer: Writer = ConsoleWriter,
                   minimumLevel: Option[Level] = None,
                   modifiers: List[LogModifier] = Nil,

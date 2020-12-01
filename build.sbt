@@ -10,7 +10,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.1.6"
+version in ThisBuild := "3.1.7-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -38,7 +38,7 @@ parallelExecution in ThisBuild := false
 val perfolationVersion: String = "1.2.0"
 val sourcecodeVersion: String = "0.2.1"
 val collectionCompatVersion: String = "2.2.0"
-val moduloadVersion: String = "1.0.2"
+val moduloadVersion: String = "1.0.3"
 
 // Testing
 val scalatestVersion: String = "3.2.2"
