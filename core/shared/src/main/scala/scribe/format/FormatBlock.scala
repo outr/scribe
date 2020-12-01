@@ -105,6 +105,19 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.className)
   }
 
+  object ClassNameSimple extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = {
+      val cn = record.className
+      val index = cn.lastIndexOf('.')
+      val simple = if (index != -1) {
+        cn.substring(index + 1)
+      } else {
+        cn
+      }
+      new TextOutput(simple)
+    }
+  }
+
   object MethodName extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.methodName.getOrElse(""))
   }
