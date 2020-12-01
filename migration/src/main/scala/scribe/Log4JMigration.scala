@@ -91,6 +91,9 @@ class Log4JMigration private() {
       val filter = levelFilter(list.head)
       val handlers = list.tail.map(this.handlers.apply)
       Logger(className).withModifier(filter).replace()
+      if (handlers.nonEmpty) {
+        Logger(className).clearHandlers().replace()
+      }
       handlers.foreach { h =>
         Logger(className).withHandler(h).replace()
       }
@@ -101,6 +104,9 @@ class Log4JMigration private() {
       val filter = levelFilter(list.head)
       val handlers = list.tail.map(this.handlers.apply)
       Logger.root.withModifier(filter).replace()
+      if (handlers.nonEmpty) {
+        Logger.root.clearHandlers().replace()
+      }
       handlers.foreach { h =>
         Logger.root.withHandler(h).replace()
       }
