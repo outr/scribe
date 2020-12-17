@@ -15,6 +15,8 @@ object ANSIOutputFormat extends OutputFormat {
     var strikethrough: Boolean = false
   }
 
+  override def begin(stream: String => Unit): Unit = stream(ANSI.ctrl.Reset)
+
   def apply(output: LogOutput, stream: String => Unit): Unit = output match {
     case o: TextOutput => stream(o.plainText)
     case o: CompositeOutput => o.entries.foreach(apply(_, stream))

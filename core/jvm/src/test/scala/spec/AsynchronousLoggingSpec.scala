@@ -2,12 +2,11 @@ package spec
 
 import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
-
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import scribe.format._
 import scribe.output.LogOutput
-import scribe.output.format.OutputFormat
+import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.writer.{FileWriter, Writer}
 import scribe.{LogRecord, Logger}
 
@@ -57,7 +56,8 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
       val fileWriter = FileWriter().nio
       val logger = Logger.empty.orphan().withHandler(
         formatter = AsynchronousLoggingSpec.format,
-        writer = fileWriter
+        writer = fileWriter,
+        outputFormat = ASCIIOutputFormat
       )
 
       Future.sequence(threads.map { char =>
@@ -70,15 +70,20 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
         var previous = 0L
         fileWriter.flush()
         fileWriter.dispose()
-        val lines = Source.fromFile(file).getLines().toList
-        lines.foreach {
-          case Regex(ts, message) => {
-            val timeStamp = ts.toLong
-            timeStamp should be >= previous
-            previous = timeStamp
+        val source = Source.fromFile(file)
+        try {
+          val lines = source.getLines().toList
+          lines.foreach {
+            case Regex(ts, message) => {
+              val timeStamp = ts.toLong
+              timeStamp should be >= previous
+              previous = timeStamp
+            }
           }
+          lines.length should be(threads.length * iterations)
+        } finally {
+          source.close()
         }
-        lines.length should be(threads.length * iterations)
       }
     }
   }

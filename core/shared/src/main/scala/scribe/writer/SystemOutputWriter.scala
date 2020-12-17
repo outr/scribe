@@ -30,8 +30,9 @@ object SystemOutputWriter extends Writer {
       Logger.system.err
     }
     val sb = stringBuilders.get()
-    sb.append(ANSI.ctrl.Reset)
+    outputFormat.begin(sb.append(_))
     outputFormat(output, s => sb.append(s))
+    outputFormat.end(sb.append(_))
     if (synchronizeWriting) {
       synchronized(stream.println(sb.toString()))
     } else {

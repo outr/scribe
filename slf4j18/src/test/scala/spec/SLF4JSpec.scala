@@ -1,14 +1,15 @@
 package spec
 
 import java.util.TimeZone
-
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.slf4j.{LoggerFactory, MDC}
 import scribe.handler.LogHandler
 import scribe.output.LogOutput
-import scribe.output.format.OutputFormat
+import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
+import scribe.format._
+import scribe.format
 import scribe.writer.Writer
 import scribe.{Level, LogRecord, Logger}
 
@@ -25,11 +26,13 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
   }
   private val recordHolder = LogHandler(
     writer = writer,
-    minimumLevel = Some(Level.Info)
+    minimumLevel = Some(Level.Info),
+    formatter = formatter"$dateFull ${string("[")}$levelColoredPaddedRight${string("]")} ${green(position)} - ${format.message}$mdc"
   )
 
   "SLF4J" should {
     "set the time to an arbitrary value" in {
+      OutputFormat.default = ASCIIOutputFormat
       Time.function = () => 1542376191920L
     }
     "remove existing handlers from Root" in {

@@ -2,10 +2,10 @@ package spec
 
 import java.nio.file.{Files, Path, Paths}
 import java.text.SimpleDateFormat
-
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.format._
+import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
 import scribe.writer.FileWriter
 import scribe.writer.file.LogPath
@@ -13,7 +13,6 @@ import scribe.{Level, Logger}
 
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
-
 import scala.language.implicitConversions
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {
@@ -32,6 +31,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
 
   "File Logging" should {
     "setup" in {
+      OutputFormat.default = ASCIIOutputFormat
       Time.function = () => timeStamp
     }
     "configure logging to a temporary file" in {
@@ -264,7 +264,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
 
   private def linesFor(path: Path, linesMinimum: Int = 1, waitForData: Long = 5.seconds.toMillis): List[String] = {
     if (Files.exists(path)) {
-      val lines = Files.lines(path).iterator().asScala.toList
+      val lines = Files.lines(path).iterator().asScala.toList.map(_.trim).filter(_.nonEmpty)
       if (lines.nonEmpty && lines.size >= linesMinimum) {
         lines
       } else if (waitForData > 0L) {

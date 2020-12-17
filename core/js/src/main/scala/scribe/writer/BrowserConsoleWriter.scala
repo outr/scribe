@@ -14,7 +14,9 @@ object BrowserConsoleWriter extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
     val b = new StringBuilder
     args.clear()
+    outputFormat.begin(b.append(_))
     outputFormat(output, b.append(_))
+    outputFormat.end(b.append(_))
 
     val jsArgs = args.map(js.Any.fromString).toList
 
