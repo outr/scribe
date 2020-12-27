@@ -27,7 +27,9 @@ class FileWriter(actions: List[Action],
 
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
     invoke(actions)
+    outputFormat.begin(logFile.write)
     outputFormat(output, logFile.write)
+    outputFormat.end(logFile.write)
     logFile.write(System.lineSeparator())
   }
 
