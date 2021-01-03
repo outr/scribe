@@ -22,10 +22,7 @@ object Log4JMigration extends Moduload {
   private val AppenderLayoutConversionPattern = """log4j[.]appender[.]([a-zA-Z0-9]+)[.]layout[.]ConversionPattern""".r
   private val LoggerRegex = """log4j[.]logger[.](.+)""".r
 
-  override def load()(implicit ec: ExecutionContext): Future[Unit] = Future.successful {
-    apply()
-    ()
-  }
+  override def load(): Unit = apply()
 
   override def error(t: Throwable): Unit = scribe.error("Error loading Log4JMigration", t)
 

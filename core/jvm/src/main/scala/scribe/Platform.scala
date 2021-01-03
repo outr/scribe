@@ -14,7 +14,7 @@ object Platform extends PlatformImplementation {
 
   def init(): Unit = {
     // Load Moduload
-    Await.result(Moduload.load()(Execution.global), Duration.Inf)
+    Moduload.load()
   }
 
   def outputFormat(): OutputFormat = sys.env.getOrElse("SCRIBE_OUTPUT_FORMAT", "ANSI").toUpperCase match {
