@@ -134,6 +134,18 @@ object FormatBlock {
     }
   }
 
+  object ClassAndMethodNameSimple extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = {
+      val className = ClassNameSimple.format(record).plainText
+      val methodName = if (record.methodName.nonEmpty) {
+        s".${MethodName.format(record).plainText}"
+      } else {
+        ""
+      }
+      new TextOutput(s"$className$methodName")
+    }
+  }
+
   object Position extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = {
       val line = if (record.line.nonEmpty) {
@@ -167,6 +179,22 @@ object FormatBlock {
       }
       val v = Abbreviator(classAndMethodName, maxLength - line.length, separator, removeEntries, abbreviateName)
       new TextOutput(s"$v$line$column")
+    }
+  }
+
+  object PositionSimple extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = {
+      val line = if (record.line.nonEmpty) {
+        s":${LineNumber.format(record).plainText}"
+      } else {
+        ""
+      }
+      val column = if (record.column.nonEmpty) {
+        s":${ColumnNumber.format(record).plainText}"
+      } else {
+        ""
+      }
+      new TextOutput(s"${ClassAndMethodNameSimple.format(record).plainText}$line$column")
     }
   }
 

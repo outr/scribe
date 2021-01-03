@@ -2,7 +2,7 @@
 val scala213 = "2.13.4"
 val scala212 = "2.12.12"
 val scala211 = "2.11.12"
-val scala3 = "0.27.0-RC1"
+val scala3 = "3.0.0-M3"
 val allScalaVersions = List(scala213, scala212, scala211, scala3)
 val scala2Versions = List(scala213, scala212, scala211)
 val nativeScalaVersions = List(scala211)
@@ -10,7 +10,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.1.8"
+version in ThisBuild := "3.1.9-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -35,13 +35,13 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.2.0"
+val perfolationVersion: String = "1.2.3"
 val sourcecodeVersion: String = "0.2.1"
-val collectionCompatVersion: String = "2.2.0"
-val moduloadVersion: String = "1.0.3"
+val collectionCompatVersion: String = "2.3.2"
+val moduloadVersion: String = "1.1.0"
 
 // Testing
-val scalatestVersion: String = "3.2.2"
+val scalatestVersion: String = "3.2.3"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
@@ -107,7 +107,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jsSettings(sourceMapSettings)
   .jsSettings(
-    crossScalaVersions := scala2Versions
+    crossScalaVersions := allScalaVersions
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
