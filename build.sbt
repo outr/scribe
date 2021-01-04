@@ -107,7 +107,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jsSettings(sourceMapSettings)
   .jsSettings(
-    crossScalaVersions := scala2Versions
+    crossScalaVersions := allScalaVersions
   )
   .jvmSettings(
     libraryDependencies ++= Seq(

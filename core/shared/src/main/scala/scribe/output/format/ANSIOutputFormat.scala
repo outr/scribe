@@ -13,11 +13,23 @@ object ANSIOutputFormat extends OutputFormat {
     var italic: Boolean = false
     var underline: Boolean = false
     var strikethrough: Boolean = false
+
+    def clear(): Unit = {
+      fg = None
+      bg = None
+      bold = false
+      italic = false
+      underline = false
+      strikethrough = false
+    }
   }
 
   override def begin(stream: String => Unit): Unit = stream(ANSI.ctrl.Reset)
 
-  override def end(stream: String => Unit): Unit = stream(ANSI.ctrl.Reset)
+  override def end(stream: String => Unit): Unit = {
+    ansi.clear()
+    stream(ANSI.ctrl.Reset)
+  }
 
   def apply(output: LogOutput, stream: String => Unit): Unit = output match {
     case o: TextOutput => stream(o.plainText)

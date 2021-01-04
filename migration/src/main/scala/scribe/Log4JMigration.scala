@@ -10,7 +10,6 @@ import scribe.handler.{LogHandler, SynchronousLogHandler}
 import scribe.modify.LevelFilter
 import scribe.modify.LevelFilter._
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.util.Try

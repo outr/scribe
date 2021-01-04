@@ -4,9 +4,6 @@ import moduload.Moduload
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
 import scribe.writer.{SystemOutputWriter, Writer}
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-
 object Platform extends PlatformImplementation {
   def isJVM: Boolean = true
   def isJS: Boolean = false

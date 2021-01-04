@@ -67,6 +67,7 @@ package object format {
     padded = true,
     abbreviateName = true
   )
+  def positionSimple: FormatBlock = FormatBlock.PositionSimple
   def message: FormatBlock = FormatBlock.Message
   def newLine: FormatBlock = FormatBlock.NewLine
   def mdc(key: String,
