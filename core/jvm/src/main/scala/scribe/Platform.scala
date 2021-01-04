@@ -4,9 +4,6 @@ import moduload.Moduload
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
 import scribe.writer.{SystemOutputWriter, Writer}
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-
 object Platform extends PlatformImplementation {
   def isJVM: Boolean = true
   def isJS: Boolean = false
@@ -14,7 +11,7 @@ object Platform extends PlatformImplementation {
 
   def init(): Unit = {
     // Load Moduload
-    Await.result(Moduload.load()(Execution.global), Duration.Inf)
+    Moduload.load()
   }
 
   def outputFormat(): OutputFormat = sys.env.getOrElse("SCRIBE_OUTPUT_FORMAT", "ANSI").toUpperCase match {
