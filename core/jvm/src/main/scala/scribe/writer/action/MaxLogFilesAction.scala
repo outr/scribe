@@ -22,7 +22,7 @@ case class MaxLogFilesAction(max: Int,
 }
 
 object MaxLogFilesAction {
-  val MatchLogAndGZ: Path => Boolean = (path: Path) => {
+  val MatchLogAndGZ: Path => Boolean = (path: Path) => {    // TODO: make sure this only matches the log files for this writer
     val name = path.toString.toLowerCase
     name.endsWith(".log") || name.endsWith(".log.gz")
   }
@@ -35,19 +35,22 @@ object MaxLogFilesAction {
     } else {
       fileName.substring(0, fileName.indexOf('.'))
     }
-    val directory = Option(path.toAbsolutePath.getParent)
-      .getOrElse(throw new RuntimeException(s"No parent found for ${path.toAbsolutePath.toString}"))
-    val stream = Files.newDirectoryStream(directory)
-    try {
-      stream
-        .iterator()
-        .asScala
-        .toList
-        .filter(MatchLogAndGZ)
-        .filter(_.getFileName.toString.startsWith(prefix))
-        .sortBy(Files.getLastModifiedTime(_))
-    } finally {
-      stream.close()
+    Option(path.toAbsolutePath.getParent) match {
+      case Some(directory) if Files.isDirectory(directory) => {
+        val stream = Files.newDirectoryStream(directory)
+        try {
+          stream
+            .iterator()
+            .asScala
+            .toList
+            .filter(MatchLogAndGZ)
+            .filter(_.getFileName.toString.startsWith(prefix))
+            .sortBy(Files.getLastModifiedTime(_))
+        } finally {
+          stream.close()
+        }
+      }
+      case _ => Nil
     }
   }
 }
