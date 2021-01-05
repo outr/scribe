@@ -87,6 +87,18 @@ lazy val root = project.in(file("."))
     publishLocal := {}
   )
 
+lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-file"
+  )
+  .nativeSettings(
+    commonNativeSettings
+  )
+
+lazy val fileJVM = fileModule.jvm
+lazy val fileNative = fileModule.native
+
 lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
@@ -120,8 +132,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
 
 lazy val coreJS = core.js
-lazy val coreJVM = core.jvm
-lazy val coreNative = core.native
+lazy val coreJVM = core.jvm.dependsOn(fileJVM)
+lazy val coreNative = core.native.dependsOn(fileNative)
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
