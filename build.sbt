@@ -80,24 +80,13 @@ val commonNativeSettings = Seq(
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
+    fileJVM, fileNative,
     slf4j, slf4j18, migration, config, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
     publishLocal := {}
   )
-
-lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
-  .crossType(CrossType.Full)
-  .settings(
-    name := "scribe-file"
-  )
-  .nativeSettings(
-    commonNativeSettings
-  )
-
-lazy val fileJVM = fileModule.jvm
-lazy val fileNative = fileModule.native
 
 lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
@@ -132,8 +121,21 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
 
 lazy val coreJS = core.js
-lazy val coreJVM = core.jvm.dependsOn(fileJVM)
-lazy val coreNative = core.native.dependsOn(fileNative)
+lazy val coreJVM = core.jvm
+lazy val coreNative = core.native
+
+lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-file"
+  )
+  .nativeSettings(
+    commonNativeSettings
+  )
+  .dependsOn(core)
+
+lazy val fileJVM = fileModule.jvm
+lazy val fileNative = fileModule.native
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
