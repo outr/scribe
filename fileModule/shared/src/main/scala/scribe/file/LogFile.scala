@@ -3,10 +3,8 @@ package scribe.file
 import scribe.file.writer.LogFileWriter
 
 import java.nio.charset.Charset
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicLong
-
-import scala.jdk.CollectionConverters._
 
 case class LogFile private(path: Path,
                            append: Boolean,
@@ -43,39 +41,6 @@ case class LogFile private(path: Path,
   }
 }
 
-trait PathPart {
-  def current(previous: Path): Path
-  def all(previous: Path): List[Path]
-}
-
-object PathPart {
-  case object Root extends PathPart {
-    override def current(previous: Path): Path = Paths.get("/")
-
-    override def all(previous: Path): List[Path] = List(current(previous))
-  }
-
-  case class Static(part: String) extends PathPart {
-    override def current(previous: Path): Path = previous.resolve(part)
-
-    override def all(previous: Path): List[Path] = List(current(previous))
-  }
-
-  case class Matcher(matcher: Path => Boolean, apply: Path => Path) extends PathPart {
-    override def current(previous: Path): Path = apply(previous)
-
-    override def all(previous: Path): List[Path] = Files.list(previous).iterator().asScala.toList.filter(matcher)
-  }
-}
-
-sealed trait LogFileStatus
-
-object LogFileStatus {
-  case object Inactive extends LogFileStatus
-  case object Active extends LogFileStatus
-  case object Disposed extends LogFileStatus
-}
-
 object LogFile {
   private var paths = Map.empty[Path, LogFile]
   private var usage = Map.empty[LogFile, Set[FileWriter]]
@@ -107,6 +72,9 @@ object LogFile {
       logFile.flush()
       logFile.dispose()
       usage -= logFile
+      paths.foreach {
+        case (key, value) => if (value eq logFile) paths -= key
+      }
     } else {
       usage += logFile -> set
     }
