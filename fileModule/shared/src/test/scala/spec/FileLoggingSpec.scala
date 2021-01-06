@@ -1,16 +1,15 @@
 package spec
 
-import java.nio.file.{Files, Path, Paths}
-import java.text.SimpleDateFormat
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import scribe.file.FileWriter
 import scribe.format._
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
-import scribe.writer.FileWriter
-import scribe.writer.file.LogPath
 import scribe.{Level, Logger}
 
+import java.nio.file.{Files, Path, Paths}
+import java.text.SimpleDateFormat
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions

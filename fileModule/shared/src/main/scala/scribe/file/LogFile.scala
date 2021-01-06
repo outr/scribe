@@ -44,8 +44,23 @@ case class LogFile private(path: Path,
 object LogFile {
   private var paths = Map.empty[Path, LogFile]
   private var usage = Map.empty[LogFile, Set[FileWriter]]
+  private var current = Map.empty[FileWriter, LogFile]
 
-  def request(path: Path, writer: FileWriter): LogFile = synchronized {
+  def apply(writer: FileWriter): LogFile = synchronized {
+    val path = writer.path
+    val logFile = request(path, writer)
+    current.get(writer) match {
+      case Some(lf) if lf eq logFile => // Nothing to do
+      case Some(lf) => {
+        release(lf, writer)
+        current += writer -> logFile
+      }
+      case None => current += writer -> logFile
+    }
+    logFile
+  }
+
+  private def request(path: Path, writer: FileWriter): LogFile = {
     val logFile = paths.get(path) match {
       case Some(lf) => lf
       case None =>
@@ -66,7 +81,7 @@ object LogFile {
     logFile
   }
 
-  def release(logFile: LogFile, writer: FileWriter): Unit = synchronized {
+  private def release(logFile: LogFile, writer: FileWriter): Unit = {
     val set = usage.getOrElse(logFile, Set.empty) - writer
     if (set.isEmpty) {
       logFile.flush()

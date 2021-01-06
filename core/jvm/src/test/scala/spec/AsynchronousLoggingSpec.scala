@@ -7,7 +7,7 @@ import org.scalatest.wordspec.AsyncWordSpec
 import scribe.format._
 import scribe.output.LogOutput
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
-import scribe.writer.{FileWriter, Writer}
+import scribe.writer.Writer
 import scribe.{LogRecord, Logger}
 
 import scala.concurrent.Future
@@ -49,7 +49,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
         queue.size() should be(total)
       }
     }
-    s"log $total records in the proper order with file logging" in {
+    /*s"log $total records in the proper order with file logging" in {
       val file = new File("logs/app.log")
       file.delete()
 
@@ -85,7 +85,7 @@ class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
           source.close()
         }
       }
-    }
+    }*/
   }
 }
 

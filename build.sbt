@@ -127,7 +127,10 @@ lazy val coreNative = core.native
 lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
-    name := "scribe-file"
+    name := "scribe-file",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
+    )
   )
   .nativeSettings(
     commonNativeSettings
