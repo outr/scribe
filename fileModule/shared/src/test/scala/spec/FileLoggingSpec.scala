@@ -36,99 +36,105 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       OutputFormat.default = ASCIIOutputFormat
       Time.function = () => timeStamp
     }
-    "configure logging to a temporary file" in {
-      val directory = Paths.get("logs")
-      if (Files.exists(directory)) {
-        Files.newDirectoryStream(directory).iterator().asScala.foreach { path =>
-          Files.delete(path)
+    "verify simple logging" when {
+      "configure logging to a temporary file" in {
+        val directory = Paths.get("logs")
+        if (Files.exists(directory)) {
+          Files.newDirectoryStream(directory).iterator().asScala.foreach { path =>
+            Files.delete(path)
+          }
         }
+        setWriter(FileWriter().flushAlways.staticPath(logFile))
       }
-      setWriter(FileWriter().flushAlways.staticPath(logFile))
+      "log to the file" in {
+        logger.info("Testing File Logger")
+      }
+      "verify the file was logged to" in {
+        waitForExists(logFile) should be(true)
+        linesFor(logFile) should be(List("Testing File Logger"))
+      }
     }
-    "log to the file" in {
-      logger.info("Testing File Logger")
+    "verify date logging" when {
+      "configure date formatted log files" in {
+        setWriter(FileWriter().flushAlways.dailyPath())
+      }
+      "log to date formatted file" in {
+        logger.info("Testing date formatted file")
+      }
+      "verify the date formatted file was logged to" in {
+        val path = Paths.get("logs/app-2018-01-01.log")
+        waitForExists(path) should be(true)
+        linesFor(path) should be(List("Testing date formatted file"))
+        linesFor(logFile) should be(List("Testing File Logger"))
+      }
+      "change the timeStamp and write another log record" in {
+        timeStamp += 1000 * 60 * 60 * 12
+        logger.info("Testing mid-day")
+      }
+      "verify that two records are in the date formatted file" in {
+        val path = Paths.get("logs/app-2018-01-01.log")
+        waitForExists(path) should be(true)
+        linesFor(path, linesMinimum = 2) should be(List("Testing date formatted file", "Testing mid-day"))
+        linesFor(logFile) should be(List("Testing File Logger"))
+      }
+      "increment timeStamp to the next day" in {
+        timeStamp += 1000 * 60 * 60 * 12
+        logger.info("Testing next day")
+      }
+      "verify that a new log file is created" in {
+        val day1 = Paths.get("logs/app-2018-01-01.log")
+        val day2 = Paths.get("logs/app-2018-01-02.log")
+        waitForExists(day2) should be(true)
+        linesFor(day2) should be(List("Testing next day"))
+        linesFor(day1) should be(List("Testing date formatted file", "Testing mid-day"))
+        linesFor(logFile) should be(List("Testing File Logger"))
+      }
+      "verify that list() returns both log files" in {
+        writer.list().map(_.toString) should be(List("logs/app-2018-01-02.log", "logs/app-2018-01-01.log"))
+      }
     }
-    "verify the file was logged to" in {
-      waitForExists(logFile) should be(true)
-      linesFor(logFile) should be(List("Testing File Logger"))
+    "verify rolling loggin" when {
+      "configure rolling files" in {
+        setDate("2018-01-01")
+        setWriter(FileWriter().flushAlways.path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
+      }
+      "log a record to the rolling file" in {
+        logger.info("Rolling 1")
+      }
+      "verify rolling log 1" in {
+        val path = Paths.get("logs/rolling.log")
+        waitForExists(path) should be(true)
+        linesFor(path) should be(List("Rolling 1"))
+      }
+      "increment date and roll file" in {
+        setDate("2018-01-02")
+        logger.info("Rolling 2")
+      }
+      "verify rolling log 2" in {
+        val path = Paths.get("logs/rolling.log")
+        val rolled = Paths.get("logs/rolling-2018-01-01.log")
+        waitForExists(path) should be(true)
+        waitForExists(rolled) should be(true)
+        linesFor(path) should be(List("Rolling 2"))
+        linesFor(rolled) should be(List("Rolling 1"))
+      }
+      "increment date and roll file again" in {
+        setDate("2018-01-03")
+        logger.info("Rolling 3")
+      }
+      "verify rolling log 3" in {
+        val path = Paths.get("logs/rolling.log")
+        val rolled1 = Paths.get("logs/rolling-2018-01-01.log")
+        val rolled2 = Paths.get("logs/rolling-2018-01-02.log")
+        waitForExists(path) should be(true)
+        waitForExists(rolled1) should be(true)
+        waitForExists(rolled2) should be(true)
+        linesFor(path) should be(List("Rolling 3"))
+        linesFor(rolled1) should be(List("Rolling 1"))
+        linesFor(rolled2) should be(List("Rolling 2"))
+      }
     }
-    "configure date formatted log files" in {
-      setWriter(FileWriter().flushAlways.dailyPath())
-    }
-    "log to date formatted file" in {
-      logger.info("Testing date formatted file")
-    }
-    "verify the date formatted file was logged to" in {
-      val path = Paths.get("logs/app-2018-01-01.log")
-      waitForExists(path) should be(true)
-      linesFor(path) should be(List("Testing date formatted file"))
-      linesFor(logFile) should be(List("Testing File Logger"))
-    }
-    "change the timeStamp and write another log record" in {
-      timeStamp += 1000 * 60 * 60 * 12
-      logger.info("Testing mid-day")
-    }
-    "verify that two records are in the date formatted file" in {
-      val path = Paths.get("logs/app-2018-01-01.log")
-      waitForExists(path) should be(true)
-      linesFor(path, linesMinimum = 2) should be(List("Testing date formatted file", "Testing mid-day"))
-      linesFor(logFile) should be(List("Testing File Logger"))
-    }
-    "increment timeStamp to the next day" in {
-      timeStamp += 1000 * 60 * 60 * 12
-      logger.info("Testing next day")
-    }
-    "verify that a new log file is created" in {
-      val day1 = Paths.get("logs/app-2018-01-01.log")
-      val day2 = Paths.get("logs/app-2018-01-02.log")
-      waitForExists(day2) should be(true)
-      linesFor(day2) should be(List("Testing next day"))
-      linesFor(day1) should be(List("Testing date formatted file", "Testing mid-day"))
-      linesFor(logFile) should be(List("Testing File Logger"))
-    }
-    "verify that list() returns both log files" in {
-      writer.list().map(_.toString) should be(List("logs/app-2018-01-02.log", "logs/app-2018-01-01.log"))
-    }
-    /*"configure rolling files" in {
-      setDate("2018-01-01")
-      setWriter(FileWriter().flushAlways.path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
-    }
-    "log a record to the rolling file" in {
-      logger.info("Rolling 1")
-    }
-    "verify rolling log 1" in {
-      val path = Paths.get("logs/rolling.log")
-      waitForExists(path) should be(true)
-      linesFor(path) should be(List("Rolling 1"))
-    }
-    "increment date and roll file" in {
-      setDate("2018-01-02")
-      logger.info("Rolling 2")
-    }
-    "verify rolling log 2" in {
-      val path = Paths.get("logs/rolling.log")
-      val rolled = Paths.get("logs/rolling-2018-01-01.log")
-      waitForExists(path) should be(true)
-      waitForExists(rolled) should be(true)
-      linesFor(path) should be(List("Rolling 2"))
-      linesFor(rolled) should be(List("Rolling 1"))
-    }
-    "increment date and roll file again" in {
-      setDate("2018-01-03")
-      logger.info("Rolling 3")
-    }
-    "verify rolling log 3" in {
-      val path = Paths.get("logs/rolling.log")
-      val rolled1 = Paths.get("logs/rolling-2018-01-01.log")
-      val rolled2 = Paths.get("logs/rolling-2018-01-02.log")
-      waitForExists(path) should be(true)
-      waitForExists(rolled1) should be(true)
-      waitForExists(rolled2) should be(true)
-      linesFor(path) should be(List("Rolling 3"))
-      linesFor(rolled1) should be(List("Rolling 1"))
-      linesFor(rolled2) should be(List("Rolling 2"))
-    }
-    "configure daily path with gzipping" in {
+    /*"configure daily path with gzipping" in {
       setDate("2018-01-01")
       setWriter(FileWriter().flushAlways.path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))
     }

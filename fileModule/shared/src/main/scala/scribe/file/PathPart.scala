@@ -22,6 +22,12 @@ object PathPart {
     override def all(previous: Path): List[Path] = List(path)
   }
 
+  case class Dynamic(path: () => Path) extends PathPart {
+    override def current(previous: Path): Path = path()
+
+    override def all(previous: Path): List[Path] = List(path())
+  }
+
   case class Static(part: String) extends PathPart {
     override def current(previous: Path): Path = previous.resolve(part)
 

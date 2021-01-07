@@ -51,7 +51,7 @@ case class FileWriter(append: Boolean = true,
 
   def staticPath(path: Path): FileWriter = copy(pathBuilder = PathBuilder(List(PathPart.SetPath(path))))
 
-  def dailyPath(prefix: => String = "app",
+  def dailyPath(prefix: String = "app",
                 separator: String = "-",
                 extension: String = "log",
                 directory: => Path = Paths.get("logs"),
@@ -59,21 +59,17 @@ case class FileWriter(append: Boolean = true,
     val handler = FileHandler.before(priority)(FileHandler.daily { writer =>
       writer.updatePath()
     })
-    val pathBuilder = PathBuilder(List(new PathPart {
-      override def current(previous: Path): Path = {
-        val l = Time()
-        val distinction = s"${l.t.Y}$separator${l.t.m}$separator${l.t.d}"
-        directory.resolve(s"$prefix$separator$distinction.$extension")
-      }
-
-      override def all(previous: Path): List[Path] = {
-        val regex = s"$prefix[$separator]\\d{4}[$separator]\\d{2}[$separator]\\d{2}[.]$extension"
-        Files.list(directory).iterator().asScala.toList.filter { path =>
-          val fileName = path.getFileName.toString
-          fileName.matches(regex)
-        }
-      }
-    }))
+    val regex = s"$prefix[$separator]\\d{4}[$separator]\\d{2}[$separator]\\d{2}[.]$extension"
+    val matcher = (path: Path) => {
+      val fileName = path.getFileName.toString
+      fileName.matches(regex)
+    }
+    val current = (path: Path) => {
+      val l = Time()
+      val distinction = s"${l.t.Y}$separator${l.t.m}$separator${l.t.d}"
+      path.resolve(s"$prefix$separator$distinction.$extension")
+    }
+    val pathBuilder = PathBuilder(List(PathPart.Dynamic(() => directory), PathPart.Matcher(matcher, current)))
     copy(pathBuilder = pathBuilder).withHandler(handler)
   }
 }
