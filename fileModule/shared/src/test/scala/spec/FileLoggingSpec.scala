@@ -105,8 +105,8 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       "configure rolling files" in {
         setDate("2018-01-01")
         setWriter(FileWriter().flushAlways.rolling(
-          Paths.get("logs") / "rolling.log",
-          Paths.get("logs") / ("rolling-" % year % "-" % month % "-" % day % ".log")
+          "logs" / "rolling.log",
+          "logs" / ("rolling-" % year % "-" % month % "-" % day % ".log")
         ))
       }
       "log a record to the rolling file" in {

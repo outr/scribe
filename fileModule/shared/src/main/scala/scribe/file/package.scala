@@ -2,13 +2,14 @@ package scribe
 
 import scribe.file.PathPart.FileName
 
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, Paths}
 import scala.language.implicitConversions
 import perfolation._
 import scribe.util.Time
 
 package object file {
   implicit def path2PathBuilder(path: Path): PathBuilder = PathBuilder(List(PathPart.SetPath(path)))
+  implicit def string2PathBuilder(s: String): PathBuilder = PathBuilder(List(PathPart.SetPath(Paths.get(s))))
   implicit def string2FileName(s: String): FileName = FileName(List(FileNamePart.Static(s)))
   implicit def string2FileNamePart(s: String): FileNamePart = FileNamePart.Static(s)
 
