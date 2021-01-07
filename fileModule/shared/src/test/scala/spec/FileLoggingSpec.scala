@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
+import scribe.file._
+import perfolation._
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
@@ -56,7 +58,10 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     }
     "verify date logging" when {
       "configure date formatted log files" in {
-        setWriter(FileWriter().flushAlways.dailyPath())
+        setWriter(FileWriter()
+          .flushAlways
+          .withPathBuilder(Paths.get("logs") / ("app-" % year % "-" % month % "-" % day % ".log"))
+        )
       }
       "log to date formatted file" in {
         logger.info("Testing date formatted file")
@@ -93,7 +98,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         writer.list().map(_.toString) should be(List("logs/app-2018-01-02.log", "logs/app-2018-01-01.log"))
       }
     }
-    "verify rolling loggin" when {
+    /*"verify rolling logging" when {
       "configure rolling files" in {
         setDate("2018-01-01")
         setWriter(FileWriter().flushAlways.path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
@@ -133,7 +138,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(rolled1) should be(List("Rolling 1"))
         linesFor(rolled2) should be(List("Rolling 2"))
       }
-    }
+    }*/
     /*"configure daily path with gzipping" in {
       setDate("2018-01-01")
       setWriter(FileWriter().flushAlways.path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))

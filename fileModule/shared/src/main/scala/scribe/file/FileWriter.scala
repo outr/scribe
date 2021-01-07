@@ -8,10 +8,7 @@ import scribe.util.Time
 import scribe.writer.Writer
 
 import java.nio.charset.Charset
-import java.nio.file.{Files, Path, Paths}
-import perfolation._
-
-import scala.jdk.CollectionConverters._
+import java.nio.file.{Files, Path}
 
 case class FileWriter(append: Boolean = true,
                       flushMode: FlushMode = FlushMode.AsynchronousFlush(),
@@ -33,6 +30,10 @@ case class FileWriter(append: Boolean = true,
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
     // Apply all handlers before write
     handlers.foreach(_.apply(WriteStatus.Before, this))
+    // Check if the Path should be revalidated
+    if (pathBuilder.revalidate()) {
+      updatePath()
+    }
     // Write to LogFile
     val logFile = LogFile(this)
     outputFormat.begin(logFile.write)
@@ -49,27 +50,31 @@ case class FileWriter(append: Boolean = true,
   def flushAlways: FileWriter = copy(flushMode = FlushMode.AlwaysFlush)
   def flushAsync: FileWriter = copy(flushMode = FlushMode.AsynchronousFlush())
 
+  def withPathBuilder(pathBuilder: PathBuilder): FileWriter = copy(pathBuilder = pathBuilder)
+
   def staticPath(path: Path): FileWriter = copy(pathBuilder = PathBuilder(List(PathPart.SetPath(path))))
 
-  def dailyPath(prefix: String = "app",
-                separator: String = "-",
-                extension: String = "log",
-                directory: => Path = Paths.get("logs"),
-                priority: Priority = Priority.Normal): FileWriter = {
-    val handler = FileHandler.before(priority)(FileHandler.daily { writer =>
-      writer.updatePath()
-    })
-    val regex = s"$prefix[$separator]\\d{4}[$separator]\\d{2}[$separator]\\d{2}[.]$extension"
-    val matcher = (path: Path) => {
-      val fileName = path.getFileName.toString
-      fileName.matches(regex)
+  def withUpdatePathCheck(update: => Boolean): FileWriter = {
+    val handler = new FileHandler {
+      override def apply(status: WriteStatus, writer: FileWriter): Unit = if (status == WriteStatus.Before) {
+        if (update) {
+          writer.updatePath()
+        }
+      }
     }
-    val current = (path: Path) => {
-      val l = Time()
-      val distinction = s"${l.t.Y}$separator${l.t.m}$separator${l.t.d}"
-      path.resolve(s"$prefix$separator$distinction.$extension")
+    withHandler(handler)
+  }
+
+  def withUpdatePathChanged[T](get: => T): FileWriter = {
+    var previous = Option.empty[T]
+    withUpdatePathCheck {
+      val current: T = get
+      if (!previous.contains(current)) {
+        previous = Some(current)
+        true
+      } else {
+        false
+      }
     }
-    val pathBuilder = PathBuilder(List(PathPart.Dynamic(() => directory), PathPart.Matcher(matcher, current)))
-    copy(pathBuilder = pathBuilder).withHandler(handler)
   }
 }
