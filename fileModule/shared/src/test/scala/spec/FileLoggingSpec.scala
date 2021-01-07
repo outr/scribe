@@ -2,7 +2,7 @@ package spec
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scribe.file.FileWriter
+import scribe.file.{FileWriter, FlushMode}
 import scribe.format._
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
@@ -24,8 +24,11 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     timeStamp = new SimpleDateFormat("yyyy-MM-dd").parse(date).getTime
   }
 
+  private var writer: FileWriter = _
+
   private def setWriter(writer: FileWriter): Unit = {
     logger = logger.clearHandlers().withHandler(formatter = Formatter.simple, writer = writer)
+    this.writer = writer
   }
 
   "File Logging" should {
@@ -40,7 +43,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
           Files.delete(path)
         }
       }
-      setWriter(FileWriter().autoFlush.nio.path(_ => logFile))
+      setWriter(FileWriter().flushAlways.staticPath(logFile))
     }
     "log to the file" in {
       logger.info("Testing File Logger")
@@ -50,7 +53,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       linesFor(logFile) should be(List("Testing File Logger"))
     }
     "configure date formatted log files" in {
-      setWriter(FileWriter().autoFlush.path(LogPath.daily()))
+      setWriter(FileWriter().flushAlways.dailyPath())
     }
     "log to date formatted file" in {
       logger.info("Testing date formatted file")
@@ -83,9 +86,12 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       linesFor(day1) should be(List("Testing date formatted file", "Testing mid-day"))
       linesFor(logFile) should be(List("Testing File Logger"))
     }
-    "configure rolling files" in {
+    "verify that list() returns both log files" in {
+      writer.list().map(_.toString) should be(List("logs/app-2018-01-02.log", "logs/app-2018-01-01.log"))
+    }
+    /*"configure rolling files" in {
       setDate("2018-01-01")
-      setWriter(FileWriter().autoFlush.path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
+      setWriter(FileWriter().flushAlways.path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
     }
     "log a record to the rolling file" in {
       logger.info("Rolling 1")
@@ -124,7 +130,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     }
     "configure daily path with gzipping" in {
       setDate("2018-01-01")
-      setWriter(FileWriter().autoFlush.path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))
+      setWriter(FileWriter().flushAlways.path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))
     }
     "log a record pre gzip" in {
       logger.info("Gzip 1")
@@ -149,7 +155,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     }
     "configure maximum sized log files" in {
       setWriter(FileWriter()
-        .autoFlush
+        .flushAlways
         .path(LogPath.simple("max.sized.log"))
         .maxSize(1L, checkRate = 0.millis)
       )
@@ -172,7 +178,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     }
     "configure maximum number of log files" in {
       setWriter(FileWriter()
-        .autoFlush
+        .flushAlways
         .path(LogPath.simple("maxlogs.log"))
         .maxSize(1L, checkRate = 0.millis)
         .maxLogs(3, checkRate = 0.millis))
@@ -210,7 +216,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       val writer = FileWriter()
         .path(_ => path1)
         .rolling(path = LogPath.daily("rolling1", "."))
-        .autoFlush
+        .flushAlways
       writer.logFile.path should be(path1)
       val logger = Logger
         .empty
@@ -237,7 +243,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       linesFor(path1) should be(List("Test 3"))
       linesFor(path2) should be(List("Test 1"))
       linesFor(path3) should be(List("Test 2"))
-    }
+    }*/
     "tear down" in {
       Time.reset()
     }
