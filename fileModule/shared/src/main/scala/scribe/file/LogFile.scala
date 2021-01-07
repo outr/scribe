@@ -35,7 +35,7 @@ case class LogFile private(path: Path,
     writer.flush()
   }
 
-  def dispose(): Unit = if (status == LogFileStatus.Active) {
+  private def dispose(): Unit = if (status == LogFileStatus.Active) {
     status = LogFileStatus.Disposed
     writer.dispose()
   }
@@ -45,6 +45,33 @@ object LogFile {
   private var paths = Map.empty[Path, LogFile]
   private var usage = Map.empty[LogFile, Set[FileWriter]]
   private var current = Map.empty[FileWriter, LogFile]
+
+  def close(logFile: LogFile): Unit = synchronized {
+    logFile.flush()
+    paths.foreach {
+      case (path, lf) => if (lf eq logFile) paths -= path
+    }
+    usage -= logFile
+    current.foreach {
+      case (fileWriter, lf) => if (lf eq logFile) current -= fileWriter
+    }
+    logFile.dispose()
+  }
+
+  def delete(logFile: LogFile): Unit = synchronized {
+    close(logFile)
+    Files.deleteIfExists(logFile.path)
+  }
+
+  def move(logFile: LogFile, path: Path): Unit = synchronized {
+    close(logFile)
+    if (Files.exists(logFile.path)) {
+      if (Files.exists(path)) {
+        Files.delete(path)
+      }
+      Files.move(logFile.path, path)
+    }
+  }
 
   def apply(writer: FileWriter): LogFile = synchronized {
     val path = writer.path

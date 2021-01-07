@@ -16,6 +16,12 @@ object PathPart {
     override def all(previous: Path): List[Path] = List(current(previous))
   }
 
+  case class SetPath(path: Path) extends PathPart {
+    override def current(previous: Path): Path = path
+
+    override def all(previous: Path): List[Path] = List(path)
+  }
+
   case class Static(part: String) extends PathPart {
     override def current(previous: Path): Path = previous.resolve(part)
 
@@ -30,11 +36,12 @@ object PathPart {
 }
 
 case class PathBuilder(parts: List[PathPart]) {
-  def path: Path = parts.foldLeft(PathBuilder.Default)((previous, part) => part.current(previous))
+  def path: Path = parts.foldLeft(PathBuilder.DefaultPath)((previous, part) => part.current(previous))
 
-  def list: List[Path] = parts.foldLeft(List(PathBuilder.Default))((previous, part) => previous.flatMap(part.all))
+  def list: List[Path] = parts.foldLeft(List(PathBuilder.DefaultPath))((previous, part) => previous.flatMap(part.all))
 }
 
 object PathBuilder {
-  lazy val Default: Path = Paths.get("logs", "app.log")
+  lazy val DefaultPath: Path = Paths.get("logs", "app.log")
+  lazy val Default: PathBuilder = PathBuilder(List(PathPart.SetPath(DefaultPath)))
 }
