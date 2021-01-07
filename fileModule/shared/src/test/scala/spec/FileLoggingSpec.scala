@@ -16,6 +16,9 @@ import scala.language.implicitConversions
 import scribe.file._
 import perfolation._
 
+import java.nio.file.attribute.FileTime
+import java.util.concurrent.TimeUnit
+
 class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
@@ -98,10 +101,13 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         writer.list().map(_.toString) should be(List("logs/app-2018-01-02.log", "logs/app-2018-01-01.log"))
       }
     }
-    /*"verify rolling logging" when {
+    "verify rolling logging" when {
       "configure rolling files" in {
         setDate("2018-01-01")
-        setWriter(FileWriter().flushAlways.path(_ => Paths.get("logs/rolling.log")).rolling(LogPath.daily("rolling"), checkRate = 0.millis))
+        setWriter(FileWriter().flushAlways.rolling(
+          Paths.get("logs") / "rolling.log",
+          Paths.get("logs") / ("rolling-" % year % "-" % month % "-" % day % ".log")
+        ))
       }
       "log a record to the rolling file" in {
         logger.info("Rolling 1")
@@ -112,6 +118,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(path) should be(List("Rolling 1"))
       }
       "increment date and roll file" in {
+        Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
         setDate("2018-01-02")
         logger.info("Rolling 2")
       }
@@ -124,6 +131,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(rolled) should be(List("Rolling 1"))
       }
       "increment date and roll file again" in {
+        Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
         setDate("2018-01-03")
         logger.info("Rolling 3")
       }
@@ -138,7 +146,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(rolled1) should be(List("Rolling 1"))
         linesFor(rolled2) should be(List("Rolling 2"))
       }
-    }*/
+    }
     /*"configure daily path with gzipping" in {
       setDate("2018-01-01")
       setWriter(FileWriter().flushAlways.path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))

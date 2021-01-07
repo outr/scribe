@@ -5,7 +5,7 @@ import java.nio.file.{Path, Paths}
 case class PathBuilder(parts: List[PathPart]) {
   def revalidate(): Boolean = parts.exists(_.revalidate())
 
-  def path: Path = parts.foldLeft(PathBuilder.DefaultPath)((previous, part) => part.current(previous))
+  def path(timeStamp: Long): Path = parts.foldLeft(PathBuilder.DefaultPath)((previous, part) => part.current(previous, timeStamp))
 
   def list(): List[Path] = parts.foldLeft(List(PathBuilder.DefaultPath))((previous, part) => previous.flatMap(part.all))
 
