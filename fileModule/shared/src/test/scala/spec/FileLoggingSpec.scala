@@ -18,6 +18,7 @@ import perfolation._
 
 import java.nio.file.attribute.FileTime
 import java.util.concurrent.TimeUnit
+import scala.annotation.tailrec
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
@@ -36,12 +37,12 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     this.writer = writer
   }
 
-  "File Logging" should {
+  "File Logging" when {
     "setup" in {
       OutputFormat.default = ASCIIOutputFormat
       Time.function = () => timeStamp
     }
-    "verify simple logging" when {
+    "verifying simple logging" should {
       "configure logging to a temporary file" in {
         val directory = Paths.get("logs")
         if (Files.exists(directory)) {
@@ -59,7 +60,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(logFile) should be(List("Testing File Logger"))
       }
     }
-    "verify date logging" when {
+    "verifying date logging" should {
       "configure date formatted log files" in {
         setWriter(FileWriter()
           .flushAlways
@@ -101,7 +102,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         writer.list().map(_.toString) should be(List("logs/app-2018-01-02.log", "logs/app-2018-01-01.log"))
       }
     }
-    "verify rolling logging" when {
+    "verifying rolling logging" should {
       "configure rolling files" in {
         setDate("2018-01-01")
         setWriter(FileWriter().flushAlways.rolling(
@@ -147,32 +148,38 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(rolled2) should be(List("Rolling 2"))
       }
     }
-    /*"configure daily path with gzipping" in {
-      setDate("2018-01-01")
-      setWriter(FileWriter().flushAlways.path(LogPath.daily("gzip"), gzip = true, checkRate = 0.millis))
+    "verifying GZIP support" should {
+      "configure daily path with gzipping" in {
+        setDate("2018-01-01")
+        setWriter(FileWriter().flushAlways.rolling(
+          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log"),
+          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log.gz")
+        ))
+      }
+      "log a record pre gzip" in {
+        logger.info("Gzip 1")
+      }
+      "verify gzipping log 1" in {
+        val path = Paths.get("logs/gzip-2018-01-01.log")
+        waitForExists(path) should be(true)
+        linesFor(path) should be(List("Gzip 1"))
+      }
+      "modify date to create gzip" in {
+        Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
+        setDate("2018-01-02")
+        logger.info("Gzip 2")
+      }
+      "verify gzipping log 2" in {
+        val path = Paths.get("logs/gzip-2018-01-02.log")
+        val gzipped = Paths.get("logs/gzip-2018-01-01.log.gz")
+        val unGzipped = Paths.get("logs/gzip-2018-01-01.log")
+        waitForExists(path) should be(true)
+        waitForExists(gzipped) should be(true)
+        waitForExists(unGzipped) should be(false)
+        linesFor(path) should be(List("Gzip 2"))
+      }
     }
-    "log a record pre gzip" in {
-      logger.info("Gzip 1")
-    }
-    "verify gzipping log 1" in {
-      val path = Paths.get("logs/gzip-2018-01-01.log")
-      waitForExists(path) should be(true)
-      linesFor(path) should be(List("Gzip 1"))
-    }
-    "modify date to create gzip" in {
-      setDate("2018-01-02")
-      logger.info("Gzip 2")
-    }
-    "verify gzipping log 2" in {
-      val path = Paths.get("logs/gzip-2018-01-02.log")
-      val gzipped = Paths.get("logs/gzip-2018-01-01.log.gz")
-      val unGzipped = Paths.get("logs/gzip-2018-01-01.log")
-      waitForExists(path) should be(true)
-      waitForExists(gzipped) should be(true)
-      waitForExists(unGzipped) should be(false)
-      linesFor(path) should be(List("Gzip 2"))
-    }
-    "configure maximum sized log files" in {
+    /*"configure maximum sized log files" in {
       setWriter(FileWriter()
         .flushAlways
         .path(LogPath.simple("max.sized.log"))
@@ -268,6 +275,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  @tailrec
   private def waitForExists(path: Path, timeout: Long = 5.seconds.toMillis): Boolean = if (Files.exists(path)) {
     true
   } else if (timeout >= 0L) {
@@ -277,6 +285,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     false
   }
 
+  @tailrec
   private def waitForDeleted(path: Path, timeout: Long = 5.seconds.toMillis): Boolean = if (!Files.exists(path)) {
     false
   } else if (timeout >= 0L) {
@@ -286,6 +295,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     true
   }
 
+  @tailrec
   private def linesFor(path: Path, linesMinimum: Int = 1, waitForData: Long = 5.seconds.toMillis): List[String] = {
     if (Files.exists(path)) {
       val lines = Files.lines(path).iterator().asScala.toList.map(_.trim).filter(_.nonEmpty)

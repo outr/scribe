@@ -55,6 +55,21 @@ case class FileWriter(append: Boolean = true,
   def staticPath(path: Path): FileWriter = withPathBuilder(PathBuilder(List(PathPart.SetPath(path))))
 
   def rolling(current: PathBuilder, rolling: PathBuilder): FileWriter = {
+    rollingAction(current, rolling, (logFile, path) => {
+      LogFile.move(logFile, path)
+    })
+  }
+
+  def rollingGZIP(current: PathBuilder,
+                  rolling: PathBuilder,
+                  deleteOriginal: Boolean = true,
+                  bufferSize: Int = 1024): FileWriter = {
+    rollingAction(current, rolling, (logFile, path) => {
+      LogFile.gzip(logFile, path, deleteOriginal, bufferSize)
+    })
+  }
+
+  def rollingAction(current: PathBuilder, rolling: PathBuilder, rollAction: (LogFile, Path) => Unit): FileWriter = {
     withPathBuilder(current).withHandler(new FileHandler {
       override def apply(status: WriteStatus, writer: FileWriter): Unit = if (status == WriteStatus.Before) {
         val path = writer.path
@@ -64,7 +79,7 @@ case class FileWriter(append: Boolean = true,
           val lastModifiedPath = rolling.path(lastModified)
           val currentPath = rolling.path(current)
           if (lastModifiedPath != currentPath) {
-            LogFile.move(LogFile(writer), lastModifiedPath)
+            rollAction(LogFile(writer), lastModifiedPath)
           }
         }
       }

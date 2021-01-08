@@ -2,9 +2,13 @@ package scribe.file
 
 import scribe.file.writer.LogFileWriter
 
+import java.io.{File, FileInputStream, FileOutputStream, InputStream, OutputStream}
 import java.nio.charset.Charset
 import java.nio.file.{Files, Path}
 import java.util.concurrent.atomic.AtomicLong
+import java.util.zip.GZIPOutputStream
+import scala.annotation.tailrec
+import scala.util.Try
 
 case class LogFile private(path: Path,
                            append: Boolean,
@@ -70,6 +74,46 @@ object LogFile {
         Files.delete(path)
       }
       Files.move(logFile.path, path)
+    }
+  }
+
+  def gzip(logFile: LogFile,
+           path: Path,
+           deleteOriginal: Boolean,
+           bufferSize: Int): Unit = synchronized {
+    close(logFile)
+    if (Files.exists(logFile.path)) {
+      if (Files.exists(path)) {
+        Files.delete(path)
+      }
+      val buffer = new Array[Byte](bufferSize)
+      val file = logFile.path.toFile
+      val outputFile = path.toFile
+      val input = new FileInputStream(file)
+      val output = new GZIPOutputStream(new FileOutputStream(outputFile))
+      try {
+        stream(input, output, buffer)
+        output.flush()
+      } finally {
+        Try(input.close())
+        Try(output.close())
+        if (deleteOriginal) {
+          if (!file.delete()) {
+            file.deleteOnExit()
+          }
+        }
+      }
+    }
+  }
+
+  @tailrec
+  private def stream(input: InputStream, output: OutputStream, buffer: Array[Byte]): Unit = {
+    val len = input.read(buffer)
+    if (len <= 0) {
+      // Finished
+    } else {
+      output.write(buffer, 0, len)
+      stream(input, output, buffer)
     }
   }
 
