@@ -2,15 +2,15 @@
 val scala213 = "2.13.4"
 val scala212 = "2.12.12"
 val scala211 = "2.11.12"
-val scala3 = "0.27.0-RC1"
-val allScalaVersions = List(scala213, scala212, scala211, scala3)
+//val scala3 = "0.27.0-RC1"
+val allScalaVersions = List(scala213, scala212, scala211)
 val scala2Versions = List(scala213, scala212, scala211)
 val nativeScalaVersions = List(scala211)
 val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.1.9-SNAPSHOT"
+version in ThisBuild := "3.1.9"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")

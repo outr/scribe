@@ -4,12 +4,12 @@ import java.io.{File, FileInputStream, InputStream}
 import java.net.URL
 import java.nio.file.{Files, Path, Paths}
 import java.util.Properties
-
 import moduload.Moduload
 import scribe.handler.{LogHandler, SynchronousLogHandler}
 import scribe.modify.LevelFilter
 import scribe.modify.LevelFilter._
 
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.util.Try
@@ -21,7 +21,10 @@ object Log4JMigration extends Moduload {
   private val AppenderLayoutConversionPattern = """log4j[.]appender[.]([a-zA-Z0-9]+)[.]layout[.]ConversionPattern""".r
   private val LoggerRegex = """log4j[.]logger[.](.+)""".r
 
-  override def load(): Unit = apply()
+  override def load()(implicit ec: ExecutionContext): Future[Unit] = Future.successful {
+    apply()
+    ()
+  }
 
   override def error(t: Throwable): Unit = scribe.error("Error loading Log4JMigration", t)
 
