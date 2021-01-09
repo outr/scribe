@@ -2,7 +2,7 @@
 val scala213 = "2.13.4"
 val scala212 = "2.12.12"
 val scala211 = "2.11.12"
-val scala3 = "3.0.0-M3"
+val scala3 = "0.27.0-RC1"
 val allScalaVersions = List(scala213, scala212, scala211, scala3)
 val scala2Versions = List(scala213, scala212, scala211)
 val nativeScalaVersions = List(scala211)
@@ -35,13 +35,13 @@ developers in ThisBuild := List(
 parallelExecution in ThisBuild := false
 
 // Core
-val perfolationVersion: String = "1.2.3"
+val perfolationVersion: String = "1.2.0"
 val sourcecodeVersion: String = "0.2.1"
 val collectionCompatVersion: String = "2.3.2"
-val moduloadVersion: String = "1.1.0"
+val moduloadVersion: String = "1.0.3"
 
 // Testing
-val scalatestVersion: String = "3.2.3"
+val scalatestVersion: String = "3.2.2"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
@@ -107,7 +107,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jsSettings(sourceMapSettings)
   .jsSettings(
-    crossScalaVersions := allScalaVersions
+    crossScalaVersions := scala2Versions
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
