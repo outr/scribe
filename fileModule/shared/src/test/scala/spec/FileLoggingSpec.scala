@@ -179,30 +179,32 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(path) should be(List("Gzip 2"))
       }
     }
-    /*"configure maximum sized log files" in {
-      setWriter(FileWriter()
-        .flushAlways
-        .path(LogPath.simple("max.sized.log"))
-        .maxSize(1L, checkRate = 0.millis)
-      )
+    "verifying max size log files" should {
+      "configure maximum sized log files" in {
+        setWriter(FileWriter()
+          .flushAlways
+          .path(LogPath.simple("max.sized.log"))
+          .maxSize(1L, checkRate = 0.millis)
+        )
+      }
+      "write three log records across three log files" in {
+        logger.info("Record 1")
+        logger.info("Record 2")
+        logger.info("Record 3")
+      }
+      "verify three log files exist with the proper records" in {
+        val p1 = Paths.get("logs/max.sized.log")
+        val p2 = Paths.get("logs/max.sized.1.log")
+        val p3 = Paths.get("logs/max.sizedk.2.log")
+        waitForExists(p1) should be(true)
+        waitForExists(p2) should be(true)
+        waitForExists(p3) should be(true)
+        linesFor(p1) should be(List("Record 3"))
+        linesFor(p2) should be(List("Record 2"))
+        linesFor(p3) should be(List("Record 1"))
+      }
     }
-    "write three log records across three log files" in {
-      logger.info("Record 1")
-      logger.info("Record 2")
-      logger.info("Record 3")
-    }
-    "verify three log files exist with the proper records" in {
-      val p1 = Paths.get("logs/max.sized.log")
-      val p2 = Paths.get("logs/max.sized.1.log")
-      val p3 = Paths.get("logs/max.sized.2.log")
-      waitForExists(p1) should be(true)
-      waitForExists(p2) should be(true)
-      waitForExists(p3) should be(true)
-      linesFor(p1) should be(List("Record 3"))
-      linesFor(p2) should be(List("Record 2"))
-      linesFor(p3) should be(List("Record 1"))
-    }
-    "configure maximum number of log files" in {
+    /*"configure maximum number of log files" in {
       setWriter(FileWriter()
         .flushAlways
         .path(LogPath.simple("maxlogs.log"))

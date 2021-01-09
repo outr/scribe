@@ -109,4 +109,11 @@ case class FileWriter(append: Boolean = true,
       }
     }
   }
+
+  // TODO: this doesn't allow PathBuilder to list them all - Support multiple PathBuilderListers?
+  def withMaxSize(maxSizeInBytes: Long, separator: String = "-"): FileWriter = {
+    withHandler(new FileHandler {
+      override def apply(status: WriteStatus, writer: FileWriter): Unit = ???
+    })
+  }
 }
