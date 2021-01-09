@@ -2,12 +2,12 @@ package scribe.file
 
 import java.nio.file.{Path, Paths}
 
-case class PathBuilder(parts: List[PathPart]) {
+case class PathBuilder(parts: List[PathPart]) extends PathList {
   def revalidate(): Boolean = parts.exists(_.revalidate())
 
   def path(timeStamp: Long): Path = parts.foldLeft(PathBuilder.DefaultPath)((previous, part) => part.current(previous, timeStamp))
 
-  def list(): List[Path] = parts.foldLeft(List(PathBuilder.DefaultPath))((previous, part) => previous.flatMap(part.all))
+  override def list(): List[Path] = parts.foldLeft(List(PathBuilder.DefaultPath))((previous, part) => previous.flatMap(part.all))
 
   def /(part: PathPart): PathBuilder = copy(parts ::: List(part))
 }
@@ -17,4 +17,8 @@ object PathBuilder {
   lazy val Default: PathBuilder = PathBuilder(List(PathPart.SetPath(DefaultPath)))
 
   def static(path: Path): PathBuilder = PathBuilder(List(PathPart.SetPath(path)))
+}
+
+trait PathList {
+  def list(): List[Path]
 }

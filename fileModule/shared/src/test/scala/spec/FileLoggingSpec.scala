@@ -1,12 +1,13 @@
 package spec
 
+import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scribe.file.{FileWriter, FlushMode}
+import scribe.file.FileWriter
 import scribe.format._
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
-import scribe.{Level, Logger}
+import scribe.Logger
 
 import java.nio.file.{Files, Path, Paths}
 import java.text.SimpleDateFormat
@@ -14,10 +15,8 @@ import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scribe.file._
-import perfolation._
 
 import java.nio.file.attribute.FileTime
-import java.util.concurrent.TimeUnit
 import scala.annotation.tailrec
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {
@@ -35,6 +34,10 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
   private def setWriter(writer: FileWriter): Unit = {
     logger = logger.clearHandlers().withHandler(formatter = Formatter.simple, writer = writer)
     this.writer = writer
+  }
+
+  private def validateLogs(fileNames: String*): Assertion = {
+    writer.list().map(_.getFileName.toString).toSet should be(fileNames.toSet)
   }
 
   "File Logging" when {
@@ -58,6 +61,9 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       "verify the file was logged to" in {
         waitForExists(logFile) should be(true)
         linesFor(logFile) should be(List("Testing File Logger"))
+      }
+      "verify the writer lists the logged files" in {
+        validateLogs("test.log")
       }
     }
     "verifying date logging" should {
@@ -98,8 +104,8 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(day1) should be(List("Testing date formatted file", "Testing mid-day"))
         linesFor(logFile) should be(List("Testing File Logger"))
       }
-      "verify that list() returns both log files" in {
-        writer.list().map(_.toString) should be(List("logs/app-2018-01-02.log", "logs/app-2018-01-01.log"))
+      "verify the writer lists the logged files" in {
+        validateLogs("app-2018-01-02.log", "app-2018-01-01.log")
       }
     }
     "verifying rolling logging" should {
@@ -147,6 +153,9 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(rolled1) should be(List("Rolling 1"))
         linesFor(rolled2) should be(List("Rolling 2"))
       }
+      "verify the writer lists the logged files" in {
+        validateLogs("rolling.log", "rolling-2018-01-01.log", "rolling-2018-01-02.log")
+      }
     }
     "verifying GZIP support" should {
       "configure daily path with gzipping" in {
@@ -178,8 +187,11 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         waitForExists(unGzipped) should be(false)
         linesFor(path) should be(List("Gzip 2"))
       }
+      "verify the writer lists the logged files" in {
+        validateLogs("gzip-2018-01-02.log", "gzip-2018-01-01.log.gz")
+      }
     }
-    "verifying max size log files" should {
+    /*"verifying max size log files" should {
       "configure maximum sized log files" in {
         setWriter(FileWriter()
           .flushAlways
@@ -195,7 +207,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       "verify three log files exist with the proper records" in {
         val p1 = Paths.get("logs/max.sized.log")
         val p2 = Paths.get("logs/max.sized.1.log")
-        val p3 = Paths.get("logs/max.sizedk.2.log")
+        val p3 = Paths.get("logs/max.sized.2.log")
         waitForExists(p1) should be(true)
         waitForExists(p2) should be(true)
         waitForExists(p3) should be(true)
@@ -203,7 +215,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(p2) should be(List("Record 2"))
         linesFor(p3) should be(List("Record 1"))
       }
-    }
+    }*/
     /*"configure maximum number of log files" in {
       setWriter(FileWriter()
         .flushAlways

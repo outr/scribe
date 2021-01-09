@@ -14,12 +14,13 @@ case class FileWriter(append: Boolean = true,
                       flushMode: FlushMode = FlushMode.AsynchronousFlush(),
                       charset: Charset = Charset.defaultCharset(),
                       pathBuilder: PathBuilder = PathBuilder.Default,
-                      handlers: List[FileHandler] = Nil) extends Writer {
+                      handlers: List[FileHandler] = Nil,
+                      lists: List[PathList] = Nil) extends Writer {
   private var _path: Path = pathBuilder.path(Time())
 
   def path: Path = _path
 
-  def list(): List[Path] = pathBuilder.list().sortBy(path => Files.getLastModifiedTime(path))
+  def list(): List[Path] = (pathBuilder :: lists).flatMap(_.list()).sortBy(path => Files.getLastModifiedTime(path))
 
   def updatePath(): Boolean = {
     val newPath = pathBuilder.path(Time())
@@ -83,7 +84,7 @@ case class FileWriter(append: Boolean = true,
           }
         }
       }
-    })
+    }).withPathList(rolling)
   }
 
   def withUpdatePathCheck(update: => Boolean): FileWriter = {
@@ -108,6 +109,10 @@ case class FileWriter(append: Boolean = true,
         false
       }
     }
+  }
+
+  def withPathList(list: PathList): FileWriter = {
+    copy(lists = lists ::: List(list))
   }
 
   // TODO: this doesn't allow PathBuilder to list them all - Support multiple PathBuilderListers?
