@@ -4,8 +4,9 @@ import scribe.util.Time
 
 import java.nio.file.{Files, Path, Paths}
 import scala.jdk.CollectionConverters._
-
 import perfolation._
+
+import java.nio.file.attribute.FileTime
 
 trait PathPart {
   def current(previous: Path, timeStamp: Long): Path
@@ -100,6 +101,17 @@ object FileNamePart {
 
     override def regex: String = "\\d{2}"
   }
+  case class MaxLogs(maxLogs: Int) extends FileNamePart {
+    override def current(timeStamp: Long): String = ""
+
+    override def regex: String = ""
+
+    override def after(writer: FileWriter): Unit = {
+      writer.list().dropRight(maxLogs).foreach { path =>
+        Files.delete(path)
+      }
+    }
+  }
   case class MaxSize(maxSizeInBytes: Long, separator: String) extends FileNamePart {
     private val threadLocal = new ThreadLocal[Int] {
       override def initialValue(): Int = 0
@@ -120,8 +132,10 @@ object FileNamePart {
       val logFile = LogFile(writer)
       if (logFile.size >= maxSizeInBytes) {
         val path = pathFor(writer, 1)
+        val lastModified = Files.getLastModifiedTime(logFile.path)
         rollPaths(writer)
         LogFile.move(logFile, path)
+        Files.setLastModifiedTime(path, lastModified)
       }
     }
 
@@ -130,7 +144,9 @@ object FileNamePart {
       if (Files.exists(path)) {
         rollPaths(writer, i + 1)
         val nextPath = pathFor(writer, i + 1)
+        val lastModified = Files.getLastModifiedTime(path)
         Files.move(path, nextPath)
+        Files.setLastModifiedTime(nextPath, lastModified)
       }
     }
 

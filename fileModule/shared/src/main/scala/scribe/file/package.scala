@@ -5,7 +5,6 @@ import scribe.file.PathPart.FileName
 import java.nio.file.{Files, Path, Paths}
 import scala.language.implicitConversions
 import perfolation._
-import scribe.file.FileNamePart.MaxSize
 import scribe.util.Time
 
 package object file {
@@ -27,6 +26,7 @@ package object file {
   })
   def maxSize(max: Long = FileNamePart.MaxSize.OneHundredMeg, separator: String = "-"): FileNamePart =
     FileNamePart.MaxSize(max, separator)
+  def maxLogs(max: Int = 10): FileNamePart = FileNamePart.MaxLogs(max)
 
   def daily: Path => Boolean = (path: Path) => if (Files.exists(path)) {
     val lastModified = Files.getLastModifiedTime(path).toMillis

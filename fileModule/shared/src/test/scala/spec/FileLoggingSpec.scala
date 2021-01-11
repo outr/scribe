@@ -206,33 +206,35 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(p3) should be(List("Record 1"))
       }
     }
-    /*"configure maximum number of log files" in {
-      setWriter(FileWriter()
-        .flushAlways
-        .path(LogPath.simple("maxlogs.log"))
-        .maxSize(1L, checkRate = 0.millis)
-        .maxLogs(3, checkRate = 0.millis))
+    "verifying max number of log files" should {
+      "configure maximum number of log files" in {
+        setWriter(
+          FileWriter("logs" / ("maxlogs" % maxSize(max = 1L, separator = ".") % maxLogs(3) % ".log")).flushAlways
+        )
+      }
+      "write four log records for a maximum of three log files" in {
+        logger.info("Record 1")
+        Thread.sleep(1000L)
+        logger.info("Record 2")
+        Thread.sleep(1000L)
+        logger.info("Record 3")
+        Thread.sleep(1000L)
+        logger.info("Record 4")
+      }
+      "verify only three log files exist" in {
+        val p1 = Paths.get("logs/maxlogs.log")
+        val p2 = Paths.get("logs/maxlogs.1.log")
+        val p3 = Paths.get("logs/maxlogs.2.log")
+        val p4 = Paths.get("logs/maxlogs.3.log")
+        waitForExists(p1) should be(true)
+        waitForExists(p2) should be(true)
+        waitForExists(p3) should be(true)
+        waitForDeleted(p4) should be(false)
+        linesFor(p1) should be(List("Record 4"))
+        linesFor(p2) should be(List("Record 3"))
+        linesFor(p3) should be(List("Record 2"))
+      }
     }
-    "write four log records for a maximum of three log files" in {
-      logger.info("Record 1")
-      logger.info("Record 2")
-      logger.info("Record 3")
-      logger.info("Record 4")
-    }
-    // TODO: revisit this and find out why Travis CI fails on this one
-    "verify only three log files exist" in {
-      val p1 = Paths.get("logs/maxlogs.log")
-      val p2 = Paths.get("logs/maxlogs.1.log")
-      val p3 = Paths.get("logs/maxlogs.2.log")
-//      val p4 = Paths.get("logs/maxlogs.3.log")
-      waitForExists(p1) should be(true)
-      waitForExists(p2) should be(true)
-      waitForExists(p3) should be(true)
-//      waitForDeleted(p4) should be(false)
-      linesFor(p1) should be(List("Record 4"))
-      linesFor(p2) should be(List("Record 3"))
-      linesFor(p3) should be(List("Record 2"))
-    }*/
     "verifying corner cases" should {
       "rolling logging for an existing log file should roll properly" in {
         val path1 = Paths.get("logs", "rolling1.log")

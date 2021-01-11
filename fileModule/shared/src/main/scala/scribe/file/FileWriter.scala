@@ -1,7 +1,6 @@
 package scribe.file
 
-import scribe.file.handler.{FileHandler, WriteStatus}
-import scribe.{LogRecord, Priority}
+import scribe.LogRecord
 import scribe.output.LogOutput
 import scribe.output.format.OutputFormat
 import scribe.util.Time
