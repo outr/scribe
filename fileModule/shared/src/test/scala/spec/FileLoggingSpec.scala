@@ -7,7 +7,7 @@ import scribe.file.FileWriter
 import scribe.format._
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
-import scribe.Logger
+import scribe.{Level, Logger}
 
 import java.nio.file.{Files, Path, Paths}
 import java.text.SimpleDateFormat
@@ -224,7 +224,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       logger.info("Record 4")
     }
     // TODO: revisit this and find out why Travis CI fails on this one
-    /*"verify only three log files exist" in {
+    "verify only three log files exist" in {
       val p1 = Paths.get("logs/maxlogs.log")
       val p2 = Paths.get("logs/maxlogs.1.log")
       val p3 = Paths.get("logs/maxlogs.2.log")
@@ -237,47 +237,50 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       linesFor(p2) should be(List("Record 3"))
       linesFor(p3) should be(List("Record 2"))
     }*/
-    "rolling logging for an existing log file should roll properly" in {
-      val path1 = Paths.get("logs", "rolling1.log")
-      val path2 = Paths.get("logs", "rolling1.2018.01.01.log")
-      val path3 = Paths.get("logs", "rolling1.2018.01.02.log")
-      Files.deleteIfExists(path1)
-      Files.deleteIfExists(path2)
-      Files.deleteIfExists(path3)
+    "verifying corner cases" should {
+      "rolling logging for an existing log file should roll properly" in {
+        val path1 = Paths.get("logs", "rolling1.log")
+        val path2 = Paths.get("logs", "rolling1.2018.01.01.log")
+        val path3 = Paths.get("logs", "rolling1.2018.01.02.log")
+        Files.deleteIfExists(path1)
+        Files.deleteIfExists(path2)
+        Files.deleteIfExists(path3)
 
-      setDate("2018-01-01")
+        setDate("2018-01-01")
 
-      val writer = FileWriter()
-        .path(_ => path1)
-        .rolling(path = LogPath.daily("rolling1", "."))
-        .flushAlways
-      writer.logFile.path should be(path1)
-      val logger = Logger
-        .empty
-        .orphan()
-        .withHandler(
-          formatter = Formatter.simple,
-          writer = writer,
-          minimumLevel = Some(Level.Trace)
+        setWriter(
+          FileWriter("logs" / ("rolling1" % rolling("." % year % "." % month % "." % day) % ".log")).flushAlways
         )
+        writer.path should be(path1)
+        val logger = Logger
+          .empty
+          .orphan()
+          .withHandler(
+            formatter = Formatter.simple,
+            writer = writer,
+            minimumLevel = Some(Level.Trace)
+          )
 
-      logger.debug("Test 1")
-      linesFor(path1) should be(List("Test 1"))
-      linesFor(path2) should be(Nil)
-      linesFor(path3) should be(Nil)
+        logger.debug("Test 1")
+        linesFor(path1) should be(List("Test 1"))
+        linesFor(path2) should be(Nil)
+        linesFor(path3) should be(Nil)
 
-      setDate("2018-01-02")
-      logger.debug("Test 2")
-      linesFor(path1) should be(List("Test 2"))
-      linesFor(path2) should be(List("Test 1"))
-      linesFor(path3) should be(Nil)
+        Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
+        setDate("2018-01-02")
+        logger.debug("Test 2")
+        linesFor(path1) should be(List("Test 2"))
+        linesFor(path2) should be(List("Test 1"))
+        linesFor(path3) should be(Nil)
 
-      setDate("2018-01-03")
-      logger.debug("Test 3")
-      linesFor(path1) should be(List("Test 3"))
-      linesFor(path2) should be(List("Test 1"))
-      linesFor(path3) should be(List("Test 2"))
-    }*/
+        Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
+        setDate("2018-01-03")
+        logger.debug("Test 3")
+        linesFor(path1) should be(List("Test 3"))
+        linesFor(path2) should be(List("Test 1"))
+        linesFor(path3) should be(List("Test 2"))
+      }
+    }
     "tear down" in {
       Time.reset()
     }
