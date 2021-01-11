@@ -3,9 +3,7 @@ package scribe.file.path
 import scribe.util.Time
 
 import java.nio.file.{Files, Path, Paths}
-import scala.jdk.CollectionConverters._
-import perfolation._
-import scribe.file.{FileWriter, LogFile}
+import scribe.file.FileWriter
 
 trait PathPart {
   def current(previous: Path, timeStamp: Long): Path
@@ -44,7 +42,7 @@ object PathPart {
 
     override def all(previous: Path): List[Path] = {
       val regex = parts.map(_.regex).mkString
-      Files.list(previous).iterator().asScala.toList.filter { path =>
+      Files.list(previous).toArray.toList.asInstanceOf[List[Path]].filter { path =>
         val fileName = path.getFileName.toString
         fileName.matches(regex)
       }

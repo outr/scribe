@@ -10,23 +10,31 @@ import scribe.util.Time
 import scribe.{Level, Logger}
 
 import java.nio.file.{Files, Path, Paths}
-import java.text.SimpleDateFormat
 import scala.concurrent.duration._
-import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scribe.file._
 
 import java.nio.file.attribute.FileTime
+import java.util.Calendar
+import java.util.function.Consumer
 import scala.annotation.tailrec
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: Path = Paths.get("logs/test.log")
 
-  private var timeStamp: Long = new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-01").getTime
+  private var timeStamp: Long = 0L
 
-  private def setDate(date: String): Unit = {
-    timeStamp = new SimpleDateFormat("yyyy-MM-dd").parse(date).getTime
+  private val DateRegex = """(\d{4})-(\d{2})-(\d{2})""".r
+
+  setDate("2018-01-01")
+
+  private def setDate(date: String): Unit = date match {
+    case DateRegex(year, month, day) => {
+      val c = Calendar.getInstance()
+      c.set(year.toInt, month.toInt - 1, day.toInt, 0, 0, 0)
+      timeStamp = c.getTimeInMillis
+    }
   }
 
   private var writer: FileWriter = _
@@ -49,9 +57,12 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       "configure logging to a temporary file" in {
         val directory = Paths.get("logs")
         if (Files.exists(directory)) {
-          Files.newDirectoryStream(directory).iterator().asScala.foreach { path =>
-            Files.delete(path)
-          }
+          Files.newDirectoryStream(directory).forEach(new Consumer[Path] {
+            override def accept(path: Path): Unit = Files.delete(path)
+          })
+//          Files.newDirectoryStream(directory).forEach { path: Path =>
+//            Files.delete(path)
+//          }
         }
         setWriter(FileWriter(logFile).flushAlways)
       }
@@ -307,7 +318,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
   @tailrec
   private def linesFor(path: Path, linesMinimum: Int = 1, waitForData: Long = 5.seconds.toMillis): List[String] = {
     if (Files.exists(path)) {
-      val lines = Files.lines(path).iterator().asScala.toList.map(_.trim).filter(_.nonEmpty)
+      val lines = Files.lines(path).toArray.toList.asInstanceOf[List[String]].map(_.trim).filter(_.nonEmpty)
       if (lines.nonEmpty && lines.size >= linesMinimum) {
         lines
       } else if (waitForData > 0L) {
