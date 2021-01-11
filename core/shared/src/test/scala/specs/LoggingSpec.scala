@@ -1,14 +1,13 @@
 package specs
 
 import java.util.concurrent.atomic.AtomicInteger
-
 import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import perfolation._
 import scribe._
 import scribe.filter._
-import scribe.format.Formatter
+import scribe.format.{FormatBlock, Formatter}
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster}
 import scribe.output.format.{HTMLOutputFormat, OutputFormat}
@@ -93,6 +92,9 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       testingModifier.records.head.className should be("specs.LoggingTestObject")
       testingModifier.records.head.line should be(line)
       testingModifier.records.head.fileName should be(expectedTestFileName)
+      FormatBlock.Position.abbreviate(maxLength = 1, removeEntries = false)
+        .format(testingModifier.records.head)
+        .plainText should be("s.LoggingTestObject.testLogger:14")
     }
     "write a log message with an anonymous function" in {
       val line = Some(10)
