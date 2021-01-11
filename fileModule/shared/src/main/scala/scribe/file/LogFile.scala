@@ -35,6 +35,8 @@ case class LogFile private(path: Path,
     sizeCounter.addAndGet(output.length.toLong)
   }
 
+  def size: Long = sizeCounter.get()
+
   def flush(): Unit = if (status == LogFileStatus.Active) {
     writer.flush()
   }

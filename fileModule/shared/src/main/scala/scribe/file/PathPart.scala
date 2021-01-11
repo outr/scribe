@@ -78,6 +78,7 @@ trait FileNamePart {
   def after(writer: FileWriter): Unit = {}
 }
 
+// TODO: move parts into separate package and separate files
 object FileNamePart {
   case class Static(s: String) extends FileNamePart {
     override def current(timeStamp: Long): String = s
@@ -98,6 +99,52 @@ object FileNamePart {
     override def current(timeStamp: Long): String = timeStamp.t.d
 
     override def regex: String = "\\d{2}"
+  }
+  case class MaxSize(maxSizeInBytes: Long, separator: String) extends FileNamePart {
+    private val threadLocal = new ThreadLocal[Int] {
+      override def initialValue(): Int = 0
+    }
+
+    override def current(timeStamp: Long): String = {
+      val i = threadLocal.get()
+      if (i == 0) {
+        ""
+      } else {
+        s"$separator$i"
+      }
+    }
+
+    override def regex: String = s"([$separator]\\d*)?"
+
+    override def before(writer: FileWriter): Unit = {
+      val logFile = LogFile(writer)
+      if (logFile.size >= maxSizeInBytes) {
+        val path = pathFor(writer, 1)
+        rollPaths(writer)
+        LogFile.move(logFile, path)
+      }
+    }
+
+    private def rollPaths(writer: FileWriter, i: Int = 1): Unit = {
+      val path = pathFor(writer, i)
+      if (Files.exists(path)) {
+        rollPaths(writer, i + 1)
+        val nextPath = pathFor(writer, i + 1)
+        Files.move(path, nextPath)
+      }
+    }
+
+    private def pathFor(writer: FileWriter, i: Int): Path = {
+      threadLocal.set(i)
+      try {
+        writer.pathBuilder.path(Time())
+      } finally {
+        threadLocal.remove()
+      }
+    }
+  }
+  object MaxSize {
+    val OneHundredMeg: Long = 100000000L
   }
   case class Rolling(parts: List[FileNamePart], action: (LogFile, Path) => Unit) extends FileNamePart {
     private lazy val partsRegex = parts.map(_.regex).mkString

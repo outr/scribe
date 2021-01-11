@@ -185,13 +185,9 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
       }
     }
     // "logs" / ("max.sized" % maxSize() % ".log")
-    /*"verifying max size log files" should {
+    "verifying max size log files" should {
       "configure maximum sized log files" in {
-        setWriter(FileWriter()
-          .flushAlways
-          .path(LogPath.simple("max.sized.log"))
-          .maxSize(1L, checkRate = 0.millis)
-        )
+        setWriter(FileWriter("logs" / ("max.sized" % maxSize(max = 1L, separator = ".") % ".log")).flushAlways)
       }
       "write three log records across three log files" in {
         logger.info("Record 1")
@@ -209,7 +205,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(p2) should be(List("Record 2"))
         linesFor(p3) should be(List("Record 1"))
       }
-    }*/
+    }
     /*"configure maximum number of log files" in {
       setWriter(FileWriter()
         .flushAlways
