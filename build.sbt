@@ -34,6 +34,8 @@ developers in ThisBuild := List(
 )
 parallelExecution in ThisBuild := false
 
+testOptions in ThisBuild += Tests.Argument("-oD")
+
 // Core
 val perfolationVersion: String = "1.2.3"
 val sourcecodeVersion: String = "0.2.1"

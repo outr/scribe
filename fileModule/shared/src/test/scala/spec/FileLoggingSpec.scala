@@ -53,7 +53,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
             Files.delete(path)
           }
         }
-        setWriter(FileWriter().flushAlways.staticPath(logFile))
+        setWriter(FileWriter(logFile).flushAlways)
       }
       "log to the file" in {
         logger.info("Testing File Logger")
@@ -68,10 +68,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     }
     "verifying date logging" should {
       "configure date formatted log files" in {
-        setWriter(FileWriter()
-          .flushAlways
-          .withPathBuilder(Paths.get("logs") / ("app-" % year % "-" % month % "-" % day % ".log"))
-        )
+        setWriter(FileWriter(Paths.get("logs") / ("app-" % year % "-" % month % "-" % day % ".log")).flushAlways)
       }
       "log to date formatted file" in {
         logger.info("Testing date formatted file")
@@ -111,14 +108,8 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     "verifying rolling logging" should {
       "configure rolling files" in {
         setDate("2018-01-01")
-        // "logs" / ("rolling" % rolling("-" % year % "-" % month % "-" % day) % ".log")
-//        setWriter(FileWriter().flushAlways.rolling(
-//          "logs" / "rolling.log",
-//          "logs" / ("rolling-" % year % "-" % month % "-" % day % ".log")
-//        ))
-        setWriter(FileWriter()
-          .flushAlways
-          .withPathBuilder("logs" / ("rolling" % rolling("-" % year % "-" % month % "-" % day) % ".log"))
+        setWriter(
+          FileWriter("logs" / ("rolling" % rolling("-" % year % "-" % month % "-" % day) % ".log")).flushAlways
         )
       }
       "log a record to the rolling file" in {
@@ -165,15 +156,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     "verifying GZIP support" should {
       "configure daily path with gzipping" in {
         setDate("2018-01-01")
-        // "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log" % rollingGZIP(".gz"))
-//        setWriter(FileWriter().flushAlways.rolling(
-//          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log"),
-//          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log.gz")
-//        ))
-        setWriter(FileWriter()
-          .flushAlways
-          .withPathBuilder("logs" / ("gzip-" % year % "-" % month % "-" % day % ".log" % rollingGZIP()))
-        )
+        setWriter(FileWriter("logs" / ("gzip-" % year % "-" % month % "-" % day % ".log" % rollingGZIP())).flushAlways)
       }
       "log a record pre gzip" in {
         logger.info("Gzip 1")
