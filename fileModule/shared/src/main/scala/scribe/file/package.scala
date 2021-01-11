@@ -1,6 +1,7 @@
 package scribe
 
-import scribe.file.PathPart.FileName
+import scribe.file.path._
+import scribe.file.path.PathPart.FileName
 
 import java.nio.file.{Files, Path, Paths}
 import scala.language.implicitConversions

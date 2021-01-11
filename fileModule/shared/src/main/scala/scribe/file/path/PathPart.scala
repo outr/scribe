@@ -1,12 +1,11 @@
-package scribe.file
+package scribe.file.path
 
 import scribe.util.Time
 
 import java.nio.file.{Files, Path, Paths}
 import scala.jdk.CollectionConverters._
 import perfolation._
-
-import java.nio.file.attribute.FileTime
+import scribe.file.{FileWriter, LogFile}
 
 trait PathPart {
   def current(previous: Path, timeStamp: Long): Path

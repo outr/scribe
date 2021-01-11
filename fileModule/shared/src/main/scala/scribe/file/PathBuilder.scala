@@ -1,5 +1,7 @@
 package scribe.file
 
+import scribe.file.path.PathPart
+
 import java.nio.file.{Path, Paths}
 
 case class PathBuilder(parts: List[PathPart]) extends PathList {
