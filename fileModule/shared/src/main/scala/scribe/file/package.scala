@@ -16,6 +16,14 @@ package object file {
   def day: FileNamePart = FileNamePart.Day
   def month: FileNamePart = FileNamePart.Month
   def year: FileNamePart = FileNamePart.Year
+  def rolling(fileName: FileName): FileNamePart = FileNamePart.Rolling(fileName.parts, (logFile, path) => {
+    LogFile.move(logFile, path)
+  })
+  def rollingGZIP(fileName: FileName = string2FileName(".gz"),
+                  deleteOriginal: Boolean = true,
+                  bufferSize: Int = 1024): FileNamePart = FileNamePart.Rolling(fileName.parts, (logFile, path) => {
+    LogFile.gzip(logFile, path, deleteOriginal, bufferSize)
+  })
 
   def daily: Path => Boolean = (path: Path) => if (Files.exists(path)) {
     val lastModified = Files.getLastModifiedTime(path).toMillis

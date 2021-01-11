@@ -6,7 +6,7 @@ import perfolation._
 import scribe.util.Time
 
 trait FileHandler {
-  def apply(status: WriteStatus, writer: FileWriter): Unit
+  def apply(status: WriteStatus, writer: FileWriter): Unit    // TODO: move this functionality into PathPart / FileNamePart
 
   def priority: Priority = Priority.Normal
 }

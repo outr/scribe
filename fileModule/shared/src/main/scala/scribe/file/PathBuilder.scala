@@ -3,7 +3,8 @@ package scribe.file
 import java.nio.file.{Path, Paths}
 
 case class PathBuilder(parts: List[PathPart]) extends PathList {
-  def revalidate(): Boolean = parts.exists(_.revalidate())
+  def before(writer: FileWriter): Unit = parts.foreach(_.before(writer))
+  def after(writer: FileWriter): Unit = parts.foreach(_.after(writer))
 
   def path(timeStamp: Long): Path = parts.foldLeft(PathBuilder.DefaultPath)((previous, part) => part.current(previous, timeStamp))
 

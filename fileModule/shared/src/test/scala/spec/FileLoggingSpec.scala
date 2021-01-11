@@ -111,10 +111,15 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     "verifying rolling logging" should {
       "configure rolling files" in {
         setDate("2018-01-01")
-        setWriter(FileWriter().flushAlways.rolling(
-          "logs" / "rolling.log",
-          "logs" / ("rolling-" % year % "-" % month % "-" % day % ".log")
-        ))
+        // "logs" / ("rolling" % rolling("-" % year % "-" % month % "-" % day) % ".log")
+//        setWriter(FileWriter().flushAlways.rolling(
+//          "logs" / "rolling.log",
+//          "logs" / ("rolling-" % year % "-" % month % "-" % day % ".log")
+//        ))
+        setWriter(FileWriter()
+          .flushAlways
+          .withPathBuilder("logs" / ("rolling" % rolling("-" % year % "-" % month % "-" % day) % ".log"))
+        )
       }
       "log a record to the rolling file" in {
         logger.info("Rolling 1")
@@ -160,10 +165,15 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     "verifying GZIP support" should {
       "configure daily path with gzipping" in {
         setDate("2018-01-01")
-        setWriter(FileWriter().flushAlways.rolling(
-          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log"),
-          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log.gz")
-        ))
+        // "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log" % rollingGZIP(".gz"))
+//        setWriter(FileWriter().flushAlways.rolling(
+//          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log"),
+//          "logs" / ("gzip-" % year % "-" % month % "-" % day % ".log.gz")
+//        ))
+        setWriter(FileWriter()
+          .flushAlways
+          .withPathBuilder("logs" / ("gzip-" % year % "-" % month % "-" % day % ".log" % rollingGZIP()))
+        )
       }
       "log a record pre gzip" in {
         logger.info("Gzip 1")
@@ -191,6 +201,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         validateLogs("gzip-2018-01-02.log", "gzip-2018-01-01.log.gz")
       }
     }
+    // "logs" / ("max.sized" % maxSize() % ".log")
     /*"verifying max size log files" should {
       "configure maximum sized log files" in {
         setWriter(FileWriter()

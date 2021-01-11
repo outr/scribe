@@ -50,6 +50,8 @@ object LogFile {
   private var usage = Map.empty[LogFile, Set[FileWriter]]
   private var current = Map.empty[FileWriter, LogFile]
 
+  def get(path: Path): Option[LogFile] = paths.get(path)
+
   def close(logFile: LogFile): Unit = synchronized {
     logFile.flush()
     paths.foreach {
