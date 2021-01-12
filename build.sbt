@@ -42,6 +42,9 @@ val sourcecodeVersion: String = "0.2.1"
 val collectionCompatVersion: String = "2.3.2"
 val moduloadVersion: String = "1.1.0"
 
+// JSON
+val uPickleVersion: String = "1.2.2"
+
 // Testing
 val scalatestVersion: String = "3.2.3"
 
@@ -83,6 +86,7 @@ lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
     fileJVM, fileNative,
+    jsonJS, jsonJVM,
     slf4j, slf4j18, migration, config, slack, logstash)
   .settings(
     name := "scribe",
@@ -142,6 +146,21 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
 
 lazy val fileJVM = fileModule.jvm
 lazy val fileNative = fileModule.native
+
+lazy val json = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-json",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
+    ),
+    crossScalaVersions := List(scala213, scala212, scala3)
+  )
+  .dependsOn(core)
+
+lazy val jsonJS = json.js
+lazy val jsonJVM = json.jvm
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
