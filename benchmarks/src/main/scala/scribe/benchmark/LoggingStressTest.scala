@@ -1,13 +1,14 @@
 package scribe.benchmark
 
+import scribe.file.FileWriter
+
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
-
 import scribe.{Level, LogRecord, Logger}
 import scribe.format.Formatter
 import scribe.handler.LogHandler
-import scribe.writer.FileWriter
-import scribe.writer.file.LogFileMode
+
+import scala.annotation.tailrec
 
 object LoggingStressTest {
   private var logged = 0
@@ -24,10 +25,8 @@ object LoggingStressTest {
   def stressAll(iterations: Int): Unit = {
     val types = List(
       "Null" -> nullLogger(),
-      "NIO Simple" -> fileLogger(Formatter.simple, LogFileMode.NIO),
-      "IO Simple" -> fileLogger(Formatter.simple, LogFileMode.IO),
-      "NIO Default" -> fileLogger(Formatter.classic, LogFileMode.NIO),
-      "IO Default" -> fileLogger(Formatter.classic, LogFileMode.IO)
+      "Simple" -> fileLogger(Formatter.simple),
+      "Default" -> fileLogger(Formatter.classic)
     )
     types.foreach {
       case (name, logger) => {
@@ -49,10 +48,10 @@ object LoggingStressTest {
     override def log[M](record: LogRecord[M]): Unit = logged += 1
   }).replace()
 
-  def fileLogger(formatter: Formatter, mode: LogFileMode): Logger = {
+  def fileLogger(formatter: Formatter): Logger = {
     val path = Paths.get("logs/file-logging.log")
     Files.deleteIfExists(path)
-    Logger.empty.orphan().withHandler(formatter, FileWriter().withMode(mode).path(_ => path), minimumLevel = Some(Level.Info)).replace()
+    Logger.empty.orphan().withHandler(formatter, FileWriter(path), minimumLevel = Some(Level.Info)).replace()
   }
 
   def timed(iterations: Int, logger: Logger): Double = {
@@ -62,6 +61,7 @@ object LoggingStressTest {
     TimeUnit.MILLISECONDS.convert(elapsed, TimeUnit.NANOSECONDS) / 1000.0
   }
 
+  @tailrec
   def stressLogger(iterations: Int, logger: Logger): Unit = {
     logger.info("Testing logging")
     if (iterations > 0) {

@@ -230,7 +230,7 @@ lazy val logstash = project.in(file("logstash"))
   .dependsOn(coreJVM)
 
 lazy val benchmarks = project.in(file("benchmarks"))
-  .dependsOn(coreJVM)
+  .dependsOn(fileJVM)
   .enablePlugins(JmhPlugin)
   .settings(
     publishArtifact := false,
