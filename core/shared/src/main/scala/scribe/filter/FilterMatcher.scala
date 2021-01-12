@@ -2,6 +2,9 @@ package scribe.filter
 
 import scribe.LogRecord
 
+/**
+  * Matcher for use with filters
+  */
 trait FilterMatcher {
   protected def string[M](record: LogRecord[M]): String
 

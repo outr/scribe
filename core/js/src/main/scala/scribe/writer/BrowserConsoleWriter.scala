@@ -8,6 +8,9 @@ import scribe.output.format.OutputFormat
 import scala.collection.mutable.ListBuffer
 import scala.scalajs.js
 
+/**
+  * Writer specifically to target the JavaScript console in the browser
+  */
 object BrowserConsoleWriter extends Writer {
   val args: ListBuffer[String] = ListBuffer.empty
 

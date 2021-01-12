@@ -2,6 +2,9 @@ package scribe.filter
 
 import scribe.LogRecord
 
+/**
+  * Filters based on the package name
+  */
 object PackageNameFilter extends FilterMatcher {
   override protected def string[M](record: LogRecord[M]): String = {
     val index = record.className.lastIndexOf('.')

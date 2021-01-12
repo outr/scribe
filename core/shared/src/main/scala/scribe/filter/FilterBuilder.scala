@@ -3,6 +3,9 @@ package scribe.filter
 import scribe.modify.LogModifier
 import scribe.{Level, LogRecord, Priority}
 
+/**
+  * FilterBuilder allows convenient log modification
+  */
 case class FilterBuilder(priority: Priority = Priority.Normal,
                          select: List[Filter] = Nil,
                          include: List[Filter] = Nil,

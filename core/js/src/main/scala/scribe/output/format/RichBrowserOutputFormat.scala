@@ -1,9 +1,13 @@
 package scribe.output.format
-import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, CompositeOutput, ItalicOutput, LogOutput, StrikethroughOutput, TextOutput, URLOutput, UnderlineOutput}
+
+import scribe.output._
 import scribe.writer.BrowserConsoleWriter
 
 import scala.collection.mutable.ListBuffer
 
+/**
+  * Supports rich output to JavaScript console in the browser
+  */
 object RichBrowserOutputFormat extends OutputFormat {
   override def apply(output: LogOutput, stream: String => Unit): Unit = recurse(
     stream = stream,
