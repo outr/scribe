@@ -60,9 +60,6 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
           Files.newDirectoryStream(directory).forEach(new Consumer[Path] {
             override def accept(path: Path): Unit = Files.delete(path)
           })
-//          Files.newDirectoryStream(directory).forEach { path: Path =>
-//            Files.delete(path)
-//          }
         }
         setWriter(FileWriter(logFile).flushAlways)
       }
