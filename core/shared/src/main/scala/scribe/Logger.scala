@@ -76,9 +76,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     } else {
       record
     }
-    modifiers.foldLeft(Option(r)) {
-      case (r, lm) => r.flatMap(_.modify(lm))
-    }.foreach { r =>
+    r.modify(modifiers).foreach { r =>
       handlers.foreach(_.log(r))
       parentId.map(Logger.apply).foreach(_.log(r))
     }
