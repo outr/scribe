@@ -120,6 +120,8 @@ object Logger {
   private val systemOut = System.out
   private val systemErr = System.err
 
+  lazy val DefaultRootMinimumLevel: Level = Option(System.getenv("SCRIBE_MINIMUM_LEVEL")).flatMap(Level.get).getOrElse(Level.Info)
+
   object system {
     def out: PrintStream = systemOut
     def err: PrintStream = systemErr
@@ -130,8 +132,7 @@ object Logger {
   private var id2Logger: Map[LoggerId, Logger] = Map.empty
   private var name2Id: Map[String, LoggerId] = Map.empty
 
-  // Configure the root logger to filter anything under Info and write to the console
-  root.orphan().withHandler(minimumLevel = Some(Level.Info)).replace(Some("root"))
+  resetRoot()
 
   // Initialize Platform-specific functionality
   Platform.init()
@@ -197,6 +198,11 @@ object Logger {
   def namesFor(loggerId: LoggerId): Set[String] = name2Id.collect {
     case (name, id) if id == loggerId => name
   }.toSet
+
+  def resetRoot(): Unit = {
+    // Configure the root logger to filter anything under SCRIBE_MINIMUM_LEVEL (or INFO if not specified) and write to the console
+    root.orphan().clearHandlers().withHandler(minimumLevel = Some(DefaultRootMinimumLevel)).replace(Some("root"))
+  }
 
   private def fixName(name: String): String = name.replace("$", "")
 }

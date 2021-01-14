@@ -69,48 +69,50 @@ class Log4JMigration private() {
 
   private var handlers = Map.empty[String, SynchronousLogHandler]
 
-  def apply(key: String, value: String): Boolean = key match {
-    case AppenderClass(name) => value match {
-      case "org.apache.log4j.ConsoleAppender" => {
-        handlers += name -> LogHandler()
+  def apply(key: String, value: String): Boolean = {
+    def parse(): (LevelFilter, List[LogHandler]) = {
+      val list = value.split(',').map(_.trim).filter(_.nonEmpty).toList
+      (levelFilter(list.head), list.tail.map(handlers.apply))
+    }
+    key match {
+      case AppenderClass(name) => value match {
+        case "org.apache.log4j.ConsoleAppender" => {
+          handlers += name -> LogHandler()
+          true
+        }
+        case _ => {
+          scribe.warn(s"Unsupported appender: $value for $name")
+          false
+        }
+      }
+      case AppenderLayout(_) => false                                             // Ignore layouts
+      case AppenderLayoutConversionPattern(_) => false                            // Ignore layouts
+      case LoggerRegex(className) => {
+        val (filter, handlers) = parse()
+        Logger(className).withModifier(filter).replace()
+        if (handlers.nonEmpty) {
+          Logger(className).clearHandlers().replace()
+        }
+        handlers.foreach { h =>
+          Logger(className).withHandler(h).replace()
+        }
+        true
+      }
+      case RootLoggerRegex(_) => {
+        val (filter, handlers) = parse()
+        Logger.root.withModifier(filter).replace()
+        if (handlers.nonEmpty) {
+          Logger.root.clearHandlers().replace()
+        }
+        handlers.foreach { h =>
+          Logger.root.withHandler(h).replace()
+        }
         true
       }
       case _ => {
-        scribe.warn(s"Unsupported appender: $value for $name")
+        scribe.warn(s"Unsupported log4j property: $key = $value")
         false
       }
-    }
-    case AppenderLayout(_) => false                                             // Ignore layouts
-    case AppenderLayoutConversionPattern(_) => false                            // Ignore layouts
-    case LoggerRegex(className) => {
-      val list = value.split(',').map(_.trim).toList
-      val filter = levelFilter(list.head)
-      val handlers = list.tail.map(this.handlers.apply)
-      Logger(className).withModifier(filter).replace()
-      if (handlers.nonEmpty) {
-        Logger(className).clearHandlers().replace()
-      }
-      handlers.foreach { h =>
-        Logger(className).withHandler(h).replace()
-      }
-      true
-    }
-    case RootLoggerRegex(_) => {
-      val list = value.split(',').map(_.trim).toList
-      val filter = levelFilter(list.head)
-      val handlers = list.tail.map(this.handlers.apply)
-      Logger.root.withModifier(filter).replace()
-      if (handlers.nonEmpty) {
-        Logger.root.clearHandlers().replace()
-      }
-      handlers.foreach { h =>
-        Logger.root.withHandler(h).replace()
-      }
-      true
-    }
-    case _ => {
-      scribe.warn(s"Unsupported log4j property: $key = $value")
-      false
     }
   }
 
