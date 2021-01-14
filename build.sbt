@@ -2,8 +2,8 @@
 val scala213 = "2.13.4"
 val scala212 = "2.12.12"
 val scala211 = "2.11.12"
-val scala3 = "3.0.0-M3"
-val allScalaVersions = List(scala213, scala212, scala211, scala3)
+//val scala3 = "3.0.0-M3"
+val allScalaVersions = List(scala213, scala212, scala211) //, scala3)
 val scala2Versions = List(scala213, scala212, scala211)
 val nativeScalaVersions = List(scala211)
 val compatScalaVersions = List(scala213, scala212)
@@ -53,7 +53,7 @@ val slf4jVersion: String = "1.7.30"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Config Dependencies
-val profigVersion: String = "3.1.0-SNAPSHOT"
+val profigVersion: String = "3.1.1"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.13.18"
@@ -155,7 +155,7 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
       "com.lihaoyi" %%% "upickle" % uPickleVersion,
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     ),
-    crossScalaVersions := List(scala213, scala212, scala3)
+    crossScalaVersions := List(scala213, scala212)
   )
   .dependsOn(core)
 

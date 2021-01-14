@@ -1,8 +1,7 @@
 package scribe
 
 import moduload.Moduload
-import profig.Profig
-import upickle.default._
+import profig._
 
 object ScribeConfig extends Moduload {
   implicit def rw: ReadWriter[ScribeConfig] = macroRW
