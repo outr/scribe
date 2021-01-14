@@ -1,4 +1,3 @@
-import scala.concurrent.{ExecutionContext, Future}
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 
@@ -15,9 +14,5 @@ package object scribe extends LoggerSupport {
 
   implicit class AnyLogging(value: Any) {
     def logger: Logger = Logger(value.getClass.getName)
-  }
-
-  object Execution {
-    implicit def global: ExecutionContext = scala.concurrent.ExecutionContext.global
   }
 }

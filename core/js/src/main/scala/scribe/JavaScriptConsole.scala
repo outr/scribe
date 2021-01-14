@@ -2,6 +2,9 @@ package scribe
 
 import scala.scalajs.js
 
+/**
+  * Facade around extra features of the JavaScript console in the browser
+  */
 @js.native
 trait JavaScriptConsole extends js.Object {
 

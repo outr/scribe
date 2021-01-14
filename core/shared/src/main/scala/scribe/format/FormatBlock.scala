@@ -164,9 +164,8 @@ object FormatBlock {
     override def abbreviate(maxLength: Int,
                             padded: Boolean = false,
                             separator: Char = '.',
-                            removeEntries: Boolean = true,
+                            removeEntries: Boolean = false,
                             abbreviateName: Boolean = false): FormatBlock = apply { record =>
-      val classAndMethodName = ClassAndMethodName.format(record).plainText
       val line = if (record.line.nonEmpty) {
         s":${LineNumber.format(record).plainText}"
       } else {
@@ -177,8 +176,10 @@ object FormatBlock {
       } else {
         ""
       }
-      val v = Abbreviator(classAndMethodName, maxLength - line.length, separator, removeEntries, abbreviateName)
-      new TextOutput(s"$v$line$column")
+      val className = ClassName.format(record).plainText
+      val methodName = MethodName.format(record).plainText
+      val cna = Abbreviator(className, maxLength - line.length, separator, removeEntries, abbreviateName)
+      new TextOutput(s"$cna.$methodName$line$column")
     }
   }
 

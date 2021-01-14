@@ -28,12 +28,26 @@ trait LogRecord[M] {
   def get(key: String): Option[Any] = data.get(key).map(_())
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(levelValue))
-  def modify(modifier: LogModifier): Option[LogRecord[M]] = if (appliedModifierIds.contains(modifier.id)) {
+  def checkModifierId(id: String, add: Boolean = true): Boolean = if (appliedModifierIds.contains(id)) {
+    true
+  } else {
+    if (add) {
+      appliedModifierIds += id
+    }
+    false
+  }
+  def modify(modifier: LogModifier): Option[LogRecord[M]] = if (checkModifierId(modifier.id)) {
     Some(this)
   } else {
-    modifier(this).map { r =>
-      r.appliedModifierIds = r.appliedModifierIds + modifier.id
-      r
+    modifier(this)
+  }
+  @tailrec
+  final def modify(modifiers: List[LogModifier]): Option[LogRecord[M]] = if (modifiers.isEmpty) {
+    Some(this)
+  } else {
+    modify(modifiers.head) match {
+      case None => None
+      case Some(record) => record.modify(modifiers.tail)
     }
   }
 

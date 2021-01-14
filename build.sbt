@@ -2,15 +2,15 @@
 val scala213 = "2.13.4"
 val scala212 = "2.12.12"
 val scala211 = "2.11.12"
-//val scala3 = "0.27.0-RC1"
-val allScalaVersions = List(scala213, scala212, scala211)
+//val scala3 = "3.0.0-M3"
+val allScalaVersions = List(scala213, scala212, scala211) //, scala3)
 val scala2Versions = List(scala213, scala212, scala211)
 val nativeScalaVersions = List(scala211)
 val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.1.9"
+version in ThisBuild := "3.2.0-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -34,21 +34,26 @@ developers in ThisBuild := List(
 )
 parallelExecution in ThisBuild := false
 
+testOptions in ThisBuild += Tests.Argument("-oD")
+
 // Core
-val perfolationVersion: String = "1.2.0"
+val perfolationVersion: String = "1.2.3"
 val sourcecodeVersion: String = "0.2.1"
 val collectionCompatVersion: String = "2.3.2"
-val moduloadVersion: String = "1.0.3"
+val moduloadVersion: String = "1.1.0"
+
+// JSON
+val uPickleVersion: String = "1.2.2"
 
 // Testing
-val scalatestVersion: String = "3.2.2"
+val scalatestVersion: String = "3.2.3"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Config Dependencies
-val profigVersion: String = "3.0.4"
+val profigVersion: String = "3.1.1"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.13.18"
@@ -80,6 +85,8 @@ val commonNativeSettings = Seq(
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
+    fileJVM, fileNative,
+    jsonJS, jsonJVM,
     slf4j, slf4j18, migration, config, slack, logstash)
   .settings(
     name := "scribe",
@@ -107,7 +114,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jsSettings(sourceMapSettings)
   .jsSettings(
-    crossScalaVersions := scala2Versions
+    crossScalaVersions := allScalaVersions
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
@@ -122,6 +129,38 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 lazy val coreNative = core.native
+
+lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-file",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
+    )
+  )
+  .nativeSettings(
+    commonNativeSettings,
+    test := {}
+  )
+  .dependsOn(core)
+
+lazy val fileJVM = fileModule.jvm
+lazy val fileNative = fileModule.native
+
+lazy val json = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-json",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
+    ),
+    crossScalaVersions := List(scala213, scala212)
+  )
+  .dependsOn(core)
+
+lazy val jsonJS = json.js
+lazy val jsonJVM = json.jvm
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
@@ -191,7 +230,7 @@ lazy val logstash = project.in(file("logstash"))
   .dependsOn(coreJVM)
 
 lazy val benchmarks = project.in(file("benchmarks"))
-  .dependsOn(coreJVM)
+  .dependsOn(fileJVM)
   .enablePlugins(JmhPlugin)
   .settings(
     publishArtifact := false,

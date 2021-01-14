@@ -11,6 +11,16 @@ import scribe.writer.{ConsoleWriter, Writer}
 
 import scala.language.implicitConversions
 
+/**
+  * Provides support for asynchronous logging to process the log record in another thread and avoid any blocking.
+  *
+  * @param formatter the formatter to use (defaults to Formatter.default)
+  * @param writer the writer to use (defaults to ConsoleWriter)
+  * @param outputFormat the output format to use (defaults to OutputFormat.default)
+  * @param modifiers the modifiers
+  * @param maxBuffer the maximum buffer before overflow occurs (defaults to AsynchronousLogHandler.DefaultMaxBuffer)
+  * @param overflow what to do with overflows (defaults to DropOld)
+  */
 case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
                                   writer: Writer = ConsoleWriter,
                                   outputFormat: OutputFormat = OutputFormat.default,
@@ -75,5 +85,8 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
 }
 
 object AsynchronousLogHandler {
+  /**
+    * The default max buffer of log records (set to 1000)
+    */
   val DefaultMaxBuffer: Int = 1000
 }
