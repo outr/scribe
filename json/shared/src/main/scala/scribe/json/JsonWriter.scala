@@ -6,10 +6,9 @@ import scribe.output.format.OutputFormat
 import scribe.writer.Writer
 import perfolation._
 import upickle.default._
+import JsonWriter._
 
 case class JsonWriter(writer: Writer) extends Writer {
-  import JsonWriter._
-
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
     val l = record.timeStamp
     val trace = record.throwable.map(throwable2Trace)
@@ -22,7 +21,7 @@ case class JsonWriter(writer: Writer) extends Writer {
       methodName = record.methodName,
       line = record.line,
       column = record.column,
-      data = record.data.map(t => t._1 -> t._2.toString()),
+      data = record.data.map(t => t._1 -> t._2().toString),
       throwable = trace,
       timeStamp = l,
       date = l.t.F,

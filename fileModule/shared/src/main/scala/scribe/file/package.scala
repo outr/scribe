@@ -9,6 +9,8 @@ import perfolation._
 import scribe.util.Time
 
 package object file {
+  val DefaultBufferSize: Int = 1024
+
   implicit def path2PathBuilder(path: Path): PathBuilder = PathBuilder(List(PathPart.SetPath(path)))
   implicit def string2PathBuilder(s: String): PathBuilder = PathBuilder(List(PathPart.SetPath(Paths.get(s))))
   implicit def string2FileName(s: String): FileName = FileName(List(FileNamePart.Static(s)))
@@ -22,7 +24,7 @@ package object file {
   })
   def rollingGZIP(fileName: FileName = string2FileName(".gz"),
                   deleteOriginal: Boolean = true,
-                  bufferSize: Int = 1024): FileNamePart = Rolling(fileName.parts, (logFile, path) => {
+                  bufferSize: Int = DefaultBufferSize): FileNamePart = Rolling(fileName.parts, (logFile, path) => {
     LogFile.gzip(logFile, path, deleteOriginal, bufferSize)
   })
   def maxSize(max: Long = MaxSize.OneHundredMeg, separator: String = "-"): FileNamePart =
