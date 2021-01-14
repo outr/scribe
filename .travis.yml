@@ -4,7 +4,7 @@ language: scala
 jdk:
   - openjdk8
 script:
-  - sbt clean +test
+  - sbt clean test
   - sbt coverage coreJVM/test slf4j/test slf4j18/test
   - sbt coverageReport
   - sbt coverageAggregate
