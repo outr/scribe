@@ -21,7 +21,9 @@ case class JsonWriter(writer: Writer) extends Writer {
       methodName = record.methodName,
       line = record.line,
       column = record.column,
-      data = record.data.map(t => t._1 -> t._2().toString),
+      data = record.data.map {
+        case (key, value) => key -> value().toString
+      },
       throwable = trace,
       timeStamp = l,
       date = l.t.F,
