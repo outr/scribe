@@ -25,18 +25,16 @@ object Log4JMigration extends Moduload {
   override def error(t: Throwable): Unit = scribe.error("Error loading Log4JMigration", t)
 
   def apply(): Int = {
-    // Load from classloader
-    val loaded = Try(Option(getClass.getClassLoader.getResource("log4j.properties"))).toOption.flatten match {
-      case Some(url) => load(url)
-      case None => 0
-    }
-    // Load from disk
     val path = Paths.get("log4j.properties")
     if (Files.exists(path)) {
+      // Load from disk
       load(path)
-      loaded + 1
     } else {
-      loaded
+      // Load from classloader
+      Try(Option(getClass.getClassLoader.getResource("log4j.properties"))).toOption.flatten match {
+        case Some(url) => load(url)
+        case None => 0
+      }
     }
   }
 
