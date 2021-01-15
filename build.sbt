@@ -10,7 +10,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.2.0"
+version in ThisBuild := "3.2.1-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -137,6 +137,9 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     )
+  )
+  .jvmSettings(
+    crossScalaVersions := allScalaVersions
   )
   .nativeSettings(
     commonNativeSettings,

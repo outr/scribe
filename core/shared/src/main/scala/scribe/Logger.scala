@@ -201,7 +201,13 @@ object Logger {
 
   def resetRoot(): Unit = {
     // Configure the root logger to filter anything under SCRIBE_MINIMUM_LEVEL (or INFO if not specified) and write to the console
-    root.orphan().clearHandlers().withHandler(minimumLevel = Some(DefaultRootMinimumLevel)).replace(Some("root"))
+    root
+      .orphan()
+      .clearModifiers()
+      .withMinimumLevel(DefaultRootMinimumLevel)
+      .clearHandlers()
+      .withHandler()
+      .replace(Some("root"))
   }
 
   private def fixName(name: String): String = name.replace("$", "")
