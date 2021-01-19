@@ -3,10 +3,8 @@ package scribe
 import scribe.file.path._
 import scribe.file.path.PathPart.FileName
 
-import java.nio.file.{Files, Path, Paths, StandardOpenOption}
+import java.nio.file.{Path, Paths, StandardOpenOption}
 import scala.language.implicitConversions
-import perfolation._
-import scribe.util.Time
 
 import java.nio.channels.FileChannel
 
@@ -42,13 +40,4 @@ package object file {
   def maxSize(max: Long = MaxSize.OneHundredMeg, separator: String = "-"): FileNamePart =
     MaxSize(max, separator)
   def maxLogs(max: Int = 10): FileNamePart = MaxLogs(max)
-
-  def daily: Path => Boolean = (path: Path) => if (Files.exists(path)) {
-    val lastModified = Files.getLastModifiedTime(path).toMillis
-    val lastModifiedDay = lastModified.t.dayOfYear
-    val currentDay = Time().t.dayOfYear
-    lastModifiedDay != currentDay
-  } else {
-    false
-  }
 }
