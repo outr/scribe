@@ -81,6 +81,16 @@ object LogFile {
     }
   }
 
+  def copy(logFile: LogFile, path: Path): Unit = synchronized {
+    close(logFile)
+    if (Files.exists(logFile.path)) {
+      if (Files.exists(path)) {
+        Files.delete(path)
+      }
+      Files.copy(logFile.path, path)
+    }
+  }
+
   def gzip(logFile: LogFile,
            path: Path,
            deleteOriginal: Boolean,

@@ -3,10 +3,12 @@ package scribe
 import scribe.file.path._
 import scribe.file.path.PathPart.FileName
 
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path, Paths, StandardOpenOption}
 import scala.language.implicitConversions
 import perfolation._
 import scribe.util.Time
+
+import java.nio.channels.FileChannel
 
 package object file {
   val DefaultBufferSize: Int = 1024
@@ -19,8 +21,18 @@ package object file {
   def day: FileNamePart = FileNamePart.Day
   def month: FileNamePart = FileNamePart.Month
   def year: FileNamePart = FileNamePart.Year
-  def rolling(fileName: FileName): FileNamePart = Rolling(fileName.parts, (logFile, path) => {
-    LogFile.move(logFile, path)
+  def rolling(fileName: FileName, truncate: Boolean = true): FileNamePart = Rolling(fileName.parts, (logFile, path) => {
+    if (truncate) {
+      LogFile.copy(logFile, path)
+      val fc = FileChannel.open(logFile.path, StandardOpenOption.WRITE)
+      try {
+        fc.truncate(0L)
+      } finally {
+        fc.close()
+      }
+    } else {
+      LogFile.move(logFile, path)
+    }
   })
   def rollingGZIP(fileName: FileName = string2FileName(".gz"),
                   deleteOriginal: Boolean = true,
