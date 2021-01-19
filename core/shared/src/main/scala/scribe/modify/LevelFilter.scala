@@ -3,12 +3,11 @@ package scribe.modify
 import scribe.filter.Filter
 import scribe.{Level, LogRecord, Priority}
 
-class LevelFilter(include: Double => Boolean,
-                  exclude: Double => Boolean,
-                  override val priority: Priority,
-                  ignoreBoost: Boolean = false) extends LogModifier with Filter {
-  override def id: String = LevelFilter.Id
-
+case class LevelFilter(include: Double => Boolean,
+                       exclude: Double => Boolean,
+                       priority: Priority,
+                       ignoreBoost: Boolean = false,
+                       id: String = LevelFilter.Id) extends LogModifier with Filter {
   def accepts(level: Double): Boolean = {
     val i = include(level)
     val e = exclude(level)
@@ -22,6 +21,8 @@ class LevelFilter(include: Double => Boolean,
   }
 
   override def matches[M](record: LogRecord[M]): Boolean = accepts(if (ignoreBoost) record.level.value else record.levelValue)
+
+  override def withId(id: String): LogModifier = copy(id = id)
 }
 
 object LevelFilter {

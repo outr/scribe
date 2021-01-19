@@ -11,9 +11,8 @@ case class FilterBuilder(priority: Priority = Priority.Normal,
                          include: List[Filter] = Nil,
                          exclude: List[Filter] = Nil,
                          booster: Double => Double = d => d,
-                         _excludeUnselected: Boolean = false) extends LogModifier {
-  override def id: String = hashCode().toString
-
+                         _excludeUnselected: Boolean = false,
+                         id: String = "") extends LogModifier {
   def select(filters: Filter*): FilterBuilder = copy(select = select ::: filters.toList)
   def include(filters: Filter*): FilterBuilder = copy(include = include ::: filters.toList)
   def exclude(filters: Filter*): FilterBuilder = copy(exclude = exclude ::: filters.toList)
@@ -51,4 +50,6 @@ case class FilterBuilder(priority: Priority = Priority.Normal,
       Some(record)
     }
   }
+
+  override def withId(id: String): LogModifier = copy(id = id)
 }

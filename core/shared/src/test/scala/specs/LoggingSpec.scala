@@ -8,12 +8,12 @@ import perfolation._
 import scribe._
 import scribe.filter._
 import scribe.format.{FormatBlock, Formatter}
-import scribe.handler.LogHandler
+import scribe.handler.{LogHandler, SynchronousLogHandler}
 import scribe.modify.{LevelFilter, LogBooster}
 import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
-import scribe.writer.{NullWriter, Writer}
+import scribe.writer.{CacheWriter, NullWriter, Writer}
 
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
@@ -434,6 +434,21 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.set("user", User("John Doe", 21)).info("Hello")
 
       logged should be(List(User("John Doe", 21)))
+    }
+    "filter logs with two level filters with alwaysApply" in {
+      val writer = new CacheWriter
+      import scribe.format._
+      val logger = Logger.empty
+        .orphan()
+        .withMinimumLevel(Level.Info)
+        .withHandler(
+          formatter = formatter"${scribe.format.message}",
+          minimumLevel = Some(Level.Error),
+          writer = writer
+        )
+      logger.info("info")
+      logger.error("error")
+      writer.output.map(_.plainText) should be(List("error"))
     }
     // TODO: figure out why the hour is 8 hours off on 2.11
     /*"use HTMLOutputFormat to log something" in {

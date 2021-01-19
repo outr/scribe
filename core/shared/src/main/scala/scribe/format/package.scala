@@ -62,11 +62,7 @@ package object format {
   def classNameSimple: FormatBlock = FormatBlock.ClassNameSimple
   def methodName: FormatBlock = FormatBlock.MethodName
   def position: FormatBlock = FormatBlock.Position
-  def positionAbbreviated: FormatBlock = position.abbreviate(
-    maxLength = PositionAbbreviationLength,
-    padded = true,
-    abbreviateName = true
-  )
+  def positionAbbreviated: FormatBlock = FormatBlock.Position.abbreviate(maxLength = PositionAbbreviationLength)
   def positionSimple: FormatBlock = FormatBlock.PositionSimple
   def message: FormatBlock = FormatBlock.Message
   def newLine: FormatBlock = FormatBlock.NewLine

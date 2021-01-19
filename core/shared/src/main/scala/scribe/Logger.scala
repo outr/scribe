@@ -40,15 +40,15 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   def set(key: String, value: => Any): Logger = copy(data = this.data + (key -> (() => value)))
   def get(key: String): Option[Any] = data.get(key).map(_())
 
-  final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id) ::: List(modifier))
-  final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(_.id == modifier.id))
+  final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id) ::: List(modifier))
+  final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
   def includes(level: Level): Boolean = {
     modifierById[LevelFilter](LevelFilter.Id, recursive = true).forall(_.accepts(level.value))
   }
 
   def modifierById[M <: LogModifier](id: String, recursive: Boolean): Option[M] = {
-    modifiers.find(_.id == id).orElse {
+    modifiers.find(m => m.id.nonEmpty && m.id == id).orElse {
       parentId match {
         case _ if !recursive => None
         case None => None

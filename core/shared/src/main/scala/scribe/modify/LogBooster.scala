@@ -2,10 +2,12 @@ package scribe.modify
 
 import scribe.{LogRecord, Priority}
 
-class LogBooster(booster: Double => Double, override val priority: Priority) extends LogModifier {
-  override def id: String = "LogBooster"
-
+case class LogBooster(booster: Double => Double,
+                      priority: Priority,
+                      id: String = "") extends LogModifier {
   override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = Some(record.boost(booster))
+
+  override def withId(id: String): LogModifier = copy(id = id)
 }
 
 object LogBooster {

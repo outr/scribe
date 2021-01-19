@@ -11,7 +11,7 @@ trait LogModifier {
     * Represents a unique identifier for this type of modifier. This is used when adding a LogModifier to a Logger to
     * replace by type.
     */
-  def id: String = getClass.getName
+  def id: String
 
   /**
    * Multiple LogModifiers attached to the same `Logger` are automatically sorted by Priority.
@@ -26,6 +26,10 @@ trait LogModifier {
    * @return Some LogRecord that should continue to propagate or None if the logging action should be canceled
    */
   def apply[M](record: LogRecord[M]): Option[LogRecord[M]]
+
+  def withId(id: String): LogModifier
+
+  def alwaysApply: LogModifier = withId("")
 }
 
 object LogModifier {

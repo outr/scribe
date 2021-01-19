@@ -28,7 +28,9 @@ trait LogRecord[M] {
   def get(key: String): Option[Any] = data.get(key).map(_())
 
   def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(levelValue))
-  def checkModifierId(id: String, add: Boolean = true): Boolean = if (appliedModifierIds.contains(id)) {
+  def checkModifierId(id: String, add: Boolean = true): Boolean = if (id.isEmpty) {     // Always run blank id
+    false
+  } else if (appliedModifierIds.contains(id)) {
     true
   } else {
     if (add) {

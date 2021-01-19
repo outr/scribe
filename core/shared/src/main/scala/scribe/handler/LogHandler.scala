@@ -24,7 +24,7 @@ object LogHandler {
             minimumLevel: Option[Level] = None,
             modifiers: List[LogModifier] = Nil,
             outputFormat: OutputFormat = OutputFormat.default): SynchronousLogHandler = {
-    val mods = (minimumLevel.map(LevelFilter >= _).toList ::: modifiers).sortBy(_.priority)
+    val mods = (minimumLevel.map(l => (LevelFilter >= l).alwaysApply).toList ::: modifiers).sortBy(_.priority)
     SynchronousLogHandler(formatter, writer, outputFormat, mods)
   }
 
