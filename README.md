@@ -4,9 +4,9 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/88d47cae4fc6459dadeabae2e20af45a)](https://www.codacy.com/app/matthicks/scribe?utm_source=github.com&utm_medium=referral&utm_content=outr/scribe&utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f333f6b110974985b2d1dbea39665e9e)](https://www.codacy.com/gh/outr/scribe/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=outr/scribe&amp;utm_campaign=Badge_Grade)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/scribe)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.12)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.13)
 [![Latest version](https://index.scala-lang.org/outr/scribe/scribe/latest.svg)](https://index.scala-lang.org/outr/scribe)
-[![Javadocs](https://javadoc.io/badge/com.outr/scribe_2.12.svg)](https://javadoc.io/doc/com.outr/scribe_2.12)
+[![Javadocs](https://javadoc.io/badge/com.outr/scribe_2.13.svg)](https://javadoc.io/doc/com.outr/scribe_2.13)
 
 Scribe is a completely different way of thinking about logging. Instead of wrapping around existing logging frameworks
 and bearing their performance and design flaws, Scribe is built from the ground up to provide fast and effective logging
@@ -26,19 +26,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.2.3"
+libraryDependencies += "com.outr" %% "scribe" % "3.2.4"
 ```
 
 For Cross-Platform projects:
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.2.3"
+libraryDependencies += "com.outr" %%% "scribe" % "3.2.4"
 ```
 
 Or, if you want interoperability with SLF4J (to allow better interoperability with existing libraries using other loggers):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.2.3"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.2.4"
 ```
 
 ### Usage
