@@ -21,6 +21,7 @@ case class Rolling(parts: List[FileNamePart], action: (LogFile, Path) => Unit) e
     case Rolling.OnlyRolling => partsRegex
   }
 
+  // TODO: Optimize this by determining next time it should check
   override def before(writer: FileWriter): Unit = {
     val currentPaths: List[Path] = {
       threadLocal.set(Rolling.OnlyCurrent)
@@ -30,12 +31,20 @@ case class Rolling(parts: List[FileNamePart], action: (LogFile, Path) => Unit) e
         threadLocal.remove()
       }
     }
+    val existing: Path = {
+      threadLocal.set(Rolling.OnlyRolling)
+      try {
+        writer.resolvePath()
+      } finally {
+        threadLocal.remove()
+      }
+    }
 
     currentPaths.foreach { cp =>
       val lastModified = Files.getLastModifiedTime(cp).toMillis
       val rp = rollingPath(lastModified, writer)
       LogFile.get(cp) match {
-        case Some(logFile) if !Files.exists(rp) => action(logFile, rp)
+        case Some(logFile) if rp != existing && !Files.exists(rp) => action(logFile, rp)
         case _ => // Ignore
       }
     }

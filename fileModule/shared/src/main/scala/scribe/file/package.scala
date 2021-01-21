@@ -15,6 +15,7 @@ package object file {
   implicit def string2PathBuilder(s: String): PathBuilder = PathBuilder(List(PathPart.SetPath(Paths.get(s))))
   implicit def string2FileName(s: String): FileName = FileName(List(FileNamePart.Static(s)))
   implicit def string2FileNamePart(s: String): FileNamePart = FileNamePart.Static(s)
+  implicit def fileNamePart2FileName(part: FileNamePart): FileName = FileName(List(part))
 
   def day: FileNamePart = FileNamePart.Day
   def month: FileNamePart = FileNamePart.Month
@@ -40,4 +41,6 @@ package object file {
   def maxSize(max: Long = MaxSize.OneHundredMeg, separator: String = "-"): FileNamePart =
     MaxSize(max, separator)
   def maxLogs(max: Int = 10): FileNamePart = MaxLogs(max)
+
+  def daily(separator: String = "-"): FileName = year % separator % month % separator % day
 }

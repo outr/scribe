@@ -3,7 +3,7 @@ package scribe.file.path
 import scribe.util.Time
 
 import java.nio.file.{Files, Path, Paths}
-import scribe.file.FileWriter
+import scribe.file.{FileWriter, string2FileNamePart}
 
 trait PathPart {
   def current(previous: Path, timeStamp: Long): Path
@@ -33,7 +33,7 @@ object PathPart {
     override def all(previous: Path): List[Path] = List(current(previous, 0L))
   }
 
-  case class FileName(parts: List[FileNamePart]) extends PathPart {
+  case class FileName(parts: List[FileNamePart]) extends PathPart with FileNamePart {
     private var fileName: String = _
 
     override def current(previous: Path, timeStamp: Long): Path = {
@@ -64,7 +64,12 @@ object PathPart {
       parts.foreach(_.after(writer))
     }
 
+    override def current(timeStamp: Long): String = parts.map(_.current(timeStamp)).mkString
+
+    override def regex: String = parts.map(_.regex).mkString
+
     def %(part: FileNamePart): FileName = copy(parts ::: List(part))
+    def %(s: String): FileName = %(string2FileNamePart(s))
   }
 }
 

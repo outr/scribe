@@ -36,6 +36,10 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  private def incrementTime(duration: FiniteDuration): Unit = {
+    timeStamp += duration.toMillis
+  }
+
   private var writer: FileWriter = _
 
   private def setWriter(writer: FileWriter): Unit = {
@@ -254,7 +258,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         setDate("2018-01-01")
 
         setWriter(
-          FileWriter("logs" / ("rolling1" % rolling("." % year % "." % month % "." % day) % ".log")).flushAlways
+          FileWriter("logs" / ("rolling1" % rolling("." % daily(".")) % ".log")).flushAlways
         )
         writer.path should be(path1)
         val logger = Logger
@@ -270,20 +274,36 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(path1) should be(List("Test 1"))
         linesFor(path2) should be(Nil)
         linesFor(path3) should be(Nil)
+        Files.exists(path1) should be(true)
+        Files.exists(path2) should be(false)
+        Files.exists(path3) should be(false)
+
+        incrementTime(5.seconds)
+        Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
+        logger.info("Test 2")
+        linesFor(path1) should be(List("Test 1", "Test 2"))
+        linesFor(path2) should be(Nil)
+        linesFor(path3) should be(Nil)
+        Files.exists(path1) should be(true)
+        Files.exists(path2) should be(false)
+        Files.exists(path3) should be(false)
 
         Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
         setDate("2018-01-02")
-        logger.debug("Test 2")
-        linesFor(path1) should be(List("Test 2"))
-        linesFor(path2) should be(List("Test 1"))
+        logger.debug("Test 3")
+        linesFor(path1) should be(List("Test 3"))
+        linesFor(path2) should be(List("Test 1", "Test 2"))
         linesFor(path3) should be(Nil)
+        Files.exists(path1) should be(true)
+        Files.exists(path2) should be(true)
+        Files.exists(path3) should be(false)
 
         Files.setLastModifiedTime(writer.path, FileTime.fromMillis(Time()))
         setDate("2018-01-03")
-        logger.debug("Test 3")
-        linesFor(path1) should be(List("Test 3"))
-        linesFor(path2) should be(List("Test 1"))
-        linesFor(path3) should be(List("Test 2"))
+        logger.debug("Test 4")
+        linesFor(path1) should be(List("Test 4"))
+        linesFor(path2) should be(List("Test 1", "Test 2"))
+        linesFor(path3) should be(List("Test 3"))
       }
     }
     "tear down" in {

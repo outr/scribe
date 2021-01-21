@@ -13,14 +13,16 @@ case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
                       append: Boolean = true,
                       flushMode: FlushMode = FlushMode.AsynchronousFlush(),
                       charset: Charset = Charset.defaultCharset()) extends Writer {
-  private var _path: Path = pathBuilder.path(Time())
+  private var _path: Path = resolvePath()
 
   def path: Path = _path
 
   def list(): List[Path] = pathBuilder.list().sortBy(path => Files.getLastModifiedTime(path))
 
+  def resolvePath(): Path = pathBuilder.path(Time())
+
   def updatePath(): Boolean = {
-    val newPath = pathBuilder.path(Time())
+    val newPath = resolvePath()
     _path = newPath
     _path != newPath
   }
