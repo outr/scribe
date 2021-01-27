@@ -11,8 +11,8 @@ import java.nio.channels.FileChannel
 package object file {
   val DefaultBufferSize: Int = 1024
 
-  implicit def path2PathBuilder(path: Path): PathBuilder = PathBuilder(List(PathPart.SetPath(path)))
-  implicit def string2PathBuilder(s: String): PathBuilder = PathBuilder(List(PathPart.SetPath(Paths.get(s))))
+  implicit def path2PathBuilder(path: Path): PathBuilder = PathBuilder(List(PathPart.SetPath(path.toAbsolutePath.toString)))
+  implicit def string2PathBuilder(s: String): PathBuilder = PathBuilder(List(PathPart.SetPath(s)))
   implicit def string2FileName(s: String): FileName = FileName(List(FileNamePart.Static(s)))
   implicit def string2FileNamePart(s: String): FileNamePart = FileNamePart.Static(s)
   implicit def fileNamePart2FileName(part: FileNamePart): FileName = FileName(List(part))

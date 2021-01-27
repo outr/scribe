@@ -17,7 +17,7 @@ case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
 
   def path: Path = _path
 
-  def list(): List[Path] = pathBuilder.list().sortBy(path => Files.getLastModifiedTime(path))
+  def list(): List[Path] = pathBuilder.iterator().toList.sortBy(path => Files.getLastModifiedTime(path))
 
   def resolvePath(): Path = pathBuilder.path(Time())
 
