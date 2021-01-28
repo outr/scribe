@@ -1,6 +1,6 @@
 package scribe.benchmark
 
-import scribe.file.FileWriter
+import scribe.file._
 
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit

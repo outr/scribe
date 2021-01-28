@@ -3,6 +3,7 @@ package spec
 import scribe._
 import scribe.file._
 import scribe.file.FileWriter
+import scribe.output.format.ASCIIOutputFormat
 
 import java.nio.file.Files
 import scala.concurrent.duration._
@@ -14,7 +15,7 @@ object StressTestFileLogging {
 //      "logs" / ("stress" % maxSize(max = 1024 * 1024 * 5) % maxLogs(5, 15.seconds) % ".log"),
       append = false
     )
-    val logger = Logger.empty.orphan().withHandler(writer = writer)
+    val logger = Logger.empty.orphan().withHandler(writer = writer, outputFormat = ASCIIOutputFormat)
     val total = 10000000
 
     elapsed {
