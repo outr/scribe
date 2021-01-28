@@ -17,15 +17,13 @@ trait LogHandler {
 }
 
 object LogHandler {
-  lazy val default: SynchronousLogHandler = SynchronousLogHandler()
-
   def apply(formatter: Formatter = Formatter.default,
             writer: Writer = ConsoleWriter,
             minimumLevel: Option[Level] = None,
             modifiers: List[LogModifier] = Nil,
-            outputFormat: OutputFormat = OutputFormat.default): SynchronousLogHandler = {
+            outputFormat: OutputFormat = OutputFormat.default): LogHandlerBuilder = {
     val mods = (minimumLevel.map(l => (LevelFilter >= l).alwaysApply).toList ::: modifiers).sortBy(_.priority)
-    SynchronousLogHandler(formatter, writer, outputFormat, mods)
+    LogHandlerBuilder(formatter, writer, outputFormat, mods)
   }
 
   def apply(minimumLevel: Level)(f: LogRecord[_] => Unit): FunctionalLogHandler = {

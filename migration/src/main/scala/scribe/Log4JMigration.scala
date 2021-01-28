@@ -5,7 +5,7 @@ import java.net.URL
 import java.nio.file.{Files, Path, Paths}
 import java.util.Properties
 import moduload.Moduload
-import scribe.handler.{LogHandler, SynchronousLogHandler}
+import scribe.handler.{LogHandler, LogHandlerBuilder, SynchronousLogHandle}
 import scribe.modify.LevelFilter
 import scribe.modify.LevelFilter._
 
@@ -64,7 +64,7 @@ object Log4JMigration extends Moduload {
 class Log4JMigration private() {
   import Log4JMigration._
 
-  private var handlers = Map.empty[String, SynchronousLogHandler]
+  private var handlers = Map.empty[String, LogHandlerBuilder]
 
   def apply(key: String, value: String): Boolean = {
     def parse(): (LevelFilter, List[LogHandler]) = {

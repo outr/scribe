@@ -9,7 +9,7 @@ import scribe._
 import scribe.data._
 import scribe.filter._
 import scribe.format.{FormatBlock, Formatter}
-import scribe.handler.{LogHandler, SynchronousLogHandler}
+import scribe.handler.{LogHandler, SynchronousLogHandle}
 import scribe.modify.{LevelFilter, LogBooster}
 import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}

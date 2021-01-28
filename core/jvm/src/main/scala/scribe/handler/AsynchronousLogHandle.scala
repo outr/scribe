@@ -21,24 +21,20 @@ import scala.language.implicitConversions
   * @param maxBuffer the maximum buffer before overflow occurs (defaults to AsynchronousLogHandler.DefaultMaxBuffer)
   * @param overflow what to do with overflows (defaults to DropOld)
   */
-case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
-                                  writer: Writer = ConsoleWriter,
-                                  outputFormat: OutputFormat = OutputFormat.default,
-                                  modifiers: List[LogModifier] = Nil,
-                                  maxBuffer: Int = AsynchronousLogHandler.DefaultMaxBuffer,
-                                  overflow: Overflow = Overflow.DropOld) extends LogHandler {
+case class AsynchronousLogHandle(maxBuffer: Int,
+                                 overflow: Overflow = Overflow.DropOld) extends LogHandle {
   private lazy val cached = new AtomicLong(0L)
 
   private lazy val queue = {
-    val q = new ConcurrentLinkedQueue[LogRecord[_]]
+    val q = new ConcurrentLinkedQueue[(LogHandlerBuilder, LogRecord[_])]
     val t = new Thread {
       setDaemon(true)
 
       override def run(): Unit = while (true) {
         Option(q.poll()) match {
-          case Some(record) => {
+          case Some((handler, record)) => {
             cached.decrementAndGet()
-            SynchronousLogHandler.log(modifiers, formatter, writer, record, outputFormat)
+            SynchronousLogHandle.log(handler, record)
             Thread.sleep(1L)
           }
           case None => Thread.sleep(10L)
@@ -49,17 +45,11 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
     q
   }
 
-  def withMaxBuffer(maxBuffer: Int): AsynchronousLogHandler = copy(maxBuffer = maxBuffer)
+  def withMaxBuffer(maxBuffer: Int): AsynchronousLogHandle = copy(maxBuffer = maxBuffer)
 
-  def withOverflow(overflow: Overflow): AsynchronousLogHandler = copy(overflow = overflow)
+  def withOverflow(overflow: Overflow): AsynchronousLogHandle = copy(overflow = overflow)
 
-  def withFormatter(formatter: Formatter): AsynchronousLogHandler = copy(formatter = formatter)
-
-  def withWriter(writer: Writer): AsynchronousLogHandler = copy(writer = writer)
-
-  def setModifiers(modifiers: List[LogModifier]): AsynchronousLogHandler = copy(modifiers = modifiers.sorted)
-
-  override def log[M](record: LogRecord[M]): Unit = {
+  override def log[M](handler: LogHandlerBuilder, record: LogRecord[M]): Unit = {
     val add = if (!cached.incrementIfLessThan(maxBuffer)) {
       overflow match {
         case Overflow.DropOld => {
@@ -79,12 +69,12 @@ case class AsynchronousLogHandler(formatter: Formatter = Formatter.default,
       true
     }
     if (add) {
-      queue.add(record)
+      queue.add(handler -> record)
     }
   }
 }
 
-object AsynchronousLogHandler {
+object AsynchronousLogHandle {
   /**
     * The default max buffer of log records (set to 1000)
     */

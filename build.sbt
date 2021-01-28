@@ -143,6 +143,7 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   )
   .nativeSettings(
     commonNativeSettings,
+    logLevel := Level.Debug,
     test := {}
   )
   .dependsOn(core)

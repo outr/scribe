@@ -9,7 +9,7 @@ import org.pmw.tinylog
 import scribe._
 import scribe.file._
 import scribe.format._
-import scribe.handler.AsynchronousLogHandler
+import scribe.handler.AsynchronousLogHandle
 
 // jmh:run -i 3 -wi 3 -f1 -t1 -rf JSON -rff benchmarks.json
 @annotations.State(annotations.Scope.Thread)
