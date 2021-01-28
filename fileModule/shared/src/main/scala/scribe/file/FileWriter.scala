@@ -40,6 +40,8 @@ case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
     pathBuilder.after(this)
   }
 
+  def flush(): Unit = LogFile(this).flush()
+
   def flushNever: FileWriter = copy(flushMode = FlushMode.NeverFlush)
   def flushAlways: FileWriter = copy(flushMode = FlushMode.AlwaysFlush)
   def flushAsync: FileWriter = copy(flushMode = FlushMode.AsynchronousFlush())

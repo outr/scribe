@@ -23,7 +23,7 @@ case class MaxSize(maxSizeInBytes: Long, separator: String) extends FileNamePart
 
   override def before(writer: FileWriter): Unit = {
     val logFile = LogFile(writer)
-    if (logFile.size >= maxSizeInBytes) {
+    if (logFile.size >= maxSizeInBytes && Files.exists(logFile.path)) {
       val path = pathFor(writer, 1)
       val lastModified = Files.getLastModifiedTime(logFile.path)
       rollPaths(writer)
@@ -38,7 +38,8 @@ case class MaxSize(maxSizeInBytes: Long, separator: String) extends FileNamePart
       rollPaths(writer, i + 1)
       val nextPath = pathFor(writer, i + 1)
       val lastModified = Files.getLastModifiedTime(path)
-      Files.move(path, nextPath)
+      LogFile.copy(path, nextPath)
+      LogFile.truncate(path)
       Files.setLastModifiedTime(nextPath, lastModified)
     }
   }

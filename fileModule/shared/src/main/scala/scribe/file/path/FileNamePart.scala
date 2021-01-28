@@ -38,7 +38,7 @@ object FileNamePart {
       c.set(Calendar.MINUTE, 0)
       c.set(Calendar.SECOND, 0)
       c.set(Calendar.MILLISECOND, 0)
-      Some(c.getTimeInMillis - timeStamp)
+      Some(c.getTimeInMillis)
     }
   }
 
@@ -50,13 +50,13 @@ object FileNamePart {
     override def nextValidation(timeStamp: Long): Option[Long] = {
       val c = Calendar.getInstance()
       c.setTimeInMillis(timeStamp)
-      c.add(Calendar.MONTH, 0)
+      c.add(Calendar.MONTH, 1)
       c.set(Calendar.DAY_OF_MONTH, 1)
       c.set(Calendar.HOUR_OF_DAY, 0)
       c.set(Calendar.MINUTE, 0)
       c.set(Calendar.SECOND, 0)
       c.set(Calendar.MILLISECOND, 0)
-      Some(c.getTimeInMillis - timeStamp)
+      Some(c.getTimeInMillis)
     }
   }
 
@@ -73,7 +73,7 @@ object FileNamePart {
       c.set(Calendar.MINUTE, 0)
       c.set(Calendar.SECOND, 0)
       c.set(Calendar.MILLISECOND, 0)
-      Some(c.getTimeInMillis - timeStamp)
+      Some(c.getTimeInMillis)
     }
   }
 }

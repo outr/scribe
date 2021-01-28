@@ -3,8 +3,9 @@ package scribe.file
 import scribe.file.writer.LogFileWriter
 
 import java.io.{File, FileInputStream, FileOutputStream, InputStream, OutputStream}
+import java.nio.channels.FileChannel
 import java.nio.charset.Charset
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, StandardOpenOption}
 import java.util.concurrent.atomic.AtomicLong
 import java.util.zip.GZIPOutputStream
 import scala.annotation.tailrec
@@ -68,26 +69,52 @@ object LogFile {
 
   def delete(logFile: LogFile): Unit = synchronized {
     close(logFile)
-    Files.deleteIfExists(logFile.path)
+    delete(logFile.path)
+  }
+
+  def delete(path: Path): Unit = synchronized {
+    Files.deleteIfExists(path)
   }
 
   def move(logFile: LogFile, path: Path): Unit = synchronized {
     close(logFile)
-    if (Files.exists(logFile.path)) {
-      if (Files.exists(path)) {
-        Files.delete(path)
+    move(logFile.path, path)
+  }
+
+  def move(from: Path, to: Path): Unit = synchronized {
+    if (Files.exists(from)) {
+      if (Files.exists(to)) {
+        Files.delete(to)
       }
-      Files.move(logFile.path, path)
+      Files.move(from, to)
     }
   }
 
   def copy(logFile: LogFile, path: Path): Unit = synchronized {
     close(logFile)
-    if (Files.exists(logFile.path)) {
-      if (Files.exists(path)) {
-        Files.delete(path)
+    copy(logFile.path, path)
+  }
+
+  def copy(from: Path, to: Path): Unit = synchronized {
+    if (Files.exists(from)) {
+      if (Files.exists(to)) {
+        Files.delete(to)
       }
-      Files.copy(logFile.path, path)
+      Files.copy(from, to)
+    }
+  }
+
+  def truncate(logFile: LogFile): Unit = synchronized {
+    close(logFile)
+    truncate(logFile.path)
+  }
+
+  def truncate(path: Path): Unit = synchronized {
+    val fc = FileChannel.open(path, StandardOpenOption.WRITE)
+    try {
+      fc.truncate(0L)
+    } finally {
+      fc.close()
     }
   }
 

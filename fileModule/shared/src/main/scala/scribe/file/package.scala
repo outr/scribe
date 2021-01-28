@@ -26,12 +26,7 @@ package object file {
     Rolling(fileName.parts, (logFile, path) => {
       if (truncate) {
         LogFile.copy(logFile, path)
-        val fc = FileChannel.open(logFile.path, StandardOpenOption.WRITE)
-        try {
-          fc.truncate(0L)
-        } finally {
-          fc.close()
-        }
+        LogFile.truncate(logFile)
       } else {
         LogFile.move(logFile, path)
       }
