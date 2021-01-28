@@ -220,7 +220,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     "verifying max number of log files" should {
       "configure maximum number of log files" in {
         setWriter(
-          FileWriter("logs" / ("maxlogs" % maxSize(max = 1L, separator = ".") % maxLogs(3) % ".log")).flushAlways
+          FileWriter("logs" / ("maxlogs" % maxSize(max = 1L, separator = ".") % maxLogs(3, 0.seconds) % ".log")).flushAlways
         )
       }
       "write four log records for a maximum of three log files" in {

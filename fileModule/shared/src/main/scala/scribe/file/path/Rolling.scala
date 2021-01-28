@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 
 case class Rolling(parts: List[FileNamePart],
                    action: (LogFile, Path) => Unit,
-                   minimumValidationFrequency: FiniteDuration = 5.minutes) extends FileNamePart {
+                   minimumValidationFrequency: FiniteDuration) extends FileNamePart {
   private lazy val partsRegex = parts.map(_.regex).mkString
   private val threadLocal = new ThreadLocal[Rolling.Mode] {
     override def initialValue(): Rolling.Mode = Rolling.Standard
@@ -54,7 +54,7 @@ case class Rolling(parts: List[FileNamePart],
       }
     }
 
-    nextRun = (minimumValidationFrequency.toMillis :: parts.flatMap(_.nextValidation(Time()))).min
+    nextRun = (Time() + minimumValidationFrequency.toMillis :: parts.flatMap(_.nextValidation(Time()))).min
   }
 
   def rollingPath(timeStamp: Long, writer: FileWriter): Path = {
