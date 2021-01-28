@@ -11,7 +11,8 @@ import scribe.Execution.global
 import scribe.output.format.OutputFormat
 import scribe.output.{EmptyOutput, LogOutput}
 import scribe.writer.Writer
-import scribe.{LogRecord, MDC}
+import scribe.LogRecord
+import scribe.mdc.MDC
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

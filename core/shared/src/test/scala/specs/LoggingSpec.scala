@@ -6,6 +6,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import perfolation._
 import scribe._
+import scribe.mdc._
 import scribe.filter._
 import scribe.format.{FormatBlock, Formatter}
 import scribe.handler.{LogHandler, SynchronousLogHandler}

@@ -1,5 +1,7 @@
 package scribe
 
+import scribe.mdc.MDC
+
 import scala.language.experimental.macros
 
 trait LoggerSupport {

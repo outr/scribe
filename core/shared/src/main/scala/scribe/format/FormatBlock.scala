@@ -2,6 +2,7 @@ package scribe.format
 
 import perfolation._
 import scribe._
+import scribe.mdc.MDC
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.util.Abbreviator
 
