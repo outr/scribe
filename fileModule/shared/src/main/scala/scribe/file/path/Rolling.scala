@@ -1,10 +1,14 @@
 package scribe.file.path
 
 import scribe.file.{FileWriter, LogFile}
+import scribe.util.Time
 
 import java.nio.file.{Files, Path}
+import scala.concurrent.duration._
 
-case class Rolling(parts: List[FileNamePart], action: (LogFile, Path) => Unit) extends FileNamePart {
+case class Rolling(parts: List[FileNamePart],
+                   action: (LogFile, Path) => Unit,
+                   minimumValidationFrequency: FiniteDuration = 5.minutes) extends FileNamePart {
   private lazy val partsRegex = parts.map(_.regex).mkString
   private val threadLocal = new ThreadLocal[Rolling.Mode] {
     override def initialValue(): Rolling.Mode = Rolling.Standard
@@ -21,8 +25,9 @@ case class Rolling(parts: List[FileNamePart], action: (LogFile, Path) => Unit) e
     case Rolling.OnlyRolling => partsRegex
   }
 
-  // TODO: Optimize this by determining next time it should check
-  override def before(writer: FileWriter): Unit = {
+  private var nextRun: Long = 0L
+
+  override def before(writer: FileWriter): Unit = if (Time() >= nextRun) {
     val currentPaths: List[Path] = {
       threadLocal.set(Rolling.OnlyCurrent)
       try {
@@ -48,6 +53,8 @@ case class Rolling(parts: List[FileNamePart], action: (LogFile, Path) => Unit) e
         case _ => // Ignore
       }
     }
+
+    nextRun = (minimumValidationFrequency.toMillis :: parts.flatMap(_.nextValidation(Time()))).min
   }
 
   def rollingPath(timeStamp: Long, writer: FileWriter): Path = {

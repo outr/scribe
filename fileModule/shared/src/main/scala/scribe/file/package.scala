@@ -38,8 +38,7 @@ package object file {
                   bufferSize: Int = DefaultBufferSize): FileNamePart = Rolling(fileName.parts, (logFile, path) => {
     LogFile.gzip(logFile, path, deleteOriginal, bufferSize)
   })
-  def maxSize(max: Long = MaxSize.OneHundredMeg, separator: String = "-"): FileNamePart =
-    MaxSize(max, separator)
+  def maxSize(max: Long = MaxSize.OneHundredMeg, separator: String = "-"): FileNamePart = MaxSize(max, separator)
   def maxLogs(max: Int = 10): FileNamePart = MaxLogs(max)
 
   def daily(separator: String = "-"): FileName = year % separator % month % separator % day

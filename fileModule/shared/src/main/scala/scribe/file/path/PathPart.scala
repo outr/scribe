@@ -12,6 +12,8 @@ trait PathPart {
 
   def before(writer: FileWriter): Unit = {}
   def after(writer: FileWriter): Unit = {}
+
+  def nextValidation(timeStamp: Long): Option[Long] = None
 }
 
 object PathPart {
@@ -77,6 +79,11 @@ object PathPart {
 
     def %(part: FileNamePart): FileName = copy(parts ::: List(part))
     def %(s: String): FileName = %(string2FileNamePart(s))
+
+    override def nextValidation(timeStamp: Long): Option[Long] = parts.flatMap(_.nextValidation(timeStamp)) match {
+      case Nil => None
+      case l => Some(l.min)
+    }
   }
 }
 
