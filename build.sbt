@@ -1,16 +1,16 @@
 // Scala versions
 val scala213 = "2.13.4"
-val scala212 = "2.12.12"
+val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-//val scala3 = "3.0.0-M3"
-val allScalaVersions = List(scala213, scala212, scala211) //, scala3)
+val scala3 = "3.0.0-M3"
+val allScalaVersions = List(scala213, scala212, scala211) //, scala3) // TODO: re-enable once sourcecode does a release for Scala.js on 3.0.0-M3
 val scala2Versions = List(scala213, scala212, scala211)
-val nativeScalaVersions = List(scala211)
+val nativeScalaVersions = List(scala211, scala212, scala213)
 val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.2.5-SNAPSHOT"
+version in ThisBuild := "3.2.5"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -37,8 +37,8 @@ parallelExecution in ThisBuild := false
 testOptions in ThisBuild += Tests.Argument("-oD")
 
 // Core
-val perfolationVersion: String = "1.2.3"
-val sourcecodeVersion: String = "0.2.1"
+val perfolationVersion: String = "1.2.4"
+val sourcecodeVersion: String = "0.2.3"
 val collectionCompatVersion: String = "2.3.2"
 val moduloadVersion: String = "1.1.0"
 
@@ -46,7 +46,7 @@ val moduloadVersion: String = "1.1.0"
 val uPickleVersion: String = "1.2.2"
 
 // Testing
-val scalatestVersion: String = "3.2.3"
+val scalatestVersion: String = "3.2.4-M1"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
@@ -77,7 +77,7 @@ val sourceMapSettings = List(
 )
 
 val commonNativeSettings = Seq(
-  scalaVersion := scala211,
+  scalaVersion := scala213,
   crossScalaVersions := nativeScalaVersions,
   nativeLinkStubs := true
 )
