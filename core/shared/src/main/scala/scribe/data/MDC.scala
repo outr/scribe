@@ -8,7 +8,7 @@ object MDC {
   lazy val global: MDC = creator(None)
 
   var manager: MDCManager = MDCThreadLocal
-  var creator: (Option[MDC]) => MDC = parent => new MDCMap(parent)
+  var creator: Option[MDC] => MDC = parent => new MDCMap(parent)
 
   def instance: MDC = manager.instance
 
