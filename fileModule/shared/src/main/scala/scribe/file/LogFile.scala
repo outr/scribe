@@ -53,6 +53,8 @@ object LogFile {
   private var usage = Map.empty[LogFile, Set[FileWriter]]
   private var current = Map.empty[FileWriter, LogFile]
 
+  // TODO: represent a virtual list of files to avoid having to build paths and update that list with the methods below
+
   def get(path: Path): Option[LogFile] = paths.get(path)
 
   def close(logFile: LogFile): Unit = synchronized {
@@ -196,12 +198,7 @@ object LogFile {
   private def release(logFile: LogFile, writer: FileWriter): Unit = {
     val set = usage.getOrElse(logFile, Set.empty) - writer
     if (set.isEmpty) {
-      logFile.flush()
-      logFile.dispose()
-      usage -= logFile
-      paths.foreach {
-        case (key, value) => if (value eq logFile) paths -= key
-      }
+      close(logFile)
     } else {
       usage += logFile -> set
     }
