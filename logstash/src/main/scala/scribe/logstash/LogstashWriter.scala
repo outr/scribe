@@ -12,7 +12,7 @@ import scribe.output.format.OutputFormat
 import scribe.output.{EmptyOutput, LogOutput}
 import scribe.writer.Writer
 import scribe.LogRecord
-import scribe.mdc.MDC
+import scribe.data.MDC
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

@@ -3,7 +3,7 @@ package scribe.slf4j
 import java.util
 
 import org.slf4j.spi.MDCAdapter
-import scribe.mdc.MDC
+import scribe.data.MDC
 
 import scala.jdk.CollectionConverters._
 

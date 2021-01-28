@@ -1,4 +1,4 @@
-package scribe.mdc
+package scribe.data
 
 import scribe.util.Time
 
