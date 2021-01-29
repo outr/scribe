@@ -43,7 +43,7 @@ val collectionCompatVersion: String = "2.3.2"
 val moduloadVersion: String = "1.1.0"
 
 // JSON
-val uPickleVersion: String = "1.2.2"
+val uPickleVersion: String = "1.2.3"
 
 // Testing
 val scalatestVersion: String = "3.2.4-M1"
