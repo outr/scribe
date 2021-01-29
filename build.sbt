@@ -39,11 +39,11 @@ testOptions in ThisBuild += Tests.Argument("-oD")
 // Core
 val perfolationVersion: String = "1.2.4"
 val sourcecodeVersion: String = "0.2.3"
-val collectionCompatVersion: String = "2.3.2"
+val collectionCompatVersion: String = "2.4.0"
 val moduloadVersion: String = "1.1.0"
 
 // JSON
-val uPickleVersion: String = "1.2.2"
+val uPickleVersion: String = "1.2.3"
 
 // Testing
 val scalatestVersion: String = "3.2.4-M1"
@@ -53,7 +53,7 @@ val slf4jVersion: String = "1.7.30"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Config Dependencies
-val profigVersion: String = "3.1.1"
+val profigVersion: String = "3.1.2"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.13.18"
