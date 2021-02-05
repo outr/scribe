@@ -23,12 +23,24 @@ package object file {
   def rolling(fileName: FileName,
               truncate: Boolean = true,
               minimumValidationFrequency: FiniteDuration = 5.minutes): FileNamePart = {
-    Rolling(fileName.parts, (logFile, path) => {
-      if (truncate) {
-        LogFile.copy(logFile, path)
-        LogFile.truncate(logFile)
-      } else {
-        LogFile.move(logFile, path)
+    Rolling(fileName.parts, (current, path) => {
+      LogFile.get(current) match {
+        case Some(logFile) => {
+          if (truncate) {
+            LogFile.copy(logFile, path)
+            LogFile.truncate(logFile)
+          } else {
+            LogFile.move(logFile, path)
+          }
+        }
+        case None => {
+          if (truncate) {
+            LogFile.copy(current, path)
+            LogFile.truncate(current)
+          } else {
+            LogFile.move(current, path)
+          }
+        }
       }
     }, minimumValidationFrequency)
   }
@@ -36,8 +48,11 @@ package object file {
                   deleteOriginal: Boolean = true,
                   bufferSize: Int = DefaultBufferSize,
                   minimumValidationFrequency: FiniteDuration = 5.minutes): FileNamePart = {
-    Rolling(fileName.parts, (logFile, path) => {
-      LogFile.gzip(logFile, path, deleteOriginal, bufferSize)
+    Rolling(fileName.parts, (current, path) => {
+      LogFile.get(current) match {
+        case Some(logFile) => LogFile.gzip(logFile, path, deleteOriginal, bufferSize)
+        case None => LogFile.gzip(current, path, deleteOriginal, bufferSize)
+      }
     }, minimumValidationFrequency)
   }
   def maxSize(max: Long = MaxSize.OneHundredMeg, separator: String = "-"): FileNamePart = MaxSize(max, separator)

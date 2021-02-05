@@ -305,6 +305,41 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
         linesFor(path2) should be(List("Test 1", "Test 2"))
         linesFor(path3) should be(List("Test 3"))
       }
+      "rolling logging for an old log file should roll properly" in {
+        val path1 = Paths.get("logs", "rolling2.log")
+        val path2 = Paths.get("logs", "rolling2.2018.01.01.log")
+        val path3 = Paths.get("logs", "rolling2.2018.01.02.log")
+        Files.deleteIfExists(path1)
+        Files.deleteIfExists(path2)
+        Files.deleteIfExists(path3)
+
+        // Write something to the rolling file
+        Files.write(path1, "existing\n".getBytes)
+
+        setDate("2018-01-01")
+        Files.setLastModifiedTime(path1, FileTime.fromMillis(Time()))
+
+        setDate("2018-01-02")
+
+        setWriter(
+          FileWriter("logs" / ("rolling2" % rolling("." % daily(".")) % ".log")).flushAlways
+        )
+        writer.path should be(path1)
+        val logger = Logger
+          .empty
+          .orphan()
+          .withHandler(
+            formatter = Formatter.simple,
+            writer = writer,
+            minimumLevel = Some(Level.Trace)
+          )
+
+        logger.info("testing")
+
+        linesFor(path1) should be(List("testing"))
+        linesFor(path2) should be(List("existing"))
+        linesFor(path3) should be(Nil)
+      }
     }
     "tear down" in {
       Time.reset()

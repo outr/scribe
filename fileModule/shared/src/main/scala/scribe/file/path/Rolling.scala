@@ -1,13 +1,13 @@
 package scribe.file.path
 
-import scribe.file.{FileWriter, LogFile}
+import scribe.file.FileWriter
 import scribe.util.Time
 
 import java.nio.file.{Files, Path}
 import scala.concurrent.duration._
 
 case class Rolling(parts: List[FileNamePart],
-                   action: (LogFile, Path) => Unit,
+                   action: (Path, Path) => Unit,
                    minimumValidationFrequency: FiniteDuration) extends FileNamePart {
   private lazy val partsRegex = parts.map(_.regex).mkString
   private val threadLocal = new ThreadLocal[Rolling.Mode] {
@@ -48,9 +48,8 @@ case class Rolling(parts: List[FileNamePart],
     currentPaths.foreach { cp =>
       val lastModified = Files.getLastModifiedTime(cp).toMillis
       val rp = rollingPath(lastModified, writer)
-      LogFile.get(cp) match {
-        case Some(logFile) if rp != existing && !Files.exists(rp) => action(logFile, rp)
-        case _ => // Ignore
+      if (rp != existing && !Files.exists(rp)) {
+        action(cp, rp)
       }
     }
 

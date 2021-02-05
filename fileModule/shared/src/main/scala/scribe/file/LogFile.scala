@@ -120,17 +120,21 @@ object LogFile {
     }
   }
 
-  def gzip(logFile: LogFile,
+  def gzip(logFile: LogFile, path: Path, deleteOriginal: Boolean, bufferSize: Int): Unit = {
+    close(logFile)
+    gzip(logFile.path, path, deleteOriginal, bufferSize)
+  }
+
+  def gzip(current: Path,
            path: Path,
            deleteOriginal: Boolean,
            bufferSize: Int): Unit = synchronized {
-    close(logFile)
-    if (Files.exists(logFile.path)) {
+    if (Files.exists(current)) {
       if (Files.exists(path)) {
         Files.delete(path)
       }
       val buffer = new Array[Byte](bufferSize)
-      val file = logFile.path.toFile
+      val file = current.toFile
       val outputFile = path.toFile
       val input = new FileInputStream(file)
       val output = new GZIPOutputStream(new FileOutputStream(outputFile))
