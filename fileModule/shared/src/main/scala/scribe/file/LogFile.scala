@@ -54,11 +54,12 @@ object LogFile {
   private var current = Map.empty[FileWriter, LogFile]
 
   /**
-    * Make sure that all log files are flushed and closed properly before terminating
+    * Make sure that all log files are flushed and closed properly before terminating - Not supported on ScalaNative, so
+    * we ignore the error
     */
-  Runtime.getRuntime.addShutdownHook(new Thread {
+  Try(Runtime.getRuntime.addShutdownHook(new Thread {
     override def run(): Unit = dispose()
-  })
+  }))
 
   // TODO: represent a virtual list of files to avoid having to build paths and update that list with the methods below
 
