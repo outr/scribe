@@ -57,9 +57,7 @@ object LogFile {
     * Make sure that all log files are flushed and closed properly before terminating - Not supported on ScalaNative, so
     * we ignore the error
     */
-  Try(Runtime.getRuntime.addShutdownHook(new Thread {
-    override def run(): Unit = dispose()
-  }))
+  Platform.addShutdownHook(dispose())
 
   // TODO: represent a virtual list of files to avoid having to build paths and update that list with the methods below
 
