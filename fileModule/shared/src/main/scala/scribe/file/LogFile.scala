@@ -53,6 +53,13 @@ object LogFile {
   private var usage = Map.empty[LogFile, Set[FileWriter]]
   private var current = Map.empty[FileWriter, LogFile]
 
+  /**
+    * Make sure that all log files are flushed and closed properly before terminating
+    */
+  Runtime.getRuntime.addShutdownHook(new Thread {
+    override def run(): Unit = dispose()
+  })
+
   // TODO: represent a virtual list of files to avoid having to build paths and update that list with the methods below
 
   def get(path: Path): Option[LogFile] = paths.get(path)
@@ -206,5 +213,15 @@ object LogFile {
     } else {
       usage += logFile -> set
     }
+  }
+
+  def dispose(): Unit = synchronized {
+    usage.keys.foreach { logFile =>
+      logFile.flush()
+      logFile.dispose()
+    }
+    paths = Map.empty
+    usage = Map.empty
+    current = Map.empty
   }
 }
