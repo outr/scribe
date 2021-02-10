@@ -10,7 +10,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.3.3"
+version in ThisBuild := "3.3.4-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
@@ -40,7 +40,7 @@ testOptions in ThisBuild += Tests.Argument("-oD")
 val perfolationVersion: String = "1.2.4"
 val sourcecodeVersion: String = "0.2.3"
 val collectionCompatVersion: String = "2.4.1"
-val moduloadVersion: String = "1.1.0"
+val moduloadVersion: String = "1.1.1"
 
 // JSON
 val uPickleVersion: String = "1.2.3"
