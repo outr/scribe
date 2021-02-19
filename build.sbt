@@ -46,7 +46,7 @@ val moduloadVersion: String = "1.1.1"
 val uPickleVersion: String = "1.2.3"
 
 // Testing
-val scalatestVersion: String = "3.2.4-M1"
+val scalatestVersion: String = "3.2.5"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
