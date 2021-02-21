@@ -40,7 +40,7 @@ testOptions in ThisBuild += Tests.Argument("-oD")
 val perfolationVersion: String = "1.2.5"
 val sourcecodeVersion: String = "0.2.3"
 val collectionCompatVersion: String = "2.4.2"
-val moduloadVersion: String = "1.1.1"
+val moduloadVersion: String = "1.1.2"
 
 // JSON
 val uPickleVersion: String = "1.2.3"
