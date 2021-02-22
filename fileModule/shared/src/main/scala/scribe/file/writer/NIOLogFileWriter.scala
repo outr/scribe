@@ -13,7 +13,7 @@ class NIOLogFileWriter(lf: LogFile) extends LogFileWriter {
   } else {
     List(StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
   }
-  private lazy val channel: FileChannel = FileChannel.open(lf.path, options: _*)
+  private lazy val channel: FileChannel = FileChannel.open(lf.file.toPath, options: _*)
 
   override def write(output: String): Unit = {
     val o = if (output == None.orNull) {

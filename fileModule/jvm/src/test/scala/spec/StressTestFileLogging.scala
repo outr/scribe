@@ -5,8 +5,7 @@ import scribe.file._
 import scribe.file.FileWriter
 import scribe.output.format.ASCIIOutputFormat
 
-import java.nio.file.Files
-import scala.concurrent.duration._
+import scala.io.Source
 
 object StressTestFileLogging {
   def main(args: Array[String]): Unit = {
@@ -29,10 +28,17 @@ object StressTestFileLogging {
       writer.flush()
       scribe.info("Flushed!")
     }
-    val path = writer.path
+    val file = writer.file
     writer.dispose()
-    val lines = Files.lines(path).count()
+    val lines = {
+      val source = Source.fromFile(file)
+      try {
+        source.getLines().size
+      } finally {
+        source.close()
+      }
+    }
     scribe.info(s"Lines: $lines")
-    Files.delete(path)
+    file.delete()
   }
 }

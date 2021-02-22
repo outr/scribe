@@ -3,11 +3,12 @@ package scribe.file.path
 import scribe.file.FileWriter
 import scribe.util.Time
 
+import java.io.File
 import java.nio.file.{Files, Path}
 import scala.concurrent.duration._
 
 case class Rolling(parts: List[FileNamePart],
-                   action: (Path, Path) => Unit,
+                   action: (File, File) => Unit,
                    minimumValidationFrequency: FiniteDuration) extends FileNamePart {
   private lazy val partsRegex = parts.map(_.regex).mkString
   private val threadLocal = new ThreadLocal[Rolling.Mode] {
@@ -28,7 +29,7 @@ case class Rolling(parts: List[FileNamePart],
   private var nextRun: Long = 0L
 
   override def before(writer: FileWriter): Unit = if (Time() >= nextRun) {
-    val currentPaths: List[Path] = {
+    val currentPaths: List[File] = {
       threadLocal.set(Rolling.OnlyCurrent)
       try {
         writer.list()
@@ -36,19 +37,19 @@ case class Rolling(parts: List[FileNamePart],
         threadLocal.remove()
       }
     }
-    val existing: Path = {
+    val existing: File = {
       threadLocal.set(Rolling.OnlyRolling)
       try {
-        writer.resolvePath()
+        writer.resolveFile()
       } finally {
         threadLocal.remove()
       }
     }
 
     currentPaths.foreach { cp =>
-      val lastModified = Files.getLastModifiedTime(cp).toMillis
-      val rp = rollingPath(lastModified, writer)
-      if (rp != existing && !Files.exists(rp)) {
+      val lastModified = cp.lastModified()
+      val rp = rollingFile(lastModified, writer)
+      if (rp != existing && !rp.exists()) {
         action(cp, rp)
       }
     }
@@ -56,10 +57,10 @@ case class Rolling(parts: List[FileNamePart],
     nextRun = (Time() + minimumValidationFrequency.toMillis :: parts.flatMap(_.nextValidation(Time()))).min
   }
 
-  def rollingPath(timeStamp: Long, writer: FileWriter): Path = {
+  def rollingFile(timeStamp: Long, writer: FileWriter): File = {
     threadLocal.set(Rolling.OnlyRolling)
     try {
-      writer.pathBuilder.path(timeStamp)
+      writer.pathBuilder.file(timeStamp)
     } finally {
       threadLocal.remove()
     }

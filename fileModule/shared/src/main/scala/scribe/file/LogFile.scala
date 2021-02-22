@@ -5,13 +5,13 @@ import scribe.file.writer.LogFileWriter
 import java.io.{File, FileInputStream, FileOutputStream, InputStream, OutputStream}
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
-import java.nio.file.{Files, Path, StandardOpenOption}
+import java.nio.file.{Files, StandardOpenOption}
 import java.util.concurrent.atomic.AtomicLong
 import java.util.zip.GZIPOutputStream
 import scala.annotation.tailrec
 import scala.util.Try
 
-case class LogFile private(path: Path,
+case class LogFile private(file: File,
                            append: Boolean,
                            flushMode: FlushMode,
                            charset: Charset) {
@@ -19,9 +19,9 @@ case class LogFile private(path: Path,
   @volatile private var status: LogFileStatus = LogFileStatus.Inactive
   private lazy val writer: LogFileWriter = {
     status = LogFileStatus.Active
-    Option(path.getParent).foreach(Files.createDirectories(_))
-    if (Files.exists(path)) {
-      sizeCounter.set(Files.size(path))
+    Option(file.getParentFile).foreach(_.mkdirs())
+    if (file.exists()) {
+      sizeCounter.set(file.length())
     }
     LogFileWriter(this)
   }
@@ -49,7 +49,7 @@ case class LogFile private(path: Path,
 }
 
 object LogFile {
-  private var paths = Map.empty[Path, LogFile]
+  private var files = Map.empty[File, LogFile]
   private var usage = Map.empty[LogFile, Set[FileWriter]]
   private var current = Map.empty[FileWriter, LogFile]
 
@@ -61,12 +61,12 @@ object LogFile {
 
   // TODO: represent a virtual list of files to avoid having to build paths and update that list with the methods below
 
-  def get(path: Path): Option[LogFile] = paths.get(path)
+  def get(file: File): Option[LogFile] = files.get(file)
 
   def close(logFile: LogFile): Unit = synchronized {
     logFile.flush()
-    paths.foreach {
-      case (path, lf) => if (lf eq logFile) paths -= path
+    files.foreach {
+      case (path, lf) => if (lf eq logFile) files -= path
     }
     usage -= logFile
     current.foreach {
@@ -77,48 +77,52 @@ object LogFile {
 
   def delete(logFile: LogFile): Unit = synchronized {
     close(logFile)
-    delete(logFile.path)
+    delete(logFile.file)
   }
 
-  def delete(path: Path): Unit = synchronized {
-    Files.deleteIfExists(path)
-  }
-
-  def move(logFile: LogFile, path: Path): Unit = synchronized {
-    close(logFile)
-    move(logFile.path, path)
-  }
-
-  def move(from: Path, to: Path): Unit = synchronized {
-    if (Files.exists(from)) {
-      if (Files.exists(to)) {
-        Files.delete(to)
+  def delete(file: File): Unit = synchronized {
+    if (file.exists()) {
+      if (!file.delete()) {
+        file.deleteOnExit()
       }
-      Files.move(from, to)
     }
   }
 
-  def copy(logFile: LogFile, path: Path): Unit = synchronized {
+  def move(logFile: LogFile, file: File): Unit = synchronized {
     close(logFile)
-    copy(logFile.path, path)
+    move(logFile.file, file)
   }
 
-  def copy(from: Path, to: Path): Unit = synchronized {
-    if (Files.exists(from)) {
-      if (Files.exists(to)) {
-        Files.delete(to)
+  def move(from: File, to: File): Unit = synchronized {
+    if (from.exists()) {
+      if (to.exists()) {
+        to.delete()
       }
-      Files.copy(from, to)
+      from.renameTo(to)
+    }
+  }
+
+  def copy(logFile: LogFile, file: File): Unit = synchronized {
+    close(logFile)
+    copy(logFile.file, file)
+  }
+
+  def copy(from: File, to: File): Unit = synchronized {
+    if (from.exists()) {
+      if (to.exists()) {
+        to.delete()
+      }
+      Files.copy(from.toPath, to.toPath)
     }
   }
 
   def truncate(logFile: LogFile): Unit = synchronized {
     close(logFile)
-    truncate(logFile.path)
+    truncate(logFile.file)
   }
 
-  def truncate(path: Path): Unit = synchronized {
-    val fc = FileChannel.open(path, StandardOpenOption.WRITE)
+  def truncate(file: File): Unit = synchronized {
+    val fc = FileChannel.open(file.toPath, StandardOpenOption.WRITE)
     try {
       fc.truncate(0L)
     } finally {
@@ -126,24 +130,22 @@ object LogFile {
     }
   }
 
-  def gzip(logFile: LogFile, path: Path, deleteOriginal: Boolean, bufferSize: Int): Unit = {
+  def gzip(logFile: LogFile, file: File, deleteOriginal: Boolean, bufferSize: Int): Unit = {
     close(logFile)
-    gzip(logFile.path, path, deleteOriginal, bufferSize)
+    gzip(logFile.file, file, deleteOriginal, bufferSize)
   }
 
-  def gzip(current: Path,
-           path: Path,
+  def gzip(current: File,
+           path: File,
            deleteOriginal: Boolean,
            bufferSize: Int): Unit = synchronized {
-    if (Files.exists(current)) {
-      if (Files.exists(path)) {
-        Files.delete(path)
+    if (current.exists()) {
+      if (path.exists()) {
+        path.delete()
       }
       val buffer = new Array[Byte](bufferSize)
-      val file = current.toFile
-      val outputFile = path.toFile
-      val input = new FileInputStream(file)
-      val output = new GZIPOutputStream(new FileOutputStream(outputFile))
+      val input = new FileInputStream(current)
+      val output = new GZIPOutputStream(new FileOutputStream(path))
       try {
         stream(input, output, buffer)
         output.flush()
@@ -151,8 +153,8 @@ object LogFile {
         Try(input.close())
         Try(output.close())
         if (deleteOriginal) {
-          if (!file.delete()) {
-            file.deleteOnExit()
+          if (!current.delete()) {
+            current.deleteOnExit()
           }
         }
       }
@@ -171,8 +173,8 @@ object LogFile {
   }
 
   def apply(writer: FileWriter): LogFile = synchronized {
-    val path = writer.path
-    val logFile = request(path, writer)
+    val file = writer.file
+    val logFile = request(file, writer)
     current.get(writer) match {
       case Some(lf) if lf eq logFile => // Nothing to do
       case Some(lf) => {
@@ -184,19 +186,19 @@ object LogFile {
     logFile
   }
 
-  private def request(path: Path, writer: FileWriter): LogFile = {
-    val logFile = paths.get(path) match {
+  private def request(file: File, writer: FileWriter): LogFile = {
+    val logFile = files.get(file) match {
       case Some(lf) => lf
       case None =>
-        val absolutePath = path.toAbsolutePath
-        paths.get(absolutePath) match {
+        val absolutePath = file.getAbsoluteFile
+        files.get(absolutePath) match {
           case Some(lf) =>
-            paths += path -> lf
+            files += file -> lf
             lf
           case None =>
             val lf = new LogFile(absolutePath, writer.append, writer.flushMode, writer.charset)
-            paths += path -> lf
-            paths += absolutePath -> lf
+            files += file -> lf
+            files += absolutePath -> lf
             lf
         }
     }
@@ -219,7 +221,7 @@ object LogFile {
       logFile.flush()
       logFile.dispose()
     }
-    paths = Map.empty
+    files = Map.empty
     usage = Map.empty
     current = Map.empty
   }

@@ -3,15 +3,16 @@ package scribe
 import scribe.file.path._
 import scribe.file.path.PathPart.FileName
 
-import java.nio.file.{Path, Paths, StandardOpenOption}
+import java.io.File
+import java.nio.file.Path
 import scala.language.implicitConversions
-import java.nio.channels.FileChannel
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 package object file {
   val DefaultBufferSize: Int = 1024
 
   implicit def path2PathBuilder(path: Path): PathBuilder = PathBuilder(List(PathPart.SetPath(path.toAbsolutePath.toString)))
+  implicit def file2PathBuilder(file: File): PathBuilder = PathBuilder(List(PathPart.SetPath(file.getAbsolutePath)))
   implicit def string2PathBuilder(s: String): PathBuilder = PathBuilder(List(PathPart.SetPath(s)))
   implicit def string2FileName(s: String): FileName = FileName(List(FileNamePart.Static(s)))
   implicit def string2FileNamePart(s: String): FileNamePart = FileNamePart.Static(s)

@@ -6,25 +6,25 @@ import scribe.output.format.OutputFormat
 import scribe.util.Time
 import scribe.writer.Writer
 
+import java.io.File
 import java.nio.charset.Charset
-import java.nio.file.{Files, Path}
 
 case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
                       append: Boolean = true,
                       flushMode: FlushMode = FlushMode.AsynchronousFlush(),
                       charset: Charset = Charset.defaultCharset()) extends Writer {
-  private var _path: Path = resolvePath()
+  private var _file: File = resolveFile()
 
-  def path: Path = _path
+  def file: File = _file
 
-  def list(): List[Path] = pathBuilder.iterator().toList.sortBy(path => Files.getLastModifiedTime(path))
+  def list(): List[File] = pathBuilder.iterator().toList.sortBy(_.lastModified())
 
-  def resolvePath(): Path = pathBuilder.path(Time())
+  def resolveFile(): File = pathBuilder.file(Time())
 
   def updatePath(): Boolean = {
-    val newPath = resolvePath()
-    _path = newPath
-    _path != newPath
+    val newFile = resolveFile()
+    _file = newFile
+    _file != newFile
   }
 
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {

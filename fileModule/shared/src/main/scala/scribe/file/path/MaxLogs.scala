@@ -14,8 +14,10 @@ case class MaxLogs(maxLogs: Int, checkFrequency: FiniteDuration) extends FileNam
   override def regex: String = ""
 
   override def after(writer: FileWriter): Unit = if (Time() >= nextRun) {
-    writer.list().dropRight(maxLogs).foreach { path =>
-      Files.delete(path)
+    writer.list().dropRight(maxLogs).foreach { file =>
+      if (!file.delete()) {
+        file.deleteOnExit()
+      }
     }
     nextRun = Time() + checkFrequency.toMillis
   }

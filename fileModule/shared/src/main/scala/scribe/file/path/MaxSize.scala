@@ -3,7 +3,7 @@ package scribe.file.path
 import scribe.file.{FileWriter, LogFile}
 import scribe.util.Time
 
-import java.nio.file.{Files, Path}
+import java.io.File
 
 case class MaxSize(maxSizeInBytes: Long, separator: String) extends FileNamePart {
   private val threadLocal = new ThreadLocal[Int] {
@@ -23,31 +23,31 @@ case class MaxSize(maxSizeInBytes: Long, separator: String) extends FileNamePart
 
   override def before(writer: FileWriter): Unit = {
     val logFile = LogFile(writer)
-    if (logFile.size >= maxSizeInBytes && Files.exists(logFile.path)) {
-      val path = pathFor(writer, 1)
-      val lastModified = Files.getLastModifiedTime(logFile.path)
+    if (logFile.size >= maxSizeInBytes && logFile.file.exists()) {
+      val path = fileFor(writer, 1)
+      val lastModified = logFile.file.lastModified()
       rollPaths(writer)
       LogFile.move(logFile, path)
-      Files.setLastModifiedTime(path, lastModified)
+      path.setLastModified(lastModified)
     }
   }
 
   private def rollPaths(writer: FileWriter, i: Int = 1): Unit = {
-    val path = pathFor(writer, i)
-    if (Files.exists(path)) {
+    val path = fileFor(writer, i)
+    if (path.exists()) {
       rollPaths(writer, i + 1)
-      val nextPath = pathFor(writer, i + 1)
-      val lastModified = Files.getLastModifiedTime(path)
+      val nextPath = fileFor(writer, i + 1)
+      val lastModified = path.lastModified()
       LogFile.copy(path, nextPath)
       LogFile.truncate(path)
-      Files.setLastModifiedTime(nextPath, lastModified)
+      nextPath.setLastModified(lastModified)
     }
   }
 
-  private def pathFor(writer: FileWriter, i: Int): Path = {
+  private def fileFor(writer: FileWriter, i: Int): File = {
     threadLocal.set(i)
     try {
-      writer.pathBuilder.path(Time())
+      writer.pathBuilder.file(Time())
     } finally {
       threadLocal.remove()
     }
