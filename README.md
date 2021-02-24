@@ -17,7 +17,7 @@ use.
 
 ## Availability
 
-Scribe is available on the JVM, Scala.js, and ScalaNative with cross-compiling for Scala 2.11, 2.12, 2.13, and Dotty
+Scribe is available on the JVM, Scala.js, and ScalaNative with cross-compiling for Scala 2.11, 2.12, 2.13, and 3
 
 ## Quick Start
 
@@ -26,19 +26,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.3.3"
+libraryDependencies += "com.outr" %% "scribe" % "3.4.0"
 ```
 
 For Cross-Platform projects (JVM, JS, and/or Native):
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.3.3"
+libraryDependencies += "com.outr" %%% "scribe" % "3.4.0"
 ```
 
 Or, if you want interoperability with SLF4J (to allow better interoperability with existing libraries using other loggers):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.3.3"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.4.0"
 ```
 
 ### Usage
