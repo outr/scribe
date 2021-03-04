@@ -1,10 +1,9 @@
 package spec
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import scribe.{Logger, ScribeConfig}
+import testy.Spec
 
-class ConfigSpec extends AnyWordSpec with Matchers {
+class ConfigSpec extends Spec {
   "ScribeConfig" should {
     "automatically load" in {
       Logger

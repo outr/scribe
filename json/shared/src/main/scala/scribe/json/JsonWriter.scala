@@ -1,12 +1,13 @@
 package scribe.json
 
+import fabric.parse.Json
 import scribe.LogRecord
 import scribe.output.{LogOutput, TextOutput}
 import scribe.output.format.OutputFormat
 import scribe.writer.Writer
 import perfolation._
-import upickle.default._
-import JsonWriter._
+import fabric.rw.{ReaderWriter, _}
+import fabric.str
 
 case class JsonWriter(writer: Writer) extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
@@ -29,8 +30,8 @@ case class JsonWriter(writer: Writer) extends Writer {
       date = l.t.F,
       time = s"${l.t.T}.${l.t.L}${l.t.z}"
     )
-    val json = writeJs(r)
-    val jsonString = json.render()
+    val json = r.toValue
+    val jsonString = Json.format(json)
     writer.write(record, new TextOutput(jsonString), outputFormat)
   }
 
@@ -40,12 +41,6 @@ case class JsonWriter(writer: Writer) extends Writer {
     }
     Trace(throwable.getLocalizedMessage, elements, Option(throwable.getCause).map(throwable2Trace))
   }
-}
-
-object JsonWriter {
-  implicit def traceElementRW: ReadWriter[TraceElement] = macroRW
-  implicit def traceRW: ReadWriter[Trace] = macroRW
-  implicit def recordRW: ReadWriter[Record] = macroRW
 }
 
 case class Record(level: String,
@@ -62,6 +57,24 @@ case class Record(level: String,
                   date: String,
                   time: String)
 
+object Record {
+  // TODO: Remove this after updating fabric
+  implicit lazy val stringMapRW: ReaderWriter[Map[String, String]] = ReaderWriter[Map[String, String]](_.map {
+    case (key, value) => key -> str(value)
+  }, v => v.asObj.value.map {
+    case (key, value) => key -> value.asStr.value
+  })
+  implicit val rw: ReaderWriter[Record] = ccRW
+}
+
 case class Trace(message: String, elements: List[TraceElement], cause: Option[Trace])
 
+object Trace {
+  implicit val rw: ReaderWriter[Trace] = ccRW
+}
+
 case class TraceElement(`class`: String, method: String, line: Int)
+
+object TraceElement {
+  implicit val rw: ReaderWriter[TraceElement] = ccRW
+}

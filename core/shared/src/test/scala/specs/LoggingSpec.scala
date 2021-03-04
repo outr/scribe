@@ -1,9 +1,6 @@
 package specs
 
 import java.util.concurrent.atomic.AtomicInteger
-import org.scalatest.Assertion
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import perfolation._
 import scribe._
 import scribe.data._
@@ -15,11 +12,12 @@ import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{CacheWriter, NullWriter, Writer}
+import testy._
 
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
-class LoggingSpec extends AnyWordSpec with Matchers with Logging {
+class LoggingSpec extends Spec with Logging {
   val expectedTestFileName = "LoggingTestObject.scala"
 
   "Logging" should {
@@ -304,7 +302,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     "validate minimum level override support" in {
       var logged = List.empty[String]
 
-      def verify(expected: String*): Assertion = try {
+      def verify(expected: String*): Unit = try {
         logged should be(expected.toList)
       } finally {
         logged = Nil

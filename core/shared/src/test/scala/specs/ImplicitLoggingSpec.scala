@@ -1,11 +1,10 @@
 package specs
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import testy.Spec
 
 import scala.language.implicitConversions
 
-class ImplicitLoggingSpec extends AnyWordSpec with Matchers {
+class ImplicitLoggingSpec extends Spec {
   "implicit logger" should {
     "config properly" in {
       ImplicitLoggingTestObject.initialize()

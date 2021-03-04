@@ -1,21 +1,20 @@
 package spec
 
-import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
 import scribe.format._
 import scribe.output.LogOutput
-import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
+import scribe.output.format.OutputFormat
 import scribe.writer.Writer
 import scribe.{LogRecord, Logger}
+import testy.Spec
 
 import scala.concurrent.Future
-import scala.io.Source
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 
-class AsynchronousLoggingSpec extends AsyncWordSpec with Matchers {
+import scribe.Execution.global
+
+class AsynchronousLoggingSpec extends Spec {
   private val Regex = """(\d+) - (.+)""".r
   private val threads = "abcdefghijklmnopqrstuvwxyz"
   private val iterations = 10

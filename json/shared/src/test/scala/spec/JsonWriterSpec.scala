@@ -1,13 +1,12 @@
 package spec
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import scribe.Logger
 import scribe.json.JsonWriter
 import scribe.util.Time
 import scribe.writer.CacheWriter
+import testy.Spec
 
-class JsonWriterSpec extends AnyWordSpec with Matchers {
+class JsonWriterSpec extends Spec {
   "JsonWriter" should {
     def logger: Logger = Logger("jsonWriterSpec")
     val cache = new CacheWriter

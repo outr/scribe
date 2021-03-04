@@ -1,12 +1,11 @@
 package specs
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import scribe.util.Abbreviator
+import testy.Spec
 
 import scala.language.implicitConversions
 
-class AbbreviatorSpec extends AnyWordSpec with Matchers {
+class AbbreviatorSpec extends Spec {
   "Abbreviator" should {
     val className1 = "mainPackage.sub.sample.Bar"
     val className2 = "mainPackage.sub.sample.FooBar"

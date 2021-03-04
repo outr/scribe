@@ -1,8 +1,5 @@
 package spec
 
-import org.scalatest.Assertion
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import scribe.format._
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
@@ -12,15 +9,15 @@ import java.nio.file.{Files, Path, Paths}
 import scala.concurrent.duration._
 import scala.language.implicitConversions
 import scribe.file._
+import testy.Spec
 
 import java.io.File
-import java.nio.file.attribute.FileTime
 import java.util.Calendar
 import java.util.function.Consumer
 import scala.annotation.tailrec
 import scala.io.Source
 
-class FileLoggingSpec extends AnyWordSpec with Matchers {
+class FileLoggingSpec extends Spec {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: File = new File("logs/test.log")
 
@@ -49,7 +46,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     this.writer = writer
   }
 
-  private def validateLogs(fileNames: String*): Assertion = {
+  private def validateLogs(fileNames: String*): Unit = {
     writer.list().map(_.getName).toSet should be(fileNames.toSet)
   }
 
