@@ -4,10 +4,8 @@ import scribe.file.writer.LogFileWriter
 import scribe.util.Time
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicLong}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
-
-import scribe.Execution.global
 
 trait FlushMode {
   def dataWritten(logFile: LogFile, writer: LogFileWriter): Unit
@@ -22,7 +20,7 @@ object FlushMode {
     override def dataWritten(logFile: LogFile, writer: LogFileWriter): Unit = writer.flush()
   }
 
-  case class AsynchronousFlush(delay: FiniteDuration = 1.second) extends FlushMode {
+  case class AsynchronousFlush(delay: FiniteDuration = 1.second)(implicit ec: ExecutionContext) extends FlushMode {
     private lazy val delayMillis = delay.toMillis
     private lazy val flushing = new AtomicBoolean(false)
     private lazy val dirty = new AtomicBoolean(false)

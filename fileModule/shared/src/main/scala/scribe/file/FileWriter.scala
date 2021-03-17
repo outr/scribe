@@ -8,10 +8,11 @@ import scribe.writer.Writer
 
 import java.io.File
 import java.nio.charset.Charset
+import scala.concurrent.ExecutionContext
 
 case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
                       append: Boolean = true,
-                      flushMode: FlushMode = FlushMode.AsynchronousFlush(),
+                      flushMode: FlushMode = FlushMode.AsynchronousFlush()(scala.concurrent.ExecutionContext.global),
                       charset: Charset = Charset.defaultCharset()) extends Writer {
   private var _file: File = resolveFile()
 
@@ -44,5 +45,5 @@ case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
 
   def flushNever: FileWriter = copy(flushMode = FlushMode.NeverFlush)
   def flushAlways: FileWriter = copy(flushMode = FlushMode.AlwaysFlush)
-  def flushAsync: FileWriter = copy(flushMode = FlushMode.AsynchronousFlush())
+  def flushAsync(implicit ec: ExecutionContext): FileWriter = copy(flushMode = FlushMode.AsynchronousFlush())
 }
