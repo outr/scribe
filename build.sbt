@@ -16,6 +16,7 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
+resolvers in ThisBuild += Resolver.JCenterRepository
 //javaOptions in run += "-agentpath:/opt/YourKit-JavaProfiler-2020.9/bin/linux-x86-64/libyjpagent.so=delay=10000,listen=all"
 
 publishTo in ThisBuild := sonatypePublishTo.value
@@ -105,7 +106,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= (
-      if (isDotty.value) {
+      if (scalaVersion.value.startsWith("3.0")) {
         Nil
       } else {
         List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
