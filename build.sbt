@@ -54,7 +54,7 @@ val slf4jVersion: String = "1.7.30"
 val slf4j18Version: String = "1.8.0-beta4"
 
 // Config Dependencies
-val profigVersion: String = "3.2.0"
+val profigVersion: String = "3.2.1"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.13.20"
