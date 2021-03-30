@@ -1,8 +1,7 @@
 package scribe.slf4j
 
 import java.util.concurrent.ConcurrentHashMap
-
-import org.slf4j.{ILoggerFactory, Logger}
+import org.slf4j.{ILoggerFactory, Logger, ScribeLoggerAdapter}
 
 object ScribeLoggerFactory extends ILoggerFactory {
   private lazy val map = new ConcurrentHashMap[String, Logger]()

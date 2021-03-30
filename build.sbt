@@ -12,7 +12,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.5.1-SNAPSHOT"
+version in ThisBuild := "3.5.1"
 scalaVersion in ThisBuild := scala213
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")

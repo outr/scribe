@@ -6,8 +6,7 @@ import scribe.output.{LogOutput, TextOutput}
 import scribe.output.format.OutputFormat
 import scribe.writer.Writer
 import perfolation._
-import fabric.rw.{ReaderWriter, _}
-import fabric.str
+import fabric.rw._
 
 case class JsonWriter(writer: Writer) extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
@@ -58,12 +57,8 @@ case class Record(level: String,
                   time: String)
 
 object Record {
-  // TODO: Remove this after updating fabric
-  implicit lazy val stringMapRW: ReaderWriter[Map[String, String]] = ReaderWriter[Map[String, String]](_.map {
-    case (key, value) => key -> str(value)
-  }, v => v.asObj.value.map {
-    case (key, value) => key -> value.asStr.value
-  })
+  implicit val mapRW: ReaderWriter[Map[String, String]] = ReaderWriter.stringMapRW
+
   implicit val rw: ReaderWriter[Record] = ccRW
 }
 
