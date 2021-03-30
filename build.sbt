@@ -1,11 +1,13 @@
 // Scala versions
-val scala213 = "2.13.4"
+val scala213 = "2.13.5"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
 val scala3 = "3.0.0-RC1"
-val allScalaVersions = List(scala213, scala212, scala211, scala3)
-val scala2Versions = List(scala213, scala212, scala211)
-val nativeScalaVersions = List(scala211, scala212, scala213)
+val scala2 = List(scala213, scala212, scala211)
+val allScalaVersions = scala3 :: scala2
+val scalaJVMVersions = allScalaVersions
+val scalaJSVersions = allScalaVersions
+val scalaNativeVersions = scala2
 val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
@@ -34,8 +36,6 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 parallelExecution in ThisBuild := false
-
-testOptions in ThisBuild += Tests.Argument("-oD")
 
 // Core
 val perfolationVersion: String = "1.2.5"
@@ -77,12 +77,6 @@ val sourceMapSettings = List(
   }
 )
 
-val commonNativeSettings = Seq(
-  scalaVersion := scala213,
-  crossScalaVersions := nativeScalaVersions,
-  nativeLinkStubs := true
-)
-
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
@@ -114,19 +108,18 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     ),
     publishArtifact in Test := false
   )
-//  .jsSettings(sourceMapSettings)
   .jsSettings(
-    crossScalaVersions := allScalaVersions,
+    crossScalaVersions := scalaJSVersions,
     Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .jvmSettings(
+    crossScalaVersions := scalaJVMVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "moduload" % moduloadVersion
-    ),
-    crossScalaVersions := allScalaVersions
+    )
   )
   .nativeSettings(
-    commonNativeSettings
+    crossScalaVersions := scalaNativeVersions
   )
 
 lazy val coreJS = core.js
@@ -143,11 +136,11 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
     testFrameworks += new TestFramework("munit.Framework")
   )
   .jvmSettings(
-    crossScalaVersions := allScalaVersions,
-    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+    crossScalaVersions := scalaJVMVersions
   )
   .nativeSettings(
-    commonNativeSettings,
+    crossScalaVersions := scalaNativeVersions,
+    nativeLinkStubs := true,
     test := {}
   )
   .dependsOn(core)
@@ -167,7 +160,11 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
     crossScalaVersions := List(scala213, scala212)
   )
   .jsSettings(
+    crossScalaVersions := scalaJSVersions,
     Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+  )
+  .jvmSettings(
+    crossScalaVersions := scalaJVMVersions
   )
   .dependsOn(core)
 
@@ -184,7 +181,7 @@ lazy val slf4j = project.in(file("slf4j"))
       "com.outr" %% "testy" % testyVersion % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
-    crossScalaVersions := scala2Versions
+    crossScalaVersions := scalaJVMVersions
   )
 
 lazy val slf4j18 = project.in(file("slf4j18"))
@@ -197,7 +194,7 @@ lazy val slf4j18 = project.in(file("slf4j18"))
       "com.outr" %% "testy" % testyVersion % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
-    crossScalaVersions := scala2Versions
+    crossScalaVersions := scalaJVMVersions
   )
 
 lazy val migration = project.in(file("migration"))
@@ -209,7 +206,7 @@ lazy val migration = project.in(file("migration"))
       "com.outr" %% "testy" % testyVersion % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
-    crossScalaVersions := allScalaVersions
+    crossScalaVersions := scalaJVMVersions
   )
 
 lazy val config = project.in(file("config"))
