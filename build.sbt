@@ -40,7 +40,7 @@ parallelExecution in ThisBuild := false
 // Core
 val perfolationVersion: String = "1.2.5"
 val sourcecodeVersion: String = "0.2.4"
-val collectionCompatVersion: String = "2.4.2"
+val collectionCompatVersion: String = "2.4.3"
 val moduloadVersion: String = "1.1.2"
 
 // JSON
