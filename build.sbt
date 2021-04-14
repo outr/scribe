@@ -2,40 +2,40 @@
 val scala213 = "2.13.5"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-val scala3 = "3.0.0-RC1"
+val scala3 = List("3.0.0-RC1")
 val scala2 = List(scala213, scala212, scala211)
-val allScalaVersions = scala3 :: scala2
+val allScalaVersions = scala3 ::: scala2
 val scalaJVMVersions = allScalaVersions
 val scalaJSVersions = allScalaVersions
 val scalaNativeVersions = scala2
 val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
-organization in ThisBuild := "com.outr"
-version in ThisBuild := "3.5.1"
-scalaVersion in ThisBuild := scala213
-scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
-javacOptions in ThisBuild ++= Seq("-source", "1.8", "-target", "1.8")
-resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
-resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
-resolvers in ThisBuild += Resolver.JCenterRepository
+ThisBuild / organization := "com.outr"
+ThisBuild / version := "3.5.2-SNAPSHOT"
+ThisBuild / scalaVersion := scala213
+ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
+ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+ThisBuild / resolvers += Resolver.sonatypeRepo("releases")
+ThisBuild / resolvers += Resolver.sonatypeRepo("snapshots")
+ThisBuild / resolvers += Resolver.JCenterRepository
 //javaOptions in run += "-agentpath:/opt/YourKit-JavaProfiler-2020.9/bin/linux-x86-64/libyjpagent.so=delay=10000,listen=all"
 
-publishTo in ThisBuild := sonatypePublishTo.value
-sonatypeProfileName in ThisBuild := "com.outr"
-licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
-sonatypeProjectHosting in ThisBuild := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "scribe", "matt@outr.com"))
-homepage in ThisBuild := Some(url("https://github.com/outr/scribe"))
-scmInfo in ThisBuild := Some(
+ThisBuild / publishTo := sonatypePublishTo.value
+ThisBuild / sonatypeProfileName := "com.outr"
+ThisBuild / licenses := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
+ThisBuild / sonatypeProjectHosting := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "scribe", "matt@outr.com"))
+ThisBuild / homepage := Some(url("https://github.com/outr/scribe"))
+ThisBuild / scmInfo := Some(
   ScmInfo(
     url("https://github.com/outr/scribe"),
     "scm:git@github.com:outr/scribe.git"
   )
 )
-developers in ThisBuild := List(
+ThisBuild / developers := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
-parallelExecution in ThisBuild := false
+ThisBuild / parallelExecution := false
 
 // Core
 val perfolationVersion: String = "1.2.5"

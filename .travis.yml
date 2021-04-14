@@ -1,28 +1,21 @@
-os: linux
-dist: xenial
+version: ~> 1.0
+import: scala/scala-dev:travis/default.yml
 language: scala
-jdk:
-  - openjdk8
+scala:
+  - 2.13.5
+env:
+  - ADOPTOPENJDK=8     SCALAJS_VERSION=1.5.0  CACHE_WORKAROUND=see-PR-335
 install:
-  - |
-    # update this only when sbt-the-bash-script needs to be updated
-    export SBT_LAUNCHER=1.5.0-RC1
-    export SBT_OPTS="-Dfile.encoding=UTF-8"
-    curl -L --silent "https://github.com/sbt/sbt/releases/download/v$SBT_LAUNCHER/sbt-$SBT_LAUNCHER.tgz" > $HOME/sbt.tgz
-    tar zxf $HOME/sbt.tgz -C $HOME
-    sudo rm /usr/local/bin/sbt
-    sudo ln -s $HOME/sbt/bin/sbt /usr/local/bin/sbt
+  - . $HOME/.nvm/nvm.sh
+  - nvm install 14
+  - nvm use 14
+  - git fetch --tags
 script:
   - sbt clean test
   - sbt coverage coreJVM/test fileModuleJVM/test slf4j/test slf4j18/test
   - sbt coverageReport
   - sbt coverageAggregate
   - bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
-cache:
-  directories:
-    - $HOME/.cache/coursier/v1
-    - $HOME/.ivy2/cache
-    - $HOME/.sbt/boot
-before_cache:
-  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
-  - find $HOME/.sbt -name "*.lock" -delete
+notifications:
+  email:
+    - matt@matthicks.com

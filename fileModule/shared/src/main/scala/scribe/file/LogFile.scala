@@ -18,6 +18,9 @@ case class LogFile private(file: File,
   private lazy val sizeCounter = new AtomicLong(0L)
   @volatile private var status: LogFileStatus = LogFileStatus.Inactive
   private lazy val writer: LogFileWriter = {
+    // Make sure the parent directory exists
+    Option(file.getParentFile).foreach(_.mkdirs())
+
     status = LogFileStatus.Active
     Option(file.getParentFile).foreach(_.mkdirs())
     if (file.exists()) {
