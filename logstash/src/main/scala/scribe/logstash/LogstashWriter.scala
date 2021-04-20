@@ -1,18 +1,18 @@
 package scribe.logstash
 
-import io.circe.Json
+import fabric.parse.Json
 import io.youi.client.HttpClient
 import io.youi.http.HttpResponse
 import io.youi.http.content.Content
 import io.youi.net._
 import perfolation._
-import profig.JsonUtil
 import scribe.Execution.global
 import scribe.output.format.OutputFormat
 import scribe.output.{EmptyOutput, LogOutput}
 import scribe.writer.Writer
 import scribe.LogRecord
 import scribe.data.MDC
+import fabric.rw._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -33,7 +33,7 @@ case class LogstashWriter(url: URL,
   def log[M](record: LogRecord[M]): Future[HttpResponse] = {
     val l = record.timeStamp
     val timestamp = s"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
-    val r = LogstashRecord(
+    val r: LogstashRecord = LogstashRecord(
       message = record.logOutput.plainText,
       service = service,
       level = record.level.name,
@@ -53,11 +53,9 @@ case class LogstashWriter(url: URL,
       }
     )
 
-    val jsonObj = JsonUtil.toJson(r).asObject.get
-    val jsonWithFields = additionalFields.foldLeft(jsonObj) { (obj, field) =>
-      obj.add(field._1, Json.fromString(field._2))
-    }
-    val json = Json.fromJsonObject(jsonWithFields).noSpaces
+    val value = r.toValue
+    val additional = additionalFields.toValue
+    val json = Json.format(value.merge(additional))
 
     val content = Content.string(json, ContentType.`application/json`)
     client.content(content).send()

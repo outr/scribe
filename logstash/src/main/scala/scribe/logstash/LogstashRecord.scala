@@ -1,5 +1,7 @@
 package scribe.logstash
 
+import fabric.rw._
+
 case class LogstashRecord(message: String,
                           service: String,
                           level: String,
@@ -13,3 +15,7 @@ case class LogstashRecord(message: String,
                           `@timestamp`: String,
                           mdc: Map[String, String],
                           data: Map[String, String])
+
+object LogstashRecord {
+  implicit val rw: ReaderWriter[LogstashRecord] = ccRW
+}

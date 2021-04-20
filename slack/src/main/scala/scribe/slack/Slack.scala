@@ -1,10 +1,11 @@
 package scribe.slack
 
+import fabric.parse.Json
+import fabric.rw._
 import io.youi.client.HttpClient
 import io.youi.http.HttpResponse
 import io.youi.http.content.Content
 import io.youi.net.{ContentType, URL}
-import profig.JsonUtil
 import scribe.Execution.global
 import scribe._
 import scribe.format._
@@ -26,7 +27,8 @@ class Slack(serviceHash: String, botName: String) {
       icon_emoji = emojiIcon,
       attachments = attachments
     )
-    val json = JsonUtil.toJsonString(m)
+    val value = m.toValue
+    val json = Json.format(value)
     val content = Content.string(json, ContentType.`application/json`)
     client.content(content).send()
   }
@@ -34,6 +36,10 @@ class Slack(serviceHash: String, botName: String) {
 
 object Slack {
   case class Attachment(title: String, text: String)
+
+  object Attachment {
+    implicit val rw: ReaderWriter[Attachment] = ccRW
+  }
 
   def configure(serviceHash: String,
                 botName: String,
