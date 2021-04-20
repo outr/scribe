@@ -2,7 +2,7 @@
 val scala213 = "2.13.5"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-val scala3 = List("3.0.0-RC1")
+val scala3 = List("3.0.0-RC1", "3.0.0-RC2")
 val scala2 = List(scala213, scala212, scala211)
 val allScalaVersions = scala3 ::: scala2
 val scalaJVMVersions = allScalaVersions
@@ -38,16 +38,16 @@ ThisBuild / developers := List(
 ThisBuild / parallelExecution := false
 
 // Core
-val perfolationVersion: String = "1.2.5"
+val perfolationVersion: String = "1.2.6"
 val sourcecodeVersion: String = "0.2.4"
 val collectionCompatVersion: String = "2.4.3"
 val moduloadVersion: String = "1.1.2"
 
 // JSON
-val fabricVersion: String = "1.0.3"
+val fabricVersion: String = "1.0.4"
 
 // Testing
-val testyVersion: String = "1.0.2"
+val testyVersion: String = "1.0.3"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
@@ -106,7 +106,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
         List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
       }
     ),
-    publishArtifact in Test := false
+    Test / publishArtifact := false
   )
   .jsSettings(
     crossScalaVersions := scalaJSVersions,
@@ -175,7 +175,7 @@ lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
   .settings(
     name := "scribe-slf4j",
-    publishArtifact in Test := false,
+    Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "com.outr" %% "testy" % testyVersion % Test
@@ -188,7 +188,7 @@ lazy val slf4j18 = project.in(file("slf4j18"))
   .dependsOn(coreJVM)
   .settings(
     name := "scribe-slf4j18",
-    publishArtifact in Test := false,
+    Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j18Version,
       "com.outr" %% "testy" % testyVersion % Test
@@ -201,7 +201,7 @@ lazy val migration = project.in(file("migration"))
   .dependsOn(coreJVM)
   .settings(
     name := "scribe-migration",
-    publishArtifact in Test := false,
+    Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "com.outr" %% "testy" % testyVersion % Test
     ),
@@ -213,7 +213,7 @@ lazy val config = project.in(file("config"))
   .dependsOn(migration)
   .settings(
     name := "scribe-config",
-    publishArtifact in Test := false,
+    Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "com.outr" %% "profig" % profigVersion,
       "com.outr" %% "testy" % testyVersion % Test
