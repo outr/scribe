@@ -42,9 +42,14 @@ object PathPart {
     override def all(previous: String): Iterator[String] = {
       val regex = parts.map(_.regex).mkString
 
-      new File(previous).listFiles(new FilenameFilter {
-        override def accept(dir: File, name: String): Boolean = name.matches(regex)
-      }).iterator.map(_.getAbsolutePath)
+      val previousFile = new File(previous)
+      if (previousFile.exists()) {
+        previousFile.listFiles(new FilenameFilter {
+          override def accept(dir: File, name: String): Boolean = name.matches(regex)
+        }).iterator.map(_.getAbsolutePath)
+      } else {
+        Nil.iterator
+      }
     }
 
     override def before(writer: FileWriter): Unit = {

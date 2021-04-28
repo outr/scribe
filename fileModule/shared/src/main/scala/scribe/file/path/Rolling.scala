@@ -26,9 +26,19 @@ case class Rolling(parts: List[FileNamePart],
     case Rolling.OnlyRolling => partsRegex
   }
 
-  private var nextRun: Long = 0L
+  private object nextRunFor {
+    private var map: Map[FileWriter, Long] = Map.empty
 
-  override def before(writer: FileWriter): Unit = if (Time() >= nextRun) {
+    def apply(writer: FileWriter): Long = synchronized {
+      map.getOrElse(writer, 0L)
+    }
+
+    def update(writer: FileWriter, nextRun: Long): Unit = synchronized {
+      map += writer -> nextRun
+    }
+  }
+
+  override def before(writer: FileWriter): Unit = if (Time() >= nextRunFor(writer)) {
     val currentPaths: List[File] = {
       threadLocal.set(Rolling.OnlyCurrent)
       try {
@@ -54,7 +64,7 @@ case class Rolling(parts: List[FileNamePart],
       }
     }
 
-    nextRun = (Time() + minimumValidationFrequency.toMillis :: parts.flatMap(_.nextValidation(Time()))).min
+    nextRunFor(writer) = (Time() + minimumValidationFrequency.toMillis :: parts.flatMap(_.nextValidation(Time()))).min
   }
 
   def rollingFile(timeStamp: Long, writer: FileWriter): File = {
