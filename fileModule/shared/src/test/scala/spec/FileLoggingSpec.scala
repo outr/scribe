@@ -17,6 +17,8 @@ import java.util.function.Consumer
 import scala.annotation.tailrec
 import scala.io.Source
 
+import perfolation._
+
 class FileLoggingSpec extends Spec {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: File = new File("logs/test.log")
@@ -161,6 +163,83 @@ class FileLoggingSpec extends Spec {
       }
       "verify the writer lists the logged files" in {
         validateLogs("rolling.log", "rolling-2018-01-01.log", "rolling-2018-01-02.log")
+      }
+      "set up specific scenario with two files two days old that" should {
+        val f1 = new File("logs/r1.log")
+        val f2 = new File("logs/r2.log")
+        def l1: Logger = Logger("rolling.1")
+        def l2: Logger = Logger("rolling.2")
+        val twoDaysAgoMillis: Long = System.currentTimeMillis() - (48 * 60 * 60 * 1000)
+        val twoDaysAgo: String = {
+          val c = Calendar.getInstance()
+          c.setTimeInMillis(twoDaysAgoMillis)
+          s"${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH) + 1).f(i = 2)}-${c.get(Calendar.DAY_OF_MONTH).f(i = 2)}"
+        }
+
+        def filesAndContents(prefix: String): Set[(String, List[String])] = {
+          val directory = new File("logs")
+          directory.listFiles().filter(_.getName.startsWith(prefix)).map { f =>
+            val source = Source.fromFile(f)
+            val contents = try {
+              source.getLines().toList
+            } finally {
+              source.close()
+            }
+            f.getName -> contents
+          }.toSet
+        }
+
+        "delete all existing files by prefix" in {
+          val directory = new File("logs")
+          directory.listFiles().toList.filter(f => f.getName.startsWith("r1") || f.getName.startsWith("r2")).foreach { f =>
+            f.delete()
+          }
+        }
+        "verify no matching files exist" in {
+          filesAndContents("r1").size should be(0)
+          filesAndContents("r2").size should be(0)
+        }
+        "create and append to files" in {
+          Time.reset()
+
+          Files.write(f1.toPath, "old data".getBytes)
+          Files.write(f2.toPath, "old data".getBytes)
+          f1.setLastModified(twoDaysAgoMillis)
+          f2.setLastModified(twoDaysAgoMillis)
+        }
+        "configure logging" in {
+          l1.orphan().withHandler(
+            formatter = formatter"$message",
+            minimumLevel = Some(Level.Info),
+            writer = FileWriter("logs" / ("r1" % rolling("-" % year % "-" % month % "-" % day) % ".log")).flushAlways
+          ).replace()
+          l2.orphan().withHandler(
+            formatter = formatter"$message",
+            minimumLevel = Some(Level.Info),
+            writer = FileWriter("logs" / ("r2" % rolling("-" % year % "-" % month % "-" % day) % ".log")).flushAlways
+          ).replace()
+        }
+        "verify exactly two files" in {
+          filesAndContents("r1") should be(Set("r1.log" -> List("old data")))
+          filesAndContents("r2") should be(Set("r2.log" -> List("old data")))
+        }
+        "log a record to l1" in {
+          l1.info("Testing 1")
+        }
+        "verify three files" in {
+          filesAndContents("r1") should be(Set("r1.log" -> List("Testing 1"), s"r1-${twoDaysAgo}.log" -> List("old data")))
+          filesAndContents("r2") should be(Set("r2.log" -> List("old data")))
+        }
+        "log a record to l2" in {
+          l2.info("Testing 2")
+        }
+        "verify three files" in {
+          filesAndContents("r1") should be(Set("r1.log" -> List("Testing 1"), s"r1-${twoDaysAgo}.log" -> List("old data")))
+          filesAndContents("r2") should be(Set("r2.log" -> List("Testing 2"), s"r2-${twoDaysAgo}.log" -> List("old data")))
+        }
+        "switch back the time function" in {
+          Time.function = () => timeStamp
+        }
       }
     }
     "verifying GZIP support" should {
