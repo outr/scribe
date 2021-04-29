@@ -2,7 +2,7 @@
 val scala213 = "2.13.5"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-val scala3 = List("3.0.0-RC2", "3.0.0-RC3")
+val scala3 = List("3.0.0-RC3")
 val scala2 = List(scala213, scala212, scala211)
 val allScalaVersions = scala3 ::: scala2
 val scalaJVMVersions = allScalaVersions
@@ -12,7 +12,7 @@ val compatScalaVersions = List(scala213, scala212)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.5.4-SNAPSHOT"
+ThisBuild / version := "3.5.4"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
