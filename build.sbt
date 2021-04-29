@@ -2,7 +2,7 @@
 val scala213 = "2.13.5"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-val scala3 = List("3.0.0-RC2")
+val scala3 = List("3.0.0-RC2", "3.0.0-RC3")
 val scala2 = List(scala213, scala212, scala211)
 val allScalaVersions = scala3 ::: scala2
 val scalaJVMVersions = allScalaVersions
@@ -38,23 +38,23 @@ ThisBuild / developers := List(
 ThisBuild / parallelExecution := false
 
 // Core
-val perfolationVersion: String = "1.2.6"
-val sourcecodeVersion: String = "0.2.5"
+val perfolationVersion: String = "1.2.7"
+val sourcecodeVersion: String = "0.2.6"
 val collectionCompatVersion: String = "2.4.3"
-val moduloadVersion: String = "1.1.3"
+val moduloadVersion: String = "1.1.4"
 
 // JSON
-val fabricVersion: String = "1.0.4"
+val fabricVersion: String = "1.0.5"
 
 // Testing
-val testyVersion: String = "1.0.3"
+val testyVersion: String = "1.0.5"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
-val slf4j18Version: String = "1.8.0-beta4"
+val slf4j2Version: String = "2.0.0-alpha1"
 
 // Config Dependencies
-val profigVersion: String = "3.2.1"
+val profigVersion: String = "3.2.2"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.14.0"
@@ -82,7 +82,7 @@ lazy val root = project.in(file("."))
     coreJS, coreJVM, coreNative,
     fileJVM, fileNative,
     jsonJS, jsonJVM,
-    slf4j, slf4j18, migration, config, slack, logstash)
+    slf4j, slf4j2, migration, config, slack, logstash)
   .settings(
     name := "scribe",
     publish := {},
@@ -184,13 +184,13 @@ lazy val slf4j = project.in(file("slf4j"))
     crossScalaVersions := scalaJVMVersions
   )
 
-lazy val slf4j18 = project.in(file("slf4j18"))
+lazy val slf4j2 = project.in(file("slf4j18"))
   .dependsOn(coreJVM)
   .settings(
     name := "scribe-slf4j18",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-api" % slf4j18Version,
+      "org.slf4j" % "slf4j-api" % slf4j2Version,
       "com.outr" %% "testy" % testyVersion % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
