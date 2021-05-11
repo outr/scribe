@@ -1,7 +1,6 @@
 package scribe
 
-import java.io.PrintStream
-
+import java.io.{OutputStream, PrintStream}
 import scribe.format.Formatter
 import scribe.handler.LogHandler
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
@@ -115,6 +114,18 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   }
 }
 
+class LoggingOutputStream(loggerId: LoggerId, level: Level) extends OutputStream {
+  private lazy val b = new StringBuilder
+
+  override def write(byte: Int): Unit = byte.toChar match {
+    case '\n' => {
+      Logger(loggerId).logDirect(level, b.toString())
+      b.clear()
+    }
+    case c => b.append(c)
+  }
+}
+
 object Logger {
   // Keep a reference to the print streams just in case we need to redirect later
   private val systemOut = System.out
@@ -122,9 +133,56 @@ object Logger {
 
   lazy val DefaultRootMinimumLevel: Level = Option(System.getenv("SCRIBE_MINIMUM_LEVEL")).flatMap(Level.get).getOrElse(Level.Info)
 
+  /**
+    * Functionality for system output stream management
+    */
   object system {
+    /**
+      * The standard system out (set upon initialization to represent the original, non-redirected, System.out)
+      */
     def out: PrintStream = systemOut
+
+    /**
+      * The standard system err (set upon initialization to represent the original, non-redirected, System.err)
+      */
     def err: PrintStream = systemErr
+
+    /**
+      * Redirects system output to Scribe's logging
+      *
+      * @param outLevel if set, defines the level to log System.out to (defaults to Some(Level.Info))
+      * @param errLevel if set, defines the level to log System.err to (defaults to Some(Level.Error))
+      * @param loggerId the loggerId to determine what logger to use when logging (defaults to Logger.RootId)
+      */
+    def redirect(outLevel: Option[Level] = Some(Level.Info),
+                 errLevel: Option[Level] = Some(Level.Error),
+                 loggerId: LoggerId = RootId): Unit = {
+      outLevel.foreach { level =>
+        val os = new LoggingOutputStream(loggerId, level)
+        val ps = new PrintStream(os)
+        System.setOut(ps)
+      }
+      errLevel.foreach { level =>
+        val os = new LoggingOutputStream(loggerId, level)
+        val ps = new PrintStream(os)
+        System.setErr(ps)
+      }
+    }
+
+    /**
+      * Resets the System.out and System.err to the original state
+      *
+      * @param out if true, resets System.out (defaults to true)
+      * @param err if true, resets System.err (defaults to true)
+      */
+    def reset(out: Boolean = true, err: Boolean = true): Unit = {
+      if (out) {
+        System.setOut(systemOut)
+      }
+      if (err) {
+        System.setErr(systemErr)
+      }
+    }
   }
 
   val RootId: LoggerId = LoggerId(0L)
