@@ -114,18 +114,6 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   }
 }
 
-class LoggingOutputStream(loggerId: LoggerId, level: Level) extends OutputStream {
-  private lazy val b = new StringBuilder
-
-  override def write(byte: Int): Unit = byte.toChar match {
-    case '\n' => {
-      Logger(loggerId).logDirect(level, b.toString())
-      b.clear()
-    }
-    case c => b.append(c)
-  }
-}
-
 object Logger {
   // Keep a reference to the print streams just in case we need to redirect later
   private val systemOut = System.out
@@ -158,12 +146,12 @@ object Logger {
                  errLevel: Option[Level] = Some(Level.Error),
                  loggerId: LoggerId = RootId): Unit = {
       outLevel.foreach { level =>
-        val os = new LoggingOutputStream(loggerId, level)
+        val os = new LoggingOutputStream(loggerId, level, className = "System", methodName = Some("out"))
         val ps = new PrintStream(os)
         System.setOut(ps)
       }
       errLevel.foreach { level =>
-        val os = new LoggingOutputStream(loggerId, level)
+        val os = new LoggingOutputStream(loggerId, level, className = "System", methodName = Some("err"))
         val ps = new PrintStream(os)
         System.setErr(ps)
       }
