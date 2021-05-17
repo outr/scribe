@@ -2,7 +2,7 @@
 val scala213 = "2.13.5"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-val scala3 = List("3.0.0-RC3")
+val scala3 = List("3.0.0")
 val scala2 = List(scala213, scala212, scala211)
 val allScalaVersions = scala3 ::: scala2
 val scalaJVMVersions = allScalaVersions
@@ -38,23 +38,23 @@ ThisBuild / developers := List(
 ThisBuild / parallelExecution := false
 
 // Core
-val perfolationVersion: String = "1.2.7"
-val sourcecodeVersion: String = "0.2.6"
+val perfolationVersion: String = "1.2.8"
+val sourcecodeVersion: String = "0.2.7"
 val collectionCompatVersion: String = "2.4.4"
-val moduloadVersion: String = "1.1.4"
+val moduloadVersion: String = "1.1.5"
 
 // JSON
-val fabricVersion: String = "1.0.5"
+val fabricVersion: String = "1.0.6"
 
 // Testing
-val testyVersion: String = "1.0.5"
+val testyVersion: String = "1.0.6"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
 val slf4j2Version: String = "2.0.0-alpha1"
 
 // Config Dependencies
-val profigVersion: String = "3.2.2"
+val profigVersion: String = "3.2.3"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.14.0"
