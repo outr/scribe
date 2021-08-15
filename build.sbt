@@ -51,7 +51,7 @@ val testyVersion: String = "1.0.6"
 
 // SLF4J
 val slf4jVersion: String = "1.7.30"
-val slf4j2Version: String = "2.0.0-alpha1"
+val slf4j2Version: String = "2.0.0-alpha4"
 
 // Config Dependencies
 val profigVersion: String = "3.2.3"
