@@ -47,7 +47,7 @@ val moduloadVersion: String = "1.1.5"
 val fabricVersion: String = "1.0.11"
 
 // Testing
-val testyVersion: String = "1.0.6"
+val testyVersion: String = "1.0.7"
 
 // SLF4J
 val slf4jVersion: String = "1.7.32"
