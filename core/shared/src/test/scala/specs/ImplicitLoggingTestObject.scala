@@ -5,13 +5,9 @@ import scribe.handler.LogHandler
 import scribe.writer.NullWriter
 
 object ImplicitLoggingTestObject {
-  val testingModifier = new TestingModifier
+  val handler = new TestingHandler
 
   def initialize(): Unit = {
-    val handler = LogHandler(
-      writer = NullWriter,
-      modifiers = List(testingModifier)
-    )
     this.logger.orphan().withHandler(handler).replace()
   }
 

@@ -3,8 +3,8 @@ package specs
 import scribe.Logging
 import scribe.writer.NullWriter
 
-class LoggingTestObject(modifier: TestingModifier) extends Logging {
-  logger.orphan().withHandler(writer = NullWriter, modifiers = List(modifier)).replace()
+class LoggingTestObject(handler: TestingHandler) extends Logging {
+  logger.orphan().withHandler(handler).replace()
 
   private val anonymous = () => {
     LoggingTestObject.this.logger.info("Anonymous logging!")

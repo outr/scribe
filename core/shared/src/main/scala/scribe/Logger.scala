@@ -43,8 +43,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id) ::: List(modifier))
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
-  override def includes(level: Level): Boolean =
-    modifierById[LevelFilter](LevelFilter.Id, recursive = true).forall(_.accepts(level.value))
+  override def includes(level: Level): Boolean = shouldLog(LogRecord.simple("", "", "", level = level))
 
   def modifierById[M <: LogModifier](id: String, recursive: Boolean): Option[M] = {
     modifiers.find(m => m.id.nonEmpty && m.id == id).orElse {
@@ -79,6 +78,12 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
       handlers.foreach(_.log(r))
       parentId.map(Logger.apply).foreach(_.log(r))
     }
+  }
+
+  protected def shouldLog[M](record: LogRecord[M]): Boolean = record.modify(modifiers) match {
+    case Some(_) if handlers.nonEmpty => true
+    case Some(r) => parentId.map(Logger.apply).exists(p => p.shouldLog(r))
+    case None => false
   }
 
   def replace(name: Option[String] = None): Logger = name match {

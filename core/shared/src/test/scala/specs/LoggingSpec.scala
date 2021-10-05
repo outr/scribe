@@ -21,19 +21,15 @@ class LoggingSpec extends Spec with Logging {
   val expectedTestFileName = "LoggingTestObject.scala"
 
   "Logging" should {
-    val testingModifier = new TestingModifier
-    val testObject = new LoggingTestObject(testingModifier)
-    val handler = new LogHandler {
-      override def log[M](record: LogRecord[M]): Unit = testingModifier(record)
-    }
+    val handler = new TestingHandler
+    val testObject = new LoggingTestObject(handler)
     "set up the logging" in {
-      testingModifier.clear()
+      handler.clear()
       logger.withHandler(handler).replace()
-      Logger("spec").orphan().replace()
+      Logger("specs").orphan().replace()
       loggerName should be("specs.LoggingSpec")
     }
     "properly validate include" in {
-      println(s"*** Modifiers: ${logger.parentId.map(id => Logger(id).parentId)}")    // TODO: Should be orphaned....????
       logger.includes(Level.Info) should be(true)
       logger.includes(Level.Debug) should be(true)
       logger.includes(Level.Error) should be(true)
@@ -42,39 +38,36 @@ class LoggingSpec extends Spec with Logging {
       Logger(logger.parentId.get) should be(Logger("specs"))
     }
     "have no logged entries yet" in {
-      testingModifier.records.length should be(0)
+      handler.records.length should be(0)
     }
     "log a single entry after info log" in {
       logger.info("Info Log")
-      testingModifier.records.length should be(1)
+      handler.records.length should be(1)
     }
     "log a second entry after debug log" in {
       logger.debug("Debug Log")
-      testingModifier.records.length should be(2)
+      handler.records.length should be(2)
     }
-    /*"ignore the third entry after reconfiguring without debug logging" in {
+    "ignore the third entry after reconfiguring without debug logging" in {
       logger
-        .withoutHandler(handler)
-        .withHandler(writer = NullWriter)
         .withMinimumLevel(Level.Info)
-        .withModifier(testingModifier)
         .replace()
-      testingModifier.records.length should be(2)
+      handler.records.length should be(2)
       logger.debug("Debug Log 2")
-      testingModifier.records.length should be(2)
+      handler.records.length should be(2)
     }
     "boost the this logging instance" in {
       logger.withModifier(LogBooster.multiply(2.0, Priority.Critical)).replace()
       logger.debug("Debug Log 3")
-      testingModifier.records.length should be(3)
+      handler.records.length should be(3)
     }
     "not increment when logging to the root logger" in {
       Logger.root.error("Error Log 1")
-      testingModifier.records.length should be(3)
+      handler.records.length should be(3)
     }
     "log using no arguments" in {
       logger.info()
-      testingModifier.records.length should be(4)
+      handler.records.length should be(4)
     }
     "log using 's' interpolation" in {
       val message = "Wahoo!"
@@ -90,37 +83,37 @@ class LoggingSpec extends Spec with Logging {
     }
     "write a detailed log message" in {
       val line = Some(14)
-      testingModifier.clear()
+      handler.clear()
       testObject.testLogger()
-      testingModifier.records.length should be(1)
-      testingModifier.records.head.methodName should be(Some("testLogger"))
-      testingModifier.records.head.className should be("specs.LoggingTestObject")
-      testingModifier.records.head.line should be(line)
-      testingModifier.records.head.fileName should be(expectedTestFileName)
+      handler.records.length should be(1)
+      handler.records.head.methodName should be(Some("testLogger"))
+      handler.records.head.className should be("specs.LoggingTestObject")
+      handler.records.head.line should be(line)
+      handler.records.head.fileName should be(expectedTestFileName)
       FormatBlock.Position.abbreviate(maxLength = 1, removeEntries = false)
-        .format(testingModifier.records.head)
+        .format(handler.records.head)
         .plainText should be("s.LoggingTestObject.testLogger:14")
     }
     "write a log message with an anonymous function" in {
       val line = Some(10)
-      testingModifier.clear()
+      handler.clear()
       testObject.testAnonymous()
-      testingModifier.records.length should be(1)
-      testingModifier.records.head.methodName should be(None)
-      testingModifier.records.head.className should be("specs.LoggingTestObject")
-      testingModifier.records.head.line should be(line)
-      testingModifier.records.head.fileName should be(expectedTestFileName)
+      handler.records.length should be(1)
+      handler.records.head.methodName should be(None)
+      handler.records.head.className should be("specs.LoggingTestObject")
+      handler.records.head.line should be(line)
+      handler.records.head.fileName should be(expectedTestFileName)
     }
     "write an exception" in {
       val line = Some(22)
-      testingModifier.clear()
+      handler.clear()
       testObject.testException()
-      testingModifier.records.length should be(1)
-      testingModifier.records.head.methodName should be(Some("testException"))
-      testingModifier.records.head.className should be("specs.LoggingTestObject")
-      testingModifier.records.head.line should be(line)
-      testingModifier.records.head.logOutput.plainText should startWith("java.lang.RuntimeException: Testing")
-      testingModifier.records.head.fileName should be(expectedTestFileName)
+      handler.records.length should be(1)
+      handler.records.head.methodName should be(Some("testException"))
+      handler.records.head.className should be("specs.LoggingTestObject")
+      handler.records.head.line should be(line)
+      handler.records.head.logOutput.plainText should startWith("java.lang.RuntimeException: Testing")
+      handler.records.head.fileName should be(expectedTestFileName)
     }
     "utilize MDC logging" in {
       val logs = ListBuffer.empty[String]
@@ -218,8 +211,14 @@ class LoggingSpec extends Spec with Logging {
       def message(): String = {
         evaluated.incrementAndGet().toString
       }
-      scribe.info(message())
+      Logger("once").withHandler(new LogHandler {
+        override def log[M](record: LogRecord[M]): Unit = {
+          // A handler must exist
+        }
+      }).replace()
+      Logger("once").info(message())
       evaluated.get() should be(1)
+      Logger("once").clearHandlers().replace()
     }
     "verify record evaluation doesn't occur at all for filtered out" in {
       val evaluated = new AtomicInteger(0)
@@ -314,7 +313,7 @@ class LoggingSpec extends Spec with Logging {
         logged = Nil
       }
 
-      val parent = Logger().orphan().withMinimumLevel(Level.Error).withHandler(new LogHandler {
+      val parent = Logger.empty.orphan().withMinimumLevel(Level.Error).withHandler(new LogHandler {
         override def log[M](record: LogRecord[M]): Unit = {
           logged = record.logOutput.plainText :: logged
         }
@@ -355,13 +354,12 @@ class LoggingSpec extends Spec with Logging {
       logger should be(Logger[LoggingSpec])
       val p1 = Logger(logger.parentId.get)
       Logger.namesFor(p1.id) should be(Set("specs"))
-      val p2 = Logger(p1.parentId.get)
-      Logger.namesFor(p2.id) should be(Set("root"))
-      p2.parentId should be(None)
+      p1.parentId should be(None)
     }
     "validate a more complicated scenario" in {
       var records = List.empty[String]
-      val base = Logger()
+      val base = Logger
+        .empty
         .orphan()
         .withMinimumLevel(Level.Info)
         .withHandler(new LogHandler {
@@ -454,7 +452,7 @@ class LoggingSpec extends Spec with Logging {
       logger.info("info")
       logger.error("error")
       writer.output.map(_.plainText) should be(List("error"))
-    }*/
+    }
     // TODO: figure out why the hour is 8 hours off on 2.11
     /*"use HTMLOutputFormat to log something" in {
       val MomentInTime = 1606235160799L
