@@ -21,7 +21,7 @@ import scala.language.implicitConversions
   * @param maxBuffer the maximum buffer before overflow occurs (defaults to AsynchronousLogHandler.DefaultMaxBuffer)
   * @param overflow what to do with overflows (defaults to DropOld)
   */
-case class AsynchronousLogHandle(maxBuffer: Int,
+case class AsynchronousLogHandle(maxBuffer: Int = AsynchronousLogHandle.DefaultMaxBuffer,
                                  overflow: Overflow = Overflow.DropOld) extends LogHandle {
   private lazy val cached = new AtomicLong(0L)
 

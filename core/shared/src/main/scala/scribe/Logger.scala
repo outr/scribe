@@ -2,7 +2,7 @@ package scribe
 
 import java.io.{OutputStream, PrintStream}
 import scribe.format.Formatter
-import scribe.handler.LogHandler
+import scribe.handler.{LogHandle, LogHandler, SynchronousLogHandle}
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
 import scribe.output.format.OutputFormat
 import scribe.util.Time
@@ -28,8 +28,9 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                   writer: Writer = ConsoleWriter,
                   minimumLevel: Option[Level] = None,
                   modifiers: List[LogModifier] = Nil,
-                  outputFormat: OutputFormat = OutputFormat.default): Logger = {
-    withHandler(LogHandler(formatter, writer, minimumLevel, modifiers, outputFormat))
+                  outputFormat: OutputFormat = OutputFormat.default,
+                  handle: LogHandle = SynchronousLogHandle): Logger = {
+    withHandler(LogHandler(formatter, writer, minimumLevel, modifiers, outputFormat, handle))
   }
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
   def clearHandlers(): Logger = copy(handlers = Nil)
@@ -42,9 +43,8 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id) ::: List(modifier))
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
-  def includes(level: Level): Boolean = {
+  override def includes(level: Level): Boolean =
     modifierById[LevelFilter](LevelFilter.Id, recursive = true).forall(_.accepts(level.value))
-  }
 
   def modifierById[M <: LogModifier](id: String, recursive: Boolean): Option[M] = {
     modifiers.find(m => m.id.nonEmpty && m.id == id).orElse {

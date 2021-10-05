@@ -32,6 +32,12 @@ class LoggingSpec extends Spec with Logging {
       Logger("spec").orphan().replace()
       loggerName should be("specs.LoggingSpec")
     }
+    "properly validate include" in {
+      println(s"*** Modifiers: ${logger.parentId.map(id => Logger(id).parentId)}")    // TODO: Should be orphaned....????
+      logger.includes(Level.Info) should be(true)
+      logger.includes(Level.Debug) should be(true)
+      logger.includes(Level.Error) should be(true)
+    }
     "confirm logging parentage" in {
       Logger(logger.parentId.get) should be(Logger("specs"))
     }
@@ -46,7 +52,7 @@ class LoggingSpec extends Spec with Logging {
       logger.debug("Debug Log")
       testingModifier.records.length should be(2)
     }
-    "ignore the third entry after reconfiguring without debug logging" in {
+    /*"ignore the third entry after reconfiguring without debug logging" in {
       logger
         .withoutHandler(handler)
         .withHandler(writer = NullWriter)
@@ -448,7 +454,7 @@ class LoggingSpec extends Spec with Logging {
       logger.info("info")
       logger.error("error")
       writer.output.map(_.plainText) should be(List("error"))
-    }
+    }*/
     // TODO: figure out why the hour is 8 hours off on 2.11
     /*"use HTMLOutputFormat to log something" in {
       val MomentInTime = 1606235160799L

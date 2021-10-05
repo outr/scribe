@@ -18,6 +18,7 @@ package object format {
   def string(value: String): FormatBlock = RawString(value)
   def date: FormatBlock = FormatBlock.Date.Standard
   def dateFull: FormatBlock = FormatBlock.Date.Full
+  def dateCounter: FormatBlock = FormatBlock.Date.Counter
   def timeStamp: FormatBlock = FormatBlock.TimeStamp
   def time: FormatBlock = FormatBlock.Time
   def threadName: FormatBlock = FormatBlock.ThreadName

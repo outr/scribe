@@ -84,6 +84,37 @@ object FormatBlock {
         new TextOutput(d)
       }
     }
+    object Counter extends FormatBlock {
+      private lazy val cache = new ThreadLocal[String] {
+        override def initialValue(): String = ""
+      }
+      private lazy val lastValue = new ThreadLocal[Long] {
+        override def initialValue(): Long = 0L
+      }
+      private lazy val counter = new ThreadLocal[Long] {
+        override def initialValue(): Long = 0L
+      }
+
+      override def format[M](record: LogRecord[M]): LogOutput = {
+        val l = record.timeStamp
+        if (l - lastValue.get() > 1000L) {
+          counter.set(0L)
+          val d = s"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}:000"
+          cache.set(d)
+          lastValue.set(l)
+          new TextOutput(d)
+        } else {
+          val c = counter.get() + 1
+          counter.set(c)
+          val cnt = c match {
+            case _ if c >= 100 => c.toString
+            case _ if c >= 10 => s"0$c"
+            case _ => s"00$c"
+          }
+          new TextOutput(s"${cache.get()}:$cnt")
+        }
+      }
+    }
   }
 
   object ThreadName extends FormatBlock {
