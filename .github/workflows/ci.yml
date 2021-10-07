@@ -13,13 +13,11 @@ jobs:
         uses: olafurpg/setup-scala@v10
         with:
           java-version: "adopt@1.8"
-      - name: Build and Test
-        run: sbt -v -Dfile.encoding=UTF-8 +test
       - name: Coursier cache
         uses: coursier/cache-action@v5
       - name: Build and test
         run: |
-          sbt -v +test
+          sbt -v -Dfile.encoding=UTF-8 +test
           rm -rf "$HOME/.ivy2/local" || true
           find $HOME/Library/Caches/Coursier/v1        -name "ivydata-*.properties" -delete || true
           find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true

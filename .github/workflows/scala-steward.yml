@@ -1,4 +1,5 @@
 # This workflow will launch at 00:00 every Sunday
+name: Scala Steward
 on:
   schedule:
     - cron: '0 0 * * 0'

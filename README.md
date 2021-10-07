@@ -1,6 +1,6 @@
 # scribe
 
-[![Build Status](https://app.travis-ci.com/outr/scribe.svg?branch=master)](https://app.travis-ci.com/outr/scribe)
+[![CI](https://github.com/outr/scribe/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/outr/scribe/actions/workflows/ci.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/88d47cae4fc6459dadeabae2e20af45a)](https://www.codacy.com/app/matthicks/scribe?utm_source=github.com&utm_medium=referral&utm_content=outr/scribe&utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f333f6b110974985b2d1dbea39665e9e)](https://www.codacy.com/gh/outr/scribe/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=outr/scribe&amp;utm_campaign=Badge_Grade)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/scribe)
@@ -17,7 +17,7 @@ use.
 
 ## Availability
 
-Scribe is available on the JVM, Scala.js, and ScalaNative with cross-compiling for Scala 2.11, 2.12, 2.13, and 3
+Scribe is available on the JVM, Scala.js, and ScalaNative with cross-compiling for Scala 2.12, 2.13, and 3
 
 ## Quick Start
 
@@ -26,19 +26,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.5.3"
+libraryDependencies += "com.outr" %% "scribe" % "3.6.0"
 ```
 
 For Cross-Platform projects (JVM, JS, and/or Native):
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.5.3"
+libraryDependencies += "com.outr" %%% "scribe" % "3.6.0"
 ```
 
 Or, if you want interoperability with SLF4J (to allow better interoperability with existing libraries using other loggers):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.5.3"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.6.0"
 ```
 
 ### Usage
