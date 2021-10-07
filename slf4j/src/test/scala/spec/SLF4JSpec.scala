@@ -1,5 +1,8 @@
 package spec
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
 import java.util.TimeZone
 import org.slf4j.{LoggerFactory, MDC}
 import scribe.format._
@@ -10,9 +13,8 @@ import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
 import scribe.writer.Writer
 import scribe.{Level, LogRecord, Logger}
-import testy.Spec
 
-class SLF4JSpec extends Spec {
+class SLF4JSpec extends AnyWordSpec with Matchers {
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
   private var logs: List[LogRecord[_]] = Nil

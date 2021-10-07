@@ -1,5 +1,8 @@
 package specs
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
 import java.util.concurrent.atomic.AtomicInteger
 import perfolation._
 import scribe._
@@ -12,12 +15,11 @@ import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{CacheWriter, NullWriter, Writer}
-import testy._
 
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
-class LoggingSpec extends Spec with Logging {
+class LoggingSpec extends AnyWordSpec with Matchers with Logging {
   val expectedTestFileName = "LoggingTestObject.scala"
 
   "Logging" should {

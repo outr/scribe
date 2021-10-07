@@ -1,5 +1,7 @@
 package spec
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import scribe.format._
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
@@ -9,17 +11,15 @@ import java.nio.file.{Files, Path, Paths}
 import scala.concurrent.duration._
 import scala.language.implicitConversions
 import scribe.file._
-import testy.Spec
 
 import java.io.File
 import java.util.Calendar
 import java.util.function.Consumer
 import scala.annotation.tailrec
 import scala.io.Source
-
 import perfolation._
 
-class FileLoggingSpec extends Spec {
+class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()
   lazy val logFile: File = new File("logs/test.log")
 
@@ -209,12 +209,12 @@ class FileLoggingSpec extends Spec {
         }
         "configure logging" in {
           l1.orphan().withHandler(
-            formatter = formatter"$message",
+            formatter = Formatter.simple,
             minimumLevel = Some(Level.Info),
             writer = FileWriter("logs" / ("r1" % rolling("-" % year % "-" % month % "-" % day) % ".log")).flushAlways
           ).replace()
           l2.orphan().withHandler(
-            formatter = formatter"$message",
+            formatter = Formatter.simple,
             minimumLevel = Some(Level.Info),
             writer = FileWriter("logs" / ("r2" % rolling("-" % year % "-" % month % "-" % day) % ".log")).flushAlways
           ).replace()
@@ -233,7 +233,7 @@ class FileLoggingSpec extends Spec {
         "log a record to l2" in {
           l2.info("Testing 2")
         }
-        "verify three files" in {
+        "verify three files again" in {
           filesAndContents("r1") should be(Set("r1.log" -> List("Testing 1"), s"r1-${twoDaysAgo}.log" -> List("old data")))
           filesAndContents("r2") should be(Set("r2.log" -> List("Testing 2"), s"r2-${twoDaysAgo}.log" -> List("old data")))
         }

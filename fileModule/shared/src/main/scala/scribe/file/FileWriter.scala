@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
 
 case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
                       append: Boolean = true,
-                      flushMode: FlushMode = FlushMode.AsynchronousFlush()(scala.concurrent.ExecutionContext.global),
+                      flushMode: FlushMode = FlushMode.AsynchronousFlush()(scribe.Execution.global),
                       charset: Charset = Charset.defaultCharset()) extends Writer {
   private var _file: File = resolveFile()
 

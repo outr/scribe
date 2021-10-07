@@ -1,9 +1,8 @@
 // Scala versions
 val scala213 = "2.13.6"
 val scala212 = "2.12.15"
-val scala211 = "2.11.12"
 val scala3 = List("3.0.2")
-val scala2 = List(scala213, scala212, scala211)
+val scala2 = List(scala213, scala212)
 val allScalaVersions = scala3 ::: scala2
 val scalaJVMVersions = allScalaVersions
 val scalaJSVersions = allScalaVersions
@@ -47,7 +46,7 @@ val moduloadVersion: String = "1.1.5"
 val fabricVersion: String = "1.0.11"
 
 // Testing
-val testyVersion: String = "1.0.7"
+val scalaTestVersion: String = "3.2.10"
 
 // SLF4J
 val slf4jVersion: String = "1.7.32"
@@ -96,9 +95,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "com.outr" %%% "perfolation" % perfolationVersion,
       "com.lihaoyi" %%% "sourcecode" % sourcecodeVersion,
-      "com.outr" %%% "testy" % testyVersion % Test
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= (
       if (scalaVersion.value.startsWith("3.0")) {
         Nil
@@ -109,8 +107,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     Test / publishArtifact := false
   )
   .jsSettings(
-    crossScalaVersions := scalaJSVersions,
-    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+    crossScalaVersions := scalaJSVersions
   )
   .jvmSettings(
     crossScalaVersions := scalaJVMVersions,
@@ -131,9 +128,8 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   .settings(
     name := "scribe-file",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "testy" % testyVersion % Test
-    ),
-    testFrameworks += new TestFramework("munit.Framework")
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    )
   )
   .jvmSettings(
     crossScalaVersions := scalaJVMVersions
@@ -154,14 +150,12 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
     name := "scribe-json",
     libraryDependencies ++= Seq(
       "com.outr" %%% "fabric-parse" % fabricVersion,
-      "com.outr" %%% "testy" % testyVersion % Test
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    testFrameworks += new TestFramework("munit.Framework"),
     crossScalaVersions := List(scala213, scala212)
   )
   .jsSettings(
-    crossScalaVersions := scalaJSVersions,
-    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+    crossScalaVersions := scalaJSVersions
   )
   .jvmSettings(
     crossScalaVersions := scalaJVMVersions
@@ -178,9 +172,8 @@ lazy val slf4j = project.in(file("slf4j"))
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "com.outr" %% "testy" % testyVersion % Test
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    testFrameworks += new TestFramework("munit.Framework"),
     crossScalaVersions := scalaJVMVersions
   )
 
@@ -191,9 +184,8 @@ lazy val slf4j2 = project.in(file("slf4j18"))
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j2Version,
-      "com.outr" %% "testy" % testyVersion % Test
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    testFrameworks += new TestFramework("munit.Framework"),
     crossScalaVersions := scalaJVMVersions
   )
 
@@ -203,9 +195,8 @@ lazy val migration = project.in(file("migration"))
     name := "scribe-migration",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
-      "com.outr" %% "testy" % testyVersion % Test
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    testFrameworks += new TestFramework("munit.Framework"),
     crossScalaVersions := scalaJVMVersions
   )
 
@@ -216,9 +207,8 @@ lazy val config = project.in(file("config"))
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "com.outr" %% "profig" % profigVersion,
-      "com.outr" %% "testy" % testyVersion % Test
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    testFrameworks += new TestFramework("munit.Framework"),
     crossScalaVersions := compatScalaVersions
   )
 
