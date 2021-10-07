@@ -5,13 +5,15 @@ import scribe.data.MDC
 import scala.language.experimental.macros
 
 trait LoggerSupport {
+  def includes(level: Level): Boolean
+
   def log[M](record: LogRecord[M]): Unit
 
   def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
                       (implicit pkg: sourcecode.Pkg,
                        fileName: sourcecode.FileName,
                        name: sourcecode.Name,
-                       line: sourcecode.Line): Unit = {
+                       line: sourcecode.Line): Unit = if (includes(level)) {
     val backSlash = fileName.value.lastIndexOf('\\')
     val fn = if (backSlash != -1) {
       fileName.value.substring(backSlash + 1)

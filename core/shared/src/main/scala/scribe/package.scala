@@ -8,6 +8,8 @@ package object scribe extends LoggerSupport {
 
   override def log[M](record: LogRecord[M]): Unit = Logger(record.className).log(record)
 
+  override def includes(level: Level): Boolean = true
+
   def dispose(): Unit = disposables.foreach(d => d())
 
   implicit def level2Double(level: Level): Double = level.value
