@@ -11,7 +11,7 @@ trait LogRecord[M] {
 
   def level: Level
   def levelValue: Double
-  def message: LazyMessage[M]
+  def message: Message[M]
   def loggable: Loggable[M]
   def throwable: Option[Throwable]
   def fileName: String
@@ -55,7 +55,7 @@ trait LogRecord[M] {
 
   def copy(level: Level = level,
            value: Double = levelValue,
-           message: LazyMessage[M] = message,
+           message: Message[M] = message,
            loggable: Loggable[M] = loggable,
            throwable: Option[Throwable] = throwable,
            fileName: String = fileName,
@@ -73,7 +73,7 @@ trait LogRecord[M] {
 object LogRecord {
   def apply[M](level: Level,
                value: Double,
-               message: LazyMessage[M],
+               message: Message[M],
                loggable: Loggable[M],
                throwable: Option[Throwable],
                fileName: String,
@@ -174,7 +174,7 @@ object LogRecord {
 
   class SimpleLogRecord[M](val level: Level,
                            val levelValue: Double,
-                           val message: LazyMessage[M],
+                           val message: Message[M],
                            val loggable: Loggable[M],
                            val throwable: Option[Throwable],
                            val fileName: String,
@@ -195,7 +195,7 @@ object LogRecord {
 
     def copy(level: Level = level,
              value: Double = levelValue,
-             message: LazyMessage[M] = message,
+             message: Message[M] = message,
              loggable: Loggable[M],
              throwable: Option[Throwable],
              fileName: String = fileName,

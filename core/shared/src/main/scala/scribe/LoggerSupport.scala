@@ -14,13 +14,7 @@ trait LoggerSupport {
                        fileName: sourcecode.FileName,
                        name: sourcecode.Name,
                        line: sourcecode.Line): Unit = if (includes(level)) {
-    val backSlash = fileName.value.lastIndexOf('\\')
-    val fn = if (backSlash != -1) {
-      fileName.value.substring(backSlash + 1)
-    } else {
-      fileName.value
-    }
-    val className = s"${pkg.value}.${fn.substring(0, fn.length - 6)}"
+    val (fn, className) = LoggerSupport.className(pkg, fileName)
     val methodName = name.value match {
       case "anonymous" | "" => None
       case v => Option(v)
@@ -143,5 +137,37 @@ trait LoggerSupport {
     } finally {
       keyValues.foreach(t => MDC.remove(t._1))
     }
+  }
+}
+
+object LoggerSupport {
+  private var map = Map.empty[sourcecode.Pkg, Map[sourcecode.FileName, (String, String)]]
+
+  def className(pkg: sourcecode.Pkg, fileName: sourcecode.FileName): (String, String) = map.get(pkg) match {
+    case Some(m) => m.get(fileName) match {
+      case Some(value) => value
+      case None =>
+        val value = generateClassName(pkg, fileName)
+        LoggerSupport.synchronized {
+          map += pkg -> (m + (fileName -> value))
+        }
+        value
+    }
+    case None =>
+      val value = generateClassName(pkg, fileName)
+      LoggerSupport.synchronized {
+        map += pkg -> Map(fileName -> value)
+      }
+      value
+  }
+
+  private def generateClassName(pkg: sourcecode.Pkg, fileName: sourcecode.FileName): (String, String) = {
+    val backSlash = fileName.value.lastIndexOf('\\')
+    val fn = if (backSlash != -1) {
+      fileName.value.substring(backSlash + 1)
+    } else {
+      fileName.value
+    }
+    fn -> s"${pkg.value}.${fn.substring(0, fn.length - 6)}"
   }
 }
