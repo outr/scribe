@@ -76,6 +76,7 @@ class LoggingSpeedBenchmark {
       logger.info("test")
       i += 1
     }
+    LogManager.shutdown()
   }
 
   @annotations.Benchmark
@@ -104,6 +105,7 @@ class LoggingSpeedBenchmark {
       logger.info("test")
       i += 1
     }
+    LogManager.shutdown()
   }
 
   @annotations.Benchmark

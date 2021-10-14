@@ -370,6 +370,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .replace()
       Logger("com.example1").withParent(base.id).withModifier(boosted(Level.Trace, Level.Info)).replace()
       val l2 = Logger("com.example1.Test").replace()
+      Logger.namesFor(l2.id) should be(Set("com.example1.Test"))
       l2.info("One")
       records should be(List("One"))
       l2.trace("Two")

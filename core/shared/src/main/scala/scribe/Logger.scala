@@ -1,12 +1,13 @@
 package scribe
 
-import java.io.{OutputStream, PrintStream}
+import java.io.PrintStream
 import scribe.format.Formatter
 import scribe.handler.{LogHandle, LogHandler, SynchronousLogHandle}
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
 import scribe.output.format.OutputFormat
 import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
+import sourcecode.{FileName, Line, Name, Pkg}
 
 import scala.reflect._
 
@@ -16,6 +17,9 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                   overrideClassName: Option[String] = None,
                   data: Map[String, () => Any] = Map.empty,
                   id: LoggerId = LoggerId()) extends LoggerSupport {
+  private var lastUpdate = Logger.lastChange
+  private var includeStatus = Map.empty[Level, Boolean]
+
   lazy val isEmpty: Boolean = modifiers.isEmpty && handlers.isEmpty
 
   def reset(): Logger = copy(parentId = Some(Logger.RootId), Nil, Nil, None)
@@ -43,7 +47,29 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id) ::: List(modifier))
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
-  override def includes(level: Level): Boolean = shouldLog(LogRecord.simple("", "", "", level = level))
+  override def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
+                               (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit = {
+    if (includes(level)) {
+      super.log(level, message, throwable)
+    }
+  }
+
+  def includes(level: Level): Boolean = {
+    if (lastUpdate != Logger.lastChange) {
+      includeStatus = Map.empty
+      lastUpdate = Logger.lastChange
+    }
+    includeStatus.get(level) match {
+      case Some(b) =>
+        b
+      case None =>
+        val b = shouldLog(LogRecord.simple("", "", "", level = level))
+        synchronized {
+          includeStatus += level -> b
+        }
+        b
+    }
+  }
 
   def modifierById[M <: LogModifier](id: String, recursive: Boolean): Option[M] = {
     modifiers.find(m => m.id.nonEmpty && m.id == id).orElse {
@@ -109,7 +135,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
       loggable = loggable,
       throwable = throwable,
       fileName = fileName,
-      className = className,
+      className = overrideClassName.getOrElse(className),
       methodName = methodName,
       line = line,
       column = column,
@@ -180,6 +206,7 @@ object Logger {
 
   val RootId: LoggerId = LoggerId(0L)
 
+  private var lastChange: Long = 0L
   private var id2Logger: Map[LoggerId, Logger] = Map.empty
   private var name2Id: Map[String, LoggerId] = Map.empty
 
@@ -210,6 +237,7 @@ object Logger {
       val logger = Logger(parentId = Some(parentId))
       id2Logger += logger.id -> logger
       name2Id += n -> logger.id
+      lastChange = System.currentTimeMillis()
       logger
     }
   }
@@ -219,6 +247,7 @@ object Logger {
     case None => synchronized {
       val logger = new Logger(id = id)
       id2Logger += logger.id -> logger
+      lastChange = System.currentTimeMillis()
       logger
     }
   }
@@ -237,6 +266,7 @@ object Logger {
 
   def replace(logger: Logger): Logger = synchronized {
     id2Logger += logger.id -> logger
+    lastChange = System.currentTimeMillis()
     logger
   }
 

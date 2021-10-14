@@ -5,15 +5,13 @@ import scribe.data.MDC
 import scala.language.experimental.macros
 
 trait LoggerSupport {
-  def includes(level: Level): Boolean
-
   def log[M](record: LogRecord[M]): Unit
 
   def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
                       (implicit pkg: sourcecode.Pkg,
                        fileName: sourcecode.FileName,
                        name: sourcecode.Name,
-                       line: sourcecode.Line): Unit = if (includes(level)) {
+                       line: sourcecode.Line): Unit = {
     val (fn, className) = LoggerSupport.className(pkg, fileName)
     val methodName = name.value match {
       case "anonymous" | "" => None
