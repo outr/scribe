@@ -95,6 +95,12 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   }
 
   override def log[M](record: LogRecord[M]): Unit = {
+    logInternal(record)
+    // TODO: Handle async leases
+    record.dispose()
+  }
+
+  protected def logInternal[M](record: LogRecord[M]): Unit = {
     val r = if (data.nonEmpty) {
       record.copy(data = data ++ record.data)
     } else {
@@ -102,7 +108,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     }
     r.modify(modifiers).foreach { r =>
       handlers.foreach(_.log(r))
-      parentId.map(Logger.apply).foreach(_.log(r))
+      parentId.map(Logger.apply).foreach(_.logInternal(r))
     }
   }
 
