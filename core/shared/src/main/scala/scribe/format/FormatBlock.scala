@@ -268,7 +268,30 @@ object FormatBlock {
           case (key, value) => s"$key: ${value()}"
         }.mkString(" (", ", ", ")"))
       } else {
-        new TextOutput("")
+        EmptyOutput
+      }
+    }
+  }
+
+  object MDCMultiLine extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = {
+      val map = MDC.map ++ record.data
+      if (map.nonEmpty) {
+        val nl = newLine.format(record)
+        val prefix = green(bold(string("     ["))).format(record)
+        val postfix = green(bold(string(("]")))).format(record)
+        val entries = MDC.map.toList.flatMap {
+          case (key, value) => List(
+            nl,
+            prefix,
+            bold(string(s"$key: ")).format(record),
+            new TextOutput(String.valueOf(value())),
+            postfix
+          )
+        }
+        new CompositeOutput(entries)
+      } else {
+        EmptyOutput
       }
     }
   }
@@ -293,7 +316,7 @@ object FormatBlock {
         }
         list = list ::: List(pre, current)
         list
-      }.dropRight(1)
+      }
       new CompositeOutput(list)
     }
   }
