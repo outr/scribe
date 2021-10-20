@@ -268,12 +268,81 @@ object FormatBlock {
           case (key, value) => s"$key: ${value()}"
         }.mkString(" (", ", ", ")"))
       } else {
-        new TextOutput("")
+        EmptyOutput
+      }
+    }
+  }
+
+  object MDCMultiLine extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = {
+      val map = MDC.map ++ record.data
+      if (map.nonEmpty) {
+        val nl = newLine.format(record)
+        val prefix = green(bold(string("     ["))).format(record)
+        val postfix = green(bold(string(("]")))).format(record)
+        val entries = MDC.map.toList.flatMap {
+          case (key, value) => List(
+            nl,
+            prefix,
+            bold(string(s"$key: ")).format(record),
+            new TextOutput(String.valueOf(value())),
+            postfix
+          )
+        }
+        new CompositeOutput(entries)
+      } else {
+        EmptyOutput
       }
     }
   }
 
   object NewLine extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(System.lineSeparator)
+  }
+
+  case class MultiLine(maxChars: Int = MultiLine.DefaultMaxChars, prefix: String = "    ", blocks: List[FormatBlock]) extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = {
+      val pre = new TextOutput(prefix)
+      val max = maxChars - prefix.length
+      val newLine = NewLine.format(record)
+      val outputs = MultiLine.splitNewLines(blocks.map(_.format(record)))
+      val list = outputs.flatMap { output =>
+        var current = output
+        var list = List.empty[LogOutput]
+        while (current.length > max) {
+          val (left, right) = current.splitAt(max)
+          list = list ::: List(pre, left, newLine)
+          current = right
+        }
+        list = list ::: List(pre, current)
+        list
+      }
+      new CompositeOutput(list)
+    }
+  }
+
+  object MultiLine {
+    val DefaultMaxChars: Int = 120
+
+    def splitNewLines(outputs: List[LogOutput]): List[LogOutput] = outputs.flatMap { output =>
+      var lo = output
+      var plainText = output.plainText
+      var splitted = List.empty[LogOutput]
+      def process(): Unit = {
+        val index = plainText.indexOf('\n')
+        if (index == -1) {
+          splitted = lo :: splitted
+          // Finished
+        } else {
+          val (one, two) = lo.splitAt(index + 1)
+          splitted = one :: splitted
+          lo = two
+          plainText = plainText.substring(index + 1)
+          process()
+        }
+      }
+      process()
+      splitted.reverse
+    }
   }
 }

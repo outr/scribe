@@ -1,6 +1,6 @@
 package scribe
 
-import scribe.format.FormatBlock.RawString
+import scribe.format.FormatBlock.{MultiLine, RawString}
 import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, EmptyOutput, ItalicOutput, LogOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
 
 import scala.collection.mutable.ListBuffer
@@ -15,6 +15,9 @@ package object format {
   case object empty extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = EmptyOutput
   }
+  lazy val space: FormatBlock = string(" ")
+  lazy val openBracket: FormatBlock = string("[")
+  lazy val closeBracket: FormatBlock = string("]")
   def string(value: String): FormatBlock = RawString(value)
   def date: FormatBlock = FormatBlock.Date.Standard
   def dateFull: FormatBlock = FormatBlock.Date.Full
@@ -76,6 +79,8 @@ package object format {
     FormatBlock.MDCReference(key, () => default, pre, post)
   }
   def mdc: FormatBlock = FormatBlock.MDCAll
+  def mdcMultiLine: FormatBlock = FormatBlock.MDCMultiLine
+  def multiLine(blocks: FormatBlock*): FormatBlock = new MultiLine(blocks = blocks.toList)
 
   implicit class EnhancedColor(color: Color) {
     def apply(block: FormatBlock): FormatBlock = fg(block)

@@ -2,6 +2,7 @@ package scribe
 
 import scribe.modify.LogModifier
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
+import scribe.record.SimpleLogRecord
 import scribe.util.Time
 
 import scala.annotation.tailrec
@@ -70,8 +71,10 @@ trait LogRecord[M] {
   def dispose(): Unit
 }
 
-object LogRecord {
-  def apply[M](level: Level,
+object LogRecord extends LogRecordCreator {
+  var creator: LogRecordCreator = SimpleLogRecord
+
+  override def apply[M](level: Level,
                value: Double,
                message: Message[M],
                loggable: Loggable[M],
@@ -84,7 +87,7 @@ object LogRecord {
                thread: Thread = Thread.currentThread(),
                data: Map[String, () => Any] = Map.empty,
                timeStamp: Long = Time()): LogRecord[M] = {
-    new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
+    creator[M](level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
   }
 
   def simple(message: String,
@@ -170,47 +173,5 @@ object LogRecord {
         writeStackTrace(b, elements.tail)
       }
     }
-  }
-
-  class SimpleLogRecord[M](val level: Level,
-                           val levelValue: Double,
-                           val message: Message[M],
-                           val loggable: Loggable[M],
-                           val throwable: Option[Throwable],
-                           val fileName: String,
-                           val className: String,
-                           val methodName: Option[String],
-                           val line: Option[Int],
-                           val column: Option[Int],
-                           val thread: Thread,
-                           val data: Map[String, () => Any],
-                           val timeStamp: Long) extends LogRecord[M] {
-    override lazy val logOutput: LogOutput = {
-      val msg = loggable(message.value)
-      throwable match {
-        case Some(t) => throwable2LogOutput(msg, t)
-        case None => msg
-      }
-    }
-
-    def copy(level: Level = level,
-             value: Double = levelValue,
-             message: Message[M] = message,
-             loggable: Loggable[M],
-             throwable: Option[Throwable],
-             fileName: String = fileName,
-             className: String = className,
-             methodName: Option[String] = methodName,
-             line: Option[Int] = line,
-             column: Option[Int] = column,
-             thread: Thread = thread,
-             data: Map[String, () => Any] = data,
-             timeStamp: Long = timeStamp): LogRecord[M] = {
-      val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
-      r.appliedModifierIds = this.appliedModifierIds
-      r
-    }
-
-    override def dispose(): Unit = {}
   }
 }
