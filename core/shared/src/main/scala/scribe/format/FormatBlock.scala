@@ -276,4 +276,50 @@ object FormatBlock {
   object NewLine extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(System.lineSeparator)
   }
+
+  case class MultiLine(maxChars: Int = MultiLine.DefaultMaxChars, prefix: String = "    ", blocks: List[FormatBlock]) extends FormatBlock {
+    override def format[M](record: LogRecord[M]): LogOutput = {
+      val pre = new TextOutput(prefix)
+      val max = maxChars - prefix.length
+      val newLine = NewLine.format(record)
+      val outputs = MultiLine.splitNewLines(blocks.map(_.format(record)))
+      val list = outputs.flatMap { output =>
+        var current = output
+        var list = List.empty[LogOutput]
+        while (current.length > max) {
+          val (left, right) = current.splitAt(max)
+          list = list ::: List(pre, left, newLine)
+          current = right
+        }
+        list = list ::: List(pre, current)
+        list
+      }.dropRight(1)
+      new CompositeOutput(list)
+    }
+  }
+
+  object MultiLine {
+    val DefaultMaxChars: Int = 120
+
+    def splitNewLines(outputs: List[LogOutput]): List[LogOutput] = outputs.flatMap { output =>
+      var lo = output
+      var plainText = output.plainText
+      var splitted = List.empty[LogOutput]
+      def process(): Unit = {
+        val index = plainText.indexOf('\n')
+        if (index == -1) {
+          splitted = lo :: splitted
+          // Finished
+        } else {
+          val (one, two) = lo.splitAt(index + 1)
+          splitted = one :: splitted
+          lo = two
+          plainText = plainText.substring(index + 1)
+          process()
+        }
+      }
+      process()
+      splitted.reverse
+    }
+  }
 }
