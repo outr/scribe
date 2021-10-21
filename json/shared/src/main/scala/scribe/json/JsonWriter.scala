@@ -8,7 +8,7 @@ import scribe.writer.Writer
 import perfolation._
 import fabric.rw._
 
-case class JsonWriter(writer: Writer) extends Writer {
+case class JsonWriter(writer: Writer, prettyPrint: Boolean = true) extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
     val l = record.timeStamp
     val trace = record.throwable.map(throwable2Trace)
@@ -30,7 +30,7 @@ case class JsonWriter(writer: Writer) extends Writer {
       time = s"${l.t.T}.${l.t.L}${l.t.z}"
     )
     val json = r.toValue
-    val jsonString = Json.format(json)
+    val jsonString = if (prettyPrint) Json.format(json) else json.toString
     writer.write(record, new TextOutput(jsonString), outputFormat)
   }
 
