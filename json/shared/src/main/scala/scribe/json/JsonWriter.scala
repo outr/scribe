@@ -7,8 +7,9 @@ import scribe.output.format.OutputFormat
 import scribe.writer.Writer
 import perfolation._
 import fabric.rw._
+import fabric._
 
-case class JsonWriter(writer: Writer) extends Writer {
+case class JsonWriter(writer: Writer, prettyPrint: Boolean = true) extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
     val l = record.timeStamp
     val trace = record.throwable.map(throwable2Trace)
@@ -22,7 +23,10 @@ case class JsonWriter(writer: Writer) extends Writer {
       line = record.line,
       column = record.column,
       data = record.data.map {
-        case (key, value) => key -> value().toString
+        case (key, value) => value() match {
+          case value: Value => key -> value
+          case any => key -> str(any.toString)
+        }
       },
       throwable = trace,
       timeStamp = l,
@@ -30,7 +34,7 @@ case class JsonWriter(writer: Writer) extends Writer {
       time = s"${l.t.T}.${l.t.L}${l.t.z}"
     )
     val json = r.toValue
-    val jsonString = Json.format(json)
+    val jsonString = if (prettyPrint) Json.format(json) else json.toString
     writer.write(record, new TextOutput(jsonString), outputFormat)
   }
 
@@ -50,15 +54,14 @@ case class Record(level: String,
                   methodName: Option[String],
                   line: Option[Int],
                   column: Option[Int],
-                  data: Map[String, String],
+                  data: Map[String, Value],
                   throwable: Option[Trace],
                   timeStamp: Long,
                   date: String,
                   time: String)
 
 object Record {
-  implicit val mapRW: ReaderWriter[Map[String, String]] = ReaderWriter.stringMapRW
-
+  implicit val mapRW: ReaderWriter[Map[String, Value]] = ReaderWriter[Map[String, Value]](identity, _.asObj.value)
   implicit val rw: ReaderWriter[Record] = ccRW
 }
 
