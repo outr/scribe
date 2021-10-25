@@ -15,6 +15,11 @@ object SystemOutputWriter extends Writer {
     */
   var synchronizeWriting: Boolean = true
 
+  /**
+   * Workaround for some consoles that don't play nicely with asynchronous calls
+   */
+  var alwaysFlush: Boolean = false
+
   val DefaultStringBuilderStartCapacity: Int = 512
 
   var stringBuilderStartCapacity: Int = DefaultStringBuilderStartCapacity
@@ -34,9 +39,13 @@ object SystemOutputWriter extends Writer {
     outputFormat(output, s => sb.append(s))
     outputFormat.end(sb.append(_))
     if (synchronizeWriting) {
-      synchronized(stream.println(sb.toString()))
+      synchronized {
+        stream.println(sb.toString())
+        if (alwaysFlush) stream.flush()
+      }
     } else {
       stream.println(sb.toString())
+      if (alwaysFlush) stream.flush()
     }
     sb.clear()
   }
