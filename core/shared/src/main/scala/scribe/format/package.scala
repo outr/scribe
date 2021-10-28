@@ -55,6 +55,18 @@ package object format {
     }
     new ColoredOutput(color, FormatBlock.Level.PaddedRight.format(logRecord))
   }
+  def levelColor(block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+    val color = logRecord.level match {
+      case Level.Trace => Color.White
+      case Level.Debug => Color.Green
+      case Level.Info => Color.Blue
+      case Level.Warn => Color.Yellow
+      case Level.Error => Color.Red
+      case Level.Fatal => Color.Magenta
+      case _ => Color.Cyan
+    }
+    new ColoredOutput(color, block.format(logRecord))
+  }
   def fileName: FormatBlock = FormatBlock.FileName
   def line: FormatBlock = FormatBlock.LineNumber
   def column: FormatBlock = FormatBlock.ColumnNumber
