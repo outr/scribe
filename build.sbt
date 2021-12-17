@@ -51,7 +51,7 @@ val scalaTestVersion: String = "3.2.10"
 
 // SLF4J
 val slf4jVersion: String = "1.7.32"
-val slf4j2Version: String = "2.0.0-alpha1"
+val slf4j2Version: String = "2.0.0-alpha5"
 
 // Config Dependencies
 val profigVersion: String = "3.2.8"
@@ -178,10 +178,10 @@ lazy val slf4j = project.in(file("slf4j"))
     crossScalaVersions := scalaJVMVersions
   )
 
-lazy val slf4j2 = project.in(file("slf4j18"))
+lazy val slf4j2 = project.in(file("slf4j2"))
   .dependsOn(coreJVM)
   .settings(
-    name := "scribe-slf4j18",
+    name := "scribe-slf4j2",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j2Version,

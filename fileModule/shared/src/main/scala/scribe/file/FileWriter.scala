@@ -22,10 +22,9 @@ case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
 
   def resolveFile(): File = pathBuilder.file(Time())
 
-  def updatePath(): Boolean = {
+  def updatePath(): Unit = {
     val newFile = resolveFile()
     _file = newFile
-    _file != newFile
   }
 
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
