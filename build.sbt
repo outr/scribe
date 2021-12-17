@@ -44,7 +44,7 @@ val collectionCompatVersion: String = "2.6.0"
 val moduloadVersion: String = "1.1.5"
 
 // JSON
-val fabricVersion: String = "1.1.0"
+val fabricVersion: String = "1.1.1"
 
 // Testing
 val scalaTestVersion: String = "3.2.10"
