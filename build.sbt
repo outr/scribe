@@ -12,7 +12,7 @@ val scalaNativeVersions = compatScalaVersions
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.6.4-SNAPSHOT"
+ThisBuild / version := "3.6.4"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -21,6 +21,8 @@ ThisBuild / resolvers += Resolver.sonatypeRepo("snapshots")
 ThisBuild / resolvers += Resolver.JCenterRepository
 //javaOptions in run += "-agentpath:/opt/YourKit-JavaProfiler-2020.9/bin/linux-x86-64/libyjpagent.so=delay=10000,listen=all"
 
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 ThisBuild / publishTo := sonatypePublishTo.value
 ThisBuild / sonatypeProfileName := "com.outr"
 ThisBuild / licenses := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
