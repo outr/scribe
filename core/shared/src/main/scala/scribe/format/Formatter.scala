@@ -67,7 +67,7 @@ object Formatter {
    * The default formatter. This is used as a default when the formatter isn't explicitly specified. Defaults to
    * enhanced.
    */
-  var default: Formatter = enhanced
+  var default: Formatter = advanced
 
   def fromBlocks(blocks: FormatBlock*): Formatter = new FormatBlocksFormatter(blocks.toList)
 }
