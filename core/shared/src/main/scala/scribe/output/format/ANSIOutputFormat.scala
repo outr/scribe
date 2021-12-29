@@ -31,89 +31,91 @@ object ANSIOutputFormat extends OutputFormat {
     stream(ANSI.ctrl.Reset)
   }
 
-  def apply(output: LogOutput, stream: String => Unit): Unit = output match {
-    case o: TextOutput => stream(o.plainText)
-    case o: CompositeOutput => o.entries.foreach(apply(_, stream))
-    case o: ColoredOutput => {
-      val color = color2fg(o.color)
-      stream(color.ansi)
-      val previous = ansi.fg
-      ansi.fg = Some(color)
-      try {
-        apply(o.output, stream)
-      } finally {
-        ansi.fg = previous
-        reset(stream)
+  def apply(output: LogOutput, stream: String => Unit): Unit = synchronized {
+    output match {
+      case o: TextOutput => stream(o.plainText)
+      case o: CompositeOutput => o.entries.foreach(apply(_, stream))
+      case o: ColoredOutput => {
+        val color = color2fg(o.color)
+        stream(color.ansi)
+        val previous = ansi.fg
+        ansi.fg = Some(color)
+        try {
+          apply(o.output, stream)
+        } finally {
+          ansi.fg = previous
+          reset(stream)
+        }
       }
-    }
-    case o: BackgroundColoredOutput => {
-      val color = color2bg(o.color)
-      stream(color.ansi)
-      val previous = ansi.bg
-      ansi.bg = Some(color)
-      try {
-        apply(o.output, stream)
-      } finally {
-        ansi.bg = previous
-        reset(stream)
+      case o: BackgroundColoredOutput => {
+        val color = color2bg(o.color)
+        stream(color.ansi)
+        val previous = ansi.bg
+        ansi.bg = Some(color)
+        try {
+          apply(o.output, stream)
+        } finally {
+          ansi.bg = previous
+          reset(stream)
+        }
       }
-    }
-    case o: URLOutput => {
-      stream("""]8;;""")
-      stream(o.url)
-      stream("""\""")
-      if (o.output == EmptyOutput) {
+      case o: URLOutput => {
+        stream("""]8;;""")
         stream(o.url)
-      } else {
-        apply(o.output, stream)
+        stream("""\""")
+        if (o.output == EmptyOutput) {
+          stream(o.url)
+        } else {
+          apply(o.output, stream)
+        }
+        stream("""]8;;\""")
       }
-      stream("""]8;;\""")
-    }
-    case o: BoldOutput => {
-      val previous = ansi.bold
-      ansi.bold = true
-      try {
-        stream(ANSI.fx.Bold.ansi)
-        apply(o.output, stream)
-      } finally {
-        ansi.bold = previous
-        reset(stream)
+      case o: BoldOutput => {
+        val previous = ansi.bold
+        ansi.bold = true
+        try {
+          stream(ANSI.fx.Bold.ansi)
+          apply(o.output, stream)
+        } finally {
+          ansi.bold = previous
+          reset(stream)
+        }
       }
-    }
-    case o: ItalicOutput => {
-      val previous = ansi.italic
-      ansi.italic = true
-      try {
-        stream(ANSI.fx.Italic.ansi)
-        apply(o.output, stream)
-      } finally {
-        ansi.italic = previous
-        reset(stream)
+      case o: ItalicOutput => {
+        val previous = ansi.italic
+        ansi.italic = true
+        try {
+          stream(ANSI.fx.Italic.ansi)
+          apply(o.output, stream)
+        } finally {
+          ansi.italic = previous
+          reset(stream)
+        }
       }
-    }
-    case o: UnderlineOutput => {
-      val previous = ansi.underline
-      ansi.underline = true
-      try {
-        stream(ANSI.fx.Underline.ansi)
-        apply(o.output, stream)
-      } finally {
-        ansi.underline = previous
-        reset(stream)
+      case o: UnderlineOutput => {
+        val previous = ansi.underline
+        ansi.underline = true
+        try {
+          stream(ANSI.fx.Underline.ansi)
+          apply(o.output, stream)
+        } finally {
+          ansi.underline = previous
+          reset(stream)
+        }
       }
-    }
-    case o: StrikethroughOutput => {
-      val previous = ansi.strikethrough
-      ansi.strikethrough = true
-      try {
-        stream(ANSI.fx.Strikethrough.ansi)
-        apply(o.output, stream)
-      } finally {
-        ansi.strikethrough = previous
-        reset(stream)
+      case o: StrikethroughOutput => {
+        val previous = ansi.strikethrough
+        ansi.strikethrough = true
+        try {
+          stream(ANSI.fx.Strikethrough.ansi)
+          apply(o.output, stream)
+        } finally {
+          ansi.strikethrough = previous
+          reset(stream)
+        }
       }
+      case _ => stream(output.plainText)      // TODO: support warning unsupported
     }
-    case _ => stream(output.plainText)      // TODO: support warning unsupported
   }
 
   private def reset(stream: String => Unit): Unit = {
