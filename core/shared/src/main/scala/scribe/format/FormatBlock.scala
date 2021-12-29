@@ -99,17 +99,19 @@ object FormatBlock {
         val l = record.timeStamp
         if (l - lastValue.get() > 1000L) {
           counter.set(0L)
-          val d = s"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}:000"
-          cache.set(d)
+          val base = s"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}"
+          val d = s"$base:0000"
+          cache.set(base)
           lastValue.set(l)
           new TextOutput(d)
         } else {
           val c = counter.get() + 1
           counter.set(c)
           val cnt = c match {
-            case _ if c >= 100 => c.toString
-            case _ if c >= 10 => s"0$c"
-            case _ => s"00$c"
+            case _ if c >= 1000 => c.toString
+            case _ if c >= 100 => s"0$c"
+            case _ if c >= 10 => s"00$c"
+            case _ => s"000$c"
           }
           new TextOutput(s"${cache.get()}:$cnt")
         }
