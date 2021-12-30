@@ -48,7 +48,7 @@ object Formatter {
    * message and MDC on the following line(s).
    */
   lazy val advanced: Formatter = Formatter.fromBlocks(
-    bgBlue(bold(dateCounter)),
+    cyan(bold(dateCounter)),
     space,
     italic(threadName),
     space,
