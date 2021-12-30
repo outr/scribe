@@ -6,7 +6,13 @@ import scribe.ANSI
 import scala.language.implicitConversions
 
 object ANSIOutputFormat extends OutputFormat {
-  private object ansi {
+  override def begin(stream: String => Unit): Unit = {}
+
+  override def end(stream: String => Unit): Unit = {
+    stream(ANSI.ctrl.Reset)
+  }
+
+  def apply(output: LogOutput, stream: String => Unit): Unit = {
     var fg: Option[ANSI] = None
     var bg: Option[ANSI] = None
     var bold: Boolean = false
@@ -14,52 +20,42 @@ object ANSIOutputFormat extends OutputFormat {
     var underline: Boolean = false
     var strikethrough: Boolean = false
 
-    def clear(): Unit = {
-      fg = None
-      bg = None
-      bold = false
-      italic = false
-      underline = false
-      strikethrough = false
+    def reset(stream: String => Unit): Unit = {
+      stream(ANSI.ctrl.Reset)
+      fg.map(_.ansi).foreach(stream)
+      bg.map(_.ansi).foreach(stream)
+      if (bold) stream(ANSI.fx.Bold.ansi)
+      if (italic) stream(ANSI.fx.Italic.ansi)
+      if (underline) stream(ANSI.fx.Underline.ansi)
+      if (strikethrough) stream(ANSI.fx.Strikethrough.ansi)
     }
-  }
 
-  override def begin(stream: String => Unit): Unit = stream(ANSI.ctrl.Reset)
-
-  override def end(stream: String => Unit): Unit = {
-    ansi.clear()
-    stream(ANSI.ctrl.Reset)
-  }
-
-  def apply(output: LogOutput, stream: String => Unit): Unit = synchronized {
     output match {
       case o: TextOutput => stream(o.plainText)
       case o: CompositeOutput => o.entries.foreach(apply(_, stream))
-      case o: ColoredOutput => {
+      case o: ColoredOutput =>
         val color = color2fg(o.color)
         stream(color.ansi)
-        val previous = ansi.fg
-        ansi.fg = Some(color)
+        val previous = fg
+        fg = Some(color)
         try {
           apply(o.output, stream)
         } finally {
-          ansi.fg = previous
+          fg = previous
           reset(stream)
         }
-      }
-      case o: BackgroundColoredOutput => {
+      case o: BackgroundColoredOutput =>
         val color = color2bg(o.color)
         stream(color.ansi)
-        val previous = ansi.bg
-        ansi.bg = Some(color)
+        val previous = bg
+        bg = Some(color)
         try {
           apply(o.output, stream)
         } finally {
-          ansi.bg = previous
+          bg = previous
           reset(stream)
         }
-      }
-      case o: URLOutput => {
+      case o: URLOutput =>
         stream("""]8;;""")
         stream(o.url)
         stream("""\""")
@@ -69,63 +65,48 @@ object ANSIOutputFormat extends OutputFormat {
           apply(o.output, stream)
         }
         stream("""]8;;\""")
-      }
-      case o: BoldOutput => {
-        val previous = ansi.bold
-        ansi.bold = true
+      case o: BoldOutput =>
+        val previous = bold
+        bold = true
         try {
           stream(ANSI.fx.Bold.ansi)
           apply(o.output, stream)
         } finally {
-          ansi.bold = previous
+          bold = previous
           reset(stream)
         }
-      }
-      case o: ItalicOutput => {
-        val previous = ansi.italic
-        ansi.italic = true
+      case o: ItalicOutput =>
+        val previous = italic
+        italic = true
         try {
           stream(ANSI.fx.Italic.ansi)
           apply(o.output, stream)
         } finally {
-          ansi.italic = previous
+          italic = previous
           reset(stream)
         }
-      }
-      case o: UnderlineOutput => {
-        val previous = ansi.underline
-        ansi.underline = true
+      case o: UnderlineOutput =>
+        val previous = underline
+        underline = true
         try {
           stream(ANSI.fx.Underline.ansi)
           apply(o.output, stream)
         } finally {
-          ansi.underline = previous
+          underline = previous
           reset(stream)
         }
-      }
-      case o: StrikethroughOutput => {
-        val previous = ansi.strikethrough
-        ansi.strikethrough = true
+      case o: StrikethroughOutput =>
+        val previous = strikethrough
+        strikethrough = true
         try {
           stream(ANSI.fx.Strikethrough.ansi)
           apply(o.output, stream)
         } finally {
-          ansi.strikethrough = previous
+          strikethrough = previous
           reset(stream)
         }
-      }
-      case _ => stream(output.plainText)      // TODO: support warning unsupported
+      case EmptyOutput => // Nothing to do
     }
-  }
-
-  private def reset(stream: String => Unit): Unit = {
-    stream(ANSI.ctrl.Reset)
-    ansi.fg.map(_.ansi).foreach(stream)
-    ansi.bg.map(_.ansi).foreach(stream)
-    if (ansi.bold) stream(ANSI.fx.Bold.ansi)
-    if (ansi.italic) stream(ANSI.fx.Italic.ansi)
-    if (ansi.underline) stream(ANSI.fx.Underline.ansi)
-    if (ansi.strikethrough) stream(ANSI.fx.Strikethrough.ansi)
   }
 
   private def color2fg(color: Color): ANSI = color match {

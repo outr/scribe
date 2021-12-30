@@ -1,6 +1,6 @@
 package scribe.output
 
-trait LogOutput extends Any {
+sealed trait LogOutput extends Any {
   def plainText: String
   def length: Int = plainText.length
 
