@@ -180,10 +180,9 @@ object LogFile {
     val logFile = request(file, writer)
     current.get(writer) match {
       case Some(lf) if lf eq logFile => // Nothing to do
-      case Some(lf) => {
+      case Some(lf) =>
         release(lf, writer)
         current += writer -> logFile
-      }
       case None => current += writer -> logFile
     }
     logFile

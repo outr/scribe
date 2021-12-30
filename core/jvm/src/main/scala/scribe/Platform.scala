@@ -19,8 +19,8 @@ object Platform extends PlatformImplementation {
   lazy val supportsANSI: Boolean = Try(System.console() != null && sys.env.contains("TERM")).getOrElse(false)
 
   def outputFormat(): OutputFormat = sys.env.get("SCRIBE_OUTPUT_FORMAT").map(_.toUpperCase) match {
-    case Some("ANSI") || None if supportsANSI => ANSIOutputFormat
-    case Some("ASCII") || None if !supportsANSI => ASCIIOutputFormat
+    case Some("ANSI") | None if supportsANSI => ANSIOutputFormat
+    case Some("ASCII") | None if !supportsANSI => ASCIIOutputFormat
     case f =>
       scribe.warn(s"Unexpected output format specified in SCRIBE_OUTPUT_FORMAT: $f, using ASCII")
       ASCIIOutputFormat

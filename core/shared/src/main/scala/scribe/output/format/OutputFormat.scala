@@ -4,6 +4,8 @@ import scribe.Platform
 import scribe.output.LogOutput
 
 trait OutputFormat {
+  def init(stream: String => Unit): Unit = {}
+
   def begin(stream: String => Unit): Unit = {}
 
   def apply(output: LogOutput, stream: String => Unit): Unit

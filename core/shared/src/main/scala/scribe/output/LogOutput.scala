@@ -129,7 +129,9 @@ class StrikethroughOutput(val output: LogOutput) extends AnyVal with LogOutput {
   }
 }
 
-sealed trait Color
+sealed trait Color {
+  lazy val name: String = getClass.getSimpleName.replace("$", "").toLowerCase
+}
 
 object Color {
   case object Black extends Color

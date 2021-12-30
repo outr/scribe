@@ -16,9 +16,7 @@ in Scala itself, giving the developer the freedom to use whatever configuration 
 use.
 
 ## TODO
-- HTML logging
 - Create additional logging that is multi-line, but doesn't automatically break to second line
-- ANSI detection
 
 ## Availability
 
