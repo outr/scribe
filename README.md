@@ -15,9 +15,6 @@ of logging can be handled programmatically (of course, classic logging configura
 in Scala itself, giving the developer the freedom to use whatever configuration framework, if any, they should choose to
 use.
 
-## TODO
-- Create additional logging that is multi-line, but doesn't automatically break to second line
-
 ## Availability
 
 Scribe is available on the JVM, Scala.js, and ScalaNative with cross-compiling for Scala 2.12, 2.13, and 3
@@ -29,19 +26,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.6.3"
+libraryDependencies += "com.outr" %% "scribe" % "3.6.6"
 ```
 
 For Cross-Platform projects (JVM, JS, and/or Native):
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.6.3"
+libraryDependencies += "com.outr" %%% "scribe" % "3.6.6"
 ```
 
 Or, if you want interoperability with SLF4J (to allow better interoperability with existing libraries using other loggers):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.6.3"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.6.6"
 ```
 
 ### Usage
