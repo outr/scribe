@@ -15,6 +15,11 @@ of logging can be handled programmatically (of course, classic logging configura
 in Scala itself, giving the developer the freedom to use whatever configuration framework, if any, they should choose to
 use.
 
+## TODO
+- HTML logging
+- Create additional logging that is multi-line, but doesn't automatically break to second line
+- ANSI detection
+
 ## Availability
 
 Scribe is available on the JVM, Scala.js, and ScalaNative with cross-compiling for Scala 2.12, 2.13, and 3
