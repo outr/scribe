@@ -280,7 +280,7 @@ object FormatBlock {
       val map = MDC.map ++ record.data
       if (map.nonEmpty) {
         val nl = newLine.format(record)
-        val prefix = green(bold(string("     ["))).format(record)
+        val prefix = green(bold(string("    ["))).format(record)
         val postfix = green(bold(string(("]")))).format(record)
         val entries = MDC.map.toList.flatMap {
           case (key, value) => List(
@@ -302,10 +302,10 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(System.lineSeparator)
   }
 
-  case class MultiLine(maxChars: Int = MultiLine.DefaultMaxChars, prefix: String = "    ", blocks: List[FormatBlock]) extends FormatBlock {
+  case class MultiLine(maxChars: () => Int = MultiLine.PlatformColumns, prefix: String = "    ", blocks: List[FormatBlock]) extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = {
       val pre = new TextOutput(prefix)
-      val max = maxChars - prefix.length
+      val max = maxChars() - prefix.length
       val newLine = NewLine.format(record)
       val outputs = MultiLine.splitNewLines(blocks.map(_.format(record)))
       val list = outputs.flatMap { output =>
@@ -325,6 +325,7 @@ object FormatBlock {
 
   object MultiLine {
     val DefaultMaxChars: Int = 120
+    val PlatformColumns: () => Int = () => scribe.Platform.columns
 
     def splitNewLines(outputs: List[LogOutput]): List[LogOutput] = outputs.flatMap { output =>
       var lo = output

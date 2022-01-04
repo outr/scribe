@@ -17,4 +17,6 @@ object Platform extends PlatformImplementation {
   def outputFormat(): OutputFormat = RichBrowserOutputFormat
 
   override def consoleWriter: Writer = BrowserConsoleWriter
+
+  override val columns: Int = 120
 }

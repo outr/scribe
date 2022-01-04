@@ -8,4 +8,6 @@ trait PlatformImplementation {
   def isNative: Boolean
 
   def consoleWriter: Writer
+
+  def columns: Int
 }

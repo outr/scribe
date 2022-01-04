@@ -10,14 +10,19 @@ object Platform extends PlatformImplementation {
 
   def init(): Unit = {}
 
-  def outputFormat(): OutputFormat = sys.env.getOrElse("SCRIBE_OUTPUT_FORMAT", "ANSI").toUpperCase match {
-    case "ANSI" => ANSIOutputFormat
-    case "ASCII" => ASCIIOutputFormat
-    case f => {
-      scribe.warn(s"Unexpected output format specified in SCRIBE_OUTPUT_FORMAT: $f, using ASCII")
+  lazy val supportsANSI: Boolean = sys.env.contains("TERM")
+
+  def outputFormat(): OutputFormat = sys.env.get("SCRIBE_OUTPUT_FORMAT").map(_.toUpperCase) match {
+    case Some("ANSI") => ANSIOutputFormat
+    case Some("ASCII") => ASCIIOutputFormat
+    case None if supportsANSI => ANSIOutputFormat
+    case None => ASCIIOutputFormat
+    case f =>
+      System.err.println(s"Unexpected output format specified in SCRIBE_OUTPUT_FORMAT: $f, using ASCII")
       ASCIIOutputFormat
-    }
   }
 
   override def consoleWriter: Writer = SystemOutputWriter
+
+  override val columns: Int = 120
 }
