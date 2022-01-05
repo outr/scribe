@@ -85,7 +85,8 @@ lazy val root = project.in(file("."))
     coreJS, coreJVM, coreNative,
     fileJVM, fileNative,
     jsonJS, jsonJVM,
-    slf4j, slf4j2, migration, config, slack, logstash)
+    slf4j, slf4j2, log4j, migration, config, slack, logstash
+  )
   .settings(
     name := "scribe",
     publish := {},
@@ -189,6 +190,19 @@ lazy val slf4j2 = project.in(file("slf4j2"))
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j2Version,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    ),
+    crossScalaVersions := scalaJVMVersions
+  )
+
+lazy val log4j = project.in(file("log4j"))
+  .dependsOn(coreJVM)
+  .settings(
+    name := "scribe-log4j",
+    Test / publishArtifact := false,
+    libraryDependencies ++= Seq(
+      "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
+      "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := scalaJVMVersions

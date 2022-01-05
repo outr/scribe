@@ -182,15 +182,27 @@ object Logger {
     def redirect(outLevel: Option[Level] = Some(Level.Info),
                  errLevel: Option[Level] = Some(Level.Error),
                  loggerId: LoggerId = RootId): Unit = {
-      outLevel.foreach { level =>
-        val os = new LoggingOutputStream(loggerId, level, className = "System", methodName = Some("out"))
-        val ps = new PrintStream(os)
-        System.setOut(ps)
+      if (System.out.toString != "Scribe Printer") {
+        outLevel.foreach { level =>
+          val os = new LoggingOutputStream(loggerId, level, className = "System", methodName = Some("out"))
+          val ps = new PrintStream(os) {
+            override def toString: String = "Scribe Printer"
+          }
+          System.setOut(ps)
+        }
+      } else {
+        scribe.warn("System.out is already redirected")
       }
-      errLevel.foreach { level =>
-        val os = new LoggingOutputStream(loggerId, level, className = "System", methodName = Some("err"))
-        val ps = new PrintStream(os)
-        System.setErr(ps)
+      if (System.err.toString != "Scribe Printer") {
+        errLevel.foreach { level =>
+          val os = new LoggingOutputStream(loggerId, level, className = "System", methodName = Some("err"))
+          val ps = new PrintStream(os) {
+            override def toString: String = "Scribe Printer"
+          }
+          System.setErr(ps)
+        }
+      } else {
+        scribe.warn("System.err is already redirected")
       }
     }
 
