@@ -6,20 +6,20 @@ import scribe.ANSI
 import scala.language.implicitConversions
 
 object ANSIOutputFormat extends OutputFormat {
+  private var fg: Option[ANSI] = None
+  private var bg: Option[ANSI] = None
+  private var bold: Boolean = false
+  private var italic: Boolean = false
+  private var underline: Boolean = false
+  private var strikethrough: Boolean = false
+
   override def begin(stream: String => Unit): Unit = {}
 
   override def end(stream: String => Unit): Unit = {
     stream(ANSI.ctrl.Reset)
   }
 
-  def apply(output: LogOutput, stream: String => Unit): Unit = {
-    var fg: Option[ANSI] = None
-    var bg: Option[ANSI] = None
-    var bold: Boolean = false
-    var italic: Boolean = false
-    var underline: Boolean = false
-    var strikethrough: Boolean = false
-
+  def apply(output: LogOutput, stream: String => Unit): Unit = synchronized {
     def reset(stream: String => Unit): Unit = {
       stream(ANSI.ctrl.Reset)
       fg.map(_.ansi).foreach(stream)
