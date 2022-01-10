@@ -9,7 +9,6 @@ import scribe.data.MDC
 
 import scala.jdk.CollectionConverters._
 import java.net.URI
-import java.{lang, util}
 import scala.language.implicitConversions
 
 class ScribeProvider extends Provider(15, "2.6.0", classOf[ScribeLoggerContextFactory], classOf[ScribeContextMap])
@@ -65,9 +64,9 @@ object ScribeLoggerContext extends LoggerContext {
 }
 
 class ScribeContextMap extends CleanableThreadContextMap {
-  override def removeAll(keys: lang.Iterable[String]): Unit = keys.asScala.foreach(remove)
+  override def removeAll(keys: java.lang.Iterable[String]): Unit = keys.asScala.foreach(remove)
 
-  override def putAll(map: util.Map[String, String]): Unit = map.asScala.foreach {
+  override def putAll(map: java.util.Map[String, String]): Unit = map.asScala.foreach {
     case (key, value) => put(key, value)
   }
 
@@ -85,11 +84,11 @@ class ScribeContextMap extends CleanableThreadContextMap {
 
   override def get(key: String): String = MDC.get(key).map(_.toString).orNull
 
-  override def getCopy: util.Map[String, String] = MDC.map.map {
+  override def getCopy: java.util.Map[String, String] = MDC.map.map {
     case (key, value) => key -> value().toString
   }.asJava
 
-  override def getImmutableMapOrNull: util.Map[String, String] = getCopy
+  override def getImmutableMapOrNull: java.util.Map[String, String] = getCopy
 
   override def isEmpty: Boolean = MDC.map.isEmpty
 

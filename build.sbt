@@ -17,7 +17,6 @@ ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 ThisBuild / resolvers += Resolver.sonatypeRepo("releases")
-ThisBuild / resolvers += Resolver.sonatypeRepo("snapshots")
 ThisBuild / resolvers += Resolver.JCenterRepository
 //javaOptions in run += "-agentpath:/opt/YourKit-JavaProfiler-2020.9/bin/linux-x86-64/libyjpagent.so=delay=10000,listen=all"
 
