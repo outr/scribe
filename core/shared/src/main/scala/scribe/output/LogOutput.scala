@@ -38,7 +38,6 @@ class CompositeOutput(val entries: List[LogOutput]) extends LogOutput {
       } else {
         val head = right.head
         val length = head.length
-        val s = left.map(_.plainText).mkString
         chars + length match {
           case l if l == index => (new CompositeOutput(left ::: List(head)), new CompositeOutput(right.tail))
           case l if l > index =>

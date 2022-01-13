@@ -2,14 +2,14 @@ package scribe
 
 import moduload.Moduload
 import org.jline.terminal.TerminalBuilder
-import scribe.format.FormatBlock.MultiLine
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
 import scribe.writer.{SystemOutputWriter, Writer}
 
 object Platform extends PlatformImplementation {
+  private val maximumColumns: Int = 5000
   private lazy val terminal = TerminalBuilder.terminal()
   private var lastChecked: Long = 0L
-  private var cachedColumns: Int = MultiLine.DefaultMaxChars
+  private var cachedColumns: Int = -1
 
   var columnCheckFrequency: Long = 5 * 1000L
 
@@ -41,10 +41,14 @@ object Platform extends PlatformImplementation {
     if (now - lastChecked >= columnCheckFrequency) {
       lastChecked = now
       cachedColumns = terminal.getSize.getColumns match {
-        case 0 => MultiLine.DefaultMaxChars
+        case 0 => -1
         case n => n
       }
     }
-    cachedColumns
+    if (cachedColumns == -1) {
+      maximumColumns
+    } else {
+      cachedColumns
+    }
   }
 }
