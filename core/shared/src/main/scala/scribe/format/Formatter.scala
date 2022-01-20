@@ -48,14 +48,16 @@ object Formatter {
    * message and MDC on the following line(s).
    */
   lazy val advanced: Formatter = Formatter.fromBlocks(
-    cyan(bold(dateCounter)),
-    space,
-    italic(threadName),
-    space,
-    levelColored,
-    space,
-    green(position),
-    newLine,
+    groupBySecond(
+      cyan(bold(dateFull)),
+      space,
+      italic(threadName),
+      space,
+      levelColored,
+      space,
+      green(position),
+      newLine
+    ),
     multiLine(message),
     mdcMultiLine
   )

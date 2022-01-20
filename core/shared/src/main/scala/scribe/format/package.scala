@@ -1,7 +1,7 @@
 package scribe
 
 import scribe.format.FormatBlock.{MultiLine, RawString}
-import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, EmptyOutput, ItalicOutput, LogOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
+import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, CompositeOutput, EmptyOutput, ItalicOutput, LogOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
 
 import scala.collection.mutable.ListBuffer
 import scala.language.experimental.macros
@@ -66,6 +66,40 @@ package object format {
       case _ => Color.Cyan
     }
     new ColoredOutput(color, block.format(logRecord))
+  }
+  def groupBySecond(blocks: FormatBlock*): FormatBlock = {
+    var lastThreadName: String = ""
+    var lastTime: Long = 0L
+    var lastLevel: Level = Level.Trace
+    var lastClassName: String = ""
+    var lastMethodName: Option[String] = None
+    var lastLineNumber: Option[Int] = None
+    FormatBlock { logRecord =>
+      synchronized {
+        val threadName = logRecord.thread.getName
+        val distance = logRecord.timeStamp - lastTime
+        val level = logRecord.level
+        val cn = logRecord.className
+        val mn = logRecord.methodName
+        val ln = logRecord.line
+        if (threadName == lastThreadName &&
+          distance <= 1000L &&
+          level == lastLevel &&
+          cn == lastClassName &&
+          mn == lastMethodName &&
+          ln == lastLineNumber) {
+          EmptyOutput
+        } else {
+          lastThreadName = threadName
+          lastTime = logRecord.timeStamp
+          lastLevel = level
+          lastClassName = cn
+          lastMethodName = mn
+          lastLineNumber = ln
+          new CompositeOutput(blocks.map(_.format(logRecord)).toList)
+        }
+      }
+    }
   }
   def fileName: FormatBlock = FormatBlock.FileName
   def line: FormatBlock = FormatBlock.LineNumber
