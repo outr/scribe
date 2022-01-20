@@ -52,7 +52,7 @@ val fabricVersion: String = "1.2.3"
 val scalaTestVersion: String = "3.2.10"
 
 // SLF4J
-val slf4jVersion: String = "1.7.32"
+val slf4jVersion: String = "1.7.33"
 val slf4j2Version: String = "2.0.0-alpha5"
 
 // Config Dependencies
