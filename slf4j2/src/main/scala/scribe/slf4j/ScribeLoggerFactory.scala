@@ -8,10 +8,9 @@ object ScribeLoggerFactory extends ILoggerFactory {
 
   override def getLogger(name: String): Logger = Option(map.get(name)) match {
     case Some(logger) => logger
-    case None => {
+    case None =>
       val logger = new ScribeLoggerAdapter(name)
       val oldInstance = map.putIfAbsent(name, logger)
       Option(oldInstance).getOrElse(logger)
-    }
   }
 }

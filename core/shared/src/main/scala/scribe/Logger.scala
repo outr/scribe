@@ -3,6 +3,7 @@ package scribe
 import java.io.PrintStream
 import scribe.format.Formatter
 import scribe.handler.{LogHandle, LogHandler, SynchronousLogHandle}
+import scribe.jul.JULHandler
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
 import scribe.output.format.OutputFormat
 import scribe.util.Time
@@ -220,6 +221,8 @@ object Logger {
         System.setErr(systemErr)
       }
     }
+
+    def installJUL(): Unit = java.util.logging.LogManager.getLogManager.getLogger("").addHandler(JULHandler)
   }
 
   val RootId: LoggerId = LoggerId(0L)
@@ -232,6 +235,9 @@ object Logger {
 
   // Initialize Platform-specific functionality
   Platform.init()
+
+  // Override the Java Util Logger
+  system.installJUL()
 
   def empty: Logger = Logger()
   def root: Logger = apply(RootId)
