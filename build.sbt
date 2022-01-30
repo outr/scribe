@@ -49,7 +49,7 @@ val jlineVersion: String = "3.21.0"
 val fabricVersion: String = "1.2.3"
 
 // Testing
-val scalaTestVersion: String = "3.2.10"
+val scalaTestVersion: String = "3.2.11"
 
 // SLF4J
 val slf4jVersion: String = "1.7.33"
