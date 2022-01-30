@@ -46,7 +46,7 @@ val moduloadVersion: String = "1.1.5"
 val jlineVersion: String = "3.21.0"
 
 // JSON
-val fabricVersion: String = "1.2.3"
+val fabricVersion: String = "1.2.5"
 
 // Testing
 val scalaTestVersion: String = "3.2.10"
