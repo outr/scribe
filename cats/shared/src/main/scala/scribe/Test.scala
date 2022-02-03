@@ -18,7 +18,7 @@ object Test extends IOApp {
 
 class Biz[F[_]: MonadThrow: ScribeEffect] {
   def doStuff(): F[String] = for {
-    _ <- implicitly[ScribeEffect[F]].info("Testing!")
+    _ <- ScribeEffect[F].info("Testing!")
   } yield {
     "done"
   }
