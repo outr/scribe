@@ -11,5 +11,5 @@ trait ScribeEffect[F[_]] extends Any {
 }
 
 object ScribeEffect {
-  def apply[F[_]](implicit sync: Sync[F]): ScribeEffect[F] = new ScribeEffectImpl[F](sync)
+  def apply[F[_]: ScribeEffect]: ScribeEffect[F] = implicitly[ScribeEffect[F]]
 }
