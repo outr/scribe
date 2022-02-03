@@ -12,7 +12,7 @@ val scalaNativeVersions = compatScalaVersions
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.6.11-SNAPSHOT"
+ThisBuild / version := "3.7.0-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -34,7 +34,7 @@ ThisBuild / scmInfo := Some(
   )
 )
 ThisBuild / developers := List(
-  Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
+  Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("https://matthicks.com"))
 )
 ThisBuild / parallelExecution := false
 
@@ -44,6 +44,9 @@ val sourcecodeVersion: String = "0.2.7"
 val collectionCompatVersion: String = "2.6.0"
 val moduloadVersion: String = "1.1.5"
 val jlineVersion: String = "3.21.0"
+
+// Cats
+val catsEffectVersion: String = "3.3.5"
 
 // JSON
 val fabricVersion: String = "1.2.3"
@@ -82,6 +85,7 @@ val sourceMapSettings = List(
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
+    catsJS, catsJVM,
     fileJVM, fileNative,
     jsonJS, jsonJVM,
     slf4j, slf4j2, log4j, migration, config, slack, logstash
@@ -127,6 +131,33 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 lazy val coreNative = core.native
+
+lazy val cats = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-cats",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-effect" % catsEffectVersion
+    ),
+    libraryDependencies ++= (
+      if (scalaVersion.value.startsWith("3.0")) {
+        Nil
+      } else {
+        List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
+      }
+    ),
+    Test / publishArtifact := false
+  )
+  .jsSettings(
+    crossScalaVersions := scalaJSVersions
+  )
+  .jvmSettings(
+    crossScalaVersions := scalaJVMVersions
+  )
+  .dependsOn(core)
+
+lazy val catsJS = cats.js
+lazy val catsJVM = cats.jvm
 
 lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
