@@ -9,6 +9,7 @@ val compatScalaVersions = List(scala213, scala212)
 val scalaJVMVersions = allScalaVersions
 val scalaJSVersions = allScalaVersions
 val scalaNativeVersions = compatScalaVersions
+val scalaNot211Versions = List(scala213, scala212) ::: scala3
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
@@ -149,10 +150,10 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
     Test / publishArtifact := false
   )
   .jsSettings(
-    crossScalaVersions := scalaJSVersions
+    crossScalaVersions := scalaNot211Versions
   )
   .jvmSettings(
-    crossScalaVersions := scalaJVMVersions
+    crossScalaVersions := scalaNot211Versions
   )
   .dependsOn(core)
 
