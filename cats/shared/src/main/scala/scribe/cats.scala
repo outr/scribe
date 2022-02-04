@@ -3,9 +3,9 @@ package scribe
 import _root_.cats.effect._
 
 object cats {
-  lazy val io: ScribeEffect[IO] = apply[IO]
+  lazy val io: Scribe[IO] = apply[IO]
 
-  implicit def _effect[F[_]](implicit sync: Sync[F]): ScribeEffect[F] = apply[F]
+  implicit def effect[F[_]](implicit sync: Sync[F]): Scribe[F] = apply[F]
 
-  def apply[F[_]: Sync]: ScribeEffect[F] = new ScribeEffectImpl[F](implicitly[Sync[F]])
+  def apply[F[_]: Sync]: Scribe[F] = new ScribeImpl[F](implicitly[Sync[F]])
 }

@@ -7,9 +7,9 @@ import cats.effect.testing.scalatest.AsyncIOSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import scribe.handler.LogHandler
-import scribe.{LogRecord, Logger, ScribeEffect}
+import scribe.{LogRecord, Logger, Scribe}
 
-class ScribeEffectSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
+class ScribeSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
   "ScribeEffect" should {
     var messages: List[String] = Nil
     Logger.root
@@ -45,11 +45,19 @@ class ScribeEffectSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
         s should be("done")
       }
     }
+    "do reference logging" in {
+      messages = Nil
+
+      val logger = scribe.cats[IO]
+      logger.info("4").map { _ =>
+        messages should be(List("4"))
+      }
+    }
   }
 
-  class Biz[F[_]: MonadThrow: ScribeEffect] {
+  class Biz[F[_]: MonadThrow: Scribe] {
     def doStuff(): F[String] = for {
-      _ <- ScribeEffect[F].info("3")
+      _ <- Scribe[F].info("3")
     } yield {
       "done"
     }
