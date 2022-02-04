@@ -11,6 +11,7 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
 package object file {
   val DefaultBufferSize: Int = 1024
 
+  implicit def pathPart2PathBuilder(part: PathPart): PathBuilder = PathBuilder(List(part))
   implicit def path2PathBuilder(path: Path): PathBuilder = PathBuilder(List(PathPart.SetPath(path.toAbsolutePath.toString)))
   implicit def file2PathBuilder(file: File): PathBuilder = PathBuilder(List(PathPart.SetPath(file.getAbsolutePath)))
   implicit def string2PathBuilder(s: String): PathBuilder = PathBuilder(List(PathPart.SetPath(s)))

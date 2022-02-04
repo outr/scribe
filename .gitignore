@@ -6,3 +6,4 @@ logs/
 out/
 benchmarks.json
 lowered.hnir
+*.iml
