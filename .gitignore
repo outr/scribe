@@ -6,3 +6,9 @@ logs/
 out/
 benchmarks.json
 lowered.hnir
+
+# metals + vscode dirs
+.bloop/
+.metals/
+.vscode/
+**/metals.sbt
