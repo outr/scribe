@@ -17,7 +17,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                   handlers: List[LogHandler] = Nil,
                   overrideClassName: Option[String] = None,
                   data: Map[String, () => Any] = Map.empty,
-                  id: LoggerId = LoggerId()) extends LoggerSupport {
+                  id: LoggerId = LoggerId()) extends LoggerSupport[Unit] {
   private var lastUpdate = Logger.lastChange
   private var includeStatus = Map.empty[Level, Boolean]
 

@@ -4,14 +4,14 @@ import scribe.data.MDC
 
 import scala.language.experimental.macros
 
-trait LoggerSupport {
-  def log[M](record: LogRecord[M]): Unit
+trait LoggerSupport[F] extends Any {
+  def log[M](record: LogRecord[M]): F
 
   def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
                       (implicit pkg: sourcecode.Pkg,
                        fileName: sourcecode.FileName,
                        name: sourcecode.Name,
-                       line: sourcecode.Line): Unit = {
+                       line: sourcecode.Line): F = {
     val (fn, className) = LoggerSupport.className(pkg, fileName)
     val methodName = name.value match {
       case "anonymous" | "" => None
@@ -34,75 +34,75 @@ trait LoggerSupport {
   def trace()(implicit pkg: sourcecode.Pkg,
               fileName: sourcecode.FileName,
               name: sourcecode.Name,
-              line: sourcecode.Line): Unit = log[String](Level.Trace, "", None)
+              line: sourcecode.Line): F = log[String](Level.Trace, "", None)
   def debug()(implicit pkg: sourcecode.Pkg,
               fileName: sourcecode.FileName,
               name: sourcecode.Name,
-              line: sourcecode.Line): Unit = log[String](Level.Debug, "", None)
+              line: sourcecode.Line): F = log[String](Level.Debug, "", None)
   def info()(implicit pkg: sourcecode.Pkg,
              fileName: sourcecode.FileName,
              name: sourcecode.Name,
-             line: sourcecode.Line): Unit = log[String](Level.Info, "", None)
+             line: sourcecode.Line): F = log[String](Level.Info, "", None)
   def warn()(implicit pkg: sourcecode.Pkg,
              fileName: sourcecode.FileName,
              name: sourcecode.Name,
-             line: sourcecode.Line): Unit = log[String](Level.Warn, "", None)
+             line: sourcecode.Line): F = log[String](Level.Warn, "", None)
   def error()(implicit pkg: sourcecode.Pkg,
               fileName: sourcecode.FileName,
               name: sourcecode.Name,
-              line: sourcecode.Line): Unit = log[String](Level.Error, "", None)
+              line: sourcecode.Line): F = log[String](Level.Error, "", None)
 
   def trace[M: Loggable](message: => M)
                         (implicit pkg: sourcecode.Pkg,
                          fileName: sourcecode.FileName,
                          name: sourcecode.Name,
-                         line: sourcecode.Line): Unit = log[M](Level.Trace, message, None)
+                         line: sourcecode.Line): F = log[M](Level.Trace, message, None)
   def debug[M: Loggable](message: => M)
                         (implicit pkg: sourcecode.Pkg,
                          fileName: sourcecode.FileName,
                          name: sourcecode.Name,
-                         line: sourcecode.Line): Unit = log[M](Level.Debug, message, None)
+                         line: sourcecode.Line): F = log[M](Level.Debug, message, None)
   def info[M: Loggable](message: => M)
                        (implicit pkg: sourcecode.Pkg,
                         fileName: sourcecode.FileName,
                         name: sourcecode.Name,
-                        line: sourcecode.Line): Unit = log[M](Level.Info, message, None)
+                        line: sourcecode.Line): F = log[M](Level.Info, message, None)
   def warn[M: Loggable](message: => M)
                        (implicit pkg: sourcecode.Pkg,
                         fileName: sourcecode.FileName,
                         name: sourcecode.Name,
-                        line: sourcecode.Line): Unit = log[M](Level.Warn, message, None)
+                        line: sourcecode.Line): F = log[M](Level.Warn, message, None)
   def error[M: Loggable](message: => M)
                         (implicit pkg: sourcecode.Pkg,
                          fileName: sourcecode.FileName,
                          name: sourcecode.Name,
-                         line: sourcecode.Line): Unit = log[M](Level.Error, message, None)
+                         line: sourcecode.Line): F = log[M](Level.Error, message, None)
 
   def trace[M : Loggable](message: => M, t: Throwable)
                          (implicit pkg: sourcecode.Pkg,
                           fileName: sourcecode.FileName,
                           name: sourcecode.Name,
-                          line: sourcecode.Line): Unit = log[M](Level.Trace, message, Some(t))
+                          line: sourcecode.Line): F = log[M](Level.Trace, message, Some(t))
   def debug[M : Loggable](message: => M, t: Throwable)
                          (implicit pkg: sourcecode.Pkg,
                           fileName: sourcecode.FileName,
                           name: sourcecode.Name,
-                          line: sourcecode.Line): Unit = log[M](Level.Debug, message, Some(t))
+                          line: sourcecode.Line): F = log[M](Level.Debug, message, Some(t))
   def info[M : Loggable](message: => M, t: Throwable)
                         (implicit pkg: sourcecode.Pkg,
                          fileName: sourcecode.FileName,
                          name: sourcecode.Name,
-                         line: sourcecode.Line): Unit = log[M](Level.Info, message, Some(t))
+                         line: sourcecode.Line): F = log[M](Level.Info, message, Some(t))
   def warn[M : Loggable](message: => M, t: Throwable)
                         (implicit pkg: sourcecode.Pkg,
                          fileName: sourcecode.FileName,
                          name: sourcecode.Name,
-                         line: sourcecode.Line): Unit = log[M](Level.Warn, message, Some(t))
+                         line: sourcecode.Line): F = log[M](Level.Warn, message, Some(t))
   def error[M : Loggable](message: => M, t: Throwable)
                          (implicit pkg: sourcecode.Pkg,
                           fileName: sourcecode.FileName,
                           name: sourcecode.Name,
-                          line: sourcecode.Line): Unit = log[M](Level.Error, message, Some(t))
+                          line: sourcecode.Line): F = log[M](Level.Error, message, Some(t))
 
   /**
     * Includes MDC elapsed to show elapsed time within the block

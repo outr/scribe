@@ -48,6 +48,7 @@ val jlineVersion: String = "3.21.0"
 
 // Cats
 val catsEffectVersion: String = "3.3.5"
+val catsEffectTestingVersion: String = "1.4.0"
 
 // JSON
 val fabricVersion: String = "1.2.3"
@@ -138,7 +139,9 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "scribe-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-effect" % catsEffectVersion
+      "org.typelevel" %%% "cats-effect" % catsEffectVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %% "cats-effect-testing-scalatest" % catsEffectTestingVersion % "test"
     ),
     libraryDependencies ++= (
       if (scalaVersion.value.startsWith("3.0")) {

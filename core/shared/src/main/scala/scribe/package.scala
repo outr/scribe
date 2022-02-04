@@ -3,7 +3,7 @@ import sourcecode.{FileName, Line, Name, Pkg}
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 
-package object scribe extends LoggerSupport {
+package object scribe extends LoggerSupport[Unit] {
   lazy val lineSeparator: String = System.getProperty("line.separator")
 
   protected[scribe] var disposables = Set.empty[() => Unit]
