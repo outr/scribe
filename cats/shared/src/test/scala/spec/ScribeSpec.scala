@@ -53,6 +53,14 @@ class ScribeSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
         messages should be(List("4"))
       }
     }
+    "do existing logger logging" in {
+      messages = Nil
+
+      import scribe.cats._
+      Logger.root.f[IO].info("5").map { _ =>
+        messages should be(List("5"))
+      }
+    }
   }
 
   class Biz[F[_]: MonadThrow: Scribe] {

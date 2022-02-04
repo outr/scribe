@@ -85,6 +85,7 @@ asynchronous logging support completely removes logging impact from your applica
 
 ## Advanced Topics
 * [Asynchronous Tracing](https://github.com/outr/scribe/wiki/asynchronous-tracing)
+* [Cats Effect Module](https://github.com/outr/scribe/wiki/cats-effect)
 
 ## Optional Modules
 * [SLF4J integration](https://github.com/outr/scribe/wiki/slf4j)
