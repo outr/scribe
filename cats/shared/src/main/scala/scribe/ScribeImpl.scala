@@ -8,7 +8,7 @@ class ScribeImpl[F[_]](val sync: Sync[F]) extends AnyVal with Scribe[F] {
 
   override def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
                                (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): F[Unit] = {
-    sync.defer(super.log(level, message, throwable)(implicitly[Loggable[M]], pkg, fileName, name, line))
+    sync.defer(log[M](LoggerSupport[M](level, message, throwable, implicitly[Loggable[M]], pkg, fileName, name, line)))
   }
 }
 

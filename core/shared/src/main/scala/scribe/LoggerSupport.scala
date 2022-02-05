@@ -12,23 +12,7 @@ trait LoggerSupport[F] extends Any {
                        fileName: sourcecode.FileName,
                        name: sourcecode.Name,
                        line: sourcecode.Line): F = {
-    val (fn, className) = LoggerSupport.className(pkg, fileName)
-    val methodName = name.value match {
-      case "anonymous" | "" => None
-      case v => Option(v)
-    }
-    log[M](LogRecord(
-      level = level,
-      value = level.value,
-      message = new LazyMessage[M](() => message),
-      loggable = implicitly[Loggable[M]],
-      throwable = throwable,
-      fileName = fn,
-      className = className,
-      methodName = methodName,
-      line = Some(line.value),
-      column = None
-    ))
+    log[M](LoggerSupport[M](level, message, throwable, implicitly[Loggable[M]], pkg, fileName, name, line))
   }
 
   def trace()(implicit pkg: sourcecode.Pkg,
@@ -140,6 +124,33 @@ trait LoggerSupport[F] extends Any {
 
 object LoggerSupport {
   private var map = Map.empty[sourcecode.Pkg, Map[sourcecode.FileName, (String, String)]]
+
+  def apply[M](level: Level,
+               message: => M,
+               throwable: Option[Throwable],
+               loggable: Loggable[M],
+               pkg: sourcecode.Pkg,
+               fileName: sourcecode.FileName,
+               name: sourcecode.Name,
+               line: sourcecode.Line): LogRecord[M] = {
+    val (fn, className) = LoggerSupport.className(pkg, fileName)
+    val methodName = name.value match {
+      case "anonymous" | "" => None
+      case v => Option(v)
+    }
+    LogRecord(
+      level = level,
+      value = level.value,
+      message = new LazyMessage[M](() => message),
+      loggable = loggable,
+      throwable = throwable,
+      fileName = fn,
+      className = className,
+      methodName = methodName,
+      line = Some(line.value),
+      column = None
+    )
+  }
 
   def className(pkg: sourcecode.Pkg, fileName: sourcecode.FileName): (String, String) = map.get(pkg) match {
     case Some(m) => m.get(fileName) match {
