@@ -22,17 +22,16 @@ class ScribeSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
       .replace()
 
     "do cats.io logging" in {
-      scribe.cats.io.info("1")
-    }
-    "verify log 1 arrived" in {
-      messages should be(List("1"))
+      scribe.cats.io.info("1").map { _ =>
+        messages should be(List("1"))
+      }
     }
     "do cats[IO] logging" in {
       messages = Nil
-      scribe.cats[IO].info("2")
-    }
-    "verify log 2 arrived" in {
-      messages should be(List("2"))
+
+      scribe.cats[IO].info("2").map { _ =>
+        messages should be(List("2"))
+      }
     }
     "do instantiation logging" in {
       messages = Nil
