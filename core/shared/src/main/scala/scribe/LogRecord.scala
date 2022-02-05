@@ -74,6 +74,8 @@ trait LogRecord[M] {
 object LogRecord extends LogRecordCreator {
   var creator: LogRecordCreator = SimpleLogRecord
 
+  private val NativeMethod: Int = -2
+
   override def apply[M](level: Level,
                value: Double,
                message: Message[M],
@@ -153,13 +155,13 @@ object LogRecord extends LogRecordCreator {
   private def writeStackTrace(b: StringBuilder, elements: Array[StackTraceElement]): Unit = {
     elements.headOption match {
       case None => // No more elements
-      case Some(head) => {
+      case Some(head) =>
         b.append("\tat ")
         b.append(head.getClassName)
         b.append('.')
         b.append(head.getMethodName)
         b.append('(')
-        if (head.getLineNumber == -2) {
+        if (head.getLineNumber == NativeMethod) {
           b.append("Native Method")
         } else {
           b.append(head.getFileName)
@@ -171,7 +173,6 @@ object LogRecord extends LogRecordCreator {
         b.append(')')
         b.append(scribe.lineSeparator)
         writeStackTrace(b, elements.tail)
-      }
     }
   }
 }
