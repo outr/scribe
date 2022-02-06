@@ -9,9 +9,6 @@ package object scribe extends LoggerSupport[Unit] {
 
   protected[scribe] var disposables = Set.empty[() => Unit]
 
-  implicit def string2Message(s: String): LoggableMessage = Message.static(s)
-  implicit def throwable2Message(throwable: Throwable): LoggableMessage = Message.static(throwable)
-
   @inline
   override final def log[M](record: LogRecord[M]): Unit = Logger(record.className).log(record)
 

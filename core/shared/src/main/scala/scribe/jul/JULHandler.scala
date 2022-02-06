@@ -14,7 +14,7 @@ object JULHandler extends java.util.logging.Handler {
       level = level,
       value = level.value,
       message = Message(record.getMessage),
-      additionalMessages = Option(record.getThrown).map(throwable2Message).toList,
+      additionalMessages = Option(record.getThrown).toList,
       fileName = "",
       className = Option(record.getSourceClassName).getOrElse(record.getLoggerName),
       methodName = Option(record.getSourceMethodName),
