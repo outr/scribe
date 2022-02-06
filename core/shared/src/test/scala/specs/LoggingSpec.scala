@@ -84,7 +84,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.info(s"It works! ${d.f()}")
     }
     "write a detailed log message" in {
-      val line = Some(14)
+      val line = Some(13)
       handler.clear()
       testObject.testLogger()
       handler.records.length should be(1)
@@ -94,10 +94,10 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       handler.records.head.fileName should be(expectedTestFileName)
       FormatBlock.Position.abbreviate(maxLength = 1, removeEntries = false)
         .format(handler.records.head)
-        .plainText should be("s.LoggingTestObject.testLogger:14")
+        .plainText should be("s.LoggingTestObject.testLogger:13")
     }
     "write a log message with an anonymous function" in {
-      val line = Some(10)
+      val line = Some(9)
       handler.clear()
       testObject.testAnonymous()
       handler.records.length should be(1)
@@ -107,7 +107,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       handler.records.head.fileName should be(expectedTestFileName)
     }
     "write an exception" in {
-      val line = Some(22)
+      val line = Some(21)
       handler.clear()
       testObject.testException()
       handler.records.length should be(1)

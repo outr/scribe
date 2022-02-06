@@ -1,7 +1,6 @@
 package specs
 
-import scribe.Logging
-import scribe.writer.NullWriter
+import scribe._
 
 class LoggingTestObject(handler: TestingHandler) extends Logging {
   logger.orphan().withHandler(handler).replace()
