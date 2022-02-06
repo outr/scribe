@@ -1,5 +1,6 @@
 package scribe
 
+import scribe.message.{LoggableMessage, Message}
 import scribe.modify.LogModifier
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.record.SimpleLogRecord
@@ -13,8 +14,7 @@ trait LogRecord[M] {
   def level: Level
   def levelValue: Double
   def message: Message[M]
-  def loggable: Loggable[M]
-  def throwable: Option[Throwable]
+  def additionalMessages: List[LoggableMessage]
   def fileName: String
   def className: String
   def methodName: Option[String]
@@ -57,8 +57,7 @@ trait LogRecord[M] {
   def copy(level: Level = level,
            value: Double = levelValue,
            message: Message[M] = message,
-           loggable: Loggable[M] = loggable,
-           throwable: Option[Throwable] = throwable,
+           additionalMessages: List[LoggableMessage] = additionalMessages,
            fileName: String = fileName,
            className: String = className,
            methodName: Option[String] = methodName,
@@ -77,19 +76,18 @@ object LogRecord extends LogRecordCreator {
   private val NativeMethod: Int = -2
 
   override def apply[M](level: Level,
-               value: Double,
-               message: Message[M],
-               loggable: Loggable[M],
-               throwable: Option[Throwable],
-               fileName: String,
-               className: String,
-               methodName: Option[String],
-               line: Option[Int],
-               column: Option[Int],
-               thread: Thread = Thread.currentThread(),
-               data: Map[String, () => Any] = Map.empty,
-               timeStamp: Long = Time()): LogRecord[M] = {
-    creator[M](level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
+                        value: Double,
+                        message: Message[M],
+                        additionalMessages: List[LoggableMessage],
+                        fileName: String,
+                        className: String,
+                        methodName: Option[String],
+                        line: Option[Int],
+                        column: Option[Int],
+                        thread: Thread = Thread.currentThread(),
+                        data: Map[String, () => Any] = Map.empty,
+                        timeStamp: Long = Time()): LogRecord[M] = {
+    creator[M](level, value, message, additionalMessages, fileName, className, methodName, line, column, thread, data, timeStamp)
   }
 
   def simple(message: String,
@@ -105,9 +103,8 @@ object LogRecord extends LogRecordCreator {
     apply[String](
       level = level,
       value = level.value,
-      message = new LazyMessage[String](() => message),
-      loggable = Loggable.StringLoggable,
-      throwable = None,
+      message = Message(message),
+      additionalMessages = Nil,
       fileName = fileName,
       className = className,
       methodName = methodName,

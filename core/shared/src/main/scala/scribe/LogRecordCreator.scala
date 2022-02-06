@@ -1,13 +1,13 @@
 package scribe
 
+import scribe.message.{LoggableMessage, Message}
 import scribe.util.Time
 
 trait LogRecordCreator {
   def apply[M](level: Level,
                value: Double,
                message: Message[M],
-               loggable: Loggable[M],
-               throwable: Option[Throwable],
+               additionalMessages: List[LoggableMessage],
                fileName: String,
                className: String,
                methodName: Option[String],

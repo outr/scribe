@@ -1,14 +1,14 @@
 package scribe.record
 
 import scribe.LogRecord.throwable2LogOutput
-import scribe.{Level, LogRecord, LogRecordCreator, Loggable, Message}
-import scribe.output.LogOutput
+import scribe.message.{LoggableMessage, Message}
+import scribe.{Level, LogRecord, LogRecordCreator, Loggable}
+import scribe.output.{CompositeOutput, LogOutput}
 
 class SimpleLogRecord[M](val level: Level,
                          val levelValue: Double,
                          val message: Message[M],
-                         val loggable: Loggable[M],
-                         val throwable: Option[Throwable],
+                         val additionalMessages: List[LoggableMessage],
                          val fileName: String,
                          val className: String,
                          val methodName: Option[String],
@@ -18,18 +18,17 @@ class SimpleLogRecord[M](val level: Level,
                          val data: Map[String, () => Any],
                          val timeStamp: Long) extends LogRecord[M] {
   override lazy val logOutput: LogOutput = {
-    val msg = loggable(message.value)
-    throwable match {
-      case Some(t) => throwable2LogOutput(msg, t)
-      case None => msg
+    val msg = message.logOutput
+    additionalMessages match {
+      case Nil => msg
+      case list => new CompositeOutput(msg :: LogOutput.NewLine :: list.map(_.logOutput))
     }
   }
 
   def copy(level: Level = level,
            value: Double = levelValue,
            message: Message[M] = message,
-           loggable: Loggable[M],
-           throwable: Option[Throwable],
+           additionalMessages: List[LoggableMessage] = additionalMessages,
            fileName: String = fileName,
            className: String = className,
            methodName: Option[String] = methodName,
@@ -38,7 +37,7 @@ class SimpleLogRecord[M](val level: Level,
            thread: Thread = thread,
            data: Map[String, () => Any] = data,
            timeStamp: Long = timeStamp): LogRecord[M] = {
-    val r = new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
+    val r = new SimpleLogRecord(level, value, message, additionalMessages, fileName, className, methodName, line, column, thread, data, timeStamp)
     r.appliedModifierIds = this.appliedModifierIds
     r
   }
@@ -50,8 +49,7 @@ object SimpleLogRecord extends LogRecordCreator {
   override def apply[M](level: Level,
                         value: Double,
                         message: Message[M],
-                        loggable: Loggable[M],
-                        throwable: Option[Throwable],
+                        additionalMessages: List[LoggableMessage],
                         fileName: String,
                         className: String,
                         methodName: Option[String],
@@ -60,6 +58,6 @@ object SimpleLogRecord extends LogRecordCreator {
                         thread: Thread,
                         data: Map[String, () => Any],
                         timeStamp: Long): LogRecord[M] = {
-    new SimpleLogRecord(level, value, message, loggable, throwable, fileName, className, methodName, line, column, thread, data, timeStamp)
+    new SimpleLogRecord(level, value, message, additionalMessages, fileName, className, methodName, line, column, thread, data, timeStamp)
   }
 }

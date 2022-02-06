@@ -1,6 +1,6 @@
 package scribe.format
 
-import scribe._
+import scribe.LogRecord
 import scribe.output.LogOutput
 
 trait Formatter {

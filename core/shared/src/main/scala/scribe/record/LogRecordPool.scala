@@ -1,17 +1,17 @@
 package scribe.record
 
 import scribe.LogRecord.throwable2LogOutput
-import scribe.output.{EmptyOutput, LogOutput}
-import scribe.{Level, LogRecord, LogRecordCreator, Loggable, Message}
+import scribe.message.{LoggableMessage, Message}
+import scribe.output.{CompositeOutput, LogOutput}
+import scribe.{Level, LogRecord, LogRecordCreator, Loggable}
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class LogRecordPool[M] extends LogRecord[M] {
   var level: Level = Level.Info
   var levelValue: Double = level.value
-  var message: Message[M] = Message.empty[M]
-  var loggable: Loggable[M] = Loggable.StringLoggable.asInstanceOf[Loggable[M]]
-  var throwable: Option[Throwable] = None
+  var message: Message[M] = Message.empty.asInstanceOf[Message[M]]
+  var additionalMessages: List[LoggableMessage] = Nil
   var fileName: String = ""
   var className: String = ""
   var methodName: Option[String] = None
@@ -27,10 +27,10 @@ class LogRecordPool[M] extends LogRecord[M] {
     logOutputOption match {
       case Some(output) => output
       case None =>
-        val msg = loggable(message.value)
-        val output = throwable match {
-          case Some(t) => throwable2LogOutput(msg, t)
-          case None => msg
+        val msg = message.logOutput
+        val output = additionalMessages match {
+          case Nil => msg
+          case list => new CompositeOutput(msg :: LogOutput.NewLine :: list.map(_.logOutput))
         }
         logOutputOption = Some(output)
         output
@@ -40,8 +40,7 @@ class LogRecordPool[M] extends LogRecord[M] {
   override def copy(level: Level,
                     value: Double,
                     message: Message[M],
-                    loggable: Loggable[M],
-                    throwable: Option[Throwable],
+                    additionalMessages: List[LoggableMessage],
                     fileName: String,
                     className: String,
                     methodName: Option[String],
@@ -53,8 +52,7 @@ class LogRecordPool[M] extends LogRecord[M] {
     this.level = level
     this.levelValue = value
     this.message = message
-    this.loggable = loggable
-    this.throwable = throwable
+    this.additionalMessages = additionalMessages
     this.fileName = fileName
     this.className = className
     this.methodName = methodName
@@ -85,8 +83,7 @@ object LogRecordPool extends LogRecordCreator {
   override def apply[M](level: Level,
                         value: Double,
                         message: Message[M],
-                        loggable: Loggable[M],
-                        throwable: Option[Throwable],
+                        additionalMessages: List[LoggableMessage],
                         fileName: String,
                         className: String,
                         methodName: Option[String],
@@ -98,8 +95,7 @@ object LogRecordPool extends LogRecordCreator {
     level = level,
     value = value,
     message = message,
-    loggable = loggable,
-    throwable = throwable,
+    additionalMessages = additionalMessages,
     fileName = fileName,
     className = className,
     methodName = methodName,

@@ -4,6 +4,7 @@ import java.io.PrintStream
 import scribe.format.Formatter
 import scribe.handler.{LogHandle, LogHandler, SynchronousLogHandle}
 import scribe.jul.JULHandler
+import scribe.message.{LoggableMessage, Message}
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
 import scribe.output.format.OutputFormat
 import scribe.util.Time
@@ -48,10 +49,10 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id) ::: List(modifier))
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
-  override def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
+  override def log[M: Loggable](level: Level, message: => M, additionalMessages: List[LoggableMessage])
                                (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit = {
     if (includes(level)) {
-      super.log(level, message, throwable)
+      super.log(level, message, additionalMessages)
     }
   }
 
@@ -126,7 +127,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
 
   def logDirect[M](level: Level,
                    message: => M,
-                   throwable: Option[Throwable] = None,
+                   additionalMessages: List[LoggableMessage] = Nil,
                    fileName: String = "",
                    className: String = "",
                    methodName: Option[String] = None,
@@ -138,9 +139,8 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     log[M](LogRecord[M](
       level = level,
       value = level.value,
-      message = new LazyMessage[M](() => message),
-      loggable = loggable,
-      throwable = throwable,
+      message = Message(message),
+      additionalMessages = additionalMessages,
       fileName = fileName,
       className = overrideClassName.getOrElse(className),
       methodName = methodName,

@@ -8,6 +8,10 @@ sealed trait LogOutput extends Any {
   def splitAt(index: Int): (LogOutput, LogOutput)
 }
 
+object LogOutput {
+  lazy val NewLine: LogOutput = new TextOutput("\n")
+}
+
 object EmptyOutput extends LogOutput {
   override val plainText: String = ""
 

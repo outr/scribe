@@ -172,7 +172,7 @@ case class Log4JLogger(id: LoggerId) extends AbstractLogger {
                           t: Throwable): Unit = logger.log(
     level = l2l(level).getOrElse(throw new RuntimeException(s"Unsupported level: $level")),
     message = message.getFormattedMessage,
-    throwable = Option(t)
+    additionalMessages = Option(t).map(throwable2Message).toList
   )
 
   override def getLevel: log4j.Level = if (logger.includes(Level.Trace)) {

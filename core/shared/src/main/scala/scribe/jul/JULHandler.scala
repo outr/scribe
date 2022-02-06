@@ -1,7 +1,8 @@
 package scribe.jul
 
 import scribe.Loggable.StringLoggable
-import scribe.{LazyMessage, Level, LogRecord}
+import scribe.message.Message
+import scribe._
 
 import java.util.logging.{Level => JLevel}
 
@@ -12,9 +13,8 @@ object JULHandler extends java.util.logging.Handler {
     val logRecord = LogRecord(
       level = level,
       value = level.value,
-      message = new LazyMessage(() => record.getMessage),
-      loggable = StringLoggable,
-      throwable = Option(record.getThrown),
+      message = Message(record.getMessage),
+      additionalMessages = Option(record.getThrown).map(throwable2Message).toList,
       fileName = "",
       className = Option(record.getSourceClassName).getOrElse(record.getLoggerName),
       methodName = Option(record.getSourceMethodName),

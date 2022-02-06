@@ -8,15 +8,20 @@ import scribe.writer.Writer
 import perfolation._
 import fabric.rw._
 import fabric._
+import scribe.message.Message
 
 case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
   override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
     val l = record.timeStamp
-    val trace = record.throwable.map(throwable2Trace)
+    val traces = record.additionalMessages.collect {
+      case message: Message[_] if message.value.isInstanceOf[Throwable] => throwable2Trace(message.value.asInstanceOf[Throwable])
+    }
+    val additionalMessages = record.additionalMessages.map(_.logOutput.plainText)
     val r = Record(
       level = record.level.name,
       levelValue = record.levelValue,
       message = record.logOutput.plainText,
+      additionalMessages = additionalMessages,
       fileName = record.fileName,
       className = record.className,
       methodName = record.methodName,
@@ -28,7 +33,7 @@ case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
           case any => key -> str(any.toString)
         }
       },
-      throwable = trace,
+      traces = traces,
       timeStamp = l,
       date = l.t.F,
       time = s"${l.t.T}.${l.t.L}${l.t.z}"
@@ -53,13 +58,14 @@ case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
 case class Record(level: String,
                   levelValue: Double,
                   message: String,
+                  additionalMessages: List[String],
                   fileName: String,
                   className: String,
                   methodName: Option[String],
                   line: Option[Int],
                   column: Option[Int],
                   data: Map[String, Value],
-                  throwable: Option[Trace],
+                  traces: List[Trace],
                   timeStamp: Long,
                   date: String,
                   time: String)

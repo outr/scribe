@@ -1,92 +1,67 @@
 package scribe
 
 import scribe.data.MDC
+import scribe.message.{LoggableMessage, Message}
 
 import scala.language.experimental.macros
 
 trait LoggerSupport[F] extends Any {
   def log[M](record: LogRecord[M]): F
 
-  def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
+  def log[M: Loggable](level: Level, message: => M, additionalMessages: List[LoggableMessage] = Nil)
                       (implicit pkg: sourcecode.Pkg,
                        fileName: sourcecode.FileName,
                        name: sourcecode.Name,
                        line: sourcecode.Line): F = {
-    log[M](LoggerSupport[M](level, message, throwable, implicitly[Loggable[M]], pkg, fileName, name, line))
+    log[M](LoggerSupport[M](level, message, additionalMessages, pkg, fileName, name, line))
   }
 
   def trace()(implicit pkg: sourcecode.Pkg,
               fileName: sourcecode.FileName,
               name: sourcecode.Name,
-              line: sourcecode.Line): F = log[String](Level.Trace, "", None)
+              line: sourcecode.Line): F = log[String](Level.Trace, "", Nil)
   def debug()(implicit pkg: sourcecode.Pkg,
               fileName: sourcecode.FileName,
               name: sourcecode.Name,
-              line: sourcecode.Line): F = log[String](Level.Debug, "", None)
+              line: sourcecode.Line): F = log[String](Level.Debug, "", Nil)
   def info()(implicit pkg: sourcecode.Pkg,
              fileName: sourcecode.FileName,
              name: sourcecode.Name,
-             line: sourcecode.Line): F = log[String](Level.Info, "", None)
+             line: sourcecode.Line): F = log[String](Level.Info, "", Nil)
   def warn()(implicit pkg: sourcecode.Pkg,
              fileName: sourcecode.FileName,
              name: sourcecode.Name,
-             line: sourcecode.Line): F = log[String](Level.Warn, "", None)
+             line: sourcecode.Line): F = log[String](Level.Warn, "", Nil)
   def error()(implicit pkg: sourcecode.Pkg,
               fileName: sourcecode.FileName,
               name: sourcecode.Name,
-              line: sourcecode.Line): F = log[String](Level.Error, "", None)
+              line: sourcecode.Line): F = log[String](Level.Error, "", Nil)
 
-  def trace[M: Loggable](message: => M)
-                        (implicit pkg: sourcecode.Pkg,
-                         fileName: sourcecode.FileName,
-                         name: sourcecode.Name,
-                         line: sourcecode.Line): F = log[M](Level.Trace, message, None)
-  def debug[M: Loggable](message: => M)
-                        (implicit pkg: sourcecode.Pkg,
-                         fileName: sourcecode.FileName,
-                         name: sourcecode.Name,
-                         line: sourcecode.Line): F = log[M](Level.Debug, message, None)
-  def info[M: Loggable](message: => M)
-                       (implicit pkg: sourcecode.Pkg,
-                        fileName: sourcecode.FileName,
-                        name: sourcecode.Name,
-                        line: sourcecode.Line): F = log[M](Level.Info, message, None)
-  def warn[M: Loggable](message: => M)
-                       (implicit pkg: sourcecode.Pkg,
-                        fileName: sourcecode.FileName,
-                        name: sourcecode.Name,
-                        line: sourcecode.Line): F = log[M](Level.Warn, message, None)
-  def error[M: Loggable](message: => M)
-                        (implicit pkg: sourcecode.Pkg,
-                         fileName: sourcecode.FileName,
-                         name: sourcecode.Name,
-                         line: sourcecode.Line): F = log[M](Level.Error, message, None)
-
-  def trace[M : Loggable](message: => M, t: Throwable)
+  def trace[M : Loggable](message: => M, additionalMessages: LoggableMessage*)
                          (implicit pkg: sourcecode.Pkg,
                           fileName: sourcecode.FileName,
                           name: sourcecode.Name,
-                          line: sourcecode.Line): F = log[M](Level.Trace, message, Some(t))
-  def debug[M : Loggable](message: => M, t: Throwable)
+                          line: sourcecode.Line): F = log[M](Level.Trace, message, additionalMessages.toList)
+  def debug[M : Loggable](message: => M, additionalMessages: LoggableMessage*)
                          (implicit pkg: sourcecode.Pkg,
                           fileName: sourcecode.FileName,
                           name: sourcecode.Name,
-                          line: sourcecode.Line): F = log[M](Level.Debug, message, Some(t))
-  def info[M : Loggable](message: => M, t: Throwable)
+                          line: sourcecode.Line): F = log[M](Level.Debug, message, additionalMessages.toList)
+  def info[M : Loggable](message: => M, additionalMessages: LoggableMessage*)
                         (implicit pkg: sourcecode.Pkg,
                          fileName: sourcecode.FileName,
                          name: sourcecode.Name,
-                         line: sourcecode.Line): F = log[M](Level.Info, message, Some(t))
-  def warn[M : Loggable](message: => M, t: Throwable)
+                         line: sourcecode.Line): F = log[M](Level.Info, message, additionalMessages.toList)
+  def warn[M : Loggable](message: => M, additionalMessages: LoggableMessage*)
                         (implicit pkg: sourcecode.Pkg,
                          fileName: sourcecode.FileName,
                          name: sourcecode.Name,
-                         line: sourcecode.Line): F = log[M](Level.Warn, message, Some(t))
-  def error[M : Loggable](message: => M, t: Throwable)
+                         line: sourcecode.Line): F = log[M](Level.Warn, message, additionalMessages.toList)
+  def error[M : Loggable](message: => M, additionalMessages: LoggableMessage*)
                          (implicit pkg: sourcecode.Pkg,
                           fileName: sourcecode.FileName,
                           name: sourcecode.Name,
-                          line: sourcecode.Line): F = log[M](Level.Error, message, Some(t))
+                          line: sourcecode.Line): F = log[M](Level.Error, message, additionalMessages.toList)
 
   /**
     * Includes MDC elapsed to show elapsed time within the block
@@ -127,12 +102,12 @@ object LoggerSupport {
 
   def apply[M](level: Level,
                message: => M,
-               throwable: Option[Throwable],
-               loggable: Loggable[M],
+               additionalMessages: List[LoggableMessage],
                pkg: sourcecode.Pkg,
                fileName: sourcecode.FileName,
                name: sourcecode.Name,
-               line: sourcecode.Line): LogRecord[M] = {
+               line: sourcecode.Line)
+              (implicit loggable: Loggable[M]): LogRecord[M] = {
     val (fn, className) = LoggerSupport.className(pkg, fileName)
     val methodName = name.value match {
       case "anonymous" | "" => None
@@ -141,9 +116,8 @@ object LoggerSupport {
     LogRecord(
       level = level,
       value = level.value,
-      message = new LazyMessage[M](() => message),
-      loggable = loggable,
-      throwable = throwable,
+      message = Message(message),
+      additionalMessages = additionalMessages,
       fileName = fn,
       className = className,
       methodName = methodName,

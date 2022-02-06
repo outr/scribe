@@ -1,3 +1,4 @@
+import scribe.message.{LoggableMessage, Message}
 import sourcecode.{FileName, Line, Name, Pkg}
 
 import scala.language.experimental.macros
@@ -8,13 +9,15 @@ package object scribe extends LoggerSupport[Unit] {
 
   protected[scribe] var disposables = Set.empty[() => Unit]
 
+  implicit def string2Message(s: String): LoggableMessage = Message.static(s)
+  implicit def throwable2Message(throwable: Throwable): LoggableMessage = Message.static(throwable)
+
   @inline
   override final def log[M](record: LogRecord[M]): Unit = Logger(record.className).log(record)
 
-  override def log[M: Loggable](level: Level, message: => M, throwable: Option[Throwable])
-                               (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit = {
-    if (includes(level)) super.log(level, message, throwable)
-  }
+  override def log[M: Loggable](level: Level, message: => M, additionalMessages: List[LoggableMessage])
+                               (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit =
+    if (includes(level)) super.log(level, message, additionalMessages)
 
   def includes(level: Level)(implicit pkg: sourcecode.Pkg,
                              fileName: sourcecode.FileName,
