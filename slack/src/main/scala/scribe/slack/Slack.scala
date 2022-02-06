@@ -7,7 +7,7 @@ import io.youi.http.HttpResponse
 import io.youi.http.content.Content
 import io.youi.net.{ContentType, URL}
 import scribe.Execution.global
-import scribe._
+import scribe.{Level, Logger}
 import scribe.format._
 import scribe.handler.LogHandler
 
