@@ -4,7 +4,7 @@ import org.slf4j.helpers.FormattingTuple
 import org.slf4j.spi.LocationAwareLogger
 import scribe.Loggable.StringLoggable
 import scribe.message.Message
-import scribe.{Level, LogRecord, throwable2Message}
+import scribe.{Level, LogRecord}
 
 object SLF4JHelper {
   def scribeLevel(level: Int): Level = level match {
@@ -21,7 +21,7 @@ object SLF4JHelper {
       level = level,
       value = level.value,
       message = Message.static(msg),
-      additionalMessages = t.map(throwable2Message).toList,
+      additionalMessages = t.toList,
       fileName = "",
       className = name,
       methodName = None,

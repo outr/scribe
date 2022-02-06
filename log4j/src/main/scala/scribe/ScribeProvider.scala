@@ -1,7 +1,7 @@
 package scribe
 
 import org.apache.logging.log4j
-import org.apache.logging.log4j.{Marker, message}
+import org.apache.logging.log4j.Marker
 import org.apache.logging.log4j.message.MessageFactory
 import org.apache.logging.log4j.spi.{AbstractLogger, CleanableThreadContextMap, ExtendedLogger, LoggerContext, LoggerContextFactory, LoggerRegistry, Provider}
 import org.apache.logging.log4j.util.{SortedArrayStringMap, StringMap}
@@ -11,57 +11,21 @@ import scala.jdk.CollectionConverters._
 import java.net.URI
 import scala.language.implicitConversions
 
-class ScribeProvider extends Provider(15, "2.6.0", classOf[ScribeLoggerContextFactory], classOf[ScribeContextMap])
+class ScribeProvider extends Provider(
+  ScribeProvider.DefaultPriority,
+  ScribeProvider.DefaultVersion,
+  classOf[ScribeLoggerContextFactory],
+  classOf[ScribeContextMap]
+)
 
-class ScribeLoggerContextFactory extends LoggerContextFactory {
-  override def getContext(fqcn: String,
-                          loader: ClassLoader,
-                          externalContext: Any,
-                          currentContext: Boolean): LoggerContext = ScribeLoggerContext
-
-  override def getContext(fqcn: String,
-                          loader: ClassLoader,
-                          externalContext: Any,
-                          currentContext: Boolean,
-                          configLocation: URI,
-                          name: String): LoggerContext = ScribeLoggerContext
-
-  override def removeContext(context: LoggerContext): Unit = {}
+object ScribeProvider {
+  private val DefaultPriority: Int = 15
+  private val DefaultVersion: String = "2.6.0"
 }
 
-object ScribeLoggerContext extends LoggerContext {
-  private lazy val registry = new LoggerRegistry[ExtendedLogger]()
 
-  override def getExternalContext: AnyRef = null
 
-  override def getLogger(name: String): ExtendedLogger = {
-    if (registry.hasLogger(name)) {
-      registry.getLogger(name)
-    } else {
-      val logger = Logger(name)
-      val l = Log4JLogger(logger.id)
-      registry.putIfAbsent(name, null, l)
-      l
-    }
-  }
 
-  override def getLogger(name: String, messageFactory: MessageFactory): ExtendedLogger = {
-    if (registry.hasLogger(name, messageFactory)) {
-      registry.getLogger(name, messageFactory)
-    } else {
-      val logger = Logger(name)
-      val l = Log4JLogger(logger.id)
-      registry.putIfAbsent(name, messageFactory, l)
-      l
-    }
-  }
-
-  override def hasLogger(name: String): Boolean = registry.hasLogger(name)
-
-  override def hasLogger(name: String, messageFactory: MessageFactory): Boolean = registry.hasLogger(name, messageFactory)
-
-  override def hasLogger(name: String, messageFactoryClass: Class[_ <: MessageFactory]): Boolean = registry.hasLogger(name, messageFactoryClass)
-}
 
 class ScribeContextMap extends CleanableThreadContextMap {
   override def removeAll(keys: java.lang.Iterable[String]): Unit = keys.asScala.foreach(remove)
@@ -159,11 +123,32 @@ case class Log4JLogger(id: LoggerId) extends AbstractLogger {
   override def isEnabled(level: log4j.Level, marker: Marker, message: String, p0: Any, p1: Any, p2: Any, p3: Any, p4: Any, p5: Any, p6: Any, p7: Any): Boolean =
     enabled(level)
 
-  override def isEnabled(level: log4j.Level, marker: Marker, message: String, p0: Any, p1: Any, p2: Any, p3: Any, p4: Any, p5: Any, p6: Any, p7: Any, p8: Any): Boolean =
-    enabled(level)
+  override def isEnabled(level: log4j.Level,
+                         marker: Marker,
+                         message: String,
+                         p0: Any,
+                         p1: Any,
+                         p2: Any,
+                         p3: Any,
+                         p4: Any,
+                         p5: Any,
+                         p6: Any,
+                         p7: Any,
+                         p8: Any): Boolean = enabled(level)
 
-  override def isEnabled(level: log4j.Level, marker: Marker, message: String, p0: Any, p1: Any, p2: Any, p3: Any, p4: Any, p5: Any, p6: Any, p7: Any, p8: Any, p9: Any): Boolean =
-    enabled(level)
+  override def isEnabled(level: log4j.Level,
+                         marker: Marker,
+                         message: String,
+                         p0: Any,
+                         p1: Any,
+                         p2: Any,
+                         p3: Any,
+                         p4: Any,
+                         p5: Any,
+                         p6: Any,
+                         p7: Any,
+                         p8: Any,
+                         p9: Any): Boolean = enabled(level)
 
   override def logMessage(fqcn: String,
                           level: log4j.Level,
@@ -172,7 +157,7 @@ case class Log4JLogger(id: LoggerId) extends AbstractLogger {
                           t: Throwable): Unit = logger.log(
     level = l2l(level).getOrElse(throw new RuntimeException(s"Unsupported level: $level")),
     message = message.getFormattedMessage,
-    additionalMessages = Option(t).map(throwable2Message).toList
+    additionalMessages = Option(t).toList
   )
 
   override def getLevel: log4j.Level = if (logger.includes(Level.Trace)) {
