@@ -1,12 +1,17 @@
 package scribe.benchmark
 
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
+import cats.implicits._
+
 import java.util.concurrent.TimeUnit
 import com.typesafe.config.ConfigFactory
 import com.typesafe.{scalalogging => sc}
 import org.apache.logging.log4j.LogManager
 import org.openjdk.jmh.annotations
 import org.pmw.tinylog
-import scribe._
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import scribe.Logger
 import scribe.file._
 import scribe.format._
 import scribe.handler.AsynchronousLogHandle
@@ -49,6 +54,44 @@ class LoggingSpeedBenchmark {
 
   @annotations.Benchmark
   @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  //  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withScribeEffect(): Unit = {
+    import scribe.cats._
+
+    val fileWriter = FileWriter("logs" / "scribe-effect.log")
+    val formatter = formatter"$date $levelPaddedRight [$threadName] $message"
+    val logger = Logger.empty.orphan().withHandler(formatter = formatter, writer = fileWriter).f[IO]
+
+    val io = (0 until 1000).toList.map { _ =>
+      logger.info("test")
+    }.sequence.map(_ => ())
+    io.unsafeRunSync()
+    fileWriter.dispose()
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  //  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withScribeEffectParallel(): Unit = {
+    import scribe.cats._
+
+    val fileWriter = FileWriter("logs" / "scribe-effect-par.log")
+    val formatter = formatter"$date $levelPaddedRight [$threadName] $message"
+    val logger = Logger.empty.orphan().withHandler(formatter = formatter, writer = fileWriter).f[IO]
+
+    val io = (0 until 1000).toList.map { _ =>
+      logger.info("test")
+    }.parSequence.map(_ => ())
+    io.unsafeRunSync()
+    fileWriter.dispose()
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
 //  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
   @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
   @annotations.OperationsPerInvocation(1000)
@@ -77,6 +120,25 @@ class LoggingSpeedBenchmark {
       i += 1
     }
     LogManager.shutdown()
+  }
+
+  @annotations.Benchmark
+  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime))
+  //  @annotations.BenchmarkMode(Array(annotations.Mode.AverageTime, annotations.Mode.SampleTime, annotations.Mode.Throughput))
+  @annotations.OutputTimeUnit(TimeUnit.NANOSECONDS)
+  @annotations.OperationsPerInvocation(1000)
+  def withLog4cats(): Unit = {
+    import org.typelevel.log4cats.Logger
+    import org.typelevel.log4cats.slf4j.Slf4jLogger
+    import cats.effect.Sync
+    import cats.implicits._
+
+    implicit def unsafeLogger[F[_]: Sync]: SelfAwareStructuredLogger[F] = Slf4jLogger.getLoggerFromName[F]("log4cats")
+
+    val io = (0 until 1000).toList.map { _ =>
+      Logger[IO].info("test")
+    }.sequence.map(_ => ())
+    io.unsafeRunSync()
   }
 
   @annotations.Benchmark
