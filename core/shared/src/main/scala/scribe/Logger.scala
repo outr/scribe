@@ -240,9 +240,6 @@ object Logger {
   // Initialize Platform-specific functionality
   Platform.init()
 
-  // Override the Java Util Logger
-  system.installJUL()
-
   def empty: Logger = Logger()
   def root: Logger = apply(RootId)
 
