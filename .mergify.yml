@@ -1,0 +1,19 @@
+pull_request_rules:
+  - name: assign and label scala-steward's PRs
+    conditions:
+      - author=scala-steward
+    actions:
+      assign:
+        users: [fthomas]
+      label:
+        add: [dependency-update]
+  - name: merge scala-steward's PRs
+    conditions:
+      - author=scala-steward
+      - status-success=Build and Test (ubuntu-latest, 2.12.15, adopt-hotspot@8)
+      - status-success=Build and Test (ubuntu-latest, 2.12.15, adopt-hotspot@11)
+      - status-success=Build and Test (ubuntu-latest, 2.13.8, adopt-hotspot@8)
+      - status-success=Build and Test (ubuntu-latest, 2.13.8, adopt-hotspot@11)
+    actions:
+      merge:
+        method: squash
