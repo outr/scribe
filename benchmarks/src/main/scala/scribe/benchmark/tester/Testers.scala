@@ -14,7 +14,8 @@ class Testers {
   val tinyLog = new TinyLogLoggingTester
 
   val all: List[LoggingTester] = List(
-    log4cats, log4j, log4jTrace, log4s, logback, scalaLogging, scribeAsync, scribeEffect, scribeEffectParallel, scribe,
-    tinyLog
+    scribe, scribeAsync, scribeEffect, scribeEffectParallel,
+    log4cats, log4s, scalaLogging,
+    log4j, log4jTrace, logback, tinyLog
   )
 }

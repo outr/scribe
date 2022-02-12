@@ -15,10 +15,12 @@ class ScribeEffectLoggingTester extends LoggingTester {
 
   override def init(): Unit = logger
 
-  override def run(messages: Iterator[String]): Unit = {
-    val io = messages.toList.map(logger.info(_)).sequence.map(_ => ())
-    io.unsafeRunSync()
-  }
+  override def run(messages: Iterator[String]): Unit = fs2.Stream
+    .fromIterator[IO](messages, 1000)
+    .evalMap(msg => logger.info(msg))
+    .compile
+    .drain
+    .unsafeRunSync()
 
   override def dispose(): Unit = fileWriter.dispose()
 }

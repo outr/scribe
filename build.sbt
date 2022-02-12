@@ -75,6 +75,7 @@ val scalaLoggingVersion: String = "3.9.2"
 val tinyLogVersion: String = "1.3.6"
 val log4sVersion: String = "1.8.2"
 val log4catsVersion: String = "2.2.0"
+val fs2Version: String = "3.2.4"
 
 // set source map paths from local directories to github path
 val sourceMapSettings = List(
@@ -300,6 +301,7 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
       "org.tinylog" % "tinylog" % tinyLogVersion,
       "org.log4s" %% "log4s" % log4sVersion,
-      "org.typelevel" %% "log4cats-slf4j" % log4catsVersion
+      "org.typelevel" %% "log4cats-slf4j" % log4catsVersion,
+      "co.fs2" %% "fs2-core" % fs2Version
     )
   )
