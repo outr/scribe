@@ -12,6 +12,7 @@ import scribe.writer.{ConsoleWriter, Writer}
 import sourcecode.{FileName, Line, Name, Pkg}
 
 import scala.reflect._
+import scala.util.Try
 
 case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                   modifiers: List[LogModifier] = Nil,
@@ -222,7 +223,10 @@ object Logger {
       }
     }
 
-    def installJUL(): Unit = java.util.logging.LogManager.getLogManager.getLogger("").addHandler(JULHandler)
+    def installJUL(): Unit = Try(java.util.logging.LogManager.getLogManager.getLogger("").addHandler(JULHandler))
+      .failed.foreach { t =>
+        scribe.warn(s"Failed to install java.util.logging integration: ${t.getMessage}")
+      }
   }
 
   val RootId: LoggerId = LoggerId(0L)
