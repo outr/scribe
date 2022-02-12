@@ -8,10 +8,13 @@ import org.typelevel.log4cats.{Logger, SelfAwareStructuredLogger}
 class Log4CatsLoggingTester extends LoggingTester {
   implicit def unsafeLogger[F[_] : Sync]: SelfAwareStructuredLogger[F] = Slf4jLogger.getLoggerFromName[F]("log4cats")
 
-  override def run(messages: Iterator[String]): Unit = fs2.Stream
-    .fromIterator[IO](messages, 1000)
-    .evalMap(msg => Logger[IO].info(msg))
-    .compile
-    .drain
-    .unsafeRunSync()
+  override def run(messages: Iterator[String]): Unit = {
+    val logger = Logger[IO]
+    fs2.Stream
+      .fromIterator[IO](messages, 1000)
+      .evalTapChunk(msg => logger.info(msg))
+      .compile
+      .drain
+      .unsafeRunSync()
+  }
 }

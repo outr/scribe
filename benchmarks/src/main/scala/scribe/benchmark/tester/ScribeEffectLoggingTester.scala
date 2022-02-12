@@ -17,7 +17,7 @@ class ScribeEffectLoggingTester extends LoggingTester {
 
   override def run(messages: Iterator[String]): Unit = fs2.Stream
     .fromIterator[IO](messages, 1000)
-    .evalMap(msg => logger.info(msg))
+    .evalTap(msg => logger.info(msg))
     .compile
     .drain
     .unsafeRunSync()
