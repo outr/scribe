@@ -291,6 +291,7 @@ lazy val benchmarks = project.in(file("benchmarks"))
   .dependsOn(fileJVM, catsJVM)
   .enablePlugins(JmhPlugin)
   .settings(
+    fork := true,
     publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.apache.logging.log4j" % "log4j-api" % log4jVersion,

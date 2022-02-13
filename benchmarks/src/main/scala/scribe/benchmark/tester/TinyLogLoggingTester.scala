@@ -6,8 +6,9 @@ class TinyLogLoggingTester extends LoggingTester {
   override def init(): Unit = tinylog.Configurator
     .defaultConfig()
     .removeAllWriters()
-    .writer(new tinylog.writers.FileWriter("logs/tiny.log"))
     .level(tinylog.Level.INFO)
+    .formatPattern("[{thread}] {class}.{method}(){level}: {message}")
+    .writer(new tinylog.writers.FileWriter("logs/tiny.log"))
     .activate()
 
   override def run(messages: Iterator[String]): Unit = {
