@@ -90,5 +90,5 @@ class AsynchronousLoggingSpec extends AnyWordSpec with Matchers {
 }
 
 object AsynchronousLoggingSpec {
-  val format = formatter"$timeStamp - $message"
+  val format = formatter"$timeStamp - $messages"
 }

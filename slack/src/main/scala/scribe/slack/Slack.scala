@@ -47,7 +47,7 @@ object Slack {
                 loggerName: String = "slack",
                 level: Level = Level.Error): Unit = {
     val slack = new Slack(serviceHash, botName)
-    val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $message"
+    val formatter = formatter"[$threadName] $levelPaddedRight $positionAbbreviated - $messages"
 
     val handler = LogHandler(
       minimumLevel = Some(level),

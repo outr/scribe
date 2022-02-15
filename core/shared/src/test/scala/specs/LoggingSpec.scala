@@ -448,7 +448,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .orphan()
         .withMinimumLevel(Level.Info)
         .withHandler(
-          formatter = formatter"${scribe.format.message}",
+          formatter = formatter"${scribe.format.messages}",
           minimumLevel = Some(Level.Error),
           writer = writer
         )
@@ -476,5 +476,5 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
 object LoggingSpec {
   import scribe.format._
-  val mdcFormatter: Formatter = formatter"${mdc("test1", prefix = string("["), postfix = string("], "))}${mdc("test2", "UNSET")} - $message"
+  val mdcFormatter: Formatter = formatter"${mdc("test1", prefix = string("["), postfix = string("], "))}${mdc("test2", "UNSET")} - $messages"
 }

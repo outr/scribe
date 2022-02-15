@@ -10,7 +10,7 @@ import scribe.format._
 
 class ScribeEffectLoggingTester extends LoggingTester {
   private lazy val fileWriter = FileWriter("logs" / "scribe-effect.log")
-  private lazy val formatter = formatter"$date $levelPaddedRight [$threadName] $message"
+  private lazy val formatter = formatter"$date $levelPaddedRight [$threadName] $messages"
   private lazy val logger = Logger.empty.orphan().withHandler(formatter = formatter, writer = fileWriter).f[IO]
 
   override def init(): Unit = logger

@@ -28,7 +28,7 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
   private val recordHolder = LogHandler(
     writer = writer,
     minimumLevel = Some(Level.Info),
-    formatter = formatter"$dateFull ${string("[")}$levelColoredPaddedRight${string("]")} ${green(position)} - ${format.message}$mdc"
+    formatter = formatter"$dateFull ${string("[")}$levelColoredPaddedRight${string("]")} ${green(position)} - ${format.messages}$mdc"
   )
 
   "SLF4J" should {

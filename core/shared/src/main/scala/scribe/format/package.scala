@@ -114,7 +114,7 @@ package object format {
   def position: FormatBlock = FormatBlock.Position
   def positionAbbreviated: FormatBlock = FormatBlock.Position.abbreviate(maxLength = PositionAbbreviationLength)
   def positionSimple: FormatBlock = FormatBlock.PositionSimple
-  def message: FormatBlock = FormatBlock.Message
+  def messages: FormatBlock = FormatBlock.Messages
   def newLine: FormatBlock = FormatBlock.NewLine
   def mdc(key: String,
           default: => Any = "",
