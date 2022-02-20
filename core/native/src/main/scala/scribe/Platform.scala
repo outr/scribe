@@ -1,7 +1,7 @@
 package scribe
 
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
-import scribe.writer.{SystemOutputWriter, Writer}
+import scribe.writer.{SystemWriter, Writer}
 
 object Platform extends PlatformImplementation {
   def isJVM: Boolean = false
@@ -22,7 +22,7 @@ object Platform extends PlatformImplementation {
       ASCIIOutputFormat
   }
 
-  override def consoleWriter: Writer = SystemOutputWriter
+  override def consoleWriter: Writer = SystemWriter
 
   override val columns: Int = 120
 }
