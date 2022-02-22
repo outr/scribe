@@ -25,19 +25,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.7.0"
+libraryDependencies += "com.outr" %% "scribe" % "3.8.0"
 ```
 
 For Cross-Platform projects (JVM, JS, and/or Native):
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.7.0"
+libraryDependencies += "com.outr" %%% "scribe" % "3.8.0"
 ```
 
 Or, if you want interoperability with SLF4J (to allow better interoperability with existing libraries using other loggers):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.7.0"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.8.0"
 ```
 
 ### Usage
@@ -77,19 +77,7 @@ any runtime cost.
 asynchronous logging support completely removes logging impact from your application's thread impact.
 
 ## Documentation
-* [Features](https://github.com/outr/scribe/wiki/Features)
-* [Performance / Benchmarks](https://github.com/outr/scribe/wiki/benchmarks)
-* [Library Dependencies](https://github.com/outr/scribe/wiki/library-dependencies)
-* [Getting Started](https://github.com/outr/scribe/wiki/getting-started)
-
-## Advanced Topics
-* [Asynchronous Tracing](https://github.com/outr/scribe/wiki/asynchronous-tracing)
-* [Cats Effect Module](https://github.com/outr/scribe/wiki/Cats-Effect-Support)
-
-## Optional Modules
-* [SLF4J integration](https://github.com/outr/scribe/wiki/slf4j)
-* [Slack integration](https://github.com/outr/scribe/wiki/slack)
-* [Logstash integration](https://github.com/outr/scribe/wiki/logstash)
+[Check out the wiki for complete documentation](https://github.com/outr/scribe/wiki)
 
 ## Community
 The best way to receive immediate feedback for any questions is via our [Gitter channel](https://gitter.im/outr/scribe)
