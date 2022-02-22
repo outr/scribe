@@ -88,11 +88,11 @@ val sourceMapSettings = List(
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, coreNative,
-    catsJS, catsJVM,
-    fileJVM, fileNative,
-    jsonJS, jsonJVM,
-    slf4j, slf4j2, log4j, migration, config, slack, logstash
+    coreJS, coreJVM, coreNative
+//    catsJS, catsJVM,
+//    fileJVM, fileNative,
+//    jsonJS, jsonJVM,
+//    slf4j, slf4j2, log4j, migration, config, slack, logstash
   )
   .settings(
     name := "scribe",
@@ -136,6 +136,7 @@ lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 lazy val coreNative = core.native
 
+/*
 lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
   .settings(
@@ -305,4 +306,4 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "org.typelevel" %% "log4cats-slf4j" % log4catsVersion,
       "co.fs2" %% "fs2-core" % fs2Version
     )
-  )
+  )*/
