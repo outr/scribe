@@ -13,7 +13,7 @@ val scalaNot211Versions = List(scala213, scala212) ::: scala3
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.8.0"
+ThisBuild / version := "3.8.1-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")

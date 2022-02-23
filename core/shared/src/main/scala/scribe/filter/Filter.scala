@@ -7,4 +7,6 @@ import scribe.LogRecord
   */
 trait Filter {
   def matches[M](record: LogRecord[M]): Boolean
+
+  def &&(that: Filter): Filter = MultiFilter(List(this, that))
 }
