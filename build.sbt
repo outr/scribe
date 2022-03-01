@@ -8,8 +8,8 @@ val allScalaVersions = scala3 ::: scala2
 val compatScalaVersions = List(scala213, scala212)
 val scalaJVMVersions = allScalaVersions
 val scalaJSVersions = allScalaVersions
-val scalaNativeVersions = compatScalaVersions
 val scalaNot211Versions = List(scala213, scala212) ::: scala3
+val scalaNativeVersions = scalaNot211Versions
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
@@ -40,7 +40,7 @@ ThisBuild / developers := List(
 ThisBuild / parallelExecution := false
 
 // Core
-val perfolationVersion: String = "1.2.8"
+val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.2.8"
 val collectionCompatVersion: String = "2.6.0"
 val moduloadVersion: String = "1.1.5"
