@@ -33,7 +33,7 @@ case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
 
     // Write to LogFile
     val logFile = LogFile(this)
-    if (!previousFile.contains(_file)) {
+    if (!previousFile.contains(_file) || logFile.size == 0L) {
       previousFile = Some(_file)
       if (_file.length() == 0L || !append) {
         outputFormat.init(logFile.write)
