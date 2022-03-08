@@ -6,11 +6,13 @@ import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.record.SimpleLogRecord
 import scribe.util.Time
 
+import java.util.concurrent.atomic.AtomicLong
 import scala.annotation.tailrec
 
 trait LogRecord[M] {
   protected var appliedModifierIds = Set.empty[String]
 
+  final val id: Long = LogRecord.incrementor.incrementAndGet()
   def level: Level
   def levelValue: Double
   def message: Message[M]
@@ -71,6 +73,8 @@ trait LogRecord[M] {
 }
 
 object LogRecord extends LogRecordCreator {
+  private val incrementor = new AtomicLong(0L)
+
   var creator: LogRecordCreator = SimpleLogRecord
 
   private val NativeMethod: Int = -2
