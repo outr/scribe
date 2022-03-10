@@ -13,7 +13,7 @@ val scalaNativeVersions = scalaNot211Versions
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.8.2"
+ThisBuild / version := "3.8.3-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -45,6 +45,7 @@ val sourcecodeVersion: String = "0.2.8"
 val collectionCompatVersion: String = "2.6.0"
 val moduloadVersion: String = "1.1.5"
 val jlineVersion: String = "3.21.0"
+val jansiVersion: String = "2.4.0"
 
 // Cats
 val catsEffectVersion: String = "3.3.7"
@@ -125,7 +126,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     crossScalaVersions := scalaJVMVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "moduload" % moduloadVersion,
-      "org.jline" % "jline" % jlineVersion
+      "org.jline" % "jline" % jlineVersion,
+      "org.fusesource.jansi" % "jansi" % jansiVersion
     )
   )
   .nativeSettings(
