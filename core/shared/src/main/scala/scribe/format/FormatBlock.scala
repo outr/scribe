@@ -266,7 +266,7 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = {
       val map = MDC.map ++ record.data
       if (map.nonEmpty) {
-        new TextOutput(MDC.map.map {
+        new TextOutput(map.map {
           case (key, value) => s"$key: ${value()}"
         }.mkString(" (", ", ", ")"))
       } else {
@@ -282,7 +282,7 @@ object FormatBlock {
         val nl = newLine.format(record)
         val prefix = green(bold(string("    ["))).format(record)
         val postfix = green(bold(string(("]")))).format(record)
-        val entries = MDC.map.toList.flatMap {
+        val entries = map.toList.flatMap {
           case (key, value) => List(
             nl,
             prefix,
