@@ -2,7 +2,7 @@
 val scala213 = "2.13.8"
 val scala212 = "2.12.15"
 val scala211 = "2.11.12"
-val scala3 = List("3.1.1")
+val scala3 = List("3.1.2")
 val scala2 = List(scala213, scala212, scala211)
 val allScalaVersions = scala3 ::: scala2
 val compatScalaVersions = List(scala213, scala212)
@@ -42,27 +42,27 @@ ThisBuild / parallelExecution := false
 // Core
 val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.2.8"
-val collectionCompatVersion: String = "2.6.0"
+val collectionCompatVersion: String = "2.7.0"
 val moduloadVersion: String = "1.1.5"
 val jlineVersion: String = "3.21.0"
 val jansiVersion: String = "2.4.0"
 
 // Cats
-val catsEffectVersion: String = "3.3.7"
+val catsEffectVersion: String = "3.3.11"
 val catsEffectTestingVersion: String = "1.4.0"
 
 // JSON
 val fabricVersion: String = "1.2.5"
 
 // Testing
-val scalaTestVersion: String = "3.2.11"
+val scalaTestVersion: String = "3.2.12"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
 val slf4j2Version: String = "2.0.0-alpha5"
 
 // Config Dependencies
-val profigVersion: String = "3.3.0"
+val profigVersion: String = "3.3.3"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.14.4"
