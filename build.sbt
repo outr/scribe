@@ -55,7 +55,7 @@ val catsEffectTestingVersion: String = "1.4.0"
 val fabricVersion: String = "1.2.5"
 
 // Testing
-val scalaTestVersion: String = "3.2.11"
+val scalaTestVersion: String = "3.2.12"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
