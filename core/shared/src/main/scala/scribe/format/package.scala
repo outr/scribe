@@ -68,12 +68,14 @@ package object format {
     new ColoredOutput(color, block.format(logRecord))
   }
   def groupBySecond(blocks: FormatBlock*): FormatBlock = {
+    var lastId: Long = 0L
     var lastThreadName: String = ""
     var lastTime: Long = 0L
     var lastLevel: Level = Level.Trace
     var lastClassName: String = ""
     var lastMethodName: Option[String] = None
     var lastLineNumber: Option[Int] = None
+    var previousOutput: Option[LogOutput] = None
     FormatBlock { logRecord =>
       synchronized {
         val threadName = logRecord.thread.getName
@@ -82,21 +84,27 @@ package object format {
         val cn = logRecord.className
         val mn = logRecord.methodName
         val ln = logRecord.line
-        if (threadName == lastThreadName &&
+        if (lastId == logRecord.id && previousOutput.nonEmpty) {
+          previousOutput.get
+        } else if (threadName == lastThreadName &&
           distance <= 1000L &&
           level == lastLevel &&
           cn == lastClassName &&
           mn == lastMethodName &&
           ln == lastLineNumber) {
+          previousOutput = None
           EmptyOutput
         } else {
+          lastId = logRecord.id
           lastThreadName = threadName
           lastTime = logRecord.timeStamp
           lastLevel = level
           lastClassName = cn
           lastMethodName = mn
           lastLineNumber = ln
-          new CompositeOutput(blocks.map(_.format(logRecord)).toList)
+          val output = new CompositeOutput(blocks.map(_.format(logRecord)).toList)
+          previousOutput = Some(output)
+          output
         }
       }
     }
@@ -114,7 +122,7 @@ package object format {
   def position: FormatBlock = FormatBlock.Position
   def positionAbbreviated: FormatBlock = FormatBlock.Position.abbreviate(maxLength = PositionAbbreviationLength)
   def positionSimple: FormatBlock = FormatBlock.PositionSimple
-  def message: FormatBlock = FormatBlock.Message
+  def messages: FormatBlock = FormatBlock.Messages
   def newLine: FormatBlock = FormatBlock.NewLine
   def mdc(key: String,
           default: => Any = "",

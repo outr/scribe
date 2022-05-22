@@ -76,4 +76,49 @@ object FileNamePart {
       Some(c.getTimeInMillis)
     }
   }
+
+  case object Hour extends FileNamePart {
+    override def current(timeStamp: Long): String = timeStamp.t.H
+
+    override def regex: String = "\\d{2}"
+
+    override def nextValidation(timeStamp: Long): Option[Long] = {
+      val c = Calendar.getInstance()
+      c.setTimeInMillis(timeStamp)
+      c.add(Calendar.HOUR_OF_DAY, 1)
+      c.set(Calendar.MINUTE, 0)
+      c.set(Calendar.SECOND, 0)
+      c.set(Calendar.MILLISECOND, 0)
+      Some(c.getTimeInMillis)
+    }
+  }
+
+  case object Minute extends FileNamePart {
+    override def current(timeStamp: Long): String = timeStamp.t.M
+
+    override def regex: String = "\\d{2}"
+
+    override def nextValidation(timeStamp: Long): Option[Long] = {
+      val c = Calendar.getInstance()
+      c.setTimeInMillis(timeStamp)
+      c.add(Calendar.MINUTE, 1)
+      c.set(Calendar.SECOND, 0)
+      c.set(Calendar.MILLISECOND, 0)
+      Some(c.getTimeInMillis)
+    }
+  }
+
+  case object Second extends FileNamePart {
+    override def current(timeStamp: Long): String = timeStamp.t.S
+
+    override def regex: String = "\\d{2}"
+
+    override def nextValidation(timeStamp: Long): Option[Long] = {
+      val c = Calendar.getInstance()
+      c.setTimeInMillis(timeStamp)
+      c.add(Calendar.SECOND, 1)
+      c.set(Calendar.MILLISECOND, 0)
+      Some(c.getTimeInMillis)
+    }
+  }
 }

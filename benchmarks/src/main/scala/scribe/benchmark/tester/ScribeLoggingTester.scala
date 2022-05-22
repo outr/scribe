@@ -2,11 +2,11 @@ package scribe.benchmark.tester
 
 import scribe.Logger
 import scribe.file._
-import scribe.format.{message, _}
+import scribe.format.{messages, _}
 
 class ScribeLoggingTester extends LoggingTester {
   private lazy val fileWriter = FileWriter("logs" / "scribe.log")
-  private lazy val formatter = formatter"$date $levelPaddedRight [$threadName] $message"
+  private lazy val formatter = formatter"$date $levelPaddedRight [$threadName] $messages"
   private lazy val logger = Logger.empty.orphan().withHandler(formatter = formatter, writer = fileWriter)
 
   override def init(): Unit = logger

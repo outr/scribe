@@ -1,8 +1,7 @@
 package scribe.record
 
-import scribe.LogRecord.throwable2LogOutput
 import scribe.message.{LoggableMessage, Message}
-import scribe.{Level, LogRecord, LogRecordCreator, Loggable}
+import scribe.{Level, LogRecord, LogRecordCreator}
 import scribe.output.{CompositeOutput, LogOutput}
 
 class SimpleLogRecord[M](val level: Level,

@@ -3,7 +3,7 @@ package scribe
 import moduload.Moduload
 import org.jline.terminal.TerminalBuilder
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
-import scribe.writer.{SystemOutputWriter, Writer}
+import scribe.writer.{SystemWriter, Writer}
 
 object Platform extends PlatformImplementation {
   private val maximumColumns: Int = 5000
@@ -34,7 +34,7 @@ object Platform extends PlatformImplementation {
       ASCIIOutputFormat
   }
 
-  override def consoleWriter: Writer = SystemOutputWriter
+  override def consoleWriter: Writer = SystemWriter
 
   override def columns: Int = {
     val now = System.currentTimeMillis()

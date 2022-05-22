@@ -21,6 +21,8 @@ object EmptyOutput extends LogOutput {
   }
 
   override def splitAt(index: Int): (LogOutput, LogOutput) = (EmptyOutput, EmptyOutput)
+
+  override def toString: String = "empty"
 }
 
 class TextOutput(val plainText: String) extends AnyVal with LogOutput {
@@ -28,6 +30,8 @@ class TextOutput(val plainText: String) extends AnyVal with LogOutput {
 
   override def splitAt(index: Int): (LogOutput, LogOutput) =
     (new TextOutput(plainText.substring(0, index)), new TextOutput(plainText.substring(index)))
+
+  override def toString: String = s"text($plainText)"
 }
 
 class CompositeOutput(val entries: List[LogOutput]) extends LogOutput {
@@ -53,6 +57,8 @@ class CompositeOutput(val entries: List[LogOutput]) extends LogOutput {
     }
     recurse(Nil, entries, 0)
   }
+
+  override def toString: String = s"composite(${entries.mkString(", ")})"
 }
 
 class ColoredOutput(val color: Color, val output: LogOutput) extends LogOutput {

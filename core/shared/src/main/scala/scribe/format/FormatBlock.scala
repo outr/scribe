@@ -241,7 +241,7 @@ object FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.column.fold("")(_.toString))
   }
 
-  object Message extends FormatBlock {
+  object Messages extends FormatBlock {
     override def format[M](record: LogRecord[M]): LogOutput = record.logOutput
   }
 

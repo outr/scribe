@@ -19,6 +19,9 @@ package object file {
   implicit def string2FileNamePart(s: String): FileNamePart = FileNamePart.Static(s)
   implicit def fileNamePart2FileName(part: FileNamePart): FileName = FileName(List(part))
 
+  def second: FileNamePart = FileNamePart.Second
+  def minute: FileNamePart = FileNamePart.Minute
+  def hour: FileNamePart = FileNamePart.Hour
   def day: FileNamePart = FileNamePart.Day
   def month: FileNamePart = FileNamePart.Month
   def year: FileNamePart = FileNamePart.Year

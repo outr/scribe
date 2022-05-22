@@ -4,10 +4,14 @@ import scribe.output._
 import scribe.output.format.OutputFormat
 import scribe.{ANSI, Level, LogRecord, Logger}
 
+import java.io.PrintStream
 import scala.math.Ordering.Implicits._
 import scala.language.implicitConversions
 
-object SystemOutputWriter extends Writer {
+/**
+ * SystemWriter writes to System.out or System.err choosing the latter if the level is higher than Info
+ */
+object SystemWriter extends Writer {
   /**
     * If true, will always synchronize writing to the console to avoid interleaved text. Most native consoles will
     * handle this automatically, but IntelliJ and Eclipse are notorious about not properly handling this.
@@ -34,6 +38,10 @@ object SystemOutputWriter extends Writer {
     } else {
       Logger.system.err
     }
+    write[M](stream, output, outputFormat)
+  }
+
+  def write[M](stream: PrintStream, output: LogOutput, outputFormat: OutputFormat): Unit = {
     val sb = stringBuilders.get()
     outputFormat.begin(sb.append(_))
     outputFormat(output, s => sb.append(s))

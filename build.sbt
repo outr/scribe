@@ -8,12 +8,12 @@ val allScalaVersions = scala3 ::: scala2
 val compatScalaVersions = List(scala213, scala212)
 val scalaJVMVersions = allScalaVersions
 val scalaJSVersions = allScalaVersions
-val scalaNativeVersions = compatScalaVersions
 val scalaNot211Versions = List(scala213, scala212) ::: scala3
+val scalaNativeVersions = scalaNot211Versions
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.7.1"
+ThisBuild / version := "3.8.3-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -40,14 +40,15 @@ ThisBuild / developers := List(
 ThisBuild / parallelExecution := false
 
 // Core
-val perfolationVersion: String = "1.2.8"
+val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.2.8"
 val collectionCompatVersion: String = "2.6.0"
 val moduloadVersion: String = "1.1.5"
 val jlineVersion: String = "3.21.0"
+val jansiVersion: String = "2.4.0"
 
 // Cats
-val catsEffectVersion: String = "3.3.5"
+val catsEffectVersion: String = "3.3.7"
 val catsEffectTestingVersion: String = "1.4.0"
 
 // JSON
@@ -61,13 +62,13 @@ val slf4jVersion: String = "1.7.36"
 val slf4j2Version: String = "2.0.0-alpha5"
 
 // Config Dependencies
-val profigVersion: String = "3.2.9"
+val profigVersion: String = "3.3.0"
 
 // Slack and Logstash Dependencies
 val youiVersion: String = "0.14.4"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.17.1"
+val log4jVersion: String = "2.17.2"
 val disruptorVersion: String = "3.4.2"
 val logbackVersion: String = "1.2.3"
 val typesafeConfigVersion: String = "1.4.0"
@@ -125,7 +126,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     crossScalaVersions := scalaJVMVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "moduload" % moduloadVersion,
-      "org.jline" % "jline" % jlineVersion
+      "org.jline" % "jline" % jlineVersion,
+      "org.fusesource.jansi" % "jansi" % jansiVersion
     )
   )
   .nativeSettings(
