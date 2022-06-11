@@ -10,6 +10,7 @@ import scribe.data._
 import scribe.filter._
 import scribe.format.{FormatBlock, Formatter}
 import scribe.handler.{LogHandler, SynchronousLogHandle}
+import scribe.message.LoggableMessage
 import scribe.modify.{LevelFilter, LogBooster}
 import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
@@ -403,9 +404,8 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         }
       })
 
-      implicit val loggableUser: Loggable[User] = new Loggable[User] {
-        override def apply(value: User): LogOutput = new TextOutput(s"{name: ${value.name}, age: ${value.age}}")
-      }
+      implicit val loggableUser: User => LoggableMessage =
+        Loggable[User](u => new TextOutput(s"{name: ${u.name}, age: ${u.age}}"))
 
       logger.info(User("John Doe", 21))
 
