@@ -13,7 +13,7 @@ import scribe.{Level, LogRecord}
  * `withHandler` method that takes a `Formatter` and `Writer` instead of defining a `LogHandler` manually.
  */
 trait LogHandler {
-  def log[M](record: LogRecord[M]): Unit
+  def log(record: LogRecord): Unit
 }
 
 object LogHandler {
@@ -27,7 +27,7 @@ object LogHandler {
     LogHandlerBuilder(formatter, writer, outputFormat, mods, handle)
   }
 
-  def apply(minimumLevel: Level)(f: LogRecord[_] => Unit): FunctionalLogHandler = {
+  def apply(minimumLevel: Level)(f: LogRecord => Unit): FunctionalLogHandler = {
     FunctionalLogHandler(f, List(LevelFilter >= minimumLevel))
   }
 }

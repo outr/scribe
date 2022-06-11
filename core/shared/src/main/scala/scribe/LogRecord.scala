@@ -9,14 +9,13 @@ import scribe.util.Time
 import java.util.concurrent.atomic.AtomicLong
 import scala.annotation.tailrec
 
-trait LogRecord[M] {
+trait LogRecord {
   protected var appliedModifierIds = Set.empty[String]
 
   final val id: Long = LogRecord.incrementor.incrementAndGet()
   def level: Level
   def levelValue: Double
-  def message: Message[M]
-  def additionalMessages: List[LoggableMessage]
+  def messages: List[LoggableMessage]
   def fileName: String
   def className: String
   def methodName: Option[String]
@@ -28,9 +27,14 @@ trait LogRecord[M] {
 
   def logOutput: LogOutput
 
+  protected def generateLogOutput(): LogOutput = messages match {
+    case msg :: Nil => msg.logOutput
+    case list => new CompositeOutput(list.map(_.logOutput))
+  }
+
   def get(key: String): Option[Any] = data.get(key).map(_())
 
-  def boost(booster: Double => Double): LogRecord[M] = copy(value = booster(levelValue))
+  def boost(booster: Double => Double): LogRecord = copy(value = booster(levelValue))
   def checkModifierId(id: String, add: Boolean = true): Boolean = if (id.isEmpty) {     // Always run blank id
     false
   } else if (appliedModifierIds.contains(id)) {
@@ -41,13 +45,13 @@ trait LogRecord[M] {
     }
     false
   }
-  def modify(modifier: LogModifier): Option[LogRecord[M]] = if (checkModifierId(modifier.id)) {
+  def modify(modifier: LogModifier): Option[LogRecord] = if (checkModifierId(modifier.id)) {
     Some(this)
   } else {
     modifier(this)
   }
   @tailrec
-  final def modify(modifiers: List[LogModifier]): Option[LogRecord[M]] = if (modifiers.isEmpty) {
+  final def modify(modifiers: List[LogModifier]): Option[LogRecord] = if (modifiers.isEmpty) {
     Some(this)
   } else {
     modify(modifiers.head) match {
@@ -58,8 +62,7 @@ trait LogRecord[M] {
 
   def copy(level: Level = level,
            value: Double = levelValue,
-           message: Message[M] = message,
-           additionalMessages: List[LoggableMessage] = additionalMessages,
+           messages: List[LoggableMessage] = messages,
            fileName: String = fileName,
            className: String = className,
            methodName: Option[String] = methodName,
@@ -67,7 +70,7 @@ trait LogRecord[M] {
            column: Option[Int] = column,
            thread: Thread = thread,
            data: Map[String, () => Any] = data,
-           timeStamp: Long = timeStamp): LogRecord[M]
+           timeStamp: Long = timeStamp): LogRecord
 
   def dispose(): Unit
 }
@@ -79,19 +82,18 @@ object LogRecord extends LogRecordCreator {
 
   private val NativeMethod: Int = -2
 
-  override def apply[M](level: Level,
-                        value: Double,
-                        message: Message[M],
-                        additionalMessages: List[LoggableMessage],
-                        fileName: String,
-                        className: String,
-                        methodName: Option[String],
-                        line: Option[Int],
-                        column: Option[Int],
-                        thread: Thread = Thread.currentThread(),
-                        data: Map[String, () => Any] = Map.empty,
-                        timeStamp: Long = Time()): LogRecord[M] = {
-    creator[M](level, value, message, additionalMessages, fileName, className, methodName, line, column, thread, data, timeStamp)
+  override def apply(level: Level,
+                     value: Double,
+                     messages: List[LoggableMessage],
+                     fileName: String,
+                     className: String,
+                     methodName: Option[String],
+                     line: Option[Int],
+                     column: Option[Int],
+                     thread: Thread = Thread.currentThread(),
+                     data: Map[String, () => Any] = Map.empty,
+                     timeStamp: Long = Time()): LogRecord = {
+    creator(level, value, messages, fileName, className, methodName, line, column, thread, data, timeStamp)
   }
 
   def simple(message: String,
@@ -103,12 +105,11 @@ object LogRecord extends LogRecordCreator {
              level: Level = Level.Info,
              thread: Thread = Thread.currentThread(),
              data: Map[String, () => Any] = Map.empty,
-             timeStamp: Long = Time()): LogRecord[String] = {
-    apply[String](
+             timeStamp: Long = Time()): LogRecord = {
+    apply(
       level = level,
       value = level.value,
-      message = Message(message),
-      additionalMessages = Nil,
+      messages = List(message),
       fileName = fileName,
       className = className,
       methodName = methodName,

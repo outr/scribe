@@ -5,5 +5,5 @@ import scribe.output.LogOutput
 
 object EmptyMessage extends Message[String] {
   override val value: String = ""
-  override val logOutput: LogOutput = Loggable.StringLoggable(value)
+  override val logOutput: LogOutput = value
 }

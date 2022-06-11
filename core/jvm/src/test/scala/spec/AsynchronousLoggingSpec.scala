@@ -27,7 +27,7 @@ class AsynchronousLoggingSpec extends AnyWordSpec with Matchers {
       val logger = Logger.empty.orphan().withHandler(
         formatter = AsynchronousLoggingSpec.format,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = queue.add(output.plainText.trim)
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = queue.add(output.plainText.trim)
         }
       )
 

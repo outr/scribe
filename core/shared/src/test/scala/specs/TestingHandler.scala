@@ -7,9 +7,9 @@ import scribe.{LogRecord, Priority}
 import scala.collection.mutable.ListBuffer
 
 class TestingHandler() extends LogHandler {
-  val records: ListBuffer[LogRecord[_]] = ListBuffer.empty[LogRecord[_]]
+  val records: ListBuffer[LogRecord] = ListBuffer.empty[LogRecord]
 
-  override def log[M](record: LogRecord[M]): Unit = records += record
+  override def log(record: LogRecord): Unit = records += record
 
   def clear(): Unit = records.clear()
 }

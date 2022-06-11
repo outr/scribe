@@ -26,11 +26,17 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   lazy val isEmpty: Boolean = modifiers.isEmpty && handlers.isEmpty
 
   def reset(): Logger = copy(parentId = Some(Logger.RootId), Nil, Nil, None)
+
   def orphan(): Logger = copy(parentId = None)
+
   def withParent(name: String): Logger = copy(parentId = Some(Logger(name).id))
+
   def withParent(logger: Logger): Logger = copy(parentId = Some(logger.id))
+
   def withParent(id: LoggerId): Logger = copy(parentId = Some(id))
+
   def withHandler(handler: LogHandler): Logger = copy(handlers = handlers ::: List(handler))
+
   def withHandler(formatter: Formatter = Formatter.default,
                   writer: Writer = ConsoleWriter,
                   minimumLevel: Option[Level] = None,
@@ -39,21 +45,29 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                   handle: LogHandle = SynchronousLogHandle): Logger = {
     withHandler(LogHandler(formatter, writer, minimumLevel, modifiers, outputFormat, handle))
   }
+
   def withoutHandler(handler: LogHandler): Logger = copy(handlers = handlers.filterNot(_ == handler))
+
   def clearHandlers(): Logger = copy(handlers = Nil)
+
   def withClassNameOverride(className: String): Logger = copy(overrideClassName = Option(className))
+
   def setModifiers(modifiers: List[LogModifier]): Logger = copy(modifiers = modifiers.sorted)
+
   def clearModifiers(): Logger = setModifiers(Nil)
+
   def set(key: String, value: => Any): Logger = copy(data = this.data + (key -> (() => value)))
-  def get(key: String): Option[Any] = data.get(key).map(_())
+
+  def get(key: String): Option[Any] = data.get(key).map(_ ())
 
   final def withModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id) ::: List(modifier))
+
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
-  override def log[M: Loggable](level: Level, message: => M, additionalMessages: List[LoggableMessage])
-                               (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit = {
+  override def log(level: Level, messages: LoggableMessage*)
+                  (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit = {
     if (includes(level)) {
-      super.log(level, message, additionalMessages)
+      super.log(level, messages: _*)
     }
   }
 
@@ -85,10 +99,13 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   }
 
   def withMinimumLevel(level: Level): Logger = withModifier(LevelFilter >= level)
+
   def withBoost(booster: Double => Double, priority: Priority = Priority.Normal): Logger = {
     withModifier(new LogBooster(booster, priority))
   }
+
   def withBoostOneLevel(): Logger = withBoost(_ + 100.0)
+
   def withBoosted(minimumLevel: Level, destinationLevel: Level): Logger = {
     withBoost(d => if (d >= minimumLevel.value && d <= destinationLevel.value) {
       destinationLevel.value
@@ -97,13 +114,13 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     })
   }
 
-  override def log[M](record: LogRecord[M]): Unit = {
+  override def log(record: LogRecord): Unit = {
     logInternal(record)
     // TODO: Handle async leases
     record.dispose()
   }
 
-  protected def logInternal[M](record: LogRecord[M]): Unit = {
+  protected def logInternal(record: LogRecord): Unit = {
     val r = if (data.nonEmpty) {
       record.copy(data = data ++ record.data)
     } else {
@@ -115,7 +132,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     }
   }
 
-  protected def shouldLog[M](record: LogRecord[M]): Boolean = record.modify(modifiers) match {
+  protected def shouldLog(record: LogRecord): Boolean = record.modify(modifiers) match {
     case Some(_) if handlers.nonEmpty => true
     case Some(r) => parentId.map(Logger.apply).exists(p => p.shouldLog(r))
     case None => false
@@ -126,22 +143,19 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     case None => Logger.replace(this)
   }
 
-  def logDirect[M](level: Level,
-                   message: => M,
-                   additionalMessages: List[LoggableMessage] = Nil,
-                   fileName: String = "",
-                   className: String = "",
-                   methodName: Option[String] = None,
-                   line: Option[Int] = None,
-                   column: Option[Int] = None,
-                   thread: Thread = Thread.currentThread(),
-                   timeStamp: Long = Time())
-                  (implicit loggable: Loggable[M]): Unit = {
-    log[M](LogRecord[M](
+  def logDirect(level: Level,
+                messages: List[LoggableMessage] = Nil,
+                fileName: String = "",
+                className: String = "",
+                methodName: Option[String] = None,
+                line: Option[Int] = None,
+                column: Option[Int] = None,
+                thread: Thread = Thread.currentThread(),
+                timeStamp: Long = Time()): Unit = {
+    log(LogRecord(
       level = level,
       value = level.value,
-      message = Message(message),
-      additionalMessages = additionalMessages,
+      messages = messages,
       fileName = fileName,
       className = overrideClassName.getOrElse(className),
       methodName = methodName,
@@ -161,26 +175,26 @@ object Logger {
   lazy val DefaultRootMinimumLevel: Level = Option(System.getenv("SCRIBE_MINIMUM_LEVEL")).flatMap(Level.get).getOrElse(Level.Info)
 
   /**
-    * Functionality for system output stream management
-    */
+   * Functionality for system output stream management
+   */
   object system {
     /**
-      * The standard system out (set upon initialization to represent the original, non-redirected, System.out)
-      */
+     * The standard system out (set upon initialization to represent the original, non-redirected, System.out)
+     */
     def out: PrintStream = systemOut
 
     /**
-      * The standard system err (set upon initialization to represent the original, non-redirected, System.err)
-      */
+     * The standard system err (set upon initialization to represent the original, non-redirected, System.err)
+     */
     def err: PrintStream = systemErr
 
     /**
-      * Redirects system output to Scribe's logging
-      *
-      * @param outLevel if set, defines the level to log System.out to (defaults to Some(Level.Info))
-      * @param errLevel if set, defines the level to log System.err to (defaults to Some(Level.Error))
-      * @param loggerId the loggerId to determine what logger to use when logging (defaults to Logger.RootId)
-      */
+     * Redirects system output to Scribe's logging
+     *
+     * @param outLevel if set, defines the level to log System.out to (defaults to Some(Level.Info))
+     * @param errLevel if set, defines the level to log System.err to (defaults to Some(Level.Error))
+     * @param loggerId the loggerId to determine what logger to use when logging (defaults to Logger.RootId)
+     */
     def redirect(outLevel: Option[Level] = Some(Level.Info),
                  errLevel: Option[Level] = Some(Level.Error),
                  loggerId: LoggerId = RootId): Unit = {
@@ -209,11 +223,11 @@ object Logger {
     }
 
     /**
-      * Resets the System.out and System.err to the original state
-      *
-      * @param out if true, resets System.out (defaults to true)
-      * @param err if true, resets System.err (defaults to true)
-      */
+     * Resets the System.out and System.err to the original state
+     *
+     * @param out if true, resets System.out (defaults to true)
+     * @param err if true, resets System.err (defaults to true)
+     */
     def reset(out: Boolean = true, err: Boolean = true): Unit = {
       if (out) {
         System.setOut(systemOut)
@@ -225,8 +239,8 @@ object Logger {
 
     def installJUL(): Unit = Try(java.util.logging.LogManager.getLogManager.getLogger("").addHandler(JULHandler))
       .failed.foreach { t =>
-        scribe.warn(s"Failed to install java.util.logging integration: ${t.getMessage}")
-      }
+      scribe.warn(s"Failed to install java.util.logging integration: ${t.getMessage}")
+    }
   }
 
   val RootId: LoggerId = LoggerId(0L)
@@ -241,6 +255,7 @@ object Logger {
   Platform.init()
 
   def empty: Logger = Logger()
+
   def root: Logger = apply(RootId)
 
   def loggersByName: Map[String, Logger] = name2Id.map {

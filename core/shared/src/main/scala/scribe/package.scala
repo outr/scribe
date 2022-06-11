@@ -10,11 +10,11 @@ package object scribe extends LoggerSupport[Unit] {
   protected[scribe] var disposables = Set.empty[() => Unit]
 
   @inline
-  override final def log[M](record: LogRecord[M]): Unit = Logger(record.className).log(record)
+  override final def log(record: LogRecord): Unit = Logger(record.className).log(record)
 
-  override def log[M: Loggable](level: Level, message: => M, additionalMessages: List[Message])
+  override def log(level: Level, messages: Message*)
                                (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit =
-    if (includes(level)) super.log(level, message, additionalMessages)
+    if (includes(level)) super.log(level, messages: _*)
 
   def includes(level: Level)(implicit pkg: sourcecode.Pkg,
                              fileName: sourcecode.FileName,

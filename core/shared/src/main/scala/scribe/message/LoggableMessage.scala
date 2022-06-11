@@ -5,6 +5,7 @@ import scribe.output.LogOutput
 import scala.language.implicitConversions
 
 trait LoggableMessage {
+  def value: Any
   def logOutput: LogOutput
 }
 

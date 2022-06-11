@@ -3,7 +3,7 @@ package scribe.message
 import scribe.Loggable
 
 trait Message[M] extends LoggableMessage {
-  def value: M
+  override def value: M
 }
 
 object Message {

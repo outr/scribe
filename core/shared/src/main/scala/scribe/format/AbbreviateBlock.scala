@@ -13,7 +13,7 @@ class AbbreviateBlock(block: FormatBlock,
     override def initialValue(): Map[String, TextOutput] = Map.empty
   }
 
-  override def format[M](record: LogRecord[M]): LogOutput = {
+  override def format(record: LogRecord): LogOutput = {
     val value = block.format(record).plainText
     val map = cache.get()
     map.get(value) match {

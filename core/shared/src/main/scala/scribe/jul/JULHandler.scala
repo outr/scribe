@@ -1,6 +1,5 @@
 package scribe.jul
 
-import scribe.Loggable.StringLoggable
 import scribe.message.Message
 import scribe._
 
@@ -13,8 +12,7 @@ object JULHandler extends java.util.logging.Handler {
     val logRecord = LogRecord(
       level = level,
       value = level.value,
-      message = Message(record.getMessage),
-      additionalMessages = Option(record.getThrown).toList,
+      messages = List(record.getMessage),
       fileName = "",
       className = Option(record.getSourceClassName).getOrElse(record.getLoggerName),
       methodName = Option(record.getSourceMethodName),

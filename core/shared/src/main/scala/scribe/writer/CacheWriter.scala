@@ -4,15 +4,15 @@ import scribe.output.LogOutput
 import scribe.output.format.OutputFormat
 
 class CacheWriter(max: Int = CacheWriter.DefaultMax) extends Writer {
-  private var recordCache = List.empty[LogRecord[Any]]
+  private var recordCache = List.empty[LogRecord]
   private var outputCache = List.empty[LogOutput]
 
-  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
-    recordCache = (record.asInstanceOf[LogRecord[Any]] :: recordCache).take(max)
+  override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
+    recordCache = (record :: recordCache).take(max)
     outputCache = (output :: outputCache).take(max)
   }
 
-  def records: List[LogRecord[Any]] = recordCache
+  def records: List[LogRecord] = recordCache
   def output: List[LogOutput] = outputCache
 
   def clear(): Unit = synchronized {
