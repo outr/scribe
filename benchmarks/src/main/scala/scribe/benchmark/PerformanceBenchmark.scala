@@ -20,7 +20,7 @@ class PerformanceBenchmark {
   private lazy val logger = Logger.empty.orphan().withHandler(
     minimumLevel = Some(Level.Info),
     writer = new Writer {
-      override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = record.level match {
+      override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = record.level match {
         case Level.Debug => debug.incrementAndGet()
         case Level.Info => info.incrementAndGet()
         case Level.Error => error.incrementAndGet()

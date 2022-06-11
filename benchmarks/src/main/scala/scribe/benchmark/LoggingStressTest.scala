@@ -45,7 +45,7 @@ object LoggingStressTest {
   }
 
   def nullLogger(): Logger = Logger("nullLogger").orphan().withHandler(new LogHandler {
-    override def log[M](record: LogRecord[M]): Unit = logged += 1
+    override def log(record: LogRecord): Unit = logged += 1
   }).replace()
 
   def fileLogger(formatter: Formatter): Logger = {
