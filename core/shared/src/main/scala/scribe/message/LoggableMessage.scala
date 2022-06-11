@@ -19,5 +19,7 @@ object LoggableMessage {
     list.map(f => throwable2Message(f))
 
   def apply[V](value: => V)(toLogOutput: V => LogOutput): LoggableMessage =
-    new LazyMessage[V](() => value)(toLogOutput(_))
+    new LazyMessage[V](() => value)(new Loggable[V] {
+      override def apply(value: V): LogOutput = toLogOutput(value)
+    })
 }

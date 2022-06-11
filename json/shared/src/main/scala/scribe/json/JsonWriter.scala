@@ -11,17 +11,18 @@ import fabric._
 import scribe.message.Message
 
 case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
-  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
+  override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
     val l = record.timeStamp
-    val traces = record.additionalMessages.collect {
+    val traces = record.messages.collect {
       case message: Message[_] if message.value.isInstanceOf[Throwable] => throwable2Trace(message.value.asInstanceOf[Throwable])
     }
-    val additionalMessages = record.additionalMessages.map(_.logOutput.plainText)
+    val messages = record.messages.collect {
+      case message: Message[_] if !message.value.isInstanceOf[Throwable] => message.logOutput.plainText
+    }
     val r = Record(
       level = record.level.name,
       levelValue = record.levelValue,
-      message = record.logOutput.plainText,
-      additionalMessages = additionalMessages,
+      messages = messages,
       fileName = record.fileName,
       className = record.className,
       methodName = record.methodName,
@@ -57,8 +58,7 @@ case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
 
 case class Record(level: String,
                   levelValue: Double,
-                  message: String,
-                  additionalMessages: List[String],
+                  messages: List[String],
                   fileName: String,
                   className: String,
                   methodName: Option[String],
@@ -71,7 +71,7 @@ case class Record(level: String,
                   time: String)
 
 object Record {
-  implicit val mapRW: ReaderWriter[Map[String, Value]] = ReaderWriter[Map[String, Value]](identity, _.asObj.value)
+  implicit val mapRW: ReaderWriter[Map[String, Value]] = ReaderWriter[Map[String, Value]](t => t, _.asObj.value)
   implicit val rw: ReaderWriter[Record] = ccRW
 }
 

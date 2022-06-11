@@ -15,8 +15,8 @@ class ScribeSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
     Logger.root
       .clearHandlers()
       .withHandler(new LogHandler {
-        override def log[M](record: LogRecord[M]): Unit = synchronized {
-          messages = record.message.logOutput.plainText :: messages
+        override def log(record: LogRecord): Unit = synchronized {
+          messages = record.messages.map(_.logOutput.plainText) ::: messages
         }
       })
       .replace()

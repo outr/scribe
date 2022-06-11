@@ -404,8 +404,10 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         }
       })
 
-      implicit val loggableUser: User => LoggableMessage =
-        Loggable[User](u => new TextOutput(s"{name: ${u.name}, age: ${u.age}}"))
+      // TODO: Surely we can make this better...
+      implicit def loggableUser(user: User): LoggableMessage = LoggableMessage[User](user) { u =>
+        new TextOutput(s"{name: ${u.name}, age: ${u.age}}")
+      }
 
       logger.info(User("John Doe", 21))
 

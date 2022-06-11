@@ -6,6 +6,7 @@ import org.apache.logging.log4j.message.MessageFactory
 import org.apache.logging.log4j.spi.{AbstractLogger, CleanableThreadContextMap, ExtendedLogger, LoggerContext, LoggerContextFactory, LoggerRegistry, Provider}
 import org.apache.logging.log4j.util.{SortedArrayStringMap, StringMap}
 import scribe.data.MDC
+import scribe.message.LoggableMessage
 
 import scala.jdk.CollectionConverters._
 import java.net.URI
@@ -155,9 +156,11 @@ case class Log4JLogger(id: LoggerId) extends AbstractLogger {
                           marker: Marker,
                           message: org.apache.logging.log4j.message.Message,
                           t: Throwable): Unit = logger.log(
-    level = l2l(level).getOrElse(throw new RuntimeException(s"Unsupported level: $level")),
-    message = message.getFormattedMessage,
-    additionalMessages = Option(t).toList
+    l2l(level).getOrElse(throw new RuntimeException(s"Unsupported level: $level")),
+    (Some(LoggableMessage.string2Message(message.getFormattedMessage))
+      :: Option(t).map(LoggableMessage.throwable2Message(_))
+      :: Nil
+    ).flatten: _*
   )
 
   override def getLevel: log4j.Level = if (logger.includes(Level.Trace)) {
