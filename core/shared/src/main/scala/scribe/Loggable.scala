@@ -8,9 +8,3 @@ import scala.language.implicitConversions
 trait Loggable[-T] {
   def apply(value: T): LogOutput
 }
-
-object Loggable {
-  def apply[V](f: V => LogOutput): V => LoggableMessage = (v: V) => {
-    LoggableMessage[V](v)(f)
-  }
-}

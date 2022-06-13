@@ -3,6 +3,8 @@ package scribe
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
 import scribe.writer.{SystemWriter, Writer}
 
+import scala.concurrent.ExecutionContext
+
 object Platform extends PlatformImplementation {
   def isJVM: Boolean = false
   def isJS: Boolean = false
@@ -25,4 +27,6 @@ object Platform extends PlatformImplementation {
   override def consoleWriter: Writer = SystemWriter
 
   override val columns: Int = 120
+
+  override def executionContext: ExecutionContext = ExecutionContext.global
 }

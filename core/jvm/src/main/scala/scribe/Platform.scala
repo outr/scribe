@@ -5,6 +5,8 @@ import org.jline.terminal.TerminalBuilder
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
 import scribe.writer.{SystemWriter, Writer}
 
+import scala.concurrent.ExecutionContext
+
 object Platform extends PlatformImplementation {
   private val maximumColumns: Int = 5000
   private lazy val terminal = TerminalBuilder.terminal()
@@ -51,4 +53,6 @@ object Platform extends PlatformImplementation {
       cachedColumns
     }
   }
+
+  override def executionContext: ExecutionContext = ExecutionContext.global
 }

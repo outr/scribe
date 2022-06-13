@@ -3,6 +3,7 @@ package scribe
 import scribe.output.format.{OutputFormat, RichBrowserOutputFormat}
 import scribe.writer.{BrowserConsoleWriter, Writer}
 
+import scala.concurrent.ExecutionContext
 import scala.scalajs.js
 
 object Platform extends PlatformImplementation {
@@ -19,4 +20,6 @@ object Platform extends PlatformImplementation {
   override def consoleWriter: Writer = BrowserConsoleWriter
 
   override val columns: Int = 120
+
+  override def executionContext: ExecutionContext = scala.scalajs.concurrent.JSExecutionContext.queue
 }

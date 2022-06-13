@@ -2,6 +2,8 @@ package scribe
 
 import scribe.writer.Writer
 
+import scala.concurrent.ExecutionContext
+
 trait PlatformImplementation {
   def isJVM: Boolean
   def isJS: Boolean
@@ -10,4 +12,6 @@ trait PlatformImplementation {
   def consoleWriter: Writer
 
   def columns: Int
+
+  def executionContext: ExecutionContext
 }

@@ -337,7 +337,8 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val h = LogHandler(
         minimumLevel = Some(Level.Info),
         writer = new Writer {
-          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = records = record.messages.map(_.logOutput.plainText).mkString(" ") :: records
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit =
+            records = record.messages.map(_.logOutput.plainText).mkString(" ") :: records
         },
         modifiers = List(
           select(
@@ -404,10 +405,8 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         }
       })
 
-      // TODO: Surely we can make this better...
-      implicit def loggableUser(user: User): LoggableMessage = LoggableMessage[User](user) { u =>
-        new TextOutput(s"{name: ${u.name}, age: ${u.age}}")
-      }
+      implicit def loggableUser(user: => User): LoggableMessage =
+        LoggableMessage[User](u => new TextOutput(s"{name: ${u.name}, age: ${u.age}}"))(user)
 
       logger.info(User("John Doe", 21))
 
