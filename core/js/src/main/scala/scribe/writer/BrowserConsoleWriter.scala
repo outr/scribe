@@ -5,6 +5,7 @@ import scribe._
 import scribe.output._
 import scribe.output.format.OutputFormat
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.scalajs.js
 
@@ -14,8 +15,8 @@ import scala.scalajs.js
 object BrowserConsoleWriter extends Writer {
   val args: ListBuffer[String] = ListBuffer.empty
 
-  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
-    val b = new StringBuilder
+  override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
+    val b = new mutable.StringBuilder
     args.clear()
     outputFormat.begin(b.append(_))
     outputFormat(output, b.append(_))

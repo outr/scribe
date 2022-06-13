@@ -17,10 +17,10 @@ import scribe.{Level, LogRecord, Logger}
 class SLF4JSpec extends AnyWordSpec with Matchers {
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
-  private var logs: List[LogRecord[_]] = Nil
+  private var logs: List[LogRecord] = Nil
   private var logOutput: List[String] = Nil
   private val writer = new Writer {
-    override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
+    override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
       logs = record :: logs
       logOutput = output.plainText :: logOutput
     }

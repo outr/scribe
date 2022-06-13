@@ -3,7 +3,6 @@ package scribe.slf4j
 import org.slf4j.helpers.FormattingTuple
 import org.slf4j.spi.LocationAwareLogger
 import scribe.{Level, LogRecord}
-import scribe.Loggable.StringLoggable
 import scribe.message.Message
 
 object SLF4JHelper {
@@ -20,8 +19,7 @@ object SLF4JHelper {
     val record = LogRecord(
       level = level,
       value = level.value,
-      message = Message.static(msg),
-      additionalMessages = t.toList,
+      messages = List(msg),
       fileName = "",
       className = name,
       methodName = None,

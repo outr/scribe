@@ -10,6 +10,7 @@ import scribe.data._
 import scribe.filter._
 import scribe.format.{FormatBlock, Formatter}
 import scribe.handler.{LogHandler, SynchronousLogHandle}
+import scribe.message.LoggableMessage
 import scribe.modify.{LevelFilter, LogBooster}
 import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
@@ -122,7 +123,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = LoggingSpec.mdcFormatter,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
         }
       )
 
@@ -150,7 +151,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
         }
       )
 
@@ -178,7 +179,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val logger = Logger.empty.withHandler(
         formatter = Formatter.simple,
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
         }
       )
 
@@ -214,7 +215,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         evaluated.incrementAndGet().toString
       }
       Logger("once").withHandler(new LogHandler {
-        override def log[M](record: LogRecord[M]): Unit = {
+        override def log(record: LogRecord): Unit = {
           // A handler must exist
         }
       }).replace()
@@ -245,14 +246,14 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .withHandler(
           formatter = Formatter.simple,
           writer = new Writer {
-            override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
+            override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
           }
         )
-      logger.logDirect(Level.Warn, "Included", className = "org.apache.flink.api.Included")
+      logger.logDirect(Level.Warn, List("Included"), className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included"))
-      logger.logDirect(Level.Info, "Excluded", className = "org.apache.flink.api.Excluded")
+      logger.logDirect(Level.Info, List("Excluded"), className = "org.apache.flink.api.Excluded")
       logs.toList should be(List("Included"))
-      logger.logDirect(Level.Info, "Ignored", className = "test.Ignored")
+      logger.logDirect(Level.Info, List("Ignored"), className = "test.Ignored")
       logs.toList should be(List("Included", "Ignored"))
     }
     "boost via DSL" in {
@@ -267,15 +268,15 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .withHandler(
           formatter = Formatter.simple,
           writer = new Writer {
-            override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
+            override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
           },
           minimumLevel = Some(Level.Info)
         )
-      logger.logDirect(Level.Warn, "Included 1", className = "org.apache.flink.api.Included")
+      logger.logDirect(Level.Warn, List("Included 1"), className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1"))
-      logger.logDirect(Level.Trace, "Included 2", className = "org.apache.flink.api.Included")
+      logger.logDirect(Level.Trace, List("Included 2"), className = "org.apache.flink.api.Included")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(Level.Trace, "Excluded", className = "org.apache.flink.Excluded")
+      logger.logDirect(Level.Trace, List("Excluded"), className = "org.apache.flink.Excluded")
       logs.toList should be(List("Included 1", "Included 2"))
     }
     "multiple filters via DSL" in {
@@ -293,17 +294,17 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .withHandler(
           formatter = Formatter.simple,
           writer = new Writer {
-            override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
+            override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = logs += output.plainText
           },
           minimumLevel = Some(Level.Info)
         )
-      logger.logDirect(Level.Debug, "Included 1", className = "org.package1.Included")
+      logger.logDirect(Level.Debug, List("Included 1"), className = "org.package1.Included")
       logs.toList should be(List("Included 1"))
-      logger.logDirect(Level.Debug, "Included 2", className = "org.package2.Included")
+      logger.logDirect(Level.Debug, List("Included 2"), className = "org.package2.Included")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(Level.Info, "Excluded 1", className = "org.package3.Excluded")
+      logger.logDirect(Level.Info, List("Excluded 1"), className = "org.package3.Excluded")
       logs.toList should be(List("Included 1", "Included 2"))
-      logger.logDirect(Level.Error, "Included 3", className = "org.package3.Included")
+      logger.logDirect(Level.Error, List("Included 3"), className = "org.package3.Included")
       logs.toList should be(List("Included 1", "Included 2", "Included 3"))
     }
     "validate minimum level override support" in {
@@ -316,7 +317,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       }
 
       val parent = Logger.empty.orphan().withMinimumLevel(Level.Error).withHandler(new LogHandler {
-        override def log[M](record: LogRecord[M]): Unit = {
+        override def log(record: LogRecord): Unit = {
           logged = record.logOutput.plainText :: logged
         }
       }).replace()
@@ -336,7 +337,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       val h = LogHandler(
         minimumLevel = Some(Level.Info),
         writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = records = record.message.value.toString :: records
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = records = record.messages.map(_.logOutput.plainText).mkString(" ") :: records
         },
         modifiers = List(
           select(
@@ -365,7 +366,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         .orphan()
         .withMinimumLevel(Level.Info)
         .withHandler(new LogHandler {
-          override def log[M](record: LogRecord[M]): Unit = records = record.logOutput.plainText :: records
+          override def log(record: LogRecord): Unit = records = record.logOutput.plainText :: records
         })
         .replace()
       Logger("com.example1").withParent(base.id).withModifier(boosted(Level.Trace, Level.Info)).replace()
@@ -397,14 +398,15 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
       case class User(name: String, age: Int)
       val logger = Logger().orphan().withHandler(new LogHandler {
-        override def log[M](record: LogRecord[M]): Unit = record.message.value match {
+        override def log(record: LogRecord): Unit = record.messages.head.value match {
           case u: User => logged = u :: logged
           case _ => // Ignore others
         }
       })
 
-      implicit val loggableUser: Loggable[User] = new Loggable[User] {
-        override def apply(value: User): LogOutput = new TextOutput(s"{name: ${value.name}, age: ${value.age}}")
+      // TODO: Surely we can make this better...
+      implicit def loggableUser(user: User): LoggableMessage = LoggableMessage[User](user) { u =>
+        new TextOutput(s"{name: ${u.name}, age: ${u.age}}")
       }
 
       logger.info(User("John Doe", 21))
@@ -416,7 +418,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
       case class User(name: String, age: Int)
       val logger = Logger().orphan().withHandler(new LogHandler {
-        override def log[M](record: LogRecord[M]): Unit = MDC.get("user").foreach {
+        override def log(record: LogRecord): Unit = MDC.get("user").foreach {
           case u: User => logged = u :: logged
         }
       })
@@ -432,7 +434,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
 
       case class User(name: String, age: Int)
       val logger = Logger().orphan().withHandler(new LogHandler {
-        override def log[M](record: LogRecord[M]): Unit = record.get("user").foreach {
+        override def log(record: LogRecord): Unit = record.get("user").foreach {
           case u: User => logged = u :: logged
         }
       })
@@ -462,7 +464,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       Time.contextualize(MomentInTime) {
         val b = new StringBuilder
         val writer = new Writer {
-          override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
             outputFormat(output, b.append(_))
           }
         }

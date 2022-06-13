@@ -11,7 +11,7 @@ case class LogHandlerBuilder(formatter: Formatter = Formatter.default,
                              outputFormat: OutputFormat = OutputFormat.default,
                              modifiers: List[LogModifier] = Nil,
                              handle: LogHandle = SynchronousLogHandle) extends LogHandler {
-  override def log[M](record: LogRecord[M]): Unit = handle.log(this, record)
+  override def log(record: LogRecord): Unit = handle.log(this, record)
 
   def withFormatter(formatter: Formatter): LogHandlerBuilder = copy(formatter = formatter)
 

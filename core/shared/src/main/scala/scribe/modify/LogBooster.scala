@@ -5,7 +5,7 @@ import scribe.{LogRecord, Priority}
 case class LogBooster(booster: Double => Double,
                       priority: Priority,
                       id: String = LogBooster.Id) extends LogModifier {
-  override def apply[M](record: LogRecord[M]): Option[LogRecord[M]] = Some(record.boost(booster))
+  override def apply(record: LogRecord): Option[LogRecord] = Some(record.boost(booster))
 
   override def withId(id: String): LogModifier = copy(id = id)
 }

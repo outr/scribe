@@ -13,7 +13,7 @@ package object format {
   private val PositionAbbreviationLength = 25
 
   case object empty extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = EmptyOutput
+    override def format(record: LogRecord): LogOutput = EmptyOutput
   }
   lazy val space: FormatBlock = string(" ")
   lazy val openBracket: FormatBlock = string("[")

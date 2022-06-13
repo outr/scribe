@@ -26,7 +26,7 @@ case class AsynchronousLogHandle(maxBuffer: Int = AsynchronousLogHandle.DefaultM
   private lazy val cached = new AtomicLong(0L)
 
   private lazy val queue = {
-    val q = new ConcurrentLinkedQueue[(LogHandlerBuilder, LogRecord[_])]
+    val q = new ConcurrentLinkedQueue[(LogHandlerBuilder, LogRecord)]
     val t = new Thread {
       setDaemon(true)
 
@@ -49,7 +49,7 @@ case class AsynchronousLogHandle(maxBuffer: Int = AsynchronousLogHandle.DefaultM
 
   def withOverflow(overflow: Overflow): AsynchronousLogHandle = copy(overflow = overflow)
 
-  override def log[M](handler: LogHandlerBuilder, record: LogRecord[M]): Unit = {
+  override def log(handler: LogHandlerBuilder, record: LogRecord): Unit = {
     val add = if (!cached.incrementIfLessThan(maxBuffer)) {
       overflow match {
         case Overflow.DropOld => {

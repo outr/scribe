@@ -9,7 +9,7 @@ import scribe.util.Abbreviator
 import scala.language.implicitConversions
 
 trait FormatBlock {
-  def format[M](record: LogRecord[M]): LogOutput
+  def format(record: LogRecord): LogOutput
 
   def abbreviate(maxLength: Int,
                  padded: Boolean = false,
@@ -32,28 +32,28 @@ trait FormatBlock {
 }
 
 object FormatBlock {
-  def apply(f: LogRecord[_] => LogOutput): FormatBlock = new FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = f(record)
+  def apply(f: LogRecord => LogOutput): FormatBlock = new FormatBlock {
+    override def format(record: LogRecord): LogOutput = f(record)
   }
 
   case class Mapped(block: FormatBlock, f: LogOutput => LogOutput) extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = f(block.format(record))
+    override def format(record: LogRecord): LogOutput = f(block.format(record))
   }
 
   case class MappedPlain(block: FormatBlock, f: String => String) extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = block.format(record).map(f)
+    override def format(record: LogRecord): LogOutput = block.format(record).map(f)
   }
 
   case class RawString(s: String) extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(s)
+    override def format(record: LogRecord): LogOutput = new TextOutput(s)
   }
 
   object TimeStamp extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.timeStamp.toString)
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.timeStamp.toString)
   }
 
   object Time extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(s"${record.timeStamp.t.T}")
+    override def format(record: LogRecord): LogOutput = new TextOutput(s"${record.timeStamp.t.T}")
   }
 
   object Date {
@@ -65,7 +65,7 @@ object FormatBlock {
         override def initialValue(): Long = 0L
       }
 
-      override def format[M](record: LogRecord[M]): LogOutput = {
+      override def format(record: LogRecord): LogOutput = {
         val l = record.timeStamp
         if (l - lastValue.get() > 1000L) {
           val d = s"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}"
@@ -78,7 +78,7 @@ object FormatBlock {
       }
     }
     object Full extends FormatBlock {
-      override def format[M](record: LogRecord[M]): LogOutput = {
+      override def format(record: LogRecord): LogOutput = {
         val l = record.timeStamp
         val d = s"${l.t.Y}.${l.t.m}.${l.t.d} ${l.t.T}:${l.t.L}"
         new TextOutput(d)
@@ -95,7 +95,7 @@ object FormatBlock {
         override def initialValue(): Long = 0L
       }
 
-      override def format[M](record: LogRecord[M]): LogOutput = {
+      override def format(record: LogRecord): LogOutput = {
         val l = record.timeStamp
         if (l - lastValue.get() > 1000L) {
           counter.set(0L)
@@ -120,27 +120,27 @@ object FormatBlock {
   }
 
   object ThreadName extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.thread.getName)
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.thread.getName)
   }
 
   object Level extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.level.name)
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.level.name)
 
     object PaddedRight extends FormatBlock {
-      override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.level.namePadded)
+      override def format(record: LogRecord): LogOutput = new TextOutput(record.level.namePadded)
     }
   }
 
   object FileName extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.fileName)
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.fileName)
   }
 
   object ClassName extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.className)
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.className)
   }
 
   object ClassNameSimple extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val cn = record.className
       val index = cn.lastIndexOf('.')
       val simple = if (index != -1) {
@@ -153,11 +153,11 @@ object FormatBlock {
   }
 
   object MethodName extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.methodName.getOrElse(""))
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.methodName.getOrElse(""))
   }
 
   object ClassAndMethodName extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val className = ClassName.format(record).plainText
       val methodName = if (record.methodName.nonEmpty) {
         s".${MethodName.format(record).plainText}"
@@ -169,7 +169,7 @@ object FormatBlock {
   }
 
   object ClassAndMethodNameSimple extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val className = ClassNameSimple.format(record).plainText
       val methodName = if (record.methodName.nonEmpty) {
         s".${MethodName.format(record).plainText}"
@@ -181,7 +181,7 @@ object FormatBlock {
   }
 
   object Position extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val line = if (record.line.nonEmpty) {
         s":${LineNumber.format(record).plainText}"
       } else {
@@ -218,7 +218,7 @@ object FormatBlock {
   }
 
   object PositionSimple extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val line = if (record.line.nonEmpty) {
         s":${LineNumber.format(record).plainText}"
       } else {
@@ -234,22 +234,22 @@ object FormatBlock {
   }
 
   object LineNumber extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.line.fold("")(_.toString))
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.line.fold("")(_.toString))
   }
 
   object ColumnNumber extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(record.column.fold("")(_.toString))
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.column.fold("")(_.toString))
   }
 
   object Messages extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = record.logOutput
+    override def format(record: LogRecord): LogOutput = record.logOutput
   }
 
   case class MDCReference(key: String,
                           default: () => Any,
                           prefix: Option[FormatBlock],
                           postfix: Option[FormatBlock]) extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = MDC.get(key) match {
+    override def format(record: LogRecord): LogOutput = MDC.get(key) match {
       case Some(value) => {
         val text = new TextOutput(value.toString)
         if (prefix.nonEmpty || postfix.nonEmpty) {
@@ -263,7 +263,7 @@ object FormatBlock {
   }
 
   object MDCAll extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val map = MDC.map ++ record.data
       if (map.nonEmpty) {
         new TextOutput(map.map {
@@ -276,7 +276,7 @@ object FormatBlock {
   }
 
   object MDCMultiLine extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val map = MDC.map ++ record.data
       if (map.nonEmpty) {
         val nl = newLine.format(record)
@@ -299,11 +299,11 @@ object FormatBlock {
   }
 
   object NewLine extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = new TextOutput(System.lineSeparator)
+    override def format(record: LogRecord): LogOutput = new TextOutput(System.lineSeparator)
   }
 
   case class MultiLine(maxChars: () => Int = MultiLine.PlatformColumns, prefix: String = "    ", blocks: List[FormatBlock]) extends FormatBlock {
-    override def format[M](record: LogRecord[M]): LogOutput = {
+    override def format(record: LogRecord): LogOutput = {
       val pre = new TextOutput(prefix)
       val max = maxChars() - prefix.length
       val newLine = NewLine.format(record)

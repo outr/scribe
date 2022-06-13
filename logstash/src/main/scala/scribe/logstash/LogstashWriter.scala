@@ -23,22 +23,21 @@ case class LogstashWriter(url: URL,
                           asynchronous: Boolean = true) extends Writer {
   private lazy val client = HttpClient.url(url).post
 
-  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
+  override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
     val future = log(record)
     if (!asynchronous) {
       Await.result(future, 10.seconds)
     }
   }
 
-  def log[M](record: LogRecord[M]): Future[HttpResponse] = {
+  def log(record: LogRecord): Future[HttpResponse] = {
     val l = record.timeStamp
     val timestamp = s"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
     val r: LogstashRecord = LogstashRecord(
-      message = record.logOutput.plainText,
+      messages = record.messages.map(_.logOutput.plainText),
       service = service,
       level = record.level.name,
       value = record.levelValue,
-      additionalMessages = record.additionalMessages.map(_.logOutput.plainText),
       fileName = record.fileName,
       className = record.className,
       methodName = record.methodName,

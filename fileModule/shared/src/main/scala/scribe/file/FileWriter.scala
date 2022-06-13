@@ -28,7 +28,7 @@ case class FileWriter(pathBuilder: PathBuilder = PathBuilder.Default,
     _file = newFile
   }
 
-  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
+  override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = synchronized {
     pathBuilder.before(this)
 
     // Write to LogFile

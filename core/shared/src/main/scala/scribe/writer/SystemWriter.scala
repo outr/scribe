@@ -32,13 +32,13 @@ object SystemWriter extends Writer {
     override def initialValue(): StringBuilder = new StringBuilder(stringBuilderStartCapacity)
   }
 
-  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = {
+  override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
     val stream = if (record.level <= Level.Info) {
       Logger.system.out
     } else {
       Logger.system.err
     }
-    write[M](stream, output, outputFormat)
+    write(stream, output, outputFormat)
   }
 
   def write[M](stream: PrintStream, output: LogOutput, outputFormat: OutputFormat): Unit = {

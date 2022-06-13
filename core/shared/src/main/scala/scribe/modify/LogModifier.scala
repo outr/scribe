@@ -22,10 +22,9 @@ trait LogModifier {
    * Handles modification of a LogRecord
    *
    * @param record the record to modify
-   * @tparam M the type of message
    * @return Some LogRecord that should continue to propagate or None if the logging action should be canceled
    */
-  def apply[M](record: LogRecord[M]): Option[LogRecord[M]]
+  def apply(record: LogRecord): Option[LogRecord]
 
   def withId(id: String): LogModifier
 

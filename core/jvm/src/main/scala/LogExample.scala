@@ -9,8 +9,7 @@ object LogExample extends App {
   logger.log(LogRecord(
     level = Level.Info,
     value = Level.Info.value,
-    message = new LazyMessage(() => "Some message"),
-    additionalMessages = Nil,
+    messages = List("Some message"),
     fileName = "file.scala",
     className = "Class",
     methodName = None,

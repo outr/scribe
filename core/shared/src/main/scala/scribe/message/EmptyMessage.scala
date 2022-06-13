@@ -1,9 +1,8 @@
 package scribe.message
 
-import scribe.Loggable
-import scribe.output.LogOutput
+import scribe.output.{EmptyOutput, LogOutput}
 
 object EmptyMessage extends Message[String] {
   override val value: String = ""
-  override val logOutput: LogOutput = Loggable.StringLoggable(value)
+  override val logOutput: LogOutput = EmptyOutput
 }

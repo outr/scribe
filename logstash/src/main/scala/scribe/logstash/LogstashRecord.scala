@@ -2,11 +2,10 @@ package scribe.logstash
 
 import fabric.rw._
 
-case class LogstashRecord(message: String,
+case class LogstashRecord(messages: List[String],
                           service: String,
                           level: String,
                           value: Double,
-                          additionalMessages: List[String],
                           fileName: String,
                           className: String,
                           methodName: Option[String],

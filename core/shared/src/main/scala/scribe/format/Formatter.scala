@@ -4,7 +4,7 @@ import scribe.LogRecord
 import scribe.output.LogOutput
 
 trait Formatter {
-  def format[M](record: LogRecord[M]): LogOutput
+  def format(record: LogRecord): LogOutput
 }
 
 object Formatter {

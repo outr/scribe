@@ -27,7 +27,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       json("date").asString should be("2021-01-01")
       json("line").asInt should be(24)
       json("fileName").asString should be("JsonWriterSpec.scala")
-      json("message").asString should be("Hello, Json!")
+      json("messages").asVector.map(_.asString) should be(Vector("Hello, Json!"))
     }
   }
 }

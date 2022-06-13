@@ -10,15 +10,7 @@ trait Loggable[-T] {
 }
 
 object Loggable {
-  implicit object StringLoggable extends Loggable[String] {
-    def apply(value: String): LogOutput = new TextOutput(value)
-  }
-
-  implicit object LogOutputLoggable extends Loggable[LogOutput] {
-    override def apply(value: LogOutput): LogOutput = value
-  }
-
-  implicit object ThrowableLoggable extends Loggable[Throwable] {
-    def apply(t: Throwable): LogOutput = LogRecord.throwable2LogOutput(EmptyOutput, t)
+  def apply[V](f: V => LogOutput): V => LoggableMessage = (v: V) => {
+    LoggableMessage[V](v)(f)
   }
 }
