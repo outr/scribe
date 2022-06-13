@@ -1,10 +1,6 @@
 package scribe.handler
 
 import scribe.LogRecord
-import scribe.format.Formatter
-import scribe.modify.LogModifier
-import scribe.output.format.OutputFormat
-import scribe.writer.{ConsoleWriter, Writer}
 
 object SynchronousLogHandle extends LogHandle {
   def log(handler: LogHandlerBuilder, record: LogRecord): Unit = {

@@ -1,11 +1,10 @@
 package scribe.benchmark
 
+import perfolation._
 import scribe.benchmark.tester.{LoggingTester, Testers}
 
-import java.util.concurrent.TimeUnit
-import perfolation._
-
 import java.io.{BufferedWriter, File, FileOutputStream, OutputStreamWriter}
+import java.util.concurrent.TimeUnit
 import scala.annotation.tailrec
 import scala.io.Source
 

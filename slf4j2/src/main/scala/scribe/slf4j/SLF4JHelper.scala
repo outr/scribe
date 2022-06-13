@@ -2,7 +2,6 @@ package scribe.slf4j
 
 import org.slf4j.helpers.FormattingTuple
 import org.slf4j.spi.LocationAwareLogger
-import scribe.message.Message
 import scribe.{Level, LogRecord}
 
 object SLF4JHelper {

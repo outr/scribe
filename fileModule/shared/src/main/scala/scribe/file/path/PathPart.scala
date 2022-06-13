@@ -1,9 +1,7 @@
 package scribe.file.path
 
-import scribe.util.Time
-
-import java.nio.file.{Files, Path, Paths}
 import scribe.file.{FileWriter, string2FileNamePart}
+import scribe.util.Time
 
 import java.io.{File, FilenameFilter}
 

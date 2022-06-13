@@ -1,8 +1,7 @@
 package specs
 
+import scribe.LogRecord
 import scribe.handler.LogHandler
-import scribe.modify.LogModifier
-import scribe.{LogRecord, Priority}
 
 import scala.collection.mutable.ListBuffer
 

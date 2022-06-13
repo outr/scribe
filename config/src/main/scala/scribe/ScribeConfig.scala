@@ -1,7 +1,7 @@
 package scribe
 
-import moduload.Moduload
 import fabric.rw._
+import moduload.Moduload
 import profig._
 
 object ScribeConfig extends Moduload {

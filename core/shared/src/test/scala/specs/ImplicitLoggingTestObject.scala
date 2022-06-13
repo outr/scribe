@@ -1,8 +1,6 @@
 package specs
 
 import scribe._
-import scribe.handler.LogHandler
-import scribe.writer.NullWriter
 
 object ImplicitLoggingTestObject {
   val handler = new TestingHandler

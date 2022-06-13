@@ -1,10 +1,9 @@
 package scribe.slf4j
 
-import java.util
-
 import org.slf4j.spi.MDCAdapter
 import scribe.data.MDC
 
+import java.util
 import scala.jdk.CollectionConverters._
 
 object ScribeMDCAdapter extends MDCAdapter {

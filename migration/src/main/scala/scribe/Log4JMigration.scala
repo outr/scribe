@@ -1,14 +1,14 @@
 package scribe
 
+import moduload.Moduload
+import scribe.handler.{LogHandler, LogHandlerBuilder}
+import scribe.modify.LevelFilter
+import scribe.modify.LevelFilter._
+
 import java.io.{File, FileInputStream, InputStream}
 import java.net.URL
 import java.nio.file.{Files, Path, Paths}
 import java.util.Properties
-import moduload.Moduload
-import scribe.handler.{LogHandler, LogHandlerBuilder, SynchronousLogHandle}
-import scribe.modify.LevelFilter
-import scribe.modify.LevelFilter._
-
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.util.Try

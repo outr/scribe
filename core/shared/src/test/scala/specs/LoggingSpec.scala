@@ -2,21 +2,20 @@ package specs
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-
-import java.util.concurrent.atomic.AtomicInteger
 import perfolation._
 import scribe._
 import scribe.data._
 import scribe.filter._
 import scribe.format.{FormatBlock, Formatter}
-import scribe.handler.{LogHandler, SynchronousLogHandle}
+import scribe.handler.LogHandler
 import scribe.message.LoggableMessage
 import scribe.modify.{LevelFilter, LogBooster}
-import scribe.output.format.{HTMLOutputFormat, OutputFormat}
+import scribe.output.format.OutputFormat
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
-import scribe.writer.{CacheWriter, NullWriter, Writer}
+import scribe.writer.{CacheWriter, Writer}
 
+import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 

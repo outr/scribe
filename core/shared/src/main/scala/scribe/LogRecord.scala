@@ -1,6 +1,6 @@
 package scribe
 
-import scribe.message.{LoggableMessage, Message}
+import scribe.message.LoggableMessage
 import scribe.modify.LogModifier
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
 import scribe.record.SimpleLogRecord

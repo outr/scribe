@@ -4,8 +4,8 @@ import scribe.file.writer.LogFileWriter
 import scribe.util.Time
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicLong}
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 trait FlushMode {
   def dataWritten(logFile: LogFile, writer: LogFileWriter): Unit

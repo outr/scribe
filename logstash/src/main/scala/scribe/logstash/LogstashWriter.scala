@@ -1,18 +1,18 @@
 package scribe.logstash
 
 import fabric.parse.Json
+import fabric.rw._
 import io.youi.client.HttpClient
 import io.youi.http.HttpResponse
 import io.youi.http.content.Content
 import io.youi.net._
 import perfolation._
 import scribe.Execution.global
-import scribe.output.format.OutputFormat
-import scribe.output.{EmptyOutput, LogOutput}
-import scribe.writer.Writer
 import scribe.LogRecord
 import scribe.data.MDC
-import fabric.rw._
+import scribe.output.LogOutput
+import scribe.output.format.OutputFormat
+import scribe.writer.Writer
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

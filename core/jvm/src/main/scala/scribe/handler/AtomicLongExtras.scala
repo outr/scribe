@@ -1,7 +1,6 @@
 package scribe.handler
 
 import java.util.concurrent.atomic.AtomicLong
-
 import scala.annotation.tailrec
 
 class AtomicLongExtras(val value: AtomicLong) extends AnyVal {

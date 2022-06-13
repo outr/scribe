@@ -1,14 +1,13 @@
 package scribe.json
 
-import fabric.parse.Json
-import scribe.LogRecord
-import scribe.output.{LogOutput, TextOutput}
-import scribe.output.format.OutputFormat
-import scribe.writer.Writer
-import perfolation._
-import fabric.rw._
 import fabric._
+import fabric.rw._
+import perfolation._
+import scribe.LogRecord
 import scribe.message.Message
+import scribe.output.format.OutputFormat
+import scribe.output.{LogOutput, TextOutput}
+import scribe.writer.Writer
 
 case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
   override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {

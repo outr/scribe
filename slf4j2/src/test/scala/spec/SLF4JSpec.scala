@@ -2,17 +2,16 @@ package spec
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-
-import java.util.TimeZone
 import org.slf4j.{LoggerFactory, MDC}
+import scribe.format._
 import scribe.handler.LogHandler
 import scribe.output.LogOutput
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
-import scribe.format._
-import scribe.format
 import scribe.writer.Writer
-import scribe.{Level, LogRecord, Logger}
+import scribe.{Level, LogRecord, Logger, format}
+
+import java.util.TimeZone
 
 class SLF4JSpec extends AnyWordSpec with Matchers {
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))

@@ -1,7 +1,7 @@
 package scribe.file.path
 
-import scribe.file.FileWriter
 import perfolation._
+import scribe.file.FileWriter
 
 import java.util.Calendar
 

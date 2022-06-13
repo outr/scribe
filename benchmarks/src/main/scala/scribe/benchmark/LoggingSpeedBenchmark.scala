@@ -1,8 +1,9 @@
 package scribe.benchmark
 
-import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations
 import scribe.benchmark.tester._
+
+import java.util.concurrent.TimeUnit
 
 // jmh:run -i 3 -wi 3 -f1 -t1 -rf JSON -rff benchmarks.json
 @annotations.State(annotations.Scope.Thread)

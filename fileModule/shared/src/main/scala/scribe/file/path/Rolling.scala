@@ -4,7 +4,6 @@ import scribe.file.FileWriter
 import scribe.util.Time
 
 import java.io.File
-import java.nio.file.{Files, Path}
 import scala.concurrent.duration._
 
 case class Rolling(parts: List[FileNamePart],

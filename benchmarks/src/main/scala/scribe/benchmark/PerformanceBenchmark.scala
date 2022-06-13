@@ -1,12 +1,10 @@
 package scribe.benchmark
 
 import org.openjdk.jmh.annotations
-import scribe.format._
-import scribe.{Level, LogRecord, Logger}
-import scribe.handler.LogHandler
 import scribe.output.LogOutput
 import scribe.output.format.OutputFormat
 import scribe.writer.Writer
+import scribe.{Level, LogRecord, Logger}
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong

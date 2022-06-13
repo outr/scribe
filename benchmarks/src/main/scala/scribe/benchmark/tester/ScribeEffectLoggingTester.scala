@@ -2,7 +2,6 @@ package scribe.benchmark.tester
 
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import cats.implicits._
 import scribe.Logger
 import scribe.cats._
 import scribe.file._

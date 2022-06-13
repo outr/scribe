@@ -11,7 +11,7 @@ class ImplicitLoggingSpec extends AnyWordSpec with Matchers {
       ImplicitLoggingTestObject.initialize()
     }
     "properly log a simple message" in {
-      val line = Some(15)
+      val line = Some(13)
 
       ImplicitLoggingTestObject.doSomething()
       ImplicitLoggingTestObject.handler.records.length should be(1)

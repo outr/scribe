@@ -1,6 +1,6 @@
 package scribe
 
-import scribe.message.{LoggableMessage, Message}
+import scribe.message.LoggableMessage
 import scribe.util.Time
 
 trait LogRecordCreator {

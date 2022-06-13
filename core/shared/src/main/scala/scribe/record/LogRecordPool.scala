@@ -1,7 +1,7 @@
 package scribe.record
 
-import scribe.message.{LoggableMessage, Message}
-import scribe.output.{CompositeOutput, LogOutput}
+import scribe.message.LoggableMessage
+import scribe.output.LogOutput
 import scribe.{Level, LogRecord, LogRecordCreator}
 
 import java.util.concurrent.ConcurrentLinkedQueue

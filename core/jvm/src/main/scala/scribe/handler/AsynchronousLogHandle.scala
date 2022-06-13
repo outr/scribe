@@ -1,14 +1,9 @@
 package scribe.handler
 
+import scribe.LogRecord
+
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicLong
-
-import scribe.LogRecord
-import scribe.format.Formatter
-import scribe.modify.LogModifier
-import scribe.output.format.OutputFormat
-import scribe.writer.{ConsoleWriter, Writer}
-
 import scala.language.implicitConversions
 
 /**

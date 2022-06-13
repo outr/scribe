@@ -1,13 +1,12 @@
 package scribe.benchmark
 
 import scribe.file._
+import scribe.format.Formatter
+import scribe.handler.LogHandler
+import scribe.{Level, LogRecord, Logger}
 
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
-import scribe.{Level, LogRecord, Logger}
-import scribe.format.Formatter
-import scribe.handler.LogHandler
-
 import scala.annotation.tailrec
 
 object LoggingStressTest {

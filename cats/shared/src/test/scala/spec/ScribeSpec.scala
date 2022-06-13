@@ -2,8 +2,8 @@ package spec
 
 import cats.MonadThrow
 import cats.effect._
-import cats.syntax.all._
 import cats.effect.testing.scalatest.AsyncIOSpec
+import cats.syntax.all._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import scribe.handler.LogHandler

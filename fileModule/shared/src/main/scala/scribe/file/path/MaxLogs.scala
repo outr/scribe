@@ -3,7 +3,6 @@ package scribe.file.path
 import scribe.file.FileWriter
 import scribe.util.Time
 
-import java.nio.file.Files
 import scala.concurrent.duration._
 
 case class MaxLogs(maxLogs: Int, checkFrequency: FiniteDuration) extends FileNamePart {

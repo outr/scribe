@@ -2,11 +2,11 @@ package scribe.writer
 
 import scribe.output._
 import scribe.output.format.OutputFormat
-import scribe.{ANSI, Level, LogRecord, Logger}
+import scribe.{Level, LogRecord, Logger}
 
 import java.io.PrintStream
-import scala.math.Ordering.Implicits._
 import scala.language.implicitConversions
+import scala.math.Ordering.Implicits._
 
 /**
  * SystemWriter writes to System.out or System.err choosing the latter if the level is higher than Info

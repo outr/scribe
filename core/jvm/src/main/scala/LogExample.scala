@@ -1,6 +1,5 @@
 import scribe._
 import scribe.data.MDC
-import scribe.message.LazyMessage
 
 object LogExample extends App {
   MDC.update("key1", "value1")

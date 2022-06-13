@@ -1,8 +1,7 @@
 package spec
 
 import scribe._
-import scribe.file._
-import scribe.file.FileWriter
+import scribe.file.{FileWriter, _}
 import scribe.output.format.ASCIIOutputFormat
 
 import scala.io.Source

@@ -1,12 +1,12 @@
 package scribe
 
-import scribe.file.path._
 import scribe.file.path.PathPart.FileName
+import scribe.file.path._
 
 import java.io.File
 import java.nio.file.Path
-import scala.language.implicitConversions
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.language.implicitConversions
 
 package object file {
   val DefaultBufferSize: Int = 1024

@@ -1,7 +1,5 @@
 package scribe.message
 
-import scribe.Loggable
-
 trait Message[M] extends LoggableMessage {
   override def value: M
 }

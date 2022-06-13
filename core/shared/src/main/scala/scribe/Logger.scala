@@ -1,16 +1,16 @@
 package scribe
 
-import java.io.PrintStream
 import scribe.format.Formatter
 import scribe.handler.{LogHandle, LogHandler, SynchronousLogHandle}
 import scribe.jul.JULHandler
-import scribe.message.{LoggableMessage, Message}
+import scribe.message.LoggableMessage
 import scribe.modify.{LevelFilter, LogBooster, LogModifier}
 import scribe.output.format.OutputFormat
 import scribe.util.Time
 import scribe.writer.{ConsoleWriter, Writer}
 import sourcecode.{FileName, Line, Name, Pkg}
 
+import java.io.PrintStream
 import scala.reflect._
 import scala.util.Try
 

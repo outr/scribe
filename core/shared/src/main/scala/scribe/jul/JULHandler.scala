@@ -1,6 +1,5 @@
 package scribe.jul
 
-import scribe.message.Message
 import scribe._
 
 import java.util.logging.{Level => JLevel}

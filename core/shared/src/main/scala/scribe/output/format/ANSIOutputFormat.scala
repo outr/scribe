@@ -1,7 +1,7 @@
 package scribe.output.format
 
-import scribe.output._
 import scribe.ANSI
+import scribe.output._
 
 import scala.language.implicitConversions
 

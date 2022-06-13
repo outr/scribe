@@ -2,22 +2,20 @@ package spec
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import scribe.file._
 import scribe.format._
 import scribe.output.format.{ASCIIOutputFormat, OutputFormat}
 import scribe.util.Time
 import scribe.{Level, Logger}
 
-import java.nio.file.{Files, Path, Paths}
-import scala.concurrent.duration._
-import scala.language.implicitConversions
-import scribe.file._
-
 import java.io.File
+import java.nio.file.{Files, Path}
 import java.util.Calendar
 import java.util.function.Consumer
 import scala.annotation.tailrec
+import scala.concurrent.duration._
 import scala.io.Source
-import perfolation._
+import scala.language.implicitConversions
 
 class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var logger: Logger = Logger.empty.orphan()

@@ -1,7 +1,7 @@
 package scribe.message
 
-import scribe.{LogRecord, Loggable}
 import scribe.output.{EmptyOutput, LogOutput, TextOutput}
+import scribe.{LogRecord, Loggable}
 
 import scala.language.implicitConversions
 

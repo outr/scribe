@@ -2,14 +2,12 @@ package scribe
 
 import org.apache.logging.log4j
 import org.apache.logging.log4j.Marker
-import org.apache.logging.log4j.message.MessageFactory
-import org.apache.logging.log4j.spi.{AbstractLogger, CleanableThreadContextMap, ExtendedLogger, LoggerContext, LoggerContextFactory, LoggerRegistry, Provider}
+import org.apache.logging.log4j.spi.{AbstractLogger, CleanableThreadContextMap, Provider}
 import org.apache.logging.log4j.util.{SortedArrayStringMap, StringMap}
 import scribe.data.MDC
 import scribe.message.LoggableMessage
 
 import scala.jdk.CollectionConverters._
-import java.net.URI
 import scala.language.implicitConversions
 
 class ScribeProvider extends Provider(

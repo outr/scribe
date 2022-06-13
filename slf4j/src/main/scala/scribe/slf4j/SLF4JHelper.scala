@@ -3,7 +3,6 @@ package scribe.slf4j
 import org.slf4j.helpers.FormattingTuple
 import org.slf4j.spi.LocationAwareLogger
 import scribe.{Level, LogRecord}
-import scribe.message.Message
 
 object SLF4JHelper {
   def scribeLevel(level: Int): Level = level match {
