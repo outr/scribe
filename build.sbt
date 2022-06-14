@@ -13,7 +13,7 @@ val scalaNativeVersions = scalaNot211Versions
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.9.0-SNAPSHOT"
+ThisBuild / version := "3.9.0"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
