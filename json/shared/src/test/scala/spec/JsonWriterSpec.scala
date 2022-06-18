@@ -18,7 +18,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
     "initialize properly" in {
       logger
         .orphan()
-        .withHandler(writer = JsonWriter(cache))
+        .withHandler(writer = new JsonWriter(cache))
         .replace()
       Time.function = () => time
     }
@@ -27,7 +27,6 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       logger.info("Hello, Json!")
       cache.output.length should be(1)
       val json = Json.parse(cache.output.head.plainText)
-      println(Json.format(json))
       json("date").asString should be("2021-01-01")
       json("line").asInt should be(27)
       json("fileName").asString should be("JsonWriterSpec.scala")
