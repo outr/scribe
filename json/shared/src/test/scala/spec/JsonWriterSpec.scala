@@ -39,7 +39,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       cache.output.length should be(1)
       val json = Json.parse(cache.output.head.plainText)
       json("date").asString should be("2021-01-02")
-      json("line").asInt should be(39)
+      json("line").asInt should be(38)
       json("fileName").asString should be("JsonWriterSpec.scala")
       json("message") should be(Str("Failure, Json!"))
     }
