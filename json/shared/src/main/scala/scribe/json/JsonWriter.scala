@@ -14,14 +14,22 @@ case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
     val l = record.timeStamp
     val traces = record.messages.collect {
       case message: Message[_] if message.value.isInstanceOf[Throwable] => throwable2Trace(message.value.asInstanceOf[Throwable])
+    } match {
+      case Nil => Null
+      case t :: Nil => t.toValue
+      case list => list.toValue
     }
     val messages = record.messages.collect {
       case message: Message[_] if !message.value.isInstanceOf[Throwable] => message.logOutput.plainText
+    } match {
+      case Nil => Null
+      case m :: Nil => m.toValue
+      case list => list.toValue
     }
     val r = Record(
       level = record.level.name,
       levelValue = record.levelValue,
-      messages = messages,
+      message = messages,
       fileName = record.fileName,
       className = record.className,
       methodName = record.methodName,
@@ -33,7 +41,7 @@ case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
           case any => key -> str(any.toString)
         }
       },
-      traces = traces,
+      trace = traces,
       timeStamp = l,
       date = l.t.F,
       time = s"${l.t.T}.${l.t.L}${l.t.z}"
@@ -57,14 +65,14 @@ case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
 
 case class Record(level: String,
                   levelValue: Double,
-                  messages: List[String],
+                  message: Value,
                   fileName: String,
                   className: String,
                   methodName: Option[String],
                   line: Option[Int],
                   column: Option[Int],
                   data: Map[String, Value],
-                  traces: List[Trace],
+                  trace: Value,
                   timeStamp: Long,
                   date: String,
                   time: String)
