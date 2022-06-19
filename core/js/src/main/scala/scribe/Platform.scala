@@ -12,8 +12,10 @@ object Platform extends PlatformImplementation {
   def isNative: Boolean = false
 
   def init(): Unit = {}
-  
+
+  // $COVERAGE-OFF$
   def console: JavaScriptConsole = js.Dynamic.global.console.asInstanceOf[JavaScriptConsole]
+  // $COVERAGE-ON$
 
   def outputFormat(): OutputFormat = RichBrowserOutputFormat
 
