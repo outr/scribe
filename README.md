@@ -1,7 +1,8 @@
 # scribe
 
 [![CI](https://github.com/outr/scribe/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/outr/scribe/actions/workflows/ci.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f333f6b110974985b2d1dbea39665e9e)](https://www.codacy.com/gh/outr/scribe/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=outr/scribe&amp;utm_campaign=Badge_Grade)
+[![Codacy Grade](https://app.codacy.com/project/badge/Grade/f333f6b110974985b2d1dbea39665e9e)](https://www.codacy.com/gh/outr/scribe/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=outr/scribe&amp;utm_campaign=Badge_Grade)
+[![Codacy Coverage](https://app.codacy.com/project/badge/Coverage/f333f6b110974985b2d1dbea39665e9e)](https://www.codacy.com/gh/outr/scribe/dashboard?utm_source=github.com&utm_medium=referral&utm_content=outr/scribe&utm_campaign=Badge_Coverage)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/scribe)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr/scribe_2.13)
 [![Latest version](https://index.scala-lang.org/outr/scribe/scribe/latest.svg)](https://index.scala-lang.org/outr/scribe)
