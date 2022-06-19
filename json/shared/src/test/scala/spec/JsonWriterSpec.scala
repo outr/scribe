@@ -1,11 +1,11 @@
 package spec
 
-import fabric.Str
+import fabric._
 import fabric.parse.Json
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.Logger
-import scribe.json.JsonWriter
+import scribe.json._
 import scribe.util.Time
 import scribe.writer.CacheWriter
 
@@ -42,6 +42,16 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       json("line").asInt should be(38)
       json("fileName").asString should be("JsonWriterSpec.scala")
       json("message") should be(Str("Failure, Json!"))
+    }
+    "log a JSON message" in {
+      cache.clear()
+      time += 1000L * 60 * 60 * 24
+      logger.info(obj(
+        "message" -> "JSON Message!"
+      ))
+      cache.records.length should be(1)
+      val json = cache.records.head.messages.head.value.asInstanceOf[Value]
+      json("message") should be(Str("JSON Message!"))
     }
   }
 }

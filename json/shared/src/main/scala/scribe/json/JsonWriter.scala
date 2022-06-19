@@ -31,11 +31,14 @@ class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
       case list => list.toValue
     }
     val messages = record.messages.collect {
-      case message: Message[_] if !message.value.isInstanceOf[Throwable] => message.logOutput.plainText
+      case message: Message[_] if !message.value.isInstanceOf[Throwable] => message.value match {
+        case v: Value => v
+        case _ => Str(message.logOutput.plainText)
+      }
     } match {
       case Nil => Null
-      case m :: Nil => m.toValue
-      case list => list.toValue
+      case m :: Nil => m
+      case list => Arr(list.toVector)
     }
     obj(
       "level" -> record.level.name,
