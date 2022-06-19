@@ -1,13 +1,13 @@
 package scribe
 
 import scribe.format.FormatBlock.{MultiLine, RawString}
-import scribe.output.{BackgroundColoredOutput, BoldOutput, Color, ColoredOutput, CompositeOutput, EmptyOutput, ItalicOutput, LogOutput, StrikethroughOutput, URLOutput, UnderlineOutput}
+import scribe.output._
 
 import scala.collection.mutable.ListBuffer
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 
-package object format {
+package object format { self =>
   private val ThreadNameAbbreviationLength = 10
   private val ClassNameAbbreviationLength = 15
   private val PositionAbbreviationLength = 25
@@ -138,8 +138,8 @@ package object format {
 
   implicit class EnhancedColor(color: Color) {
     def apply(block: FormatBlock): FormatBlock = fg(block)
-    def fg(block: FormatBlock): FormatBlock = format.fg(color, block)
-    def bg(block: FormatBlock): FormatBlock = format.bg(color, block)
+    def fg(block: FormatBlock): FormatBlock = self.fg(color, block)
+    def bg(block: FormatBlock): FormatBlock = self.bg(color, block)
   }
 
   def color(color: Color, block: FormatBlock): FormatBlock = fg(color, block)

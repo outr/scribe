@@ -62,8 +62,6 @@ object Log4JMigration extends Moduload {
 }
 
 class Log4JMigration private() {
-  import Log4JMigration._
-
   private var handlers = Map.empty[String, LogHandlerBuilder]
 
   def apply(key: String, value: String): Boolean = {
@@ -72,19 +70,17 @@ class Log4JMigration private() {
       (levelFilter(list.head), list.tail.map(handlers.apply))
     }
     key match {
-      case AppenderClass(name) => value match {
-        case "org.apache.log4j.ConsoleAppender" => {
+      case Log4JMigration.AppenderClass(name) => value match {
+        case "org.apache.log4j.ConsoleAppender" =>
           handlers += name -> LogHandler()
           true
-        }
-        case _ => {
+        case _ =>
           scribe.warn(s"Unsupported appender: $value for $name")
           false
-        }
       }
-      case AppenderLayout(_) => false                                             // Ignore layouts
-      case AppenderLayoutConversionPattern(_) => false                            // Ignore layouts
-      case LoggerRegex(className) => {
+      case Log4JMigration.AppenderLayout(_) => false                                             // Ignore layouts
+      case Log4JMigration.AppenderLayoutConversionPattern(_) => false                            // Ignore layouts
+      case Log4JMigration.LoggerRegex(className) => {
         val (filter, handlers) = parse()
         Logger(className).withModifier(filter).replace()
         if (handlers.nonEmpty) {
@@ -95,7 +91,7 @@ class Log4JMigration private() {
         }
         true
       }
-      case RootLoggerRegex(_) => {
+      case Log4JMigration.RootLoggerRegex(_) => {
         val (filter, handlers) = parse()
         Logger.root.withModifier(filter).replace()
         if (handlers.nonEmpty) {
@@ -121,10 +117,9 @@ class Log4JMigration private() {
     case "WARN" => >=(Level.Warn)
     case "ERROR" => >=(Level.Error)
     case "FATAL" => >=(Level.Fatal)
-    case _ => {
+    case _ =>
       scribe.error(s"Unsupported level name: $value. Continuing with OFF.")
       ExcludeAll
-    }
   }
 
   def finish(): Unit = {}

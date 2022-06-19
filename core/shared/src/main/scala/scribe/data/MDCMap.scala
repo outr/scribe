@@ -1,6 +1,7 @@
 package scribe.data
 
 import scribe.util.Time
+import perfolation._
 
 class MDCMap(parent: Option[MDC]) extends MDC {
   private var _map: Map[String, () => Any] = Map.empty
@@ -22,7 +23,6 @@ class MDCMap(parent: Option[MDC]) extends MDC {
 
   override def elapsed(key: String, timeFunction: () => Long = Time.function): Unit = {
     val start = timeFunction()
-    import perfolation._
     update(key, s"${((timeFunction() - start) / 1000.0).f()}s")
   }
 
