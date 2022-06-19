@@ -46,34 +46,34 @@ libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.9.0"
 scribe.info("Yes, it's that simple!")
 ```
 
-## Why Another Logging Framework?
+## Why Another Logging Framework
 
 Yes, we know there are too many Java logging frameworks to count, and a large number of decent logging frameworks in
 Scala, so why did we write yet another logging framework?  Nearly every Scala logging framework is mostly just a wrapper
 around Java logging frameworks (usually SLF4J, Log4J, or Logback). This comes with a few problems:
 
-1. No support for Scala.js
-2. No support for Scala Native
-3. Performance cost (Blog Post: https://matthicks.com/2018/02/06/scribe-2-0-fastest-jvm-logger-in-the-world/)
-4. Additional dependencies
-5. Substantial cost logging method and line numbers
-6. Lack of programmatic configuration support
+ 1. No support for Scala.js
+ 2. No support for Scala Native
+ 3. Performance cost (Blog Post: https://matthicks.com/2018/02/06/scribe-2-0-fastest-jvm-logger-in-the-world/)
+ 4. Additional dependencies
+ 5. Substantial cost logging method and line numbers
+ 6. Lack of programmatic configuration support
 
 A few of the main features that Scribe offers ([for a complete list](https://github.com/outr/scribe/wiki/Features)):
 
-1. Performance is a critical consideration. We leverage Macros to handle optimization of everything possible at
+ 1. Performance is a critical consideration. We leverage Macros to handle optimization of everything possible at
 compile-time to avoid logging slowing down your production application. As far as we are aware, Scribe is the fastest
 logging framework on the JVM.
-2. Programmatic configuration. No need to be bound to configuration files to configure your logging. This means you can
+ 2. Programmatic configuration. No need to be bound to configuration files to configure your logging. This means you can
 rely on any configuration framework or you can configure real-time changes to your logging in your production environment.
 This particularly comes in handy if you need to enable debug logging on something going wrong in production. No need to
 restart your server, simply provide a mechanism to modify the logging configuration in real-time.
-3. Clean logging. Macros allow us to introduce logging into a class via an import instead of a mix-in or unnecessary
+ 3. Clean logging. Macros allow us to introduce logging into a class via an import instead of a mix-in or unnecessary
 setup code.
-4. Zero cost class, method, and line number logging built-in. Never worry about your logger working up the stack to figure
+ 4. Zero cost class, method, and line number logging built-in. Never worry about your logger working up the stack to figure
 out the position of the logging statement at runtime. With Macros we determine that information at compile-time to avoid
 any runtime cost.
-5. Asynchronous logging support. Scribe's logger is very fast, but if real-time performance is critical, the
+ 5. Asynchronous logging support. Scribe's logger is very fast, but if real-time performance is critical, the
 asynchronous logging support completely removes logging impact from your application's thread impact.
 
 ## Documentation
