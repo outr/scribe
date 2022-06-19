@@ -23,7 +23,6 @@ object BrowserConsoleWriter extends Writer {
     outputFormat.end(b.append(_))
 
     val jsArgs = args.map(js.Any.fromString).toList
-    
     if (record.level >= Level.Error) {
       console.error(b.toString(), jsArgs: _*)
     } else if (record.level >= Level.Warn) {
