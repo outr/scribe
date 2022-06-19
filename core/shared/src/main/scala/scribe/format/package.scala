@@ -85,7 +85,7 @@ package object format {
         val mn = logRecord.methodName
         val ln = logRecord.line
         if (lastId == logRecord.id && previousOutput.nonEmpty) {
-          previousOutput.get
+          previousOutput.getOrElse(sys.error("Previous output is None"))
         } else if (threadName == lastThreadName &&
           distance <= 1000L &&
           level == lastLevel &&

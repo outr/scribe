@@ -35,15 +35,12 @@ trait LogRecord {
   def get(key: String): Option[Any] = data.get(key).map(_())
 
   def boost(booster: Double => Double): LogRecord = copy(value = booster(levelValue))
-  def checkModifierId(id: String, add: Boolean = true): Boolean = if (id.isEmpty) {     // Always run blank id
-    false
-  } else if (appliedModifierIds.contains(id)) {
-    true
-  } else {
-    if (add) {
-      appliedModifierIds += id
-    }
-    false
+  def checkModifierId(id: String, add: Boolean = true): Boolean = id match {
+    case "" => false
+    case _ if appliedModifierIds.contains(id) => true
+    case _ =>
+      if (add) appliedModifierIds += id
+      false
   }
   def modify(modifier: LogModifier): Option[LogRecord] = if (checkModifierId(modifier.id)) {
     Some(this)

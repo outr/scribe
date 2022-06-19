@@ -1,7 +1,11 @@
 package scribe
 
-final case class LoggerId(val value: Long) extends AnyVal
+import java.util.concurrent.atomic.AtomicLong
+
+final case class LoggerId(value: Long) extends AnyVal
 
 object LoggerId {
-  def apply(): LoggerId = LoggerId(scala.util.Random.nextLong())
+  private val counter = new AtomicLong(0L)
+
+  def apply(): LoggerId = new LoggerId(counter.incrementAndGet())
 }

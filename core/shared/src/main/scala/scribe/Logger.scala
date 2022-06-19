@@ -298,7 +298,7 @@ object Logger {
 
   def apply[T](implicit t: ClassTag[T]): Logger = apply(t.runtimeClass.getName)
 
-  def get(name: String): Option[Logger] = name2Id.get(fixName(name)).flatMap(id2Logger.get)
+  def get(name: String): Option[Logger] = name2Id.get(fixName(name)).flatMap(id => id2Logger.get(id))
 
   def get(id: LoggerId): Option[Logger] = id2Logger.get(id)
 
