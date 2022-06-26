@@ -7,7 +7,9 @@ import scala.collection.mutable.ListBuffer
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 
-package object format { self =>
+package object format {
+  protected val self = this
+
   private val ThreadNameAbbreviationLength = 10
   private val ClassNameAbbreviationLength = 15
   private val PositionAbbreviationLength = 25

@@ -155,6 +155,7 @@ case class Log4JLogger(id: LoggerId) extends AbstractLogger {
                           message: org.apache.logging.log4j.message.Message,
                           t: Throwable): Unit = logger.log(
     l2l(level).getOrElse(throw new RuntimeException(s"Unsupported level: $level")),
+    MDC.global,
     (Some(LoggableMessage.string2Message(message.getFormattedMessage))
       :: Option(t).map(LoggableMessage.throwable2Message(_))
       :: Nil

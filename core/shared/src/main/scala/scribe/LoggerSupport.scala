@@ -8,52 +8,57 @@ import scala.language.experimental.macros
 trait LoggerSupport[F] extends Any {
   def log(record: LogRecord): F
 
-  def log(level: Level, messages: LoggableMessage*)
+  def log(level: Level, mdc: MDC, messages: LoggableMessage*)
          (implicit pkg: sourcecode.Pkg,
           fileName: sourcecode.FileName,
           name: sourcecode.Name,
           line: sourcecode.Line): F = {
-    log(LoggerSupport(level, messages.toList, pkg, fileName, name, line))
+    log(LoggerSupport(level, messages.toList, pkg, fileName, name, line, mdc))
   }
 
   def trace(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
                                         fileName: sourcecode.FileName,
                                         name: sourcecode.Name,
-                                        line: sourcecode.Line): F = log(Level.Trace, messages: _*)
+                                        line: sourcecode.Line,
+                                        mdc: MDC): F = log(Level.Trace, mdc, messages: _*)
 
   def debug(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
                                         fileName: sourcecode.FileName,
                                         name: sourcecode.Name,
-                                        line: sourcecode.Line): F = log(Level.Debug, messages: _*)
+                                        line: sourcecode.Line,
+                                        mdc: MDC): F = log(Level.Debug, mdc, messages: _*)
 
   def info(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
                                        fileName: sourcecode.FileName,
                                        name: sourcecode.Name,
-                                       line: sourcecode.Line): F = log(Level.Info, messages: _*)
+                                       line: sourcecode.Line,
+                                       mdc: MDC): F = log(Level.Info, mdc, messages: _*)
 
   def warn(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
                                        fileName: sourcecode.FileName,
                                        name: sourcecode.Name,
-                                       line: sourcecode.Line): F = log(Level.Warn, messages: _*)
+                                       line: sourcecode.Line,
+                                       mdc: MDC): F = log(Level.Warn, mdc, messages: _*)
 
   def error(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
                                         fileName: sourcecode.FileName,
                                         name: sourcecode.Name,
-                                        line: sourcecode.Line): F = log(Level.Error, messages: _*)
+                                        line: sourcecode.Line,
+                                        mdc: MDC): F = log(Level.Error, mdc, messages: _*)
 
   /**
    * Includes MDC elapsed to show elapsed time within the block
    *
    * @param f the code block to time
    */
-  def elapsed[Return](f: => Return): Return = {
+  def elapsed[Return](f: => Return)(implicit mdc: MDC): Return = {
     val key = "elapsed"
-    val exists = MDC.contains(key)
-    if (!exists) MDC.elapsed(key)
+    val exists = mdc.contains(key)
+    if (!exists) mdc.elapsed(key)
     try {
       f
     } finally {
-      if (!exists) MDC.remove(key)
+      if (!exists) mdc.remove(key)
     }
   }
 
@@ -83,7 +88,8 @@ object LoggerSupport {
             pkg: sourcecode.Pkg,
             fileName: sourcecode.FileName,
             name: sourcecode.Name,
-            line: sourcecode.Line): LogRecord = {
+            line: sourcecode.Line,
+            mdc: MDC): LogRecord = {
     val (fn, className) = LoggerSupport.className(pkg, fileName)
     val methodName = name.value match {
       case "anonymous" | "" => None
@@ -97,7 +103,8 @@ object LoggerSupport {
       className = className,
       methodName = methodName,
       line = Some(line.value),
-      column = None
+      column = None,
+      data = mdc.map
     )
   }
 

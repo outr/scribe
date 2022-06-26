@@ -1,5 +1,6 @@
 package scribe
 
+import scribe.data.MDC
 import scribe.format.Formatter
 import scribe.handler.{LogHandle, LogHandler, SynchronousLogHandle}
 import scribe.jul.JULHandler
@@ -64,10 +65,10 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
 
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
-  override def log(level: Level, messages: LoggableMessage*)
+  override def log(level: Level, mdc: MDC, messages: LoggableMessage*)
                   (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit = {
     if (includes(level)) {
-      super.log(level, messages: _*)
+      super.log(level, mdc, messages: _*)
     }
   }
 
