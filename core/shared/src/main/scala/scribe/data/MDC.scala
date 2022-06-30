@@ -5,7 +5,18 @@ import scribe.util.Time
 import scala.language.implicitConversions
 
 object MDC {
-  lazy val global: MDC = creator(None)
+  implicit lazy val global: MDC = creator(None)
+
+  def apply[Return](f: MDC => Return): Return = {
+    val previous = manager.instance
+    val mdc = new MDCMap(Some(previous))
+    try {
+      manager.instance = mdc
+      f(mdc)
+    } finally {
+      manager.instance = previous
+    }
+  }
 
   var manager: MDCManager = MDCThreadLocal
   var creator: Option[MDC] => MDC = parent => new MDCMap(parent)

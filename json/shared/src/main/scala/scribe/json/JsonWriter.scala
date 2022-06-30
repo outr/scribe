@@ -4,6 +4,7 @@ import fabric._
 import fabric.rw._
 import perfolation._
 import scribe.LogRecord
+import scribe.data.MDC
 import scribe.message.Message
 import scribe.output.format.OutputFormat
 import scribe.output.{LogOutput, TextOutput}
@@ -40,6 +41,7 @@ class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
       case m :: Nil => m
       case list => Arr(list.toVector)
     }
+    val data = MDC.map ++ record.data
     obj(
       "level" -> record.level.name,
       "levelValue" -> record.levelValue,
@@ -49,7 +51,7 @@ class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
       "methodName" -> record.methodName.map(_.toValue).getOrElse(Null),
       "line" -> record.line.map(_.toValue).getOrElse(Null),
       "column" -> record.column.map(_.toValue).getOrElse(Null),
-      "data" -> record.data.map {
+      "data" -> data.map {
         case (key, value) => value() match {
           case value: Value => key -> value
           case any => key -> str(any.toString)
