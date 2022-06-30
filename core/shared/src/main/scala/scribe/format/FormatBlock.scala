@@ -281,16 +281,14 @@ object FormatBlock {
       if (map.nonEmpty) {
         val nl = newLine.format(record)
         val prefix = green(bold(string("    ["))).format(record)
-        val postfix = green(bold(string(("]")))).format(record)
-        val entries = map.toList.flatMap {
+        val postfix = green(bold(string("]"))).format(record)
+        val entries = nl :: prefix :: map.toList.flatMap {
           case (key, value) => List(
-            nl,
-            prefix,
-            bold(string(s"$key: ")).format(record),
+            new TextOutput(", "),
+            brightWhite(string(s"$key: ")).format(record),
             new TextOutput(String.valueOf(value())),
-            postfix
           )
-        }
+        }.tail ::: List(postfix)
         new CompositeOutput(entries)
       } else {
         EmptyOutput
