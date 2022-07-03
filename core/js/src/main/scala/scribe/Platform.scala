@@ -21,7 +21,7 @@ object Platform extends PlatformImplementation {
 
   override def consoleWriter: Writer = BrowserConsoleWriter
 
-  override val columns: Int = 120
+  override val columns: Int = 120 + columnsAdjust
 
   override def executionContext: ExecutionContext = scala.scalajs.concurrent.JSExecutionContext.queue
 }

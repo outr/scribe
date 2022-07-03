@@ -286,7 +286,7 @@ object FormatBlock {
           case (key, value) => List(
             new TextOutput(", "),
             brightWhite(string(s"$key: ")).format(record),
-            new TextOutput(String.valueOf(value())),
+            new TextOutput(String.valueOf(value()))
           )
         }.tail ::: List(postfix)
         new CompositeOutput(entries)

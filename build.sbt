@@ -39,6 +39,8 @@ ThisBuild / developers := List(
 )
 ThisBuild / parallelExecution := false
 
+ThisBuild / outputStrategy := Some(StdoutOutput)
+
 // Core
 val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.2.8"

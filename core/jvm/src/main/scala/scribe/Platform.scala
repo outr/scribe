@@ -5,7 +5,9 @@ import org.jline.terminal.TerminalBuilder
 import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat}
 import scribe.writer.{SystemWriter, Writer}
 
+import java.io.{BufferedReader, InputStreamReader}
 import scala.concurrent.ExecutionContext
+import scala.util.Try
 
 object Platform extends PlatformImplementation {
   private val maximumColumns: Int = 5000
@@ -43,16 +45,30 @@ object Platform extends PlatformImplementation {
     if (now - lastChecked >= columnCheckFrequency) {
       lastChecked = now
       cachedColumns = terminal.getSize.getColumns match {
-        case 0 => -1
+        case 0 => tputColumns()
         case n => n
       }
     }
+    println(s"COLUMNS: $cachedColumns")
     if (cachedColumns == -1) {
       maximumColumns
     } else {
-      cachedColumns
+      cachedColumns + columnsAdjust
     }
   }
+
+  def tputColumns(): Int = Try {
+    val pb = new ProcessBuilder("bash", "-c", "tput cols 2> /dev/tty")
+    val p = pb.start()
+    val i = new BufferedReader(new InputStreamReader(p.getInputStream))
+    try {
+      val line = i.readLine()
+      val columns = line.trim.toInt
+      columns
+    } finally {
+      i.close()
+    }
+  }.getOrElse(-1)
 
   override def executionContext: ExecutionContext = ExecutionContext.global
 }
