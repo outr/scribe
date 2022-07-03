@@ -49,7 +49,6 @@ object Platform extends PlatformImplementation {
         case n => n
       }
     }
-    println(s"COLUMNS: $cachedColumns")
     if (cachedColumns == -1) {
       maximumColumns
     } else {
