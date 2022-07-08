@@ -2,13 +2,13 @@
 val scala213 = "2.13.8"
 val scala212 = "2.12.16"
 val scala211 = "2.11.12"
-val scala3 = List("3.1.3")
+val scala3 = "3.1.3"
 val scala2 = List(scala213, scala212, scala211)
-val allScalaVersions = scala3 ::: scala2
+val allScalaVersions = scala3 :: scala2
 val compatScalaVersions = List(scala213, scala212)
 val scalaJVMVersions = allScalaVersions
 val scalaJSVersions = allScalaVersions
-val scalaNot211Versions = List(scala213, scala212) ::: scala3
+val scalaNot211Versions = List(scala3, scala213, scala212)
 val scalaNativeVersions = scalaNot211Versions
 
 name := "scribe"
@@ -71,14 +71,14 @@ val youiVersion: String = "0.14.4"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.18.0"
-val disruptorVersion: String = "3.4.2"
-val logbackVersion: String = "1.2.3"
-val typesafeConfigVersion: String = "1.4.0"
-val scalaLoggingVersion: String = "3.9.2"
+val disruptorVersion: String = "3.4.4"
+val logbackVersion: String = "1.2.11"
+val typesafeConfigVersion: String = "1.4.2"
+val scalaLoggingVersion: String = "3.9.5"
 val tinyLogVersion: String = "1.3.6"
-val log4sVersion: String = "1.8.2"
-val log4catsVersion: String = "2.2.0"
-val fs2Version: String = "3.2.4"
+val log4sVersion: String = "1.10.0"
+val log4catsVersion: String = "2.3.2"
+val fs2Version: String = "3.2.9"
 
 // set source map paths from local directories to github path
 val sourceMapSettings = List(

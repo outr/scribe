@@ -1,0 +1,38 @@
+Benchmark                                                                          Mode     Cnt       Score      Error   Units
+LoggingSpeedBenchmark.withLog4cats                                                thrpt       3      ≈ 10⁻⁴             ops/ns
+LoggingSpeedBenchmark.withLog4j                                                   thrpt       3      ≈ 10⁻³             ops/ns
+LoggingSpeedBenchmark.withLog4jTrace                                              thrpt       3      ≈ 10⁻⁴             ops/ns
+LoggingSpeedBenchmark.withLog4s                                                   thrpt       3      ≈ 10⁻³             ops/ns
+LoggingSpeedBenchmark.withLogback                                                 thrpt       3      ≈ 10⁻³             ops/ns
+LoggingSpeedBenchmark.withScalaLogging                                            thrpt       3      ≈ 10⁻⁴             ops/ns
+LoggingSpeedBenchmark.withScribe                                                  thrpt       3       0.001 ±    0.001  ops/ns
+LoggingSpeedBenchmark.withScribeAsync                                             thrpt       3       0.007 ±    0.001  ops/ns
+LoggingSpeedBenchmark.withScribeEffect                                            thrpt       3      ≈ 10⁻⁴             ops/ns
+LoggingSpeedBenchmark.withScribeEffectParallel                                    thrpt       3      ≈ 10⁻⁴             ops/ns
+LoggingSpeedBenchmark.withTinyLog                                                 thrpt       3      ≈ 10⁻⁴             ops/ns
+LoggingSpeedBenchmark.withLog4cats                                                 avgt       3    5808.273 ± 4810.853   ns/op
+LoggingSpeedBenchmark.withLog4j                                                    avgt       3    3184.263 ± 2520.554   ns/op
+LoggingSpeedBenchmark.withLog4jTrace                                               avgt       3    3365.730 ±  258.122   ns/op
+LoggingSpeedBenchmark.withLog4s                                                    avgt       3    3214.229 ±  218.917   ns/op
+LoggingSpeedBenchmark.withLogback                                                  avgt       3    3182.140 ±  713.826   ns/op
+LoggingSpeedBenchmark.withScalaLogging                                             avgt       3    3094.013 ±  416.125   ns/op
+LoggingSpeedBenchmark.withScribe                                                   avgt       3    1080.638 ±  523.088   ns/op
+LoggingSpeedBenchmark.withScribeAsync                                              avgt       3     147.752 ±    0.758   ns/op
+LoggingSpeedBenchmark.withScribeEffect                                             avgt       3    3758.015 ± 3036.886   ns/op
+LoggingSpeedBenchmark.withScribeEffectParallel                                     avgt       3   17881.018 ± 4446.830   ns/op
+LoggingSpeedBenchmark.withTinyLog                                                  avgt       3    5643.745 ± 2632.836   ns/op
+PerformanceBenchmark.withDebug                                                     avgt       3     122.041 ±   26.488   ns/op
+PerformanceBenchmark.withError                                                     avgt       3     295.100 ±   39.083   ns/op
+PerformanceBenchmark.withInfo                                                      avgt       3     298.532 ±   38.293   ns/op
+PerformanceBenchmark.withTrace                                                     avgt       3     126.033 ±    1.029   ns/op
+LoggingSpeedBenchmark.withLog4cats                                               sample    5391    5562.273 ±   55.798   ns/op
+LoggingSpeedBenchmark.withLog4j                                                  sample    9083    3301.056 ±    6.688   ns/op
+LoggingSpeedBenchmark.withLog4jTrace                                             sample    9236    3246.291 ±    4.894   ns/op
+LoggingSpeedBenchmark.withLog4s                                                  sample    9565    3134.564 ±    5.906   ns/op
+LoggingSpeedBenchmark.withLogback                                                sample    9798    3059.526 ±    8.315   ns/op
+LoggingSpeedBenchmark.withScalaLogging                                           sample    9381    3195.652 ±    6.471   ns/op
+LoggingSpeedBenchmark.withScribe                                                 sample   22475    1333.815 ±    6.871   ns/op
+LoggingSpeedBenchmark.withScribeAsync                                            sample  204907     145.872 ±    0.324   ns/op
+LoggingSpeedBenchmark.withScribeEffect                                           sample    7823    3832.189 ±   18.406   ns/op
+LoggingSpeedBenchmark.withScribeEffectParallel                                   sample    1657   18108.611 ±  355.511   ns/op
+LoggingSpeedBenchmark.withTinyLog                                                sample    5303    5653.452 ±   10.691   ns/op
