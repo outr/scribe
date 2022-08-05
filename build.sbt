@@ -50,7 +50,7 @@ val jlineVersion: String = "3.21.0"
 val jansiVersion: String = "2.4.0"
 
 // Cats
-val catsEffectVersion: String = "3.3.13"
+val catsEffectVersion: String = "3.3.14"
 val catsEffectTestingVersion: String = "1.4.0"
 
 // JSON
