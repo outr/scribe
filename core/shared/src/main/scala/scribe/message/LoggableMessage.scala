@@ -11,6 +11,7 @@ trait LoggableMessage {
 }
 
 object LoggableMessage {
+  implicit def logOutput2Message(lo: => LogOutput): LoggableMessage = apply[LogOutput](identity)(lo)
   implicit def string2Message(s: => String): LoggableMessage = apply[String](new TextOutput(_))(s)
   implicit def stringList2Messages(list: => List[String]): List[LoggableMessage] = list.map(f => string2Message(f))
   implicit def throwable2Message(throwable: => Throwable): LoggableMessage =
