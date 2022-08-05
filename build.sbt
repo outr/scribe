@@ -43,14 +43,14 @@ ThisBuild / outputStrategy := Some(StdoutOutput)
 
 // Core
 val perfolationVersion: String = "1.2.9"
-val sourcecodeVersion: String = "0.2.8"
+val sourcecodeVersion: String = "0.3.0"
 val collectionCompatVersion: String = "2.8.1"
 val moduloadVersion: String = "1.1.5"
 val jlineVersion: String = "3.21.0"
 val jansiVersion: String = "2.4.0"
 
 // Cats
-val catsEffectVersion: String = "3.3.13"
+val catsEffectVersion: String = "3.3.14"
 val catsEffectTestingVersion: String = "1.4.0"
 
 // JSON
