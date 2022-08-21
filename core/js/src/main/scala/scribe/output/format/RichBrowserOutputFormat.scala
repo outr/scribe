@@ -3,92 +3,39 @@ package scribe.output.format
 import scribe.output._
 import scribe.writer.BrowserConsoleWriter
 
-import scala.collection.mutable.ListBuffer
-
 /**
   * Supports rich output to JavaScript console in the browser
   */
 object RichBrowserOutputFormat extends OutputFormat {
-  override def apply(output: LogOutput, stream: String => Unit): Unit = recurse(
-    stream = stream,
-    args = BrowserConsoleWriter.args,
-    fg = None,
-    bg = None,
-    bold = false,
-    italic = false,
-    underline = false,
-    strikethrough = false,
-    output = output
-  )
+  import BrowserConsoleWriter.args
 
-  private def recurse(stream: String => Unit,
-                      args: ListBuffer[String],
-                      fg: Option[String],
-                      bg: Option[String],
-                      bold: Boolean,
-                      italic: Boolean,
-                      underline: Boolean,
-                      strikethrough: Boolean,
-                      output: LogOutput): Unit = output match {
-    case o: TextOutput => stream(o.plainText)
-    case o: CompositeOutput => o.entries.foreach(recurse(stream, args, fg, bg, bold, italic, underline, strikethrough, _))
-    case o: ColoredOutput => {
-      val color = color2CSS(o.color)
+  override def apply(output: LogOutput, stream: String => Unit): Unit = recurse(output, stream)
+
+  private def recurse(output: LogOutput, stream: String => Unit): Unit = {
+    def withArg(key: String, value: String, output: LogOutput): Unit = {
       stream("%c")
-      val css = s"color: $color"
-      args += css
-      recurse(stream, args, Some(css), bg, bold, italic, underline, strikethrough, o.output)
+      args.around(key -> value) {
+        recurse(output, stream)
+      }
       stream("%c")
-      args += fg.getOrElse(s"color: ${color2CSS(Color.Black)}")
     }
-    case o: BackgroundColoredOutput => {
-      val color = color2CSS(o.color)
-      stream("%c")
-      val css = s"background-color: $color"
-      args += css
-      recurse(stream, args, fg, Some(css), bold, italic, underline, strikethrough, o.output)
-      stream("%c")
-      args += bg.getOrElse(s"background-color: ${color2CSS(Color.White)}")
+    output match {
+      case o: TextOutput => stream(o.plainText)
+      case o: CompositeOutput => o.entries.foreach(recurse(_, stream))
+      case o: ColoredOutput => withArg("color", color2CSS(o.color), o.output)
+      case o: BackgroundColoredOutput => withArg("background-color", color2CSS(o.color), o.output)
+      case o: URLOutput =>
+        stream("%o (")
+        args.around("::URL" -> o.url) {
+          recurse(o.output, stream)
+        }
+        stream(")")
+      case o: BoldOutput => withArg("font-weight", "bold", o.output)
+      case o: ItalicOutput => withArg("font-style", "italic", o.output)
+      case o: UnderlineOutput => withArg("text-decoration", "underline", o.output)
+      case o: StrikethroughOutput => withArg("text-decoration", "line-through", o.output)
+      case _ => stream(output.plainText)
     }
-    case o: URLOutput => {
-      stream("%o (")
-      args += o.url
-      recurse(stream, args, fg, bg, bold, italic, underline, strikethrough, o.output)
-      stream(")")
-    }
-    case o: BoldOutput => if (!bold) {
-      stream("%c")
-      val css = "font-weight: bold"
-      args += css
-      recurse(stream, args, fg, bg, true, italic, underline, strikethrough, o.output)
-      stream("%c")
-      args += "font-weight: normal"
-    }
-    case o: ItalicOutput => if (!italic) {
-      stream("%c")
-      val css = "font-style: italic"
-      args += css
-      recurse(stream, args, fg, bg, bold, true, underline, strikethrough, o.output)
-      stream("%c")
-      args += "font-style: normal"
-    }
-    case o: UnderlineOutput => if (!underline) {
-      stream("%c")
-      val css = "text-decoration: underline"
-      args += css
-      recurse(stream, args, fg, bg, bold, italic, true, strikethrough, o.output)
-      stream("%c")
-      args += "text-decoration: none"
-    }
-    case o: StrikethroughOutput => if (!strikethrough) {
-      stream("%c")
-      val css = "text-decoration: line-through"
-      args += css
-      recurse(stream, args, fg, bg, bold, italic, underline, true, o.output)
-      stream("%c")
-      args += "text-decoration: none"
-    }
-    case _ => stream(output.plainText)
   }
 
   private def color2CSS(color: Color): String = color match {
