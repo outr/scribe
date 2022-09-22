@@ -310,3 +310,14 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "co.fs2" %% "fs2-core" % fs2Version
     )
   )
+
+lazy val docs = project
+  .in(file("documentation"))
+  .dependsOn(core.jvm)
+  .enablePlugins(MdocPlugin)
+  .settings(
+    mdocVariables := Map(
+      "VERSION" -> version.value
+    ),
+    mdocOut := file(".")
+  )
