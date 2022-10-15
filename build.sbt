@@ -92,7 +92,7 @@ val sourceMapSettings = List(
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
-    catsJS, catsJVM,
+    catsJS, catsJVM, catsNative,
     fileJVM, fileNative,
     jsonJS, jsonJVM,
     slf4j, slf4j2, log4j, migration, config, slack, logstash
@@ -140,7 +140,7 @@ lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 lazy val coreNative = core.native
 
-lazy val cats = crossProject(JVMPlatform, JSPlatform)
+lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-cats",
@@ -168,6 +168,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
 
 lazy val catsJS = cats.js
 lazy val catsJVM = cats.jvm
+lazy val catsNative = cats.native
 
 lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
