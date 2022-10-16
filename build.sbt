@@ -1,8 +1,12 @@
 // Scala versions
-val scala213 = "2.13.8"
-val scala212 = "2.12.16"
+val scala213 = "2.13.10"
+
+val scala212 = "2.12.17"
+
 val scala211 = "2.11.12"
-val scala3 = "3.1.3"
+
+val scala3 = "3.2.0"
+
 val scala2 = List(scala213, scala212, scala211)
 val allScalaVersions = scala3 :: scala2
 val compatScalaVersions = List(scala213, scala212)
@@ -45,7 +49,7 @@ ThisBuild / outputStrategy := Some(StdoutOutput)
 val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.3.0"
 val collectionCompatVersion: String = "2.8.1"
-val moduloadVersion: String = "1.1.5"
+val moduloadVersion: String = "1.1.6"
 val jlineVersion: String = "3.21.0"
 val jansiVersion: String = "2.4.0"
 
@@ -57,11 +61,11 @@ val catsEffectTestingVersion: String = "1.4.0"
 val fabricVersion: String = "1.2.5"
 
 // Testing
-val scalaTestVersion: String = "3.2.13"
+val scalaTestVersion: String = "3.2.14"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
-val slf4j2Version: String = "2.0.0-alpha5"
+val slf4j2Version: String = "2.0.3"
 
 // Config Dependencies
 val profigVersion: String = "3.4.0"
@@ -70,7 +74,7 @@ val profigVersion: String = "3.4.0"
 val youiVersion: String = "0.14.4"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.18.0"
+val log4jVersion: String = "2.19.0"
 val disruptorVersion: String = "3.4.4"
 val logbackVersion: String = "1.2.11"
 val typesafeConfigVersion: String = "1.4.2"
@@ -92,7 +96,7 @@ val sourceMapSettings = List(
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
-    catsJS, catsJVM,
+    catsJS, catsJVM, catsNative,
     fileJVM, fileNative,
     jsonJS, jsonJVM,
     slf4j, slf4j2, log4j, migration, config, slack, logstash
@@ -140,7 +144,7 @@ lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 lazy val coreNative = core.native
 
-lazy val cats = crossProject(JVMPlatform, JSPlatform)
+lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-cats",
@@ -168,6 +172,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
 
 lazy val catsJS = cats.js
 lazy val catsJVM = cats.jvm
+lazy val catsNative = cats.native
 
 lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
@@ -309,4 +314,15 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "org.typelevel" %% "log4cats-slf4j" % log4catsVersion,
       "co.fs2" %% "fs2-core" % fs2Version
     )
+  )
+
+lazy val docs = project
+  .in(file("documentation"))
+  .dependsOn(core.jvm)
+  .enablePlugins(MdocPlugin)
+  .settings(
+    mdocVariables := Map(
+      "VERSION" -> version.value
+    ),
+    mdocOut := file(".")
   )
