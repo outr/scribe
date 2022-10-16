@@ -1,8 +1,12 @@
 // Scala versions
 val scala213 = "2.13.10"
-val scala212 = "2.12.16"
+
+val scala212 = "2.12.17"
+
 val scala211 = "2.11.12"
+
 val scala3 = "3.1.3"
+
 val scala2 = List(scala213, scala212, scala211)
 val allScalaVersions = scala3 :: scala2
 val compatScalaVersions = List(scala213, scala212)
