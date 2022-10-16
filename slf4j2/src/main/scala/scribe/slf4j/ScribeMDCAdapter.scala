@@ -25,4 +25,17 @@ object ScribeMDCAdapter extends MDCAdapter {
       case (key, value) => put(key, value)
     }
   }
+
+  // TODO: Support stacking
+  override def pushByKey(key: String, value: String): Unit = put(key, value)
+
+  override def popByKey(key: String): String = {
+    val value = get(key)
+    remove(key)
+    value
+  }
+
+  override def getCopyOfDequeByKey(key: String): util.Deque[String] = ???
+
+  override def clearDequeByKey(key: String): Unit = remove(key)
 }

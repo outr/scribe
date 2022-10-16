@@ -12,12 +12,12 @@ val allScalaVersions = scala3 :: scala2
 val compatScalaVersions = List(scala213, scala212)
 val scalaJVMVersions = allScalaVersions
 val scalaJSVersions = allScalaVersions
-val scalaNot211Versions = List(scala3, scala213, scala212)
-val scalaNativeVersions = scalaNot211Versions
+val scalaNativeVersions = allScalaVersions
+val scalaAllExcept211Versions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.10.3"
+ThisBuild / version := "3.10.4-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -163,10 +163,13 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     Test / publishArtifact := false
   )
   .jsSettings(
-    crossScalaVersions := scalaNot211Versions
+    crossScalaVersions := scalaAllExcept211Versions
   )
   .jvmSettings(
-    crossScalaVersions := scalaNot211Versions
+    crossScalaVersions := scalaAllExcept211Versions
+  )
+  .jsSettings(
+    crossScalaVersions := scalaAllExcept211Versions
   )
   .dependsOn(core)
 
