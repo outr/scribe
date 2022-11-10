@@ -6,7 +6,7 @@ addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.11.0")
 
 addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.4.8")
 
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.13")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.14")
 
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.2.0")
 
