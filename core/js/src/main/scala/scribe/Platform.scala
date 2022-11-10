@@ -23,5 +23,7 @@ object Platform extends PlatformImplementation {
 
   override val columns: Int = 120 + columnsAdjust
 
+  override def rows: Int = -1
+
   override def executionContext: ExecutionContext = scala.scalajs.concurrent.JSExecutionContext.queue
 }

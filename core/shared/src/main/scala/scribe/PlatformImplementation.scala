@@ -14,6 +14,7 @@ trait PlatformImplementation {
   def consoleWriter: Writer
 
   def columns: Int
+  def rows: Int
 
   def executionContext: ExecutionContext
 }
