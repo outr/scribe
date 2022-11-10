@@ -17,7 +17,7 @@ val scalaAllExcept211Versions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.10.4"
+ThisBuild / version := "3.10.5-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -148,6 +148,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-cats",
+    crossScalaVersions := scalaAllExcept211Versions,
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-effect" % catsEffectVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
@@ -161,15 +162,6 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       }
     ),
     Test / publishArtifact := false
-  )
-  .jsSettings(
-    crossScalaVersions := scalaAllExcept211Versions
-  )
-  .jvmSettings(
-    crossScalaVersions := scalaAllExcept211Versions
-  )
-  .jsSettings(
-    crossScalaVersions := scalaAllExcept211Versions
   )
   .dependsOn(core)
 
