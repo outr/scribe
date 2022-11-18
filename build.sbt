@@ -51,8 +51,7 @@ val sourcecodeVersion: String = "0.3.0"
 val collectionCompatVersion: String = "2.8.1"
 val moduloadVersion: String = "1.1.6"
 
-// Cats
-val catsEffectVersion: String = "3.3.14"
+val catsEffectVersion: String = "3.4.1"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
@@ -63,7 +62,7 @@ val scalaTestVersion: String = "3.2.14"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
-val slf4j2Version: String = "2.0.3"
+val slf4j2Version: String = "2.0.4"
 
 // Config Dependencies
 val profigVersion: String = "3.4.1"

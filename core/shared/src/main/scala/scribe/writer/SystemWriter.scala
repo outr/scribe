@@ -5,6 +5,7 @@ import scribe.output.format.OutputFormat
 import scribe.{Level, LogRecord, Logger}
 
 import java.io.PrintStream
+import scala.collection.mutable
 import scala.language.implicitConversions
 import scala.math.Ordering.Implicits._
 
@@ -28,8 +29,8 @@ object SystemWriter extends Writer {
 
   var stringBuilderStartCapacity: Int = DefaultStringBuilderStartCapacity
 
-  private val stringBuilders = new ThreadLocal[StringBuilder] {
-    override def initialValue(): StringBuilder = new StringBuilder(stringBuilderStartCapacity)
+  private val stringBuilders = new ThreadLocal[mutable.StringBuilder] {
+    override def initialValue(): mutable.StringBuilder = new mutable.StringBuilder(stringBuilderStartCapacity)
   }
 
   override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
