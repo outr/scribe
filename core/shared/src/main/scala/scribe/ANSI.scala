@@ -7,6 +7,8 @@ object ANSI {
     override def initialValue(): Map[String, ANSI] = Map.empty
   }
 
+  private val escCode: Char = 0x1B.toChar
+
   object bg {
     private def create(value: String): ANSI = ANSI(value, "bg", AnsiColor.RESET)
 
@@ -29,22 +31,27 @@ object ANSI {
     lazy val BrightYellow: ANSI = create("\u001b[43;1m")
   }
 
+  private def esc(suffix: String): String = s"$escCode[$suffix"
+  private def esc(num: Int, suffix: String): String = esc(s"$num$suffix")
+  private def esc(num1: Int, num2: Int, suffix: String): String = esc(s"$num1;$num2$suffix")
+
   object ctrl {
     private def create(count: Int, s: String): String = (0 until count).map(_ => s).mkString
 
     def Backspace(characters: Int = 1): String = create(characters, "\b")
-    def ClearScreen: String = "\u001b[2J"
-    def CursorBack(characters: Int = 1): String = s"""\\033[${characters}D"""
-    def CursorDown(lines: Int = 1): String = s"\\033[${lines}B"
-    def CursorForward(characters: Int = 1): String = s"""\\033[${characters}C"""
-    def CursorUp(lines: Int = 1): String = s"""\\033[${lines}A"""
-    def EraseLine: String = "\u001b[K"
+    def ClearScreen: String = esc(2, "J")
+    def CursorBack(characters: Int = 1): String = esc(characters, "D")
+    def CursorDown(lines: Int = 1): String = esc(lines, "B")
+    def CursorForward(characters: Int = 1): String = esc(characters, "C")
+    def CursorUp(rows: Int = 1): String = esc(rows, "A")
+    def CursorMove(row: Int, column: Int): String = esc(row, column, "f")
+    def EraseLine: String = esc("K")
     def FormFeed: String = "\f"
     def NewLine: String = "\n"
     def Reset: String = AnsiColor.RESET
-    def RestorePosition: String = "[u"
-    def Return: String = "\r"
-    def SavePosition: String = "[s"
+    lazy val RestorePosition: String = esc("u")
+    lazy val Return: String = "\r"
+    lazy val SavePosition: String = esc("s")
     def Tab: String = "\t"
   }
 
