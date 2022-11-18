@@ -20,6 +20,12 @@ object Platform extends PlatformImplementation {
   private var cachedColumns: Int = -1
   private var cachedRows: Int = -1
 
+  private lazy val cacheDirectory = {
+    val f = new File(System.getProperty("user.home"), ".cache/scribe")
+    f.mkdirs()
+    f
+  }
+
   var columnCheckFrequency: Long = 5 * 1000L
 
   def isJVM: Boolean = true
@@ -87,13 +93,12 @@ object Platform extends PlatformImplementation {
     }
   }.getOrElse((-1, -1))
 
-  private lazy val scriptFile = new File(System.getProperty("user.home"), ".cursor-position.sh")
+  private lazy val scriptFile = new File(cacheDirectory, "cursor-position.sh")
 
   def cursor(): (Int, Int) = Try {
     if (!scriptFile.isFile) {
       val script =
-        """#!/bin/bash
-          |exec < /dev/tty
+        """exec < /dev/tty
           |oldstty=$(stty -g)
           |stty raw -echo min 0
           |echo -en "\033[6n" > /dev/tty
@@ -103,10 +108,10 @@ object Platform extends PlatformImplementation {
           |col=$((${pos[1]} - 1))
           |echo $row $col""".stripMargin
       Files.write(scriptFile.toPath, script.getBytes("UTF-8"))
-      val pb = new ProcessBuilder("bash", "-c", s"chmod +x ${scriptFile.getCanonicalPath}")
+      val pb = new ProcessBuilder("bash", s"chmod +x ${scriptFile.getCanonicalPath}")
       pb.start().waitFor()
     }
-    val pb = new ProcessBuilder("bash", "-c", scriptFile.getCanonicalPath)
+    val pb = new ProcessBuilder("bash", scriptFile.getCanonicalPath)
     val p = pb.start()
     val i = new BufferedReader(new InputStreamReader(p.getInputStream))
     try {
