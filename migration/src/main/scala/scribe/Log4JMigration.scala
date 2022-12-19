@@ -67,7 +67,7 @@ class Log4JMigration private() {
   def apply(key: String, value: String): Boolean = {
     def parse(): (LevelFilter, List[LogHandler]) = {
       val list = value.split(',').map(_.trim).filter(_.nonEmpty).toList
-      (levelFilter(list.head), list.tail.map(handlers.apply))
+      (levelFilter(list.head), list.tail.map(s => handlers.getOrElse(s, LogHandler())))
     }
     key match {
       case Log4JMigration.AppenderClass(name) => value match {
