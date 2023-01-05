@@ -17,7 +17,7 @@ val scalaAllExcept211Versions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.10.5"
+ThisBuild / version := "3.10.6-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -48,10 +48,10 @@ ThisBuild / outputStrategy := Some(StdoutOutput)
 // Core
 val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.3.0"
-val collectionCompatVersion: String = "2.8.1"
+val collectionCompatVersion: String = "2.9.0"
 val moduloadVersion: String = "1.1.6"
 
-val catsEffectVersion: String = "3.4.1"
+val catsEffectVersion: String = "3.4.4"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
@@ -62,7 +62,7 @@ val scalaTestVersion: String = "3.2.14"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
-val slf4j2Version: String = "2.0.4"
+val slf4j2Version: String = "2.0.6"
 
 // Config Dependencies
 val profigVersion: String = "3.4.1"
