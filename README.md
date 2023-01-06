@@ -26,19 +26,19 @@ For people that want to skip the explanations and see it action, this is the pla
 ### Dependency Configuration
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe" % "3.10.4"
+libraryDependencies += "com.outr" %% "scribe" % "3.10.6"
 ```
 
 For Cross-Platform projects (JVM, JS, and/or Native):
 
 ```scala
-libraryDependencies += "com.outr" %%% "scribe" % "3.10.4"
+libraryDependencies += "com.outr" %%% "scribe" % "3.10.6"
 ```
 
 Or, if you want interoperability with SLF4J (to allow better interoperability with existing libraries using other loggers):
 
 ```scala
-libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.10.4"
+libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.10.6"
 ```
 
 ### Usage
@@ -46,14 +46,6 @@ libraryDependencies += "com.outr" %% "scribe-slf4j" % "3.10.4"
 ```scala
 scribe.info("Yes, it's that simple!")
 ```
-
-### SBT Tip
-Using the default logger in Scribe supports auto-line wrapping, but in SBT, the `[info]` prefixes cause that to get
-messed up. It's recommended to set:
-```sbt
-outputStrategy := Some(StdoutOutput)
-```
-This will disable the `[info]` and `[error]` prefixes so logging looks correct when running your application within SBT.
 
 ## Why Another Logging Framework
 
