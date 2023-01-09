@@ -47,6 +47,14 @@ libraryDependencies += "com.outr" %% "scribe-slf4j" % "@VERSION@"
 scribe.info("Yes, it's that simple!")
 ```
 
+### SBT Tip
+Using the default logger in Scribe supports auto-line wrapping, but in SBT, the `[info]` prefixes cause that to get
+messed up. It's recommended to set:
+```sbt
+outputStrategy := Some(StdoutOutput)
+```
+This will disable the `[info]` and `[error]` prefixes so logging looks correct when running your application within SBT.
+
 ## Why Another Logging Framework
 
 Yes, we know there are too many Java logging frameworks to count, and a large number of decent logging frameworks in
