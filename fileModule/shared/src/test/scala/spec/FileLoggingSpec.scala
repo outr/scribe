@@ -25,8 +25,6 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
 
   private val DateRegex = """(\d{4})-(\d{2})-(\d{2})""".r
 
-  setDate("2018-01-01")
-
   private def setDate(date: String): Unit = date match {
     case DateRegex(year, month, day) => {
       val c = Calendar.getInstance()
@@ -54,6 +52,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
     "setup" in {
       TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
       OutputFormat.default = ASCIIOutputFormat
+      setDate("2018-01-01")
       Time.function = () => timeStamp
     }
     "verifying simple logging" should {
