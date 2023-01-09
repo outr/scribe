@@ -10,7 +10,7 @@ import scribe.{Level, Logger}
 
 import java.io.File
 import java.nio.file.{Files, Path}
-import java.util.Calendar
+import java.util.{Calendar, TimeZone}
 import java.util.function.Consumer
 import scala.annotation.tailrec
 import scala.concurrent.duration._
@@ -52,6 +52,7 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
 
   "File Logging" when {
     "setup" in {
+      TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
       OutputFormat.default = ASCIIOutputFormat
       Time.function = () => timeStamp
     }
