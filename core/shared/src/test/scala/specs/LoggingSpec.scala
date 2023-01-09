@@ -15,15 +15,17 @@ import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{CacheWriter, Writer}
 
+import java.util.TimeZone
 import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
-import scala.util.Properties
 
 class LoggingSpec extends AnyWordSpec with Matchers with Logging {
   val expectedTestFileName = "LoggingTestObject.scala"
 
   "Logging" should {
+    TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
+
     val handler = new TestingHandler
     val testObject = new LoggingTestObject(handler)
     "set up the logging" in {
@@ -454,22 +456,19 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.error("error")
       writer.output.map(_.plainText) should be(List("error"))
     }
-    // TODO: figure out why the hour is 8 hours off on 2.11
     "use HTMLOutputFormat to log something" in {
-      if (!Properties.versionNumberString.startsWith("2.11")) {
-        val MomentInTime = 1606235160799L
-        Time.contextualize(MomentInTime) {
-          val b = new StringBuilder
-          val writer = new Writer {
-            override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
-              outputFormat(output, b.append(_))
-            }
+      val MomentInTime = 1606235160799L
+      Time.contextualize(MomentInTime) {
+        val b = new StringBuilder
+        val writer = new Writer {
+          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
+            outputFormat(output, b.append(_))
           }
-          val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat())
-          Thread.currentThread().setName("test-thread")
-          logger.info("Hello, HTML!")
-          b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:470</span><br/>&#160;&#160;&#160;&#160;Hello,&#160;HTML!</div>""")
         }
+        val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat())
+        Thread.currentThread().setName("test-thread")
+        logger.info("Hello, HTML!")
+        b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:470</span><br/>&#160;&#160;&#160;&#160;Hello,&#160;HTML!</div>""")
       }
     }
   }

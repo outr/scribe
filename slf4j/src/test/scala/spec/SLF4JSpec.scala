@@ -31,6 +31,8 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
   )
 
   "SLF4J" should {
+    TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
+
     "set the time to an arbitrary value" in {
       OutputFormat.default = ASCIIOutputFormat
       Time.function = () => 1542376191920L
@@ -59,25 +61,25 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
     "verify Scribe wrote value" in {
       logOutput.size should be(1)
       val s = logOutput.head
-      s should be("2018.11.16 13:49:51:920 [INFO ] spec.SLF4JSpec - Hello World!")
+      s should be("2018.11.16 07:49:51:920 [INFO ] spec.SLF4JSpec - Hello World!")
     }
     "use MDC" in {
       MDC.put("name", "John Doe")
       val logger = LoggerFactory.getLogger(getClass)
       logger.info("A generic name")
-      logOutput.head should be("2018.11.16 13:49:51:920 [INFO ] spec.SLF4JSpec - A generic name (name: John Doe)")
+      logOutput.head should be("2018.11.16 07:49:51:920 [INFO ] spec.SLF4JSpec - A generic name (name: John Doe)")
     }
     "clear MDC" in {
       MDC.clear()
       val logger = LoggerFactory.getLogger(getClass)
       logger.info("MDC cleared")
-      logOutput.head should be("2018.11.16 13:49:51:920 [INFO ] spec.SLF4JSpec - MDC cleared")
+      logOutput.head should be("2018.11.16 07:49:51:920 [INFO ] spec.SLF4JSpec - MDC cleared")
     }
     "make sure logging nulls doesn't error" in {
       val logger = LoggerFactory.getLogger(getClass)
       logger.error(null)
       logs.length should be(3)
-      logOutput.head should be("2018.11.16 13:49:51:920 [ERROR] spec.SLF4JSpec - null")
+      logOutput.head should be("2018.11.16 07:49:51:920 [ERROR] spec.SLF4JSpec - null")
     }
   }
 }
