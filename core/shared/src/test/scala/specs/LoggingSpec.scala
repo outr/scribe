@@ -10,11 +10,12 @@ import scribe.format.{FormatBlock, Formatter}
 import scribe.handler.LogHandler
 import scribe.message.LoggableMessage
 import scribe.modify.{LevelFilter, LogBooster}
-import scribe.output.format.OutputFormat
+import scribe.output.format.{HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{CacheWriter, Writer}
 
+import java.util.TimeZone
 import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
@@ -23,6 +24,8 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
   val expectedTestFileName = "LoggingTestObject.scala"
 
   "Logging" should {
+    TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
+
     val handler = new TestingHandler
     val testObject = new LoggingTestObject(handler)
     "set up the logging" in {
@@ -396,7 +399,6 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     "log a special class" in {
       var logged = List.empty[User]
 
-      case class User(name: String, age: Int)
       val logger = Logger().orphan().withHandler(new LogHandler {
         override def log(record: LogRecord): Unit = record.messages.head.value match {
           case u: User => logged = u :: logged
@@ -414,7 +416,6 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     "access non-String values in MDC" in {
       var logged = List.empty[User]
 
-      case class User(name: String, age: Int)
       val logger = Logger().orphan().withHandler(new LogHandler {
         override def log(record: LogRecord): Unit = MDC.get("user").foreach {
           case u: User => logged = u :: logged
@@ -430,7 +431,6 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
     "access non-String values in `data`" in {
       var logged = List.empty[User]
 
-      case class User(name: String, age: Int)
       val logger = Logger().orphan().withHandler(new LogHandler {
         override def log(record: LogRecord): Unit = record.get("user").foreach {
           case u: User => logged = u :: logged
@@ -456,8 +456,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.error("error")
       writer.output.map(_.plainText) should be(List("error"))
     }
-    // TODO: figure out why the hour is 8 hours off on 2.11
-    /*"use HTMLOutputFormat to log something" in {
+    "use HTMLOutputFormat to log something" in {
       val MomentInTime = 1606235160799L
       Time.contextualize(MomentInTime) {
         val b = new StringBuilder
@@ -466,12 +465,15 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
             outputFormat(output, b.append(_))
           }
         }
-        val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat)
+        val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat())
+        Thread.currentThread().setName("test-thread")
         logger.info("Hello, HTML!")
-        b.toString() should be("""<div class="record">2020.11.24 08:26:00:799 [<span style="color: blue">INFO </span>] <span style="color: green">specs.LoggingSpec.LoggingSpec:446</span> - <span style="color: gray">Hello, HTML!</span></div>""")
+        b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:470</span><br/>&#160;&#160;&#160;&#160;Hello,&#160;HTML!</div>""")
       }
-    }*/
+    }
   }
+
+  case class User(name: String, age: Int)
 }
 
 object LoggingSpec {

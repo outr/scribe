@@ -57,8 +57,7 @@ object LogFile {
   private var current = Map.empty[FileWriter, LogFile]
 
   /**
-    * Make sure that all log files are flushed and closed properly before terminating - Not supported on ScalaNative, so
-    * we ignore the error
+    * Make sure that all log files are flushed and closed properly before terminating.
     */
   Platform.addShutdownHook(dispose())
 

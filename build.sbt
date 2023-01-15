@@ -17,7 +17,7 @@ val scalaAllExcept211Versions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.10.6-SNAPSHOT"
+ThisBuild / version := "3.10.7-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -84,9 +84,10 @@ val fs2Version: String = "3.2.9"
 // set source map paths from local directories to github path
 val sourceMapSettings = List(
   scalacOptions ++= git.gitHeadCommit.value.map { headCommit =>
+    val compilerJsSourceMapFlag = if (scalaVersion.value.startsWith("2.")) "-P:scalajs:mapSourceURI" else "-scalajs-mapSourceURI"    
     val local = baseDirectory.value.toURI
     val remote = s"https://raw.githubusercontent.com/outr/scribe/$headCommit/"
-    s"-P:scalajs:mapSourceURI:$local->$remote"
+    s"$compilerJsSourceMapFlag:$local->$remote"
   }
 )
 
