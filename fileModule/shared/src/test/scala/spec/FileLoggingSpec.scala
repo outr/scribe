@@ -10,7 +10,7 @@ import scribe.{Level, Logger}
 
 import java.io.File
 import java.nio.file.{Files, Path}
-import java.util.Calendar
+import java.util.{Calendar, TimeZone}
 import java.util.function.Consumer
 import scala.annotation.tailrec
 import scala.concurrent.duration._
@@ -24,8 +24,6 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
   private var timeStamp: Long = 0L
 
   private val DateRegex = """(\d{4})-(\d{2})-(\d{2})""".r
-
-  setDate("2018-01-01")
 
   private def setDate(date: String): Unit = date match {
     case DateRegex(year, month, day) => {
@@ -52,7 +50,9 @@ class FileLoggingSpec extends AnyWordSpec with Matchers {
 
   "File Logging" when {
     "setup" in {
+      TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
       OutputFormat.default = ASCIIOutputFormat
+      setDate("2018-01-01")
       Time.function = () => timeStamp
     }
     "verifying simple logging" should {
