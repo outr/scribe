@@ -13,16 +13,16 @@ object Platform extends PlatformImplementation {
   def isJS: Boolean = true
   def isNative: Boolean = false
 
+  // $COVERAGE-OFF$
   lazy val isNodeJS: Boolean = Try(js.Dynamic.global.process.release.name.asInstanceOf[String]).toOption.contains("node")
 
   def init(): Unit = {}
 
-  // $COVERAGE-OFF$
   def console: JavaScriptConsole = js.Dynamic.global.console.asInstanceOf[JavaScriptConsole]
-  // $COVERAGE-ON$
 
   private def processEnv: Dictionary[Any] = Try(js.Dynamic.global.process.env.asInstanceOf[js.Dictionary[Any]])
     .getOrElse(js.Dictionary.empty)
+  // $COVERAGE-ON$
 
   override def env(key: String): Option[String] = processEnv.get(key).map(_.toString)
 
