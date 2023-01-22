@@ -1,15 +1,19 @@
 package scribe
 
-import scribe.output.format.{OutputFormat, RichBrowserOutputFormat}
+import scribe.output.format.{ANSIOutputFormat, ASCIIOutputFormat, OutputFormat, RichBrowserOutputFormat}
 import scribe.writer.{BrowserConsoleWriter, Writer}
 
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js
+import scala.scalajs.js.Dictionary
+import scala.util.Try
 
 object Platform extends PlatformImplementation {
   def isJVM: Boolean = false
   def isJS: Boolean = true
   def isNative: Boolean = false
+
+  lazy val isNodeJS: Boolean = Try(js.Dynamic.global.process.release.name.asInstanceOf[String]).toOption.contains("node")
 
   def init(): Unit = {}
 
@@ -17,7 +21,16 @@ object Platform extends PlatformImplementation {
   def console: JavaScriptConsole = js.Dynamic.global.console.asInstanceOf[JavaScriptConsole]
   // $COVERAGE-ON$
 
-  def outputFormat(): OutputFormat = RichBrowserOutputFormat
+  private def processEnv: Dictionary[Any] = Try(js.Dynamic.global.process.env.asInstanceOf[js.Dictionary[Any]])
+    .getOrElse(js.Dictionary.empty)
+
+  override def env(key: String): Option[String] = processEnv.get(key).map(_.toString)
+
+  override def outputFormat(): OutputFormat = if (isNodeJS) {
+    super.outputFormat()
+  } else {
+    RichBrowserOutputFormat
+  }
 
   override def consoleWriter: Writer = BrowserConsoleWriter
 
