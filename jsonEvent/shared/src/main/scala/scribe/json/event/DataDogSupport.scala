@@ -12,7 +12,6 @@ case class Trace(message: String, elements: List[TraceElement], cause: Option[Tr
 case class DataDogRecord(
                           level: String,
                           levelValue: Double,
-                          // changed
                           message: Either[String, List[String]],
                           fileName: String,
                           className: String,

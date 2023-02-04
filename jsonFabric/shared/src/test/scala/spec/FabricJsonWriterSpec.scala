@@ -23,7 +23,7 @@ class FabricJsonWriterSpec extends AnyWordSpec with Matchers {
     "initialize properly" in {
       logger
         .orphan()
-        .withHandler(writer = new JsonWriter[DataDogRecord](cache, Map.empty)(fabricJsonEventEncoder(implicitly, implicitly)))
+        .withHandler(writer = new JsonWriter[DataDogRecord](cache, Map.empty))
         .replace()
       Time.function = () => time
     }
