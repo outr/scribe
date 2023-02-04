@@ -39,7 +39,7 @@ ThisBuild / scmInfo := Some(
   )
 )
 ThisBuild / developers := List(
-  Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("https://matthicks.com"))
+  Developer(id = "darkfrog", name = "Matt Hicks", email = "matt@matthicks.com", url = url("https://matthicks.com"))
 )
 ThisBuild / parallelExecution := false
 
@@ -84,7 +84,7 @@ val fs2Version: String = "3.2.9"
 // set source map paths from local directories to github path
 val sourceMapSettings = List(
   scalacOptions ++= git.gitHeadCommit.value.map { headCommit =>
-    val compilerJsSourceMapFlag = if (scalaVersion.value.startsWith("2.")) "-P:scalajs:mapSourceURI" else "-scalajs-mapSourceURI"    
+    val compilerJsSourceMapFlag = if (scalaVersion.value.startsWith("2.")) "-P:scalajs:mapSourceURI" else "-scalajs-mapSourceURI"
     val local = baseDirectory.value.toURI
     val remote = s"https://raw.githubusercontent.com/outr/scribe/$headCommit/"
     s"$compilerJsSourceMapFlag:$local->$remote"
@@ -120,7 +120,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       } else {
         List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
       }
-    ),
+      ),
     Test / publishArtifact := false
   )
   .jsSettings(
@@ -156,7 +156,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       } else {
         List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
       }
-    ),
+      ),
     Test / publishArtifact := false
   )
   .dependsOn(core)
@@ -190,10 +190,6 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-json",
-    libraryDependencies ++= Seq(
-      "com.outr" %%% "fabric-parse" % fabricVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
-    ),
     crossScalaVersions := List(scala213, scala212)
   )
   .jsSettings(
@@ -206,6 +202,40 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
 
 lazy val jsonJS = json.js
 lazy val jsonJVM = json.jvm
+
+lazy val jsonEvent = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-json",
+    crossScalaVersions := List(scala213, scala212)
+  )
+  .jsSettings(
+    crossScalaVersions := scalaJSVersions
+  )
+  .jvmSettings(
+    crossScalaVersions := scalaJVMVersions
+  )
+  .dependsOn(core)
+  .dependsOn(json)
+
+lazy val jsonFabric = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-json",
+    libraryDependencies ++= Seq(
+      "com.outr" %%% "fabric-parse" % fabricVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    ),
+    crossScalaVersions := List(scala213, scala212)
+  )
+  .jsSettings(
+    crossScalaVersions := scalaJSVersions
+  )
+  .jvmSettings(
+    crossScalaVersions := scalaJVMVersions
+  )
+  .dependsOn(json)
+  .dependsOn(jsonEvent % "test->compile")
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)

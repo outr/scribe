@@ -6,19 +6,24 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.Logger
 import scribe.json._
+import scribe.json.event._
+import scribe.json.fabric._
 import scribe.util.Time
 import scribe.writer.CacheWriter
+import codec._
 
-class JsonWriterSpec extends AnyWordSpec with Matchers {
+class FabricJsonWriterSpec extends AnyWordSpec with Matchers {
   "JsonWriter" should {
     var time: Long = 1609488000000L
+
     def logger: Logger = Logger("jsonWriterSpec")
+
     val cache = new CacheWriter
 
     "initialize properly" in {
       logger
         .orphan()
-        .withHandler(writer = new JsonWriter(cache))
+        .withHandler(writer = new JsonWriter[DataDogRecord](cache, Map.empty)(fabricJsonEventEncoder(implicitly, implicitly)))
         .replace()
       Time.function = () => time
     }
@@ -28,8 +33,8 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       cache.output.length should be(1)
       val json = Json.parse(cache.output.head.plainText)
       json("date").asString should be("2021-01-01")
-      json("line").asInt should be(27)
-      json("fileName").asString should be("JsonWriterSpec.scala")
+      json("line").asInt should be(32)
+      json("fileName").asString should be("FabricJsonWriterSpec.scala")
       json("message") should be(Str("Hello, Json!"))
     }
     "log a simple message and exception" in {
@@ -39,8 +44,8 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       cache.output.length should be(1)
       val json = Json.parse(cache.output.head.plainText)
       json("date").asString should be("2021-01-02")
-      json("line").asInt should be(38)
-      json("fileName").asString should be("JsonWriterSpec.scala")
+      json("line").asInt should be(43)
+      json("fileName").asString should be("FabricJsonWriterSpec.scala")
       json("message") should be(Str("Failure, Json!"))
     }
     "log a JSON message" in {
