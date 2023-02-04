@@ -12,8 +12,6 @@ package object json {
   }
 
   trait JsonEventEncoder[E] {
-    implicit val loggableEvent: LoggableEvent[E]
-
     def encode(record: LogRecord, additional: Map[String, String], compact: Boolean): String
   }
 
