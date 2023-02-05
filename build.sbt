@@ -3,7 +3,7 @@ val scala213 = "2.13.10"
 
 val scala212 = "2.12.17"
 
-val scala3 = "3.2.1"
+val scala3 = "3.2.2"
 
 val allScalaVersions = List(scala213, scala212, scala3)
 
@@ -43,7 +43,7 @@ val sourcecodeVersion: String = "0.3.0"
 val collectionCompatVersion: String = "2.9.0"
 val moduloadVersion: String = "1.1.6"
 
-val catsEffectVersion: String = "3.4.5"
+val catsEffectVersion: String = "3.4.6"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
