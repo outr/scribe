@@ -5,7 +5,7 @@ import fabric.io.{Format, JsonParser}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.Logger
-import scribe.json._
+import scribe.json.ScribeFabricJsonSupport._
 import scribe.util.Time
 import scribe.writer.CacheWriter
 
@@ -18,7 +18,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
     "initialize properly" in {
       logger
         .orphan()
-        .withHandler(writer = new JsonWriter(cache))
+        .withHandler(writer = writer(cache))
         .replace()
       Time.function = () => time
     }
