@@ -1,7 +1,7 @@
 package spec
 
 import fabric._
-import fabric.parse.Json
+import fabric.io.{Format, JsonParser}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.Logger
@@ -26,7 +26,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       cache.clear()
       logger.info("Hello, Json!")
       cache.output.length should be(1)
-      val json = Json.parse(cache.output.head.plainText)
+      val json = JsonParser(cache.output.head.plainText, Format.Json)
       json("date").asString should be("2021-01-01")
       json("line").asInt should be(27)
       json("fileName").asString should be("JsonWriterSpec.scala")
@@ -37,7 +37,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       time += 1000L * 60 * 60 * 24
       logger.warn("Failure, Json!", new RuntimeException("Failure!"))
       cache.output.length should be(1)
-      val json = Json.parse(cache.output.head.plainText)
+      val json = JsonParser(cache.output.head.plainText, Format.Json)
       json("date").asString should be("2021-01-02")
       json("line").asInt should be(38)
       json("fileName").asString should be("JsonWriterSpec.scala")
@@ -50,7 +50,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
         "message" -> "JSON Message!"
       ))
       cache.records.length should be(1)
-      val json = cache.records.head.messages.head.value.asInstanceOf[Value]
+      val json = cache.records.head.messages.head.value.asInstanceOf[Json]
       json("message") should be(Str("JSON Message!"))
     }
   }

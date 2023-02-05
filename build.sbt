@@ -9,7 +9,7 @@ val allScalaVersions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.10.7"
+ThisBuild / version := "3.11.0-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -47,7 +47,7 @@ val catsEffectVersion: String = "3.4.6"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
-val fabricVersion: String = "1.2.5"
+val fabricVersion: String = "1.9.0"
 
 // Testing
 val scalaTestVersion: String = "3.2.15"
@@ -60,7 +60,7 @@ val slf4j2Version: String = "2.0.6"
 val profigVersion: String = "3.4.1"
 
 // Slack and Logstash Dependencies
-val youiVersion: String = "0.14.4"
+val spiceVersion: String = "0.0.13"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.19.0"
@@ -174,7 +174,7 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
   .settings(
     name := "scribe-json",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "fabric-parse" % fabricVersion,
+      "org.typelevel" %%% "fabric-io" % fabricVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
@@ -247,9 +247,9 @@ lazy val config = project.in(file("config"))
 lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
-    crossScalaVersions := allScalaVersions,
+    crossScalaVersions := List(scala213, scala3),
     libraryDependencies ++= Seq(
-      "io.youi" %% "youi-client" % youiVersion
+      "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
   )
   .dependsOn(coreJVM)
@@ -257,9 +257,9 @@ lazy val slack = project.in(file("slack"))
 lazy val logstash = project.in(file("logstash"))
   .settings(
     name := "scribe-logstash",
-    crossScalaVersions := allScalaVersions,
+    crossScalaVersions := List(scala213, scala3),
     libraryDependencies ++= Seq(
-      "io.youi" %% "youi-client" % youiVersion
+      "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
   )
   .dependsOn(coreJVM)

@@ -9,5 +9,5 @@ case class SlackMessage(text: String,
                         attachments: List[Slack.Attachment])
 
 object SlackMessage {
-  implicit val rw: ReaderWriter[SlackMessage] = ccRW
+  implicit val rw: RW[SlackMessage] = RW.gen
 }

@@ -16,5 +16,5 @@ case class LogstashRecord(messages: List[String],
                           data: Map[String, String])
 
 object LogstashRecord {
-  implicit val rw: ReaderWriter[LogstashRecord] = ccRW
+  implicit val rw: RW[LogstashRecord] = RW.gen
 }

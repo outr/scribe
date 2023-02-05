@@ -1,25 +1,23 @@
 package scribe.slack
 
-import fabric.parse.Json
+import cats.effect.IO
+import fabric.Json
 import fabric.rw._
-import io.youi.client.HttpClient
-import io.youi.http.HttpResponse
-import io.youi.http.content.Content
-import io.youi.net.{ContentType, URL}
-import scribe.Execution.global
 import scribe.format._
 import scribe.handler.LogHandler
 import scribe.{Level, Logger}
-
-import scala.concurrent.Future
+import spice.http.HttpResponse
+import spice.http.client.HttpClient
+import spice.http.content.Content
+import spice.net.URL
 
 class Slack(serviceHash: String, botName: String) {
-  private lazy val client = HttpClient.url(URL(s"https://hooks.slack.com/services/$serviceHash")).post
+  private lazy val client = HttpClient.url(URL.parse(s"https://hooks.slack.com/services/$serviceHash")).post
 
   def request(message: String,
               markdown: Boolean = true,
               attachments: List[Slack.Attachment] = Nil,
-              emojiIcon: String = ":fire:"): Future[HttpResponse] = {
+              emojiIcon: String = ":fire:"): IO[HttpResponse] = {
     val m = SlackMessage(
       text = message,
       username = botName,
@@ -27,9 +25,8 @@ class Slack(serviceHash: String, botName: String) {
       icon_emoji = emojiIcon,
       attachments = attachments
     )
-    val value = m.toValue
-    val json = Json.format(value)
-    val content = Content.string(json, ContentType.`application/json`)
+    val json = m.json
+    val content = Content.json(json)
     client.content(content).send()
   }
 }
@@ -38,7 +35,7 @@ object Slack {
   case class Attachment(title: String, text: String)
 
   object Attachment {
-    implicit val rw: ReaderWriter[Attachment] = ccRW
+    implicit val rw: RW[Attachment] = RW.gen
   }
 
   def configure(serviceHash: String,

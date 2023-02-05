@@ -1,21 +1,20 @@
 package scribe.logstash
 
-import fabric.parse.Json
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
+import cats.instances.future
+import fabric.io.JsonFormatter
 import fabric.rw._
-import io.youi.client.HttpClient
-import io.youi.http.HttpResponse
-import io.youi.http.content.Content
-import io.youi.net._
 import perfolation._
-import scribe.Execution.global
 import scribe.LogRecord
 import scribe.data.MDC
 import scribe.output.LogOutput
 import scribe.output.format.OutputFormat
 import scribe.writer.Writer
-
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import spice.http.HttpResponse
+import spice.http.client.HttpClient
+import spice.http.content.Content
+import spice.net.{ContentType, URL}
 
 case class LogstashWriter(url: URL,
                           service: String,
@@ -24,13 +23,13 @@ case class LogstashWriter(url: URL,
   private lazy val client = HttpClient.url(url).post
 
   override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
-    val future = log(record)
+    val io = log(record)
     if (!asynchronous) {
-      Await.result(future, 10.seconds)
+      io.unsafeRunSync()
     }
   }
 
-  def log(record: LogRecord): Future[HttpResponse] = {
+  def log(record: LogRecord): IO[HttpResponse] = {
     val l = record.timeStamp
     val timestamp = s"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
     val r: LogstashRecord = LogstashRecord(
@@ -52,11 +51,10 @@ case class LogstashWriter(url: URL,
       }
     )
 
-    val value = r.toValue
-    val additional = additionalFields.toValue
-    val json = Json.format(value.merge(additional))
+    val json = r.json
+    val additional = additionalFields.json
 
-    val content = Content.string(json, ContentType.`application/json`)
+    val content = Content.json(json.merge(additional))
     client.content(content).send()
   }
 }
