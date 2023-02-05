@@ -1,7 +1,8 @@
 package scribe.message
 
-import scribe.output.{EmptyOutput, LogOutput, TextOutput}
-import scribe.{LogRecord, Loggable}
+import scribe.output.{LogOutput, TextOutput}
+import scribe.throwable.TraceLoggableMessage
+import scribe.Loggable
 
 import scala.language.implicitConversions
 
@@ -14,8 +15,7 @@ object LoggableMessage {
   implicit def logOutput2Message(lo: => LogOutput): LoggableMessage = apply[LogOutput](identity)(lo)
   implicit def string2Message(s: => String): LoggableMessage = apply[String](new TextOutput(_))(s)
   implicit def stringList2Messages(list: => List[String]): List[LoggableMessage] = list.map(f => string2Message(f))
-  implicit def throwable2Message(throwable: => Throwable): LoggableMessage =
-    apply[Throwable](LogRecord.throwable2LogOutput(EmptyOutput, _))(throwable)
+  implicit def throwable2Message(throwable: => Throwable): LoggableMessage = TraceLoggableMessage(throwable)
   implicit def throwableList2Messages(list: List[Throwable]): List[LoggableMessage] =
     list.map(f => throwable2Message(f))
 

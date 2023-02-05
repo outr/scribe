@@ -1,5 +1,7 @@
 package scribe
 
+import scribe.format.FormatBlock
+import scribe.format.FormatBlock.NewLine
 import scribe.message.LoggableMessage
 import scribe.modify.LogModifier
 import scribe.output.{CompositeOutput, EmptyOutput, LogOutput, TextOutput}
@@ -29,7 +31,11 @@ trait LogRecord {
 
   protected def generateLogOutput(): LogOutput = messages match {
     case msg :: Nil => msg.logOutput
-    case list => new CompositeOutput(list.map(_.logOutput))
+    case list => new CompositeOutput(
+      list.flatMap { message =>
+        List(message.logOutput, LogRecord.messageSeparator.format(this))
+      }.dropRight(1)
+    )
   }
 
   def get(key: String): Option[Any] = data.get(key).map(_())
@@ -75,9 +81,15 @@ trait LogRecord {
 object LogRecord extends LogRecordCreator {
   private val incrementor = new AtomicLong(0L)
 
+  /**
+   * The LogRecordCreator to create LogRecords. Defaults to SimpleLogRecord.
+   */
   var creator: LogRecordCreator = SimpleLogRecord
 
-  private val NativeMethod: Int = -2
+  /**
+   * The separator between multiple messages for the same LogRecord. Defaults to NewLine.
+   */
+  var messageSeparator: FormatBlock = NewLine
 
   override def apply(level: Level,
                      value: Double,
@@ -116,62 +128,5 @@ object LogRecord extends LogRecordCreator {
       data = data,
       timeStamp = timeStamp
     )
-  }
-
-  /**
-    * Converts a Throwable to a String representation for output in logging.
-    */
-  @tailrec
-  final def throwable2LogOutput(message: LogOutput,
-                                t: Throwable,
-                                primaryCause: Boolean = true,
-                                b: StringBuilder = new StringBuilder): LogOutput = if (t == None.orNull) {
-    EmptyOutput
-  } else {
-    if (!primaryCause) {
-      b.append("Caused by: ")
-    }
-    b.append(t.getClass.getName)
-    if (Option(t.getLocalizedMessage).nonEmpty) {
-      b.append(": ")
-      b.append(t.getLocalizedMessage)
-    }
-    b.append(scribe.lineSeparator)
-    writeStackTrace(b, t.getStackTrace)
-    if (Option(t.getCause).isEmpty) {
-      val output = new TextOutput(b.toString())
-      if (message == EmptyOutput) {
-        output
-      } else {
-        new CompositeOutput(List(message, new TextOutput(scribe.lineSeparator), output))
-      }
-    } else {
-      throwable2LogOutput(message, t.getCause, primaryCause = false, b = b)
-    }
-  }
-
-  @tailrec
-  private def writeStackTrace(b: StringBuilder, elements: Array[StackTraceElement]): Unit = {
-    elements.headOption match {
-      case None => // No more elements
-      case Some(head) =>
-        b.append("\tat ")
-        b.append(head.getClassName)
-        b.append('.')
-        b.append(head.getMethodName)
-        b.append('(')
-        if (head.getLineNumber == NativeMethod) {
-          b.append("Native Method")
-        } else {
-          b.append(head.getFileName)
-          if (head.getLineNumber > 0) {
-            b.append(':')
-            b.append(head.getLineNumber)
-          }
-        }
-        b.append(')')
-        b.append(scribe.lineSeparator)
-        writeStackTrace(b, elements.tail)
-    }
   }
 }
