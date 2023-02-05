@@ -3,17 +3,9 @@ val scala213 = "2.13.10"
 
 val scala212 = "2.12.17"
 
-val scala211 = "2.11.12"
-
 val scala3 = "3.2.2"
 
-val scala2 = List(scala213, scala212, scala211)
-val allScalaVersions = scala3 :: scala2
-val compatScalaVersions = List(scala213, scala212)
-val scalaJVMVersions = allScalaVersions
-val scalaJSVersions = allScalaVersions
-val scalaNativeVersions = allScalaVersions
-val scalaAllExcept211Versions = List(scala213, scala212, scala3)
+val allScalaVersions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
@@ -51,7 +43,7 @@ val sourcecodeVersion: String = "0.3.0"
 val collectionCompatVersion: String = "2.9.0"
 val moduloadVersion: String = "1.1.6"
 
-val catsEffectVersion: String = "3.4.5"
+val catsEffectVersion: String = "3.4.6"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
@@ -121,19 +113,13 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
         List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
       }
     ),
-    Test / publishArtifact := false
-  )
-  .jsSettings(
-    crossScalaVersions := scalaJSVersions
+    Test / publishArtifact := false,
+    crossScalaVersions := allScalaVersions
   )
   .jvmSettings(
-    crossScalaVersions := scalaJVMVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "moduload" % moduloadVersion
     )
-  )
-  .nativeSettings(
-    crossScalaVersions := scalaNativeVersions
   )
 
 lazy val coreJS = core.js
@@ -144,7 +130,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-cats",
-    crossScalaVersions := scalaAllExcept211Versions,
+    crossScalaVersions := allScalaVersions,
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-effect" % catsEffectVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
@@ -171,13 +157,10 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
     name := "scribe-file",
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
-    )
-  )
-  .jvmSettings(
-    crossScalaVersions := scalaJVMVersions
+    ),
+    crossScalaVersions := allScalaVersions
   )
   .nativeSettings(
-    crossScalaVersions := scalaNativeVersions,
     nativeLinkStubs := true,
     test := {}
   )
@@ -194,13 +177,7 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
       "com.outr" %%% "fabric-parse" % fabricVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    crossScalaVersions := List(scala213, scala212)
-  )
-  .jsSettings(
-    crossScalaVersions := scalaJSVersions
-  )
-  .jvmSettings(
-    crossScalaVersions := scalaJVMVersions
+    crossScalaVersions := allScalaVersions
   )
   .dependsOn(core)
 
@@ -216,7 +193,7 @@ lazy val slf4j = project.in(file("slf4j"))
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    crossScalaVersions := scalaJVMVersions
+    crossScalaVersions := allScalaVersions
   )
 
 lazy val slf4j2 = project.in(file("slf4j2"))
@@ -228,7 +205,7 @@ lazy val slf4j2 = project.in(file("slf4j2"))
       "org.slf4j" % "slf4j-api" % slf4j2Version,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    crossScalaVersions := scalaJVMVersions
+    crossScalaVersions := allScalaVersions
   )
 
 lazy val log4j = project.in(file("log4j"))
@@ -241,7 +218,7 @@ lazy val log4j = project.in(file("log4j"))
       "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    crossScalaVersions := scalaJVMVersions
+    crossScalaVersions := allScalaVersions
   )
 
 lazy val migration = project.in(file("migration"))
@@ -252,7 +229,7 @@ lazy val migration = project.in(file("migration"))
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    crossScalaVersions := scalaJVMVersions
+    crossScalaVersions := allScalaVersions
   )
 
 lazy val config = project.in(file("config"))
@@ -264,13 +241,13 @@ lazy val config = project.in(file("config"))
       "com.outr" %% "profig" % profigVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
-    crossScalaVersions := compatScalaVersions
+    crossScalaVersions := allScalaVersions
   )
 
 lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
-    crossScalaVersions := compatScalaVersions,
+    crossScalaVersions := allScalaVersions,
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
     )
@@ -280,7 +257,7 @@ lazy val slack = project.in(file("slack"))
 lazy val logstash = project.in(file("logstash"))
   .settings(
     name := "scribe-logstash",
-    crossScalaVersions := compatScalaVersions,
+    crossScalaVersions := allScalaVersions,
     libraryDependencies ++= Seq(
       "io.youi" %% "youi-client" % youiVersion
     )
