@@ -33,8 +33,8 @@ trait LogRecord {
     case msg :: Nil => msg.logOutput
     case list => new CompositeOutput(
       list.flatMap { message =>
-        List(message.logOutput, LogRecord.messageSeparator.format(this))
-      }.dropRight(1)
+        List(LogRecord.messageSeparator.format(this), message.logOutput)
+      }.drop(1)
     )
   }
 
