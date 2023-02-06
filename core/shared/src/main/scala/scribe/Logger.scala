@@ -115,11 +115,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     })
   }
 
-  override def log(record: LogRecord): Unit = {
-    logInternal(record)
-    // TODO: Handle async leases
-    record.dispose()
-  }
+  override def log(record: LogRecord): Unit = logInternal(record)
 
   protected def logInternal(record: LogRecord): Unit = {
     val r = if (data.nonEmpty) {
@@ -155,7 +151,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
                 timeStamp: Long = Time()): Unit = {
     log(LogRecord(
       level = level,
-      value = level.value,
+      levelValue = level.value,
       messages = messages,
       fileName = fileName,
       className = overrideClassName.getOrElse(className),

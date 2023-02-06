@@ -17,7 +17,7 @@ object SLF4JHelper {
     val scribeLogger = scribe.Logger(name)
     val record = LogRecord(
       level = level,
-      value = level.value,
+      levelValue = level.value,
       messages = List(msg),
       fileName = "",
       className = name,

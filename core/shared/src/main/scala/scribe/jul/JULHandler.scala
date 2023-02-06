@@ -10,7 +10,7 @@ object JULHandler extends java.util.logging.Handler {
     val level = l2l(record.getLevel)
     val logRecord = LogRecord(
       level = level,
-      value = level.value,
+      levelValue = level.value,
       messages = List(record.getMessage),
       fileName = "",
       className = Option(record.getSourceClassName).getOrElse(record.getLoggerName),

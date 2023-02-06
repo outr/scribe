@@ -97,7 +97,7 @@ object LoggerSupport {
     }
     LogRecord(
       level = level,
-      value = level.value,
+      levelValue = level.value,
       messages = messages,
       fileName = fn,
       className = className,
