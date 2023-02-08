@@ -88,7 +88,7 @@ lazy val root = project.in(file("."))
     coreJS, coreJVM, coreNative,
     catsJS, catsJVM, catsNative,
     fileJVM, fileNative,
-    jsonJS, jsonJVM,
+    jsonJS, jsonJVM, jsonFabricJS, jsonFabricJVM,
     slf4j, slf4j2, log4j, migration, config, slack, logstash
   )
   .settings(
@@ -174,7 +174,6 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
   .settings(
     name := "scribe-json",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "fabric-io" % fabricVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
@@ -183,6 +182,21 @@ lazy val json = crossProject(JSPlatform, JVMPlatform)
 
 lazy val jsonJS = json.js
 lazy val jsonJVM = json.jvm
+
+lazy val jsonFabric = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-json-fabric",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "fabric-io" % fabricVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    ),
+    crossScalaVersions := allScalaVersions
+  )
+  .dependsOn(json)
+
+lazy val jsonFabricJS = jsonFabric.js
+lazy val jsonFabricJVM = jsonFabric.jvm
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)

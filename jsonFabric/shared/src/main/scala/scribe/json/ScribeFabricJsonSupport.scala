@@ -1,31 +1,24 @@
 package scribe.json
 
 import fabric._
-import fabric.io.JsonFormatter
 import fabric.rw._
-import perfolation._
+import fabric.io.JsonFormatter
 import scribe.LogRecord
 import scribe.data.MDC
 import scribe.message.Message
-import scribe.output.format.OutputFormat
-import scribe.output.{LogOutput, TextOutput}
-import scribe.writer.Writer
+import scribe.throwable.{Trace, TraceElement}
+import perfolation._
 
-class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
-  override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
-    val json = toJson(record)
-    val jsonString = if (compact) {
-      JsonFormatter.Compact(json)
-    } else {
-      JsonFormatter.Default(json)
-    }
-    writer.write(record, new TextOutput(jsonString), outputFormat)
-  }
+object ScribeFabricJsonSupport extends ScribeJsonSupport[Json] {
+  private implicit val traceElementRW: RW[TraceElement] = RW.gen
+  private implicit val traceRW: RW[Trace] = RW.gen
 
-  def toJson(record: LogRecord): Json = {
+  override def json2String(json: Json): String = JsonFormatter.Default(json)
+
+  override def logRecord2Json(record: LogRecord): Json = {
     val l = record.timeStamp
-    val traces = record.messages.collect {
-      case message: Message[_] if message.value.isInstanceOf[Throwable] => throwable2Trace(message.value.asInstanceOf[Throwable])
+    val traces = record.messages.map(_.value).collect {
+      case trace: Trace => trace
     } match {
       case Nil => Null
       case t :: Nil => t.json
@@ -62,12 +55,5 @@ class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
       "date" -> l.t.F,
       "time" -> s"${l.t.T}.${l.t.L}${l.t.z}"
     )
-  }
-
-  private def throwable2Trace(throwable: Throwable): Trace = {
-    val elements = throwable.getStackTrace.toList.map { e =>
-      TraceElement(e.getClassName, e.getMethodName, e.getLineNumber)
-    }
-    Trace(throwable.getLocalizedMessage, elements, Option(throwable.getCause).map(throwable2Trace))
   }
 }
