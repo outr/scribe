@@ -48,6 +48,7 @@ val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
 val fabricVersion: String = "1.9.0"
+val circeVersion = "0.14.4"
 
 // Testing
 val scalaTestVersion: String = "3.2.15"
@@ -197,6 +198,24 @@ lazy val jsonFabric = crossProject(JSPlatform, JVMPlatform)
 
 lazy val jsonFabricJS = jsonFabric.js
 lazy val jsonFabricJVM = jsonFabric.jvm
+
+lazy val jsonCirce = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-json-circe",
+    libraryDependencies ++= Seq(
+      "io.circe" %% "circe-core" % circeVersion,
+      "io.circe" %% "circe-parser" % circeVersion % Test,
+      "io.circe" %% "circe-generic" % circeVersion % Test,
+      "io.circe" %% "circe-parser" % circeVersion % Test,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+    ),
+    crossScalaVersions := allScalaVersions
+  )
+  .dependsOn(json)
+
+lazy val jsonCirceJS = jsonCirce.js
+lazy val jsonCirceJVM = jsonCirce.jvm
 
 lazy val slf4j = project.in(file("slf4j"))
   .dependsOn(coreJVM)
