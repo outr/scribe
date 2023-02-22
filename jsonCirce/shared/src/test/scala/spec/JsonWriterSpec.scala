@@ -1,14 +1,14 @@
 package spec
 
-import io.circe.{Json, JsonObject}
+import io.circe.Json
+import io.circe.parser.parse
+import org.scalatest.Inside
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.Logger
+import scribe.json.ScribeCirceJsonSupport._
 import scribe.util.Time
 import scribe.writer.CacheWriter
-import scribe.json.ScribeCirceJsonSupport._
-import io.circe.parser.parse
-import org.scalatest.Inside
 
 class JsonWriterSpec extends AnyWordSpec with Matchers with Inside {
   "JsonWriter" should {
