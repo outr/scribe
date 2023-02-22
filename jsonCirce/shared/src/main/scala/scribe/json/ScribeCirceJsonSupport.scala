@@ -11,16 +11,16 @@ object ScribeCirceJsonSupport extends ScribeJsonSupport[Json] {
   def json2String(json: Json): String = json.noSpaces
 
   def logRecord2Json(record: LogRecord): Json = {
-    val (traces, messages) = record.messages.view
-      .collect { case message: Message[_] => message }
-      .partitionMap { message: Message[_] =>
-        if (message.value.isInstanceOf[Throwable]) { Left(message.logOutput.plainText) }
-        else { Right(message.logOutput.plainText) }
-      }
+    val traces = record.messages
+      .collect { case message: Message[_] if message.value.isInstanceOf[Throwable] => message }
+      .map(_.logOutput.plainText)
+    val messages = record.messages
+      .collect { case message: Message[_] if !message.value.isInstanceOf[Throwable] => message }
+      .map(_.logOutput.plainText)
     val timestamp = OffsetDateTime.ofInstant(Instant.ofEpochMilli(record.timeStamp), ZoneId.of("UTC"))
     val service = MDC.get("service").map(_.toString)
     JsonObject(
-      "messages" -> messages.toSeq.asJson,
+      "messages" -> messages.asJson,
       "service" -> service.asJson,
       "level" -> record.level.name.asJson,
       "value" -> record.levelValue.asJson,
