@@ -77,6 +77,25 @@ object FormatBlock {
         }
       }
     }
+    object ISO8601 extends FormatBlock {
+      private lazy val cache = new ThreadLocal[String] {
+        override def initialValue(): String = ""
+      }
+      private lazy val lastValue = new ThreadLocal[Long] {
+        override def initialValue(): Long = 0L
+      }
+      override def format(record: LogRecord): LogOutput = {
+        val l = record.timeStamp
+        if (l - lastValue.get() > 1000L) {
+          val d = s"${l.t.Y}-${l.t.m}-${l.t.d}T${l.t.T}Z"
+          cache.set(d)
+          lastValue.set(l)
+          new TextOutput(d)
+        } else {
+          new TextOutput(cache.get())
+        }
+      }
+    }
     object Full extends FormatBlock {
       override def format(record: LogRecord): LogOutput = {
         val l = record.timeStamp
