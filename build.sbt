@@ -89,7 +89,7 @@ lazy val root = project.in(file("."))
     coreJS, coreJVM, coreNative,
     catsJS, catsJVM, catsNative,
     fileJVM, fileNative,
-    jsonJS, jsonJVM, jsonFabricJS, jsonFabricJVM,
+    jsonJS, jsonJVM, jsonFabricJS, jsonFabricJVM, jsonCirceJS, jsonCirceJVM,
     slf4j, slf4j2, log4j, migration, config, slack, logstash
   )
   .settings(
