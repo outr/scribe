@@ -47,7 +47,7 @@ val catsEffectVersion: String = "3.4.8"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
-val fabricVersion: String = "1.9.0"
+val fabricVersion: String = "1.10.1"
 val circeVersion = "0.14.4"
 
 // Testing
