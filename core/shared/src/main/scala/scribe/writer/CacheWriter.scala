@@ -15,6 +15,16 @@ class CacheWriter(max: Int = CacheWriter.DefaultMax) extends Writer {
   def records: List[LogRecord] = recordCache
   def output: List[LogOutput] = outputCache
 
+  def consume[Return](f: List[LogRecord] => Return): Return = try {
+    f(records)
+  } finally {
+    clear()
+  }
+
+  def consumeMessages[Return](f: List[String] => Return): Return = consume { list =>
+    f(list.map(_.messages.map(_.logOutput.plainText).mkString(" ")))
+  }
+
   def clear(): Unit = synchronized {
     recordCache = Nil
     outputCache = Nil

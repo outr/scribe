@@ -25,10 +25,14 @@ case class FilterBuilder(priority: Priority = Priority.Normal,
   def boostOneLevel: FilterBuilder = boost(d => d + 100.0)
   def boosted(minimumLevel: Level,
               destinationLevel: Level): FilterBuilder = {
-    boost(d => if (d >= minimumLevel.value && d <= destinationLevel.value) {
-      destinationLevel.value
-    } else {
-      d
+    boost(d => {
+      println(s"*** BOOSTING! $d (min: ${minimumLevel.value}, dest: ${destinationLevel.value})")
+      if (d >= minimumLevel.value && d <= destinationLevel.value) {
+        println(s"\tto ${destinationLevel.value}")
+        destinationLevel.value
+      } else {
+        d
+      }
     })
   }
 
