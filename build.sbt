@@ -48,20 +48,20 @@ val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
 val fabricVersion: String = "1.10.4"
-val circeVersion = "0.14.4"
+val circeVersion = "0.14.5"
 
 // Testing
 val scalaTestVersion: String = "3.2.15"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
-val slf4j2Version: String = "2.0.6"
+val slf4j2Version: String = "2.0.7"
 
 // Config Dependencies
 val profigVersion: String = "3.4.1"
 
 // Slack and Logstash Dependencies
-val spiceVersion: String = "0.0.19"
+val spiceVersion: String = "0.0.21"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.20.0"
