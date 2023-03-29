@@ -1,9 +1,10 @@
 package specs
 
 import scribe._
+import scribe.writer.CacheWriter
 
-class LoggingTestObject(handler: TestingHandler) extends Logging {
-  logger.orphan().withHandler(handler).replace()
+class LoggingTestObject(writer: CacheWriter) extends Logging {
+  logger.orphan().withHandler(writer = writer).replace()
 
   private val anonymous = () => {
     LoggingTestObject.this.logger.info("Anonymous logging!")

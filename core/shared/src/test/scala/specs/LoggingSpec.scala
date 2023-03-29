@@ -26,11 +26,11 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
   "Logging" should {
     TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
 
-    val handler = new TestingHandler
-    val testObject = new LoggingTestObject(handler)
+    val writer = new CacheWriter()
+    val testObject = new LoggingTestObject(writer)
     "set up the logging" in {
-      handler.clear()
-      logger.withHandler(handler).replace()
+      writer.clear()
+      logger.withHandler(writer = writer).replace()
       Logger("specs").orphan().replace()
       loggerName should be("specs.LoggingSpec")
     }
@@ -43,36 +43,36 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       Logger(logger.parentId.get) should be(Logger("specs"))
     }
     "have no logged entries yet" in {
-      handler.records.length should be(0)
+      writer.records.length should be(0)
     }
     "log a single entry after info log" in {
       logger.info("Info Log")
-      handler.records.length should be(1)
+      writer.records.length should be(1)
     }
     "log a second entry after debug log" in {
       logger.debug("Debug Log")
-      handler.records.length should be(2)
+      writer.records.length should be(2)
     }
     "ignore the third entry after reconfiguring without debug logging" in {
       logger
         .withMinimumLevel(Level.Info)
         .replace()
-      handler.records.length should be(2)
+      writer.records.length should be(2)
       logger.debug("Debug Log 2")
-      handler.records.length should be(2)
+      writer.records.length should be(2)
     }
     "boost the this logging instance" in {
       logger.withModifier(LogBooster.multiply(2.0, Priority.Critical)).replace()
       logger.debug("Debug Log 3")
-      handler.records.length should be(3)
+      writer.records.length should be(3)
     }
     "not increment when logging to the root logger" in {
       Logger.root.error("Error Log 1")
-      handler.records.length should be(3)
+      writer.records.length should be(3)
     }
     "log using no arguments" in {
       logger.info()
-      handler.records.length should be(4)
+      writer.records.length should be(4)
     }
     "log using 's' interpolation" in {
       val message = "Wahoo!"
@@ -87,38 +87,38 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       logger.info(s"It works! ${d.f()}")
     }
     "write a detailed log message" in {
-      val line = Some(13)
-      handler.clear()
+      val line = Some(14)
+      writer.clear()
       testObject.testLogger()
-      handler.records.length should be(1)
-      handler.records.head.methodName should be(Some("testLogger"))
-      handler.records.head.className should be("specs.LoggingTestObject")
-      handler.records.head.line should be(line)
-      handler.records.head.fileName should be(expectedTestFileName)
+      writer.records.length should be(1)
+      writer.records.head.methodName should be(Some("testLogger"))
+      writer.records.head.className should be("specs.LoggingTestObject")
+      writer.records.head.line should be(line)
+      writer.records.head.fileName should be(expectedTestFileName)
       FormatBlock.Position.abbreviate(maxLength = 1, removeEntries = false)
-        .format(handler.records.head)
-        .plainText should be("s.LoggingTestObject.testLogger:13")
+        .format(writer.records.head)
+        .plainText should be("s.LoggingTestObject.testLogger:14")
     }
     "write a log message with an anonymous function" in {
-      val line = Some(9)
-      handler.clear()
+      val line = Some(10)
+      writer.clear()
       testObject.testAnonymous()
-      handler.records.length should be(1)
-      handler.records.head.methodName should be(None)
-      handler.records.head.className should be("specs.LoggingTestObject")
-      handler.records.head.line should be(line)
-      handler.records.head.fileName should be(expectedTestFileName)
+      writer.records.length should be(1)
+      writer.records.head.methodName should be(None)
+      writer.records.head.className should be("specs.LoggingTestObject")
+      writer.records.head.line should be(line)
+      writer.records.head.fileName should be(expectedTestFileName)
     }
     "write an exception" in {
-      val line = Some(21)
-      handler.clear()
+      val line = Some(22)
+      writer.clear()
       testObject.testException()
-      handler.records.length should be(1)
-      handler.records.head.methodName should be(Some("testException"))
-      handler.records.head.className should be("specs.LoggingTestObject")
-      handler.records.head.line should be(line)
-      handler.records.head.logOutput.plainText should startWith("java.lang.RuntimeException: Testing")
-      handler.records.head.fileName should be(expectedTestFileName)
+      writer.records.length should be(1)
+      writer.records.head.methodName should be(Some("testException"))
+      writer.records.head.className should be("specs.LoggingTestObject")
+      writer.records.head.line should be(line)
+      writer.records.head.logOutput.plainText should startWith("java.lang.RuntimeException: Testing")
+      writer.records.head.fileName should be(expectedTestFileName)
     }
     "utilize MDC logging" in {
       val logs = ListBuffer.empty[String]
