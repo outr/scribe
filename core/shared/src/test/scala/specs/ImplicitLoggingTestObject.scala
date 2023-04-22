@@ -1,12 +1,13 @@
 package specs
 
 import scribe._
+import scribe.writer.CacheWriter
 
 object ImplicitLoggingTestObject {
-  val handler = new TestingHandler
+  val writer = new CacheWriter
 
   def initialize(): Unit = {
-    this.logger.orphan().withHandler(handler).replace()
+    this.logger.orphan().withHandler(writer = writer).replace()
   }
 
   def doSomething(): Unit = {
