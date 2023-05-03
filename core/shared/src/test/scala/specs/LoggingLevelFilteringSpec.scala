@@ -16,6 +16,7 @@ class LoggingLevelFilteringSpec extends AnyWordSpec with Matchers {
 
   "Logging Level Filtering" should {
     "configure the loggers" in {
+      Logger.reset()
       Logger.root
         .clearHandlers()
         .withMinimumLevel(Level.Info)
