@@ -4,7 +4,7 @@ import scribe._
 import scribe.writer.CacheWriter
 
 object ImplicitLoggingTestObject {
-  val writer = new CacheWriter()
+  val writer = new CacheWriter
 
   def initialize(): Unit = {
     this.logger.orphan().withHandler(writer = writer).replace()

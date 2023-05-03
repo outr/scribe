@@ -43,11 +43,11 @@ val sourcecodeVersion: String = "0.3.0"
 val collectionCompatVersion: String = "2.9.0"
 val moduloadVersion: String = "1.1.6"
 
-val catsEffectVersion: String = "3.4.8"
+val catsEffectVersion: String = "3.4.9"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
-val fabricVersion: String = "1.10.4"
+val fabricVersion: String = "1.10.7"
 val circeVersion = "0.14.5"
 
 // Testing
@@ -61,7 +61,7 @@ val slf4j2Version: String = "2.0.7"
 val profigVersion: String = "3.4.1"
 
 // Slack and Logstash Dependencies
-val spiceVersion: String = "0.0.21"
+val spiceVersion: String = "0.0.26"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.20.0"
