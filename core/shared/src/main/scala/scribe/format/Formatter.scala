@@ -59,7 +59,7 @@ object Formatter {
       newLine
     ),
     multiLine(messages),
-    mdcMultiLine
+    multiLine(mdcMultiLine)
   )
   /**
    * A strict format with a focus on consistent width.

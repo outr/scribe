@@ -468,7 +468,7 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
         val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat())
         Thread.currentThread().setName("test-thread")
         logger.info("Hello, HTML!")
-        b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:470</span><br/>&#160;&#160;&#160;&#160;Hello,&#160;HTML!</div>""")
+        b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:470</span><br/>&#160;&#160;&#160;&#160;Hello,&#160;HTML!&#160;&#160;&#160;&#160;</div>""")
       }
     }
   }
