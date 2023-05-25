@@ -13,7 +13,7 @@ object ScribeFabricJsonSupport extends ScribeJsonSupport[Json] {
   private implicit val traceElementRW: RW[TraceElement] = RW.gen
   private implicit val traceRW: RW[Trace] = RW.gen
 
-  override def json2String(json: Json): String = JsonFormatter.Default(json)
+  override def json2String(json: Json): String = JsonFormatter.Compact(json)
 
   override def logRecord2Json(record: LogRecord): Json = {
     val l = record.timeStamp
@@ -45,6 +45,12 @@ object ScribeFabricJsonSupport extends ScribeJsonSupport[Json] {
       "line" -> record.line.map(_.json).getOrElse(Null),
       "column" -> record.column.map(_.json).getOrElse(Null),
       "data" -> data.map {
+        case (key, value) => value() match {
+          case json: Json => key -> json
+          case any => key -> str(any.toString)
+        }
+      },
+      "mdc" -> MDC.map.map {
         case (key, value) => value() match {
           case json: Json => key -> json
           case any => key -> str(any.toString)

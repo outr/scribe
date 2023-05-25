@@ -278,7 +278,7 @@ object FormatBlock {
       val map = MDC.map ++ record.data
       if (map.nonEmpty) {
         val nl = newLine.format(record)
-        val prefix = green(bold(string("    ["))).format(record)
+        val prefix = green(bold(string("["))).format(record)
         val postfix = green(bold(string("]"))).format(record)
         val entries = nl :: prefix :: map.toList.flatMap {
           case (key, value) => List(
