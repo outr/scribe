@@ -138,6 +138,8 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     case None => Logger.replace(this)
   }
 
+  def remove(): Unit = Logger.remove(this)
+
   def logDirect(level: Level,
                 messages: List[LoggableMessage] = Nil,
                 fileName: String = "",
@@ -308,6 +310,9 @@ object Logger {
 
   def get[T](implicit t: ClassTag[T]): Option[Logger] = get(t.runtimeClass.getName)
 
+  /**
+    * Replaces this logger and all references to it in the global state
+    */
   def replace(logger: Logger): Logger = synchronized {
     id2Logger += logger.id -> logger
     lastChange = System.currentTimeMillis()
@@ -318,6 +323,18 @@ object Logger {
     replace(logger)
     name2Id += fixName(name) -> logger.id
     logger
+  }
+
+  /**
+    * Removes this logger from the global state and all references to it.
+    */
+  def remove(logger: Logger): Unit = synchronized {
+    id2Logger -= logger.id
+    lastChange = System.currentTimeMillis()
+    val names = name2Id.collect {
+      case (name, id) if logger.id == id => name
+    }
+    name2Id --= names
   }
 
   def namesFor(loggerId: LoggerId): Set[String] = name2Id.collect {

@@ -9,7 +9,7 @@ val allScalaVersions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.11.3"
+ThisBuild / version := "3.11.4-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -47,7 +47,7 @@ val catsEffectVersion: String = "3.5.0"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
-val fabricVersion: String = "1.10.9"
+val fabricVersion: String = "1.11.1"
 val circeVersion = "0.14.5"
 
 // Testing
