@@ -1,24 +1,18 @@
 package scribe.slf4j
 
 import org.slf4j.helpers.FormattingTuple
-import org.slf4j.spi.LocationAwareLogger
-import scribe.{Level, LogRecord}
+import scribe.message.LoggableMessage
+import scribe._
 
 object SLF4JHelper {
-  def scribeLevel(level: Int): Level = level match {
-    case LocationAwareLogger.TRACE_INT => Level.Trace
-    case LocationAwareLogger.DEBUG_INT => Level.Debug
-    case LocationAwareLogger.INFO_INT => Level.Info
-    case LocationAwareLogger.WARN_INT => Level.Warn
-    case LocationAwareLogger.ERROR_INT => Level.Error
-  }
-
   def log(name: String, level: Level, msg: String, t: Option[Throwable]): Unit = {
     val scribeLogger = scribe.Logger(name)
+    val messages: List[LoggableMessage] = LoggableMessage.string2Message(msg) ::
+      t.toList.map(t => LoggableMessage.throwable2Message(t))
     val record = LogRecord(
       level = level,
       levelValue = level.value,
-      messages = List(msg),
+      messages = messages,
       fileName = "",
       className = name,
       methodName = None,
