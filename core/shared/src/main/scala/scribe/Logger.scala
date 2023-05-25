@@ -257,6 +257,15 @@ object Logger {
     case (name, id) => name -> id2Logger(id)
   }
 
+  /**
+   * Resets the global state of Scribe
+   */
+  def reset(): Unit = {
+    id2Logger = Map.empty
+    name2Id = Map.empty
+    resetRoot()
+  }
+
   def apply(name: String): Logger = get(name) match {
     case Some(logger) => logger
     case None => synchronized {
