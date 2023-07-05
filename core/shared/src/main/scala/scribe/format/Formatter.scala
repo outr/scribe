@@ -25,7 +25,8 @@ object Formatter {
    */
   lazy val compact: Formatter = formatter"$date ${string("[")}$levelColored${string("]")} ${green(position)} - $messages$mdc"
   /**
-   * A rich log output format with coloring and lots of details. The default format.
+   * A rich log output format with coloring and lots of details. The original default format, but has been replaced by
+   * default multi-line with "advanced".
    */
   lazy val enhanced: Formatter = Formatter.fromBlocks(
     dateCounter,
@@ -45,7 +46,7 @@ object Formatter {
   )
   /**
    * A multi-line formatter that includes expanded log information on the first line, and indented and auto-wrapping
-   * message and MDC on the following line(s).
+   * message and MDC on the following line(s). The default format.
    */
   lazy val advanced: Formatter = Formatter.fromBlocks(
     groupBySecond(
