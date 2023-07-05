@@ -9,7 +9,7 @@ val allScalaVersions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.11.6"
+ThisBuild / version := "3.11.7-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -41,7 +41,7 @@ ThisBuild / outputStrategy := Some(StdoutOutput)
 val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.3.0"
 val collectionCompatVersion: String = "2.11.0"
-val moduloadVersion: String = "1.1.6"
+val moduloadVersion: String = "1.1.7"
 
 val catsEffectVersion: String = "3.5.1"
 val catsEffectTestingVersion: String = "1.5.0"
