@@ -3,6 +3,7 @@ package org.slf4j;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 import scala.None$;
+import scala.Option;
 import scala.Some;
 import scribe.Level;
 import scribe.slf4j.SLF4JHelper;
@@ -48,7 +49,7 @@ public class ScribeLoggerAdapter extends MarkerIgnoringBase implements Logger {
 
     @Override
     public void trace(String msg, Throwable t) {
-        SLF4JHelper.log(name, Level.Trace(), msg, Some.apply(t));
+        SLF4JHelper.log(name, Level.Trace(), msg, Option.apply(t));
     }
 
     @Override
@@ -78,7 +79,7 @@ public class ScribeLoggerAdapter extends MarkerIgnoringBase implements Logger {
 
     @Override
     public void debug(String msg, Throwable t) {
-        SLF4JHelper.log(name, Level.Debug(), msg, Some.apply(t));
+        SLF4JHelper.log(name, Level.Debug(), msg, Option.apply(t));
     }
 
     @Override
@@ -108,7 +109,7 @@ public class ScribeLoggerAdapter extends MarkerIgnoringBase implements Logger {
 
     @Override
     public void info(String msg, Throwable t) {
-        SLF4JHelper.log(name, Level.Info(), msg, Some.apply(t));
+        SLF4JHelper.log(name, Level.Info(), msg, Option.apply(t));
     }
 
     @Override
@@ -138,7 +139,7 @@ public class ScribeLoggerAdapter extends MarkerIgnoringBase implements Logger {
 
     @Override
     public void warn(String msg, Throwable t) {
-        SLF4JHelper.log(name, Level.Warn(), msg, Some.apply(t));
+        SLF4JHelper.log(name, Level.Warn(), msg, Option.apply(t));
     }
 
     @Override
@@ -168,6 +169,6 @@ public class ScribeLoggerAdapter extends MarkerIgnoringBase implements Logger {
 
     @Override
     public void error(String msg, Throwable t) {
-        SLF4JHelper.log(name, Level.Error(), msg, Some.apply(t));
+        SLF4JHelper.log(name, Level.Error(), msg, Option.apply(t));
     }
 }
