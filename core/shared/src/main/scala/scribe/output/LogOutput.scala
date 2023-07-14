@@ -25,7 +25,9 @@ object EmptyOutput extends LogOutput {
   override def toString: String = "empty"
 }
 
-class TextOutput(val plainText: String) extends AnyVal with LogOutput {
+class TextOutput(val value: String) extends AnyVal with LogOutput {
+  def plainText: String = if (value == null) "null" else value
+
   override def map(f: String => String): LogOutput = new TextOutput(f(plainText))
 
   override def splitAt(index: Int): (LogOutput, LogOutput) =
