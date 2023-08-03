@@ -4,6 +4,7 @@ import scribe.LogRecord
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicLong
+import scala.annotation.tailrec
 import scala.language.implicitConversions
 
 /**
@@ -26,18 +27,29 @@ case class AsynchronousLogHandle(maxBuffer: Int = AsynchronousLogHandle.DefaultM
       setDaemon(true)
 
       override def run(): Unit = while (true) {
-        Option(q.poll()) match {
-          case Some((handler, record)) => {
-            cached.decrementAndGet()
-            SynchronousLogHandle.log(handler, record)
-            Thread.sleep(1L)
-          }
-          case None => Thread.sleep(10L)
+        if (flushNext()) {
+          Thread.sleep(1L)
+        } else {
+          Thread.sleep(10L)
         }
       }
     }
     t.start()
     q
+  }
+
+  def flushNext(): Boolean = Option(queue.poll()) match {
+    case Some((handler, record)) => {
+      cached.decrementAndGet()
+      SynchronousLogHandle.log(handler, record)
+      true
+    }
+    case None => false
+  }
+
+  @tailrec
+  final def flush(): Unit = if (flushNext()) {
+    flush()
   }
 
   def withMaxBuffer(maxBuffer: Int): AsynchronousLogHandle = copy(maxBuffer = maxBuffer)
