@@ -1,5 +1,4 @@
 import scribe.data.MDC
-import scribe.message.{LoggableMessage => Message}
 import sourcecode.{FileName, Line, Name, Pkg}
 
 import scala.language.experimental.macros
@@ -13,9 +12,9 @@ package object scribe extends LoggerSupport[Unit] {
   @inline
   override final def log(record: LogRecord): Unit = Logger(record.className).log(record)
 
-  override def log(level: Level, mdc: MDC, messages: Message*)
+  override def log(level: Level, mdc: MDC, features: LogFeature*)
                   (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit =
-    if (includes(level)) super.log(level, mdc, messages: _*)
+    if (includes(level)) super.log(level, mdc, features: _*)
 
   def includes(level: Level)(implicit pkg: sourcecode.Pkg,
                              fileName: sourcecode.FileName,

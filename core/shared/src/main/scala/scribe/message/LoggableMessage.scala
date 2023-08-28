@@ -2,22 +2,23 @@ package scribe.message
 
 import scribe.output.{LogOutput, TextOutput}
 import scribe.throwable.TraceLoggableMessage
-import scribe.Loggable
+import scribe.{LogFeature, LogRecord, Loggable}
 
 import scala.language.implicitConversions
 
-trait LoggableMessage {
+trait LoggableMessage extends LogFeature {
   def value: Any
   def logOutput: LogOutput
+
+  override def apply(record: LogRecord): LogRecord = record.withMessages(this)
 }
 
 object LoggableMessage {
-  implicit def logOutput2Message(lo: => LogOutput): LoggableMessage = apply[LogOutput](identity)(lo)
-  implicit def string2Message(s: => String): LoggableMessage = apply[String](new TextOutput(_))(s)
-  implicit def stringList2Messages(list: => List[String]): List[LoggableMessage] = list.map(f => string2Message(f))
-  implicit def throwable2Message(throwable: => Throwable): LoggableMessage = TraceLoggableMessage(throwable)
+  implicit def string2LoggableMessage(s: => String): LoggableMessage = LoggableMessage[String](new TextOutput(_))(s)
+  implicit def stringList2Messages(list: => List[String]): List[LoggableMessage] =
+    list.map(f => string2LoggableMessage(f))
   implicit def throwableList2Messages(list: List[Throwable]): List[LoggableMessage] =
-    list.map(f => throwable2Message(f))
+    list.map(f => TraceLoggableMessage(f))
 
   def apply[V](toLogOutput: V => LogOutput)(value: => V): LoggableMessage =
     new LazyMessage[V](() => value)(new Loggable[V] {

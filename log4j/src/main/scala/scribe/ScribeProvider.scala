@@ -22,10 +22,6 @@ object ScribeProvider {
   private val DefaultVersion: String = "2.6.0"
 }
 
-
-
-
-
 class ScribeContextMap extends CleanableThreadContextMap {
   override def removeAll(keys: java.lang.Iterable[String]): Unit = keys.asScala.foreach(remove)
 
@@ -153,14 +149,14 @@ case class Log4JLogger(id: LoggerId) extends AbstractLogger {
                           level: log4j.Level,
                           marker: Marker,
                           message: org.apache.logging.log4j.message.Message,
-                          t: Throwable): Unit = logger.log(
-    l2l(level).getOrElse(throw new RuntimeException(s"Unsupported level: $level")),
-    MDC.global,
-    (Some(LoggableMessage.string2Message(message.getFormattedMessage))
-      :: Option(t).map(LoggableMessage.throwable2Message(_))
-      :: Nil
-    ).flatten: _*
-  )
+                          t: Throwable): Unit = {
+    val features = LogFeature.string2LoggableMessage(message.getFormattedMessage) :: Option(t).map(t => LogFeature.throwable2LoggableMessage(t)).toList
+    logger.log(
+      l2l(level).getOrElse(throw new RuntimeException(s"Unsupported level: $level")),
+      MDC.global,
+      features: _*
+    )
+  }
 
   override def getLevel: log4j.Level = if (logger.includes(Level.Trace)) {
     log4j.Level.TRACE

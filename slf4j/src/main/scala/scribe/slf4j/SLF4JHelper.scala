@@ -7,8 +7,8 @@ import scribe._
 object SLF4JHelper {
   def log(name: String, level: Level, msg: String, t: Option[Throwable]): Unit = {
     val scribeLogger = scribe.Logger(name)
-    val messages: List[LoggableMessage] = LoggableMessage.string2Message(msg) ::
-      t.toList.map(t => LoggableMessage.throwable2Message(t))
+    val messages: List[LoggableMessage] = LoggableMessage.string2LoggableMessage(msg) ::
+      LoggableMessage.throwableList2Messages(t.toList)
     val record = LogRecord(
       level = level,
       levelValue = level.value,

@@ -36,7 +36,12 @@ case class LogRecord(level: Level,
     )
   }
 
+  def withFeatures(features: LogFeature*): LogRecord = features.foldLeft(this)((record, feature) => feature(record))
+
+  def withMessages(messages: LoggableMessage*): LogRecord = copy(messages = this.messages ::: messages.toList)
+
   def get(key: String): Option[Any] = data.get(key).map(_())
+  def update(key: String, value: () => Any): LogRecord = copy(data = data + (key -> value))
 
   def boost(booster: Double => Double): LogRecord = copy(levelValue = booster(levelValue))
   def checkModifierId(id: String, add: Boolean = true): Boolean = id match {

@@ -8,43 +8,45 @@ import scala.language.experimental.macros
 trait LoggerSupport[F] extends Any {
   def log(record: LogRecord): F
 
-  def log(level: Level, mdc: MDC, messages: LoggableMessage*)
+  def log(level: Level, mdc: MDC, features: LogFeature*)
          (implicit pkg: sourcecode.Pkg,
           fileName: sourcecode.FileName,
           name: sourcecode.Name,
           line: sourcecode.Line): F = {
-    log(LoggerSupport(level, messages.toList, pkg, fileName, name, line, mdc))
+    val r = LoggerSupport(level, Nil, pkg, fileName, name, line, mdc)
+    val record = features.foldLeft(r)((record, feature) => feature(record))
+    log(record)
   }
 
-  def trace(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
-                                        fileName: sourcecode.FileName,
-                                        name: sourcecode.Name,
-                                        line: sourcecode.Line,
-                                        mdc: MDC): F = log(Level.Trace, mdc, messages: _*)
+  def trace(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
+                                   fileName: sourcecode.FileName,
+                                   name: sourcecode.Name,
+                                   line: sourcecode.Line,
+                                   mdc: MDC): F = log(Level.Trace, mdc, features: _*)
 
-  def debug(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
-                                        fileName: sourcecode.FileName,
-                                        name: sourcecode.Name,
-                                        line: sourcecode.Line,
-                                        mdc: MDC): F = log(Level.Debug, mdc, messages: _*)
+  def debug(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
+                                   fileName: sourcecode.FileName,
+                                   name: sourcecode.Name,
+                                   line: sourcecode.Line,
+                                   mdc: MDC): F = log(Level.Debug, mdc, features: _*)
 
-  def info(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
-                                       fileName: sourcecode.FileName,
-                                       name: sourcecode.Name,
-                                       line: sourcecode.Line,
-                                       mdc: MDC): F = log(Level.Info, mdc, messages: _*)
+  def info(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
+                                  fileName: sourcecode.FileName,
+                                  name: sourcecode.Name,
+                                  line: sourcecode.Line,
+                                  mdc: MDC): F = log(Level.Info, mdc, features: _*)
 
-  def warn(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
-                                       fileName: sourcecode.FileName,
-                                       name: sourcecode.Name,
-                                       line: sourcecode.Line,
-                                       mdc: MDC): F = log(Level.Warn, mdc, messages: _*)
+  def warn(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
+                                  fileName: sourcecode.FileName,
+                                  name: sourcecode.Name,
+                                  line: sourcecode.Line,
+                                  mdc: MDC): F = log(Level.Warn, mdc, features: _*)
 
-  def error(messages: LoggableMessage*)(implicit pkg: sourcecode.Pkg,
-                                        fileName: sourcecode.FileName,
-                                        name: sourcecode.Name,
-                                        line: sourcecode.Line,
-                                        mdc: MDC): F = log(Level.Error, mdc, messages: _*)
+  def error(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
+                                   fileName: sourcecode.FileName,
+                                   name: sourcecode.Name,
+                                   line: sourcecode.Line,
+                                   mdc: MDC): F = log(Level.Error, mdc, features: _*)
 
   /**
    * Includes MDC elapsed to show elapsed time within the block

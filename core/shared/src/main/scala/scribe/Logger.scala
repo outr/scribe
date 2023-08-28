@@ -65,10 +65,10 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
 
   final def withoutModifier(modifier: LogModifier): Logger = setModifiers(modifiers.filterNot(m => m.id.nonEmpty && m.id == modifier.id))
 
-  override def log(level: Level, mdc: MDC, messages: LoggableMessage*)
+  override def log(level: Level, mdc: MDC, features: LogFeature*)
                   (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit = {
     if (includes(level)) {
-      super.log(level, mdc, messages: _*)
+      super.log(level, mdc, features: _*)
     }
   }
 
