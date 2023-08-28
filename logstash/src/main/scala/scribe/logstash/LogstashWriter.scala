@@ -7,7 +7,7 @@ import fabric.io.JsonFormatter
 import fabric.rw._
 import perfolation._
 import scribe.LogRecord
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.output.LogOutput
 import scribe.output.format.OutputFormat
 import scribe.writer.Writer

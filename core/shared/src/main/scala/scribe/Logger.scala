@@ -1,6 +1,6 @@
 package scribe
 
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.format.Formatter
 import scribe.handler.{LogHandle, LogHandler, SynchronousLogHandle}
 import scribe.jul.JULHandler

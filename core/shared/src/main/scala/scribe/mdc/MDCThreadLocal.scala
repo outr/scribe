@@ -1,4 +1,4 @@
-package scribe.data
+package scribe.mdc
 
 object MDCThreadLocal extends MDCManager {
   private val threadLocal: InheritableThreadLocal[MDC] = new InheritableThreadLocal[MDC] {

@@ -1,4 +1,4 @@
-package scribe.data
+package scribe.mdc
 
 trait MDCManager {
   def instance: MDC

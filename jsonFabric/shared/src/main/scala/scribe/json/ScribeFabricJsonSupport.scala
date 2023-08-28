@@ -4,7 +4,7 @@ import fabric._
 import fabric.rw._
 import fabric.io.JsonFormatter
 import scribe.LogRecord
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.message.Message
 import scribe.throwable.{Trace, TraceElement}
 import perfolation._

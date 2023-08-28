@@ -1,9 +1,11 @@
 package scribe
 
-case class Level(name: String, value: Double) {
+case class Level(name: String, value: Double) extends LogFeature {
   def namePadded: String = Level.padded(this)
 
   Level.add(this)
+
+  override def apply(record: LogRecord): LogRecord = record.copy(level = this, levelValue = value)
 }
 
 object Level {

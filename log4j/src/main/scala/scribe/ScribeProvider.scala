@@ -4,7 +4,7 @@ import org.apache.logging.log4j
 import org.apache.logging.log4j.Marker
 import org.apache.logging.log4j.spi.{AbstractLogger, CleanableThreadContextMap, Provider}
 import org.apache.logging.log4j.util.{SortedArrayStringMap, StringMap}
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.message.LoggableMessage
 
 import scala.jdk.CollectionConverters._

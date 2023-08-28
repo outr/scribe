@@ -1,7 +1,7 @@
 package scribe
 
 import _root_.cats.effect._
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.message.LoggableMessage
 import sourcecode.{FileName, Line, Name, Pkg}
 

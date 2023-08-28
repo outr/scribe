@@ -1,4 +1,4 @@
-package scribe.data
+package scribe.mdc
 
 import scribe.util.Time
 import perfolation._

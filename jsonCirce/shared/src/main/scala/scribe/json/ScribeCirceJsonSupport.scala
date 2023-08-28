@@ -3,7 +3,7 @@ package scribe.json
 import io.circe.syntax.EncoderOps
 import io.circe.{Json, JsonObject}
 import scribe.{LogRecord, lineSeparator}
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.message.Message
 
 import java.time.{Instant, OffsetDateTime, ZoneId}

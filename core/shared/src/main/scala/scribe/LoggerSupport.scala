@@ -1,6 +1,6 @@
 package scribe
 
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.message.LoggableMessage
 
 import scala.language.experimental.macros

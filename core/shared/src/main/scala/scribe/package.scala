@@ -1,4 +1,5 @@
-import scribe.data.MDC
+import scribe.LogFeature
+import scribe.mdc.MDC
 import sourcecode.{FileName, Line, Name, Pkg}
 
 import scala.language.experimental.macros
@@ -23,6 +24,26 @@ package object scribe extends LoggerSupport[Unit] {
     val (_, className) = LoggerSupport.className(pkg, fileName)
     Logger(className).includes(level)
   }
+
+  /**
+   * LogFeature convenience functionality to set data on a log
+   */
+  def data(key: String, value: => Any): LogFeature = LogFeature(_(key) = () => value)
+
+  /**
+   * LogFeature convenience functionality to set a booster on a log
+   */
+  def boost(booster: Double => Double): LogFeature = LogFeature(_.boost(booster))
+
+  /**
+   * LogFeature convenience functionality to override the default thread on a log
+   */
+  def thread(thread: Thread): LogFeature = LogFeature(_.copy(thread = thread))
+
+  /**
+   * LogFeature convenience functionality to override the timeStamp on a log
+   */
+  def timeStamp(timeStamp: Long): LogFeature = LogFeature(_.copy(timeStamp = timeStamp))
 
   def dispose(): Unit = disposables.foreach(d => d())
 
