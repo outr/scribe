@@ -31,6 +31,13 @@ package object scribe extends LoggerSupport[Unit] {
   def data(key: String, value: => Any): LogFeature = LogFeature(_(key) = () => value)
 
   /**
+   * LogFeature convenience functionality to set a map of data on a log
+   */
+  def data(map: Map[String, Any]): LogFeature = LogFeature { r =>
+    map.foldLeft(r)((record, tuple) => record(tuple._1) = () => tuple._2)
+  }
+
+  /**
    * LogFeature convenience functionality to set a booster on a log
    */
   def boost(booster: Double => Double): LogFeature = LogFeature(_.boost(booster))
