@@ -3,14 +3,17 @@ package scribe.mdc
 import scribe.util.Time
 import perfolation._
 
+import java.util.concurrent.ConcurrentHashMap
+import scala.jdk.CollectionConverters._
+
 class MDCMap(parent: Option[MDC]) extends MDC {
-  private var _map: Map[String, () => Any] = Map.empty
+  private val _map = new ConcurrentHashMap[String, () => Any]
 
-  override def map: Map[String, () => Any] = _map
+  override def map: Map[String, () => Any] = _map.asScala.toMap
 
-  override def get(key: String): Option[() => Any] = _map.get(key).orElse(parent.flatMap(_.get(key)))
+  override def get(key: String): Option[() => Any] = Option(_map.get(key)).orElse(parent.flatMap(_.get(key)))
 
-  override def update(key: String, value: => Any): Unit = _map = _map + (key -> (() => value))
+  override def update(key: String, value: => Any): Unit = _map.put(key, () => value)
 
   override def contextualize[Return](key: String, value: => Any)(f: => Return): Return = {
     update(key, value)
@@ -26,9 +29,9 @@ class MDCMap(parent: Option[MDC]) extends MDC {
     update(key, s"${((timeFunction() - start) / 1000.0).f()}s")
   }
 
-  override def remove(key: String): Unit = _map = _map - key
+  override def remove(key: String): Unit = _map.remove(key)
 
   override def contains(key: String): Boolean = map.contains(key)
 
-  override def clear(): Unit = _map = Map.empty
+  override def clear(): Unit = _map.clear()
 }
