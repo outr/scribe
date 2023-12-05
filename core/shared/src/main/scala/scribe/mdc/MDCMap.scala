@@ -13,23 +13,27 @@ class MDCMap(parent: Option[MDC]) extends MDC {
 
   override def get(key: String): Option[() => Any] = Option(_map.get(key)).orElse(parent.flatMap(_.get(key)))
 
-  override def update(key: String, value: => Any): Unit = _map.put(key, () => value)
+  override def update(key: String, value: => Any): Option[Any] = Option(_map.put(key, () => value)).map(_())
 
-  override def contextualize[Return](key: String, value: => Any)(f: => Return): Return = {
-    update(key, value)
+  override def set(key: String, value: Option[Any]): Option[Any] = value match {
+    case Some(v) => update(key, v)
+    case None => remove(key)
+  }
+
+  override def context[Return](values: (String, MDCValue)*)(f: => Return): Return = {
+    val previous = values.map {
+      case (key, value) => key -> update(key, value.value())
+    }
     try {
       f
     } finally {
-      remove(key)
+      previous.foreach {
+        case (key, value) => set(key, value)
+      }
     }
   }
 
-  override def elapsed(key: String, timeFunction: () => Long = Time.function): Unit = {
-    val start = timeFunction()
-    update(key, s"${((timeFunction() - start) / 1000.0).f()}s")
-  }
-
-  override def remove(key: String): Unit = _map.remove(key)
+  override def remove(key: String): Option[Any] = Option(_map.remove(key)).map(_())
 
   override def contains(key: String): Boolean = map.contains(key)
 
