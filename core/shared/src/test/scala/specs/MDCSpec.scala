@@ -44,10 +44,16 @@ class MDCSpec extends AnyWordSpec with Matchers {
         logger.info("One")
         mdc.context("test" -> "testing2") {
           logger.info("Two")
+          var finished = false
           new Thread {
-            override def run(): Unit = logger.info("Three")
+            override def run(): Unit = {
+              logger.info("Three")
+              finished = true
+            }
           }.start()
-          Thread.sleep(10)
+          while (!finished) {
+            Thread.sleep(10)
+          }
         }
         logger.info("Four")
       }
