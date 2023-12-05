@@ -3,7 +3,7 @@ package specs
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.Logger
-import scribe.mdc.MDC
+import scribe.mdc._
 import scribe.writer.CacheWriter
 
 class MDCSpec extends AnyWordSpec with Matchers {
