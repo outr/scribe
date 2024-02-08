@@ -51,7 +51,7 @@ val fabricVersion: String = "1.12.8"
 val circeVersion = "0.14.6"
 
 // Testing
-val scalaTestVersion: String = "3.2.17"
+val scalaTestVersion: String = "3.2.18"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
