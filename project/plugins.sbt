@@ -16,4 +16,4 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.11")
 
 addSbtPlugin("com.github.sbt" % "sbt-git" % "2.0.1")
 
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.5.1" )
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.5.2" )
