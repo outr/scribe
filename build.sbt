@@ -9,7 +9,7 @@ val allScalaVersions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.13.0"
+ThisBuild / version := "3.13.1-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -205,9 +205,8 @@ lazy val jsonCirce = crossProject(JSPlatform, JVMPlatform)
     name := "scribe-json-circe",
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % circeVersion,
-      "io.circe" %% "circe-parser" % circeVersion % Test,
-      "io.circe" %% "circe-generic" % circeVersion % Test,
-      "io.circe" %% "circe-parser" % circeVersion % Test,
+      "io.circe" %% "circe-parser" % circeVersion,
+      "io.circe" %% "circe-generic" % circeVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
