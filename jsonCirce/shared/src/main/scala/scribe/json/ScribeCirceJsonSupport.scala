@@ -4,14 +4,14 @@ import io.circe.Json.Null
 import io.circe.syntax.EncoderOps
 import io.circe.{Json, JsonObject}
 import perfolation.long2Implicits
-import scribe.{LogRecord, lineSeparator}
+import scribe.LogRecord
 import scribe.mdc.MDC
 import scribe.message.Message
 import scribe.throwable.Trace
 
 import io.circe.generic.auto._
 
-object ScribeCirceJsonSupport extends ScribeJsonSupport[Json] {
+trait ScribeCirceJsonSupport extends ScribeJsonSupport[Json] {
   def json2String(json: Json): String = json.noSpaces
 
   override def logRecord2Json(record: LogRecord): Json = {
@@ -34,7 +34,7 @@ object ScribeCirceJsonSupport extends ScribeJsonSupport[Json] {
       case list => list.toVector.asJson
     }
     val data = MDC.map ++ record.data
-    JsonObject(
+    val json = JsonObject(
       "level" -> record.level.name.asJson,
       "levelValue" -> record.levelValue.asJson,
       "message" -> messages,
@@ -59,6 +59,9 @@ object ScribeCirceJsonSupport extends ScribeJsonSupport[Json] {
       "timeStamp" -> l.asJson,
       "date" -> l.t.F.asJson,
       "time" -> s"${l.t.T}.${l.t.L}${l.t.z}".asJson
-    )
-  }.asJson
+    ).asJson
+    jsonExtras(record, json)
+  }
 }
+
+object ScribeCirceJsonSupport extends ScribeCirceJsonSupport

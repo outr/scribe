@@ -16,6 +16,8 @@ trait ScribeJsonSupport[J] {
 
   def logRecord2Json(record: LogRecord): J
 
+  def jsonExtras(record: LogRecord, json: J): J = json
+
   def writer(writer: Writer): Writer = new Writer {
     override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
       val json = logRecord2Json(record)

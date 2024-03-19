@@ -9,7 +9,7 @@ import scribe.message.Message
 import scribe.throwable.{Trace, TraceElement}
 import perfolation._
 
-object ScribeFabricJsonSupport extends ScribeJsonSupport[Json] {
+trait ScribeFabricJsonSupport extends ScribeJsonSupport[Json] {
   private implicit val traceElementRW: RW[TraceElement] = RW.gen
   private implicit val traceRW: RW[Trace] = RW.gen
 
@@ -35,7 +35,7 @@ object ScribeFabricJsonSupport extends ScribeJsonSupport[Json] {
       case list => Arr(list.toVector)
     }
     val data = MDC.map ++ record.data
-    obj(
+    val json = obj(
       "level" -> record.level.name,
       "levelValue" -> record.levelValue,
       "message" -> messages,
@@ -61,5 +61,8 @@ object ScribeFabricJsonSupport extends ScribeJsonSupport[Json] {
       "date" -> l.t.F,
       "time" -> s"${l.t.T}.${l.t.L}${l.t.z}"
     )
+    jsonExtras(record, json)
   }
 }
+
+object ScribeFabricJsonSupport extends ScribeFabricJsonSupport
