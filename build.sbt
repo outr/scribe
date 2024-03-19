@@ -1,5 +1,5 @@
 // Scala versions
-val scala213 = "2.13.12"
+val scala213 = "2.13.13"
 
 val scala212 = "2.12.19"
 
