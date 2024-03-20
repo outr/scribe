@@ -29,11 +29,10 @@ class JsonWriterSpec extends AnyWordSpec with Matchers with Inside {
       logger.info("Hello, Json!")
       cache.output.length should be(1)
       inside(parse(cache.output.head.plainText).toOption.flatMap(_.asObject)) {
-        case Some(json) => {
+        case Some(json) =>
           json("line").flatMap(_.asNumber).flatMap(_.toLong) should be(Some(29))
           json("fileName").flatMap(_.asString) should be(Some("JsonWriterSpec.scala"))
-          json("messages").flatMap(_.as[List[String]].toOption) should be(Some(List("Hello, Json!")))
-        }
+          json("message").flatMap(_.asString) should be(Some("Hello, Json!"))
       }
     }
 
@@ -44,10 +43,10 @@ class JsonWriterSpec extends AnyWordSpec with Matchers with Inside {
       cache.output.length should be(1)
       inside(parse(cache.output.head.plainText).toOption.flatMap(_.asObject)) {
         case Some(json) =>
-          json("@timestamp").flatMap(_.asString) should be(Some("2021-01-02T08:00:00Z"))
-          json("line").flatMap(_.asNumber).flatMap(_.toLong) should be(Some(43))
+          json("date").flatMap(_.asString) should be(Some("2021-01-02"))
+          json("line").flatMap(_.asNumber).flatMap(_.toLong) should be(Some(42))
           json("fileName").flatMap(_.asString) should be(Some("JsonWriterSpec.scala"))
-          json("messages").flatMap(_.as[List[String]].toOption) should be(Some(List("Failure, Json!")))
+          json("message").flatMap(_.asString) should be(Some("Failure, Json!"))
       }
     }
 

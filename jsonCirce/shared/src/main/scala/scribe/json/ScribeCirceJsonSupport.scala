@@ -16,11 +16,24 @@ trait ScribeCirceJsonSupport extends ScribeJsonSupport[Json] {
 
   override def logRecord2Json(record: LogRecord): Json = {
     val l = record.timeStamp
+    def trace2Json(trace: Trace): Json = JsonObject(
+      "className" -> trace.className.asJson,
+      "message" -> trace.message.asJson,
+      "elements" -> trace.elements.map { e =>
+        JsonObject(
+          "class" -> e.`class`.asJson,
+          "fileName" -> e.fileName.asJson,
+          "method" -> e.method.asJson,
+          "line" -> e.line.asJson
+        )
+      }.asJson,
+      "cause" -> trace.cause.map(trace2Json).asJson
+    ).asJson
     val traces = record.messages.map(_.value).collect {
-      case trace: Trace => trace
+      case trace: Trace => trace2Json(trace)
     } match {
       case Nil => Null
-      case t :: Nil => t.asJson
+      case t :: Nil => t
       case list => list.asJson
     }
     val messages = record.messages.collect {
