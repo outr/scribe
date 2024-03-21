@@ -48,6 +48,12 @@ trait LoggerSupport[F] extends Any {
                                    line: sourcecode.Line,
                                    mdc: MDC): F = log(Level.Error, mdc, features: _*)
 
+  def fatal(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
+                                   fileName: sourcecode.FileName,
+                                   name: sourcecode.Name,
+                                   line: sourcecode.Line,
+                                   mdc: MDC): F = log(Level.Fatal, mdc, features: _*)
+
   /**
    * Includes MDC elapsed to show elapsed time within the block
    *
