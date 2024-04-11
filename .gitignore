@@ -7,3 +7,7 @@ out/
 benchmarks.json
 lowered.hnir
 *.iml
+.bloop
+project/project
+project/metals.sbt
+.metals
