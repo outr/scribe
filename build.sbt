@@ -40,7 +40,7 @@ ThisBuild / outputStrategy := Some(StdoutOutput)
 // Core
 val perfolationVersion: String = "1.2.9"
 val sourcecodeVersion: String = "0.3.1"
-val collectionCompatVersion: String = "2.11.0"
+val collectionCompatVersion: String = "2.12.0"
 val moduloadVersion: String = "1.1.7"
 
 val catsEffectVersion: String = "3.5.4"
