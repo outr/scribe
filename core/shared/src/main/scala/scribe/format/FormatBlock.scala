@@ -71,7 +71,7 @@ object FormatBlock {
 
       override protected def formatCached(record: LogRecord): LogOutput = {
         val l = record.timeStamp
-        val d = s"${l.t.Y}-${l.t.m}-${l.t.d}T${l.t.T}Z"
+        val d = s"${l.t.Y}-${l.t.m}-${l.t.d}T${l.t.T}${l.t.Z}"
         new TextOutput(d)
       }
     }
