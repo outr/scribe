@@ -9,7 +9,7 @@ val allScalaVersions = List(scala213, scala212, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.13.2"
+ThisBuild / version := "3.13.3"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -38,16 +38,16 @@ ThisBuild / parallelExecution := false
 ThisBuild / outputStrategy := Some(StdoutOutput)
 
 // Core
-val perfolationVersion: String = "1.2.9"
-val sourcecodeVersion: String = "0.3.1"
-val collectionCompatVersion: String = "2.12.0"
+val perfolationVersion: String = "1.2.10"
+val sourcecodeVersion: String = "0.4.1"
+val collectionCompatVersion: String = "2.11.0"
 val moduloadVersion: String = "1.1.7"
 
 val catsEffectVersion: String = "3.5.4"
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
-val fabricVersion: String = "1.14.2"
+val fabricVersion: String = "1.14.3"
 val circeVersion = "0.14.6"
 
 // Testing
@@ -87,7 +87,8 @@ val sourceMapSettings = List(
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, coreNative,
-    catsJS, catsJVM, catsNative,
+    // TODO: Re-enable catsNative when cats-effect supports ScalaNative 0.5
+    catsJS, catsJVM, //catsNative,
     fileJVM, fileNative,
     jsonJS, jsonJVM, jsonFabricJS, jsonFabricJVM, jsonCirceJS, jsonCirceJVM,
     slf4j, slf4j2, log4j, migration, config, slack, logstash
@@ -162,7 +163,9 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
     crossScalaVersions := allScalaVersions
   )
   .nativeSettings(
-    nativeLinkStubs := true,
+    nativeConfig ~= {
+      _.withLinkStubs(true)
+    },
     test := {}
   )
   .dependsOn(core)
