@@ -128,7 +128,7 @@ lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 lazy val coreNative = core.native
 
-lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-cats",
@@ -151,7 +151,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 
 lazy val catsJS = cats.js
 lazy val catsJVM = cats.jvm
-lazy val catsNative = cats.native
+//lazy val catsNative = cats.native
 
 lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)

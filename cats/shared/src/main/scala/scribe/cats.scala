@@ -19,6 +19,14 @@ object cats {
     r <- f(timer)
   } yield r
 
+  def timed[Return](f: => IO[Return])(log: (Return, Double) => IO[Unit]): IO[Return] = timer { timer =>
+    f.flatMap { r =>
+      val now = System.currentTimeMillis()
+      val elapsed = (now - timer.start) / 1000.0
+      log(r, elapsed).map(_ => r)
+    }
+  }
+
   def apply[F[_]: Sync]: Scribe[F] = new ScribeImpl[F](implicitly[Sync[F]])
 
   case class Timer(start: Long) { self =>
