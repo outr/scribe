@@ -39,22 +39,28 @@ ThisBuild / outputStrategy := Some(StdoutOutput)
 
 // Core
 val perfolationVersion: String = "1.2.11"
+
 val sourcecodeVersion: String = "0.4.1"
+
 val collectionCompatVersion: String = "2.11.0"
+
 val moduloadVersion: String = "1.1.7"
 
 val catsEffectVersion: String = "3.5.4"
+
 val catsEffectTestingVersion: String = "1.5.0"
 
 // JSON
 val fabricVersion: String = "1.14.4"
-val circeVersion = "0.14.6"
+
+val circeVersion = "0.14.7"
 
 // Testing
 val scalaTestVersion: String = "3.2.18"
 
 // SLF4J
 val slf4jVersion: String = "1.7.36"
+
 val slf4j2Version: String = "2.0.13"
 
 // Config Dependencies
@@ -65,13 +71,21 @@ val spiceVersion: String = "0.5.7"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.23.1"
+
 val disruptorVersion: String = "3.4.4"
+
 val logbackVersion: String = "1.2.11"
+
 val typesafeConfigVersion: String = "1.4.2"
+
 val scalaLoggingVersion: String = "3.9.5"
+
 val tinyLogVersion: String = "1.3.6"
+
 val log4sVersion: String = "1.10.0"
+
 val log4catsVersion: String = "2.3.2"
+
 val fs2Version: String = "3.2.9"
 
 // set source map paths from local directories to github path
