@@ -234,8 +234,18 @@ object Logger {
       }
     }
 
-    def installJUL(): Unit = Try(java.util.logging.LogManager.getLogManager.getLogger("").addHandler(JULHandler))
-      .failed.foreach { t =>
+    /**
+     * Attempts to install Scribe as a java.util.logging base handler.
+     *
+     * @param removeExistingHandlers removes all existing JUL handlers if true (defaults to true)
+     */
+    def installJUL(removeExistingHandlers: Boolean = true): Unit = Try {
+      val logger = java.util.logging.LogManager.getLogManager.getLogger("")
+      if (removeExistingHandlers) {
+        logger.getHandlers.foreach(logger.removeHandler)
+      }
+      logger.addHandler(JULHandler)
+    }.failed.foreach { t =>
       scribe.warn(s"Failed to install java.util.logging integration: ${t.getMessage}")
     }
   }
