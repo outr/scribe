@@ -67,7 +67,7 @@ val slf4j2Version: String = "2.0.13"
 val profigVersion: String = "3.4.1"
 
 // Slack and Logstash Dependencies
-val spiceVersion: String = "0.5.8"
+val spiceVersion: String = "0.5.9"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.23.1"
@@ -100,11 +100,11 @@ val sourceMapSettings = List(
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, coreNative,
-    // TODO: Re-enable catsNative when cats-effect supports ScalaNative 0.5
-    catsJS, catsJVM, //catsNative,
-    fileJVM, fileNative,
-    jsonJS, jsonJVM, jsonFabricJS, jsonFabricJVM, jsonCirceJS, jsonCirceJVM,
+    core.js, core.jvm, core.native,
+    // TODO: Re-enable cats.native when cats-effect supports ScalaNative 0.5
+    cats.js, cats.jvm, //cats.native,
+    fileModule.jvm, fileModule.native,
+    json.js, json.jvm, jsonFabric.js, jsonFabric.jvm, jsonCirce.js, jsonCirce.jvm,
     slf4j, slf4j2, log4j, migration, config, slack, logstash
   )
   .settings(
@@ -120,7 +120,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "com.outr" %%% "perfolation" % perfolationVersion,
       "com.lihaoyi" %%% "sourcecode" % sourcecodeVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     libraryDependencies ++= (
       if (scalaVersion.value.startsWith("2.12.")) {
@@ -134,13 +134,18 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.outr" %% "moduload" % moduloadVersion
+      "com.outr" %%% "moduload" % moduloadVersion
     )
   )
-
-lazy val coreJS = core.js
-lazy val coreJVM = core.jvm
-lazy val coreNative = core.native
+  .jsSettings(
+    libraryDependencies ++= Seq(
+      "io.github.cquiroz" %%% "scala-java-time" % "2.5.0" % Test,
+      "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.5.0" % Test
+    )
+  )
+  .nativeSettings(
+    coverageEnabled := false
+  )
 
 lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
   .crossType(CrossType.Full)
@@ -149,8 +154,8 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
     crossScalaVersions := allScalaVersions,
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-effect" % catsEffectVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-      "org.typelevel" %% "cats-effect-testing-scalatest" % catsEffectTestingVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestingVersion % "test"
     ),
     libraryDependencies ++= (
       if (scalaVersion.value.startsWith("2.12.")) {
@@ -163,16 +168,12 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
   )
   .dependsOn(core)
 
-lazy val catsJS = cats.js
-lazy val catsJVM = cats.jvm
-//lazy val catsNative = cats.native
-
 lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-file",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
@@ -184,22 +185,16 @@ lazy val fileModule = crossProject(JVMPlatform, NativePlatform)
   )
   .dependsOn(core)
 
-lazy val fileJVM = fileModule.jvm
-lazy val fileNative = fileModule.native
-
 lazy val json = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-json",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
   .dependsOn(core)
-
-lazy val jsonJS = json.js
-lazy val jsonJVM = json.jvm
 
 lazy val jsonFabric = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
@@ -207,76 +202,70 @@ lazy val jsonFabric = crossProject(JSPlatform, JVMPlatform)
     name := "scribe-json-fabric",
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "fabric-io" % fabricVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
   .dependsOn(json)
-
-lazy val jsonFabricJS = jsonFabric.js
-lazy val jsonFabricJVM = jsonFabric.jvm
 
 lazy val jsonCirce = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-json-circe",
     libraryDependencies ++= Seq(
-      "io.circe" %% "circe-core" % circeVersion,
-      "io.circe" %% "circe-parser" % circeVersion,
-      "io.circe" %% "circe-generic" % circeVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "io.circe" %%% "circe-core" % circeVersion,
+      "io.circe" %%% "circe-parser" % circeVersion,
+      "io.circe" %%% "circe-generic" % circeVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
   .dependsOn(json)
 
-lazy val jsonCirceJS = jsonCirce.js
-lazy val jsonCirceJVM = jsonCirce.jvm
-
 lazy val slf4j = project.in(file("slf4j"))
-  .dependsOn(coreJVM)
+  .dependsOn(core.jvm)
   .settings(
     name := "scribe-slf4j",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
 
 lazy val slf4j2 = project.in(file("slf4j2"))
-  .dependsOn(coreJVM)
+  .dependsOn(core.jvm)
   .settings(
     name := "scribe-slf4j2",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % slf4j2Version,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
 
 lazy val log4j = project.in(file("log4j"))
-  .dependsOn(coreJVM)
+  .dependsOn(core.jvm)
   .settings(
     name := "scribe-log4j",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
       "org.apache.logging.log4j" % "log4j-api" % log4jVersion,
       "org.apache.logging.log4j" % "log4j-core" % log4jVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
 
 lazy val migration = project.in(file("migration"))
-  .dependsOn(coreJVM)
+  .dependsOn(core.jvm)
   .settings(
     name := "scribe-migration",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
@@ -287,8 +276,8 @@ lazy val config = project.in(file("config"))
     name := "scribe-config",
     Test / publishArtifact := false,
     libraryDependencies ++= Seq(
-      "com.outr" %% "profig" % profigVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
+      "com.outr" %%% "profig" % profigVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
   )
@@ -301,7 +290,7 @@ lazy val slack = project.in(file("slack"))
       "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
   )
-  .dependsOn(coreJVM)
+  .dependsOn(core.jvm)
 
 lazy val logstash = project.in(file("logstash"))
   .settings(
@@ -311,10 +300,10 @@ lazy val logstash = project.in(file("logstash"))
       "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
   )
-  .dependsOn(coreJVM)
+  .dependsOn(core.jvm)
 
 lazy val benchmarks = project.in(file("benchmarks"))
-  .dependsOn(fileJVM, catsJVM)
+  .dependsOn(fileModule.jvm, cats.jvm)
   .enablePlugins(JmhPlugin)
   .settings(
     fork := true,
@@ -325,11 +314,11 @@ lazy val benchmarks = project.in(file("benchmarks"))
       "com.lmax" % "disruptor" % disruptorVersion,
       "ch.qos.logback" % "logback-classic" % logbackVersion,
       "com.typesafe" % "config" % typesafeConfigVersion,
-      "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+      "com.typesafe.scala-logging" %%% "scala-logging" % scalaLoggingVersion,
       "org.tinylog" % "tinylog" % tinyLogVersion,
-      "org.log4s" %% "log4s" % log4sVersion,
-      "org.typelevel" %% "log4cats-slf4j" % log4catsVersion,
-      "co.fs2" %% "fs2-core" % fs2Version
+      "org.log4s" %%% "log4s" % log4sVersion,
+      "org.typelevel" %%% "log4cats-slf4j" % log4catsVersion,
+      "co.fs2" %%% "fs2-core" % fs2Version
     )
   )
 
