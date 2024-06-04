@@ -143,6 +143,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.5.0" % Test
     )
   )
+  .nativeSettings(
+    coverageEnabled := false
+  )
 
 lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
   .crossType(CrossType.Full)
@@ -284,7 +287,7 @@ lazy val slack = project.in(file("slack"))
     name := "scribe-slack",
     crossScalaVersions := List(scala213, scala3),
     libraryDependencies ++= Seq(
-      "com.outr" %%% "spice-client-okhttp" % spiceVersion
+      "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
   )
   .dependsOn(core.jvm)
@@ -294,7 +297,7 @@ lazy val logstash = project.in(file("logstash"))
     name := "scribe-logstash",
     crossScalaVersions := List(scala213, scala3),
     libraryDependencies ++= Seq(
-      "com.outr" %%% "spice-client-okhttp" % spiceVersion
+      "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
   )
   .dependsOn(core.jvm)
