@@ -42,7 +42,7 @@ val perfolationVersion: String = "1.2.11"
 
 val sourcecodeVersion: String = "0.4.2"
 
-val collectionCompatVersion: String = "2.11.0"
+val collectionCompatVersion: String = "2.12.0"
 
 val moduloadVersion: String = "1.1.7"
 
@@ -123,10 +123,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     libraryDependencies ++= (
-      if (scalaVersion.value.startsWith("3.0")) {
-        Nil
+      if (scalaVersion.value.startsWith("2.12.")) {
+        List("org.scala-lang.modules" %%% "scala-collection-compat" % collectionCompatVersion)
       } else {
-        List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
+        Nil
       }
     ),
     Test / publishArtifact := false,
@@ -153,10 +153,10 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
       "org.typelevel" %% "cats-effect-testing-scalatest" % catsEffectTestingVersion % "test"
     ),
     libraryDependencies ++= (
-      if (scalaVersion.value.startsWith("3.0")) {
-        Nil
+      if (scalaVersion.value.startsWith("2.12.")) {
+        List("org.scala-lang.modules" %%% "scala-collection-compat" % collectionCompatVersion)
       } else {
-        List("org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion)
+        Nil
       }
     ),
     Test / publishArtifact := false
