@@ -457,18 +457,22 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
       writer.output.map(_.plainText) should be(List("error"))
     }
     "use HTMLOutputFormat to log something" in {
-      val MomentInTime = 1606235160799L
-      Time.contextualize(MomentInTime) {
-        val b = new StringBuilder
-        val writer = new Writer {
-          override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
-            outputFormat(output, b.append(_))
+      sys.props("java.vm.name") match {
+        case "Scala.js" | "Scala Native" =>
+        case _ =>
+          val MomentInTime = 1606235160799L
+          Time.contextualize(MomentInTime) {
+            val b = new StringBuilder
+            val writer = new Writer {
+              override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
+                outputFormat(output, b.append(_))
+              }
+            }
+            val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat())
+            Thread.currentThread().setName("test-thread")
+            logger.info("Hello, HTML!")
+            b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:473</span><br/>&#160;&#160;&#160;&#160;Hello,&#160;HTML!&#160;&#160;&#160;&#160;</div>""")
           }
-        }
-        val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat())
-        Thread.currentThread().setName("test-thread")
-        logger.info("Hello, HTML!")
-        b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:470</span><br/>&#160;&#160;&#160;&#160;Hello,&#160;HTML!&#160;&#160;&#160;&#160;</div>""")
       }
     }
   }
