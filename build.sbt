@@ -139,8 +139,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-time" % "2.5.0" % Test,
-      "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.5.0" % Test
+      "io.github.cquiroz" %%% "scala-java-time" % "2.6.0" % Test,
+      "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.6.0" % Test
     )
   )
   .nativeSettings(
