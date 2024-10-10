@@ -14,6 +14,6 @@ addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.4.7")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.12")
 
-addSbtPlugin("com.github.sbt" % "sbt-git" % "2.0.1")
+addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 
 addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.5.2" )
