@@ -12,8 +12,10 @@ import scribe.writer.Writer
   * @param emojiIcon the emoji to use when sending messages
   */
 class SlackWriter(slack: Slack, emojiIcon: String) extends Writer {
+  import cats.effect.unsafe.implicits.global
+
   override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = slack.request(
     message = output.plainText,
     emojiIcon = emojiIcon
-  )
+  ).unsafeRunAndForget()
 }
