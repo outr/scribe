@@ -23,7 +23,7 @@ case class LogstashWriter(url: URL,
   private lazy val client = HttpClient.url(url).post
 
   override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
-    val io = log(record)
+    val io = log(record) // Does nothing
     if (!asynchronous) {
       io.unsafeRunSync()
     }
