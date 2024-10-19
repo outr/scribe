@@ -53,7 +53,7 @@ val catsEffectTestingVersion: String = "1.5.0"
 // JSON
 val fabricVersion: String = "1.15.4"
 
-val circeVersion = "0.14.7"
+val circeVersion = "0.14.10"
 
 // Testing
 val scalaTestVersion: String = "3.2.18"
