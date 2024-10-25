@@ -13,6 +13,7 @@ trait LogFeature {
 object LogFeature {
   def apply(f: LogRecord => LogRecord): LogFeature = (record: LogRecord) => f(record)
 
+  implicit def stringFunc2LoggableMessage(f: () => String): LogFeature = LoggableMessage.string2LoggableMessage(f())
   implicit def string2LoggableMessage(s: => String): LogFeature = LoggableMessage.string2LoggableMessage(s)
   implicit def logOutput2LoggableMessage(lo: => LogOutput): LogFeature = LoggableMessage[LogOutput](identity)(lo)
   implicit def throwable2LoggableMessage(throwable: => Throwable): LogFeature = TraceLoggableMessage(throwable)

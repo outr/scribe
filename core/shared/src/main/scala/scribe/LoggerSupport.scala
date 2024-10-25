@@ -18,11 +18,23 @@ trait LoggerSupport[F] extends Any {
     log(record)
   }
 
+  def trace(message: => String)(implicit pkg: sourcecode.Pkg,
+                                fileName: sourcecode.FileName,
+                                name: sourcecode.Name,
+                                line: sourcecode.Line,
+                                mdc: MDC): F = log(Level.Trace, mdc, message)
+
   def trace(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
                                    fileName: sourcecode.FileName,
                                    name: sourcecode.Name,
                                    line: sourcecode.Line,
                                    mdc: MDC): F = log(Level.Trace, mdc, features: _*)
+
+  def debug(message: => String)(implicit pkg: sourcecode.Pkg,
+                                fileName: sourcecode.FileName,
+                                name: sourcecode.Name,
+                                line: sourcecode.Line,
+                                mdc: MDC): F = log(Level.Debug, mdc, message)
 
   def debug(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
                                    fileName: sourcecode.FileName,
@@ -30,11 +42,23 @@ trait LoggerSupport[F] extends Any {
                                    line: sourcecode.Line,
                                    mdc: MDC): F = log(Level.Debug, mdc, features: _*)
 
+  def info(message: => String)(implicit pkg: sourcecode.Pkg,
+                               fileName: sourcecode.FileName,
+                               name: sourcecode.Name,
+                               line: sourcecode.Line,
+                               mdc: MDC): F = log(Level.Info, mdc, message)
+
   def info(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
                                   fileName: sourcecode.FileName,
                                   name: sourcecode.Name,
                                   line: sourcecode.Line,
                                   mdc: MDC): F = log(Level.Info, mdc, features: _*)
+
+  def warn(message: => String)(implicit pkg: sourcecode.Pkg,
+                               fileName: sourcecode.FileName,
+                               name: sourcecode.Name,
+                               line: sourcecode.Line,
+                               mdc: MDC): F = log(Level.Warn, mdc, message)
 
   def warn(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
                                   fileName: sourcecode.FileName,
@@ -42,11 +66,23 @@ trait LoggerSupport[F] extends Any {
                                   line: sourcecode.Line,
                                   mdc: MDC): F = log(Level.Warn, mdc, features: _*)
 
+  def error(message: => String)(implicit pkg: sourcecode.Pkg,
+                                fileName: sourcecode.FileName,
+                                name: sourcecode.Name,
+                                line: sourcecode.Line,
+                                mdc: MDC): F = log(Level.Error, mdc, message)
+
   def error(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
                                    fileName: sourcecode.FileName,
                                    name: sourcecode.Name,
                                    line: sourcecode.Line,
                                    mdc: MDC): F = log(Level.Error, mdc, features: _*)
+
+  def fatal(message: => String)(implicit pkg: sourcecode.Pkg,
+                                fileName: sourcecode.FileName,
+                                name: sourcecode.Name,
+                                line: sourcecode.Line,
+                                mdc: MDC): F = log(Level.Fatal, mdc, message)
 
   def fatal(features: LogFeature*)(implicit pkg: sourcecode.Pkg,
                                    fileName: sourcecode.FileName,

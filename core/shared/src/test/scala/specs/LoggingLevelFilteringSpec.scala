@@ -3,7 +3,7 @@ package specs
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scribe.filter._
-import scribe.{Level, Logger}
+import scribe.{Level, LogFeature, Logger}
 import scribe.writer.CacheWriter
 
 class LoggingLevelFilteringSpec extends AnyWordSpec with Matchers {
@@ -52,6 +52,28 @@ class LoggingLevelFilteringSpec extends AnyWordSpec with Matchers {
       }
       traceWriter.consumeMessages { list =>
         list should be(List("Trace1"))
+      }
+      debugWriter.consumeMessages { list =>
+        list should be(Nil)
+      }
+    }
+    "configure the logger for only errors" in {
+      Logger.reset()
+      Logger.root
+        .clearHandlers()
+        .withHandler(writer = errorWriter, minimumLevel = Some(Level.Error))
+        .replace()
+    }
+    "verify an info message doesn't get evaluated" in {
+      scribe.info {
+        throw new RuntimeException("Should not evaluate!")
+        "testing"
+      }
+      errorWriter.consumeMessages { list =>
+        list should be(Nil)
+      }
+      traceWriter.consumeMessages { list =>
+        list should be(Nil)
       }
       debugWriter.consumeMessages { list =>
         list should be(Nil)
