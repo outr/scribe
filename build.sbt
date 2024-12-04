@@ -48,7 +48,7 @@ val moduloadVersion: String = "1.1.7"
 
 val catsEffectVersion: String = "3.5.4"
 
-val catsEffectTestingVersion: String = "1.5.0"
+val catsEffectTestingVersion: String = "1.6.0"
 
 // JSON
 val fabricVersion: String = "1.15.4"
