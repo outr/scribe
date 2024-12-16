@@ -44,7 +44,7 @@ val collectionCompatVersion: String = "2.12.0"
 
 val moduloadVersion: String = "1.1.7"
 
-val rapidVersion: String = "0.2.1"
+val rapidVersion: String = "0.2.2"
 
 val catsEffectVersion: String = "3.5.7"
 
