@@ -1,11 +1,8 @@
 package scribe.logstash
 
-import cats.effect.IO
-import cats.effect.unsafe.implicits.global
-import cats.instances.future
-import fabric.io.JsonFormatter
 import fabric.rw._
 import perfolation._
+import rapid.Task
 import scribe.LogRecord
 import scribe.mdc.MDC
 import scribe.output.LogOutput
@@ -23,13 +20,13 @@ case class LogstashWriter(url: URL,
   private lazy val client = HttpClient.url(url).post
 
   override def write(record: LogRecord, output: LogOutput, outputFormat: OutputFormat): Unit = {
-    val io = log(record) // Does nothing
+    val task = log(record) // Does nothing
     if (!asynchronous) {
-      io.unsafeRunSync()
+      task.sync()
     }
   }
 
-  def log(record: LogRecord): IO[HttpResponse] = {
+  def log(record: LogRecord): Task[HttpResponse] = {
     val l = record.timeStamp
     val timestamp = s"${l.t.F}T${l.t.T}.${l.t.L}${l.t.z}"
     val r: LogstashRecord = LogstashRecord(

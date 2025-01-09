@@ -5,7 +5,7 @@ import moduload.Moduload
 import profig._
 
 object ScribeConfig extends Moduload {
-  implicit def rw: ReaderWriter[ScribeConfig] = ccRW
+  implicit def rw: RW[ScribeConfig] = RW.gen
 
   private var _loaded: Boolean = false
   def loaded: Boolean = _loaded

@@ -1,8 +1,8 @@
 package scribe.slack
 
-import cats.effect.IO
 import fabric.Json
 import fabric.rw._
+import rapid.Task
 import scribe.format._
 import scribe.handler.LogHandler
 import scribe.{Level, Logger}
@@ -17,7 +17,7 @@ class Slack(serviceHash: String, botName: String) {
   def request(message: String,
               markdown: Boolean = true,
               attachments: List[Slack.Attachment] = Nil,
-              emojiIcon: String = ":fire:"): IO[HttpResponse] = {
+              emojiIcon: String = ":fire:"): Task[HttpResponse] = {
     val m = SlackMessage(
       text = message,
       username = botName,
