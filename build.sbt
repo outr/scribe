@@ -7,7 +7,7 @@ val allScalaVersions = List(scala213, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.16.0"
+ThisBuild / version := "3.16.1-SNAPSHOT"
 ThisBuild / scalaVersion := scala213
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
@@ -43,8 +43,6 @@ val sourcecodeVersion: String = "0.4.2"
 val collectionCompatVersion: String = "2.12.0"
 
 val moduloadVersion: String = "1.1.7"
-
-val rapidVersion: String = "0.7.0"
 
 val catsEffectVersion: String = "3.5.7"
 
@@ -101,7 +99,6 @@ val sourceMapSettings = List(
 lazy val root = project.in(file("."))
   .aggregate(
     core.js, core.jvm, core.native,
-    rapid.jvm,
     // TODO: Re-enable cats.native when cats-effect supports ScalaNative 0.5
     cats.js, cats.jvm, //cats.native,
     fileModule.jvm, fileModule.native,
@@ -147,19 +144,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .nativeSettings(
     coverageEnabled := false
   )
-
-lazy val rapid = crossProject(JVMPlatform)
-  .crossType(CrossType.Full)
-  .settings(
-    name := "scribe-rapid",
-    crossScalaVersions := allScalaVersions,
-    libraryDependencies ++= Seq(
-      "com.outr" %% "rapid-core" % rapidVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-    ),
-    Test / publishArtifact := false
-  )
-  .dependsOn(core)
 
 lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
   .crossType(CrossType.Full)
