@@ -115,7 +115,7 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
     })
   }
 
-  override final def log(record: LogRecord): Unit = {
+  override final def log(record: => LogRecord): Unit = {
     val r = if (data.nonEmpty) {
       record.copy(data = data ++ record.data)
     } else {
