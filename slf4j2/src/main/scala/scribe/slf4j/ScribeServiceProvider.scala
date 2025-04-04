@@ -13,7 +13,7 @@ class ScribeServiceProvider extends SLF4JServiceProvider {
 
   override def getMDCAdapter: MDCAdapter = ScribeMDCAdapter
 
-  override def getRequestedApiVersion: String = "2.0.16"
+  override def getRequestedApiVersion: String = "2.0.17"
 
   override def initialize(): Unit = {}
 }
