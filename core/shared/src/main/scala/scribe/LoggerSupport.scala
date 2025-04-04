@@ -6,7 +6,7 @@ import scribe.message.LoggableMessage
 import scala.language.experimental.macros
 
 trait LoggerSupport[F] extends Any {
-  def log(record: LogRecord): F
+  def log(record: => LogRecord): F
 
   def log(level: Level, mdc: MDC, features: LogFeature*)
          (implicit pkg: sourcecode.Pkg,

@@ -1,7 +1,7 @@
 // Scala versions
 val scala213 = "2.13.16"
 
-val scala3 = "3.3.4"
+val scala3 = "3.3.5"
 
 val allScalaVersions = List(scala213, scala3)
 
@@ -44,7 +44,7 @@ val collectionCompatVersion: String = "2.12.0"
 
 val moduloadVersion: String = "1.1.7"
 
-val catsEffectVersion: String = "3.5.7"
+val catsEffectVersion: String = "3.6.0"
 
 val catsEffectTestingVersion: String = "1.6.0"
 
@@ -59,7 +59,7 @@ val scalaTestVersion: String = "3.2.19"
 // SLF4J
 val slf4jVersion: String = "1.7.36"
 
-val slf4j2Version: String = "2.0.16"
+val slf4j2Version: String = "2.0.17"
 
 // Config Dependencies
 val profigVersion: String = "3.4.18"

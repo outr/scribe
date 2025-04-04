@@ -11,7 +11,7 @@ package object scribe extends LoggerSupport[Unit] {
   protected[scribe] var disposables = Set.empty[() => Unit]
 
   @inline
-  override final def log(record: LogRecord): Unit = Logger(record.className).log(record)
+  override final def log(record: => LogRecord): Unit = Logger(record.className).log(record)
 
   override def log(level: Level, mdc: MDC, features: LogFeature*)
                   (implicit pkg: Pkg, fileName: FileName, name: Name, line: Line): Unit =
