@@ -36,5 +36,12 @@ class LogFeatureSpec extends AnyWordSpec with Matchers {
         record.data.get("foo") should be(None)
       }
     }
+    "log a Throwable" in {
+      val t: Throwable = new RuntimeException("Testing")
+      scribe.info(t.getMessage, t)
+      writer.consume { records =>
+        records.map(_.messages.map(_.value.toString.takeWhile(_ != '('))) should be(List(List("Testing", "Trace")))
+      }
+    }
   }
 }

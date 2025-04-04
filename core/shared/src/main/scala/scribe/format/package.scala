@@ -79,7 +79,7 @@ package object format {
     var lastLineNumber: Option[Int] = None
     var previousOutput: Option[LogOutput] = None
     FormatBlock { logRecord =>
-      synchronized {
+      self.synchronized {
         val threadName = logRecord.thread.getName
         val distance = logRecord.timeStamp - lastTime
         val level = logRecord.level
