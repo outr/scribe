@@ -103,7 +103,7 @@ lazy val root = project.in(file("."))
     cats.js, cats.jvm, //cats.native,
     fileModule.jvm, fileModule.native,
     json.js, json.jvm, jsonFabric.js, jsonFabric.jvm, jsonCirce.js, jsonCirce.jvm,
-    slf4j, slf4j2, log4j, migration, config, slack, logstash
+    slf4j, slf4j2, log4j, migration, config, slack, logstash, jpl
   )
   .settings(
     name := "scribe",
@@ -255,6 +255,19 @@ lazy val log4j = project.in(file("log4j"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions
+  )
+
+lazy val jpl = project.in(file("jpl"))
+  .dependsOn(core.jvm)
+  .settings(
+    name := "scribe-jpl",
+    Test / publishArtifact := false,
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
+    ),
+    crossScalaVersions := allScalaVersions,
+    javacOptions := Seq("--release", "11"),
+    Test / fork := true
   )
 
 lazy val migration = project.in(file("migration"))
