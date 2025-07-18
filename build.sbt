@@ -266,7 +266,7 @@ lazy val jpl = project.in(file("jpl"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
     ),
     crossScalaVersions := allScalaVersions,
-    javacOptions := Seq("--release", "11"),
+    javacOptions := Seq("--release", "9"),
     Test / fork := true
   )
 

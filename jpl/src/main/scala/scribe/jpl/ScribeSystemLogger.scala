@@ -1,7 +1,6 @@
 package scribe.jpl
 
-import scribe.Level
-import scribe.LogRecord
+import scribe.{Level, LogRecord}
 import scribe.message.LoggableMessage
 import scribe.throwable.TraceLoggableMessage
 
@@ -30,7 +29,7 @@ class ScribeSystemLogger(name: String) extends System.Logger {
       val message = localize(bundle, msg)
       log(
         scribeLevel,
-        List(LoggableMessage.string2LoggableMessage(message)) ++ Option(thrown).map(t => TraceLoggableMessage(t))
+        LoggableMessage.string2LoggableMessage(message) :: Option(thrown).map(t => TraceLoggableMessage(t)).toList
       )
     }
   }

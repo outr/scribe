@@ -13,7 +13,6 @@ import scribe.{Level, LogRecord, Logger, format}
 import java.util.{ListResourceBundle, TimeZone}
 
 class JPLSpec extends AnyWordSpec with Matchers {
-  TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
   private val className = "spec.JPLSpec"
   private var logs: List[LogRecord] = Nil
@@ -68,6 +67,12 @@ class JPLSpec extends AnyWordSpec with Matchers {
       val s = logOutput.head
       s should be("2018.11.16 07:49:51:920 [INFO ] spec.JPLSpec - Hello World!")
     }
+    "log exceptions" in {
+      val logger = System.getLogger(className)
+      logger.log(System.Logger.Level.ERROR, "Error!", new RuntimeException("Exception"))
+      val s = logOutput.head
+      s should startWith("2018.11.16 07:49:51:920 [ERROR] spec.JPLSpec - Error!\njava.lang.RuntimeException: Exception")
+    }
     "use the given ResourceBundle" in {
       val bundle = new ListResourceBundle {
         def getContents: Array[Array[AnyRef]] =
@@ -96,7 +101,7 @@ class JPLSpec extends AnyWordSpec with Matchers {
     "make sure logging nulls doesn't error" in {
       val logger = System.getLogger(className)
       logger.log(System.Logger.Level.ERROR, null: String)
-      logs.length should be(5)
+      logs.length should be(6)
       logOutput.head should be("2018.11.16 07:49:51:920 [ERROR] spec.JPLSpec - null")
     }
   }
