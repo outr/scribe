@@ -1,6 +1,7 @@
 package scribe.json
 
 import fabric._
+import fabric.dsl._
 import fabric.rw._
 import fabric.io.JsonFormatter
 import scribe.LogRecord

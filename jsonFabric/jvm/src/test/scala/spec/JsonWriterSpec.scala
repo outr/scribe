@@ -1,6 +1,7 @@
 package spec
 
 import fabric._
+import fabric.dsl._
 import fabric.io.{Format, JsonParser}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -28,7 +29,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       cache.output.length should be(1)
       val json = JsonParser(cache.output.head.plainText, Format.Json)
       json("date").asString should be("2021-01-01")
-      json("line").asInt should be(27)
+      json("line").asInt should be(28)
       json("fileName").asString should be("JsonWriterSpec.scala")
       json("message") should be(Str("Hello, Json!"))
     }
@@ -39,7 +40,7 @@ class JsonWriterSpec extends AnyWordSpec with Matchers {
       cache.output.length should be(1)
       val json = JsonParser(cache.output.head.plainText, Format.Json)
       json("date").asString should be("2021-01-02")
-      json("line").asInt should be(38)
+      json("line").asInt should be(39)
       json("fileName").asString should be("JsonWriterSpec.scala")
       json("message") should be(Str("Failure, Json!"))
     }
