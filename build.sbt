@@ -68,7 +68,7 @@ val profigVersion: String = "3.4.18"
 val spiceVersion: String = "0.10.15"
 
 // Benchmarking Dependencies
-val log4jVersion: String = "2.25.1"
+val log4jVersion: String = "2.25.2"
 
 val disruptorVersion: String = "3.4.4"
 
