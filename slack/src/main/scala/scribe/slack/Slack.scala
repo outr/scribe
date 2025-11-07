@@ -1,6 +1,5 @@
 package scribe.slack
 
-import fabric.Json
 import fabric.rw._
 import rapid.Task
 import scribe.format._

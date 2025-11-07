@@ -7,16 +7,14 @@ val allScalaVersions = List(scala213, scala3)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.17.0"
-ThisBuild / scalaVersion := scala213
+ThisBuild / version := "3.18.0-SNAPSHOT"
+ThisBuild / scalaVersion := scala3
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
-ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("releases")
 ThisBuild / resolvers += Resolver.JCenterRepository
 //javaOptions in run += "-agentpath:/opt/YourKit-JavaProfiler-2020.9/bin/linux-x86-64/libyjpagent.so=delay=10000,listen=all"
 
-ThisBuild / sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeCentralHost
-ThisBuild / publishMavenStyle := true
+ThisBuild / sonatypeCredentialHost := Sonatype.sonatypeCentralHost
 ThisBuild / publishTo := sonatypePublishToBundle.value
 ThisBuild / sonatypeProfileName := "com.outr"
 ThisBuild / licenses := Seq("MIT" -> url("https://github.com/outr/scribe/blob/master/LICENSE"))
@@ -65,7 +63,7 @@ val slf4j2Version: String = "2.0.17"
 val profigVersion: String = "3.4.18"
 
 // Slack and Logstash Dependencies
-val spiceVersion: String = "0.10.15"
+val spiceVersion: String = "0.10.16"
 
 // Benchmarking Dependencies
 val log4jVersion: String = "2.25.2"

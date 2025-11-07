@@ -13,7 +13,6 @@ import scribe.{Level, LogRecord, Logger, format}
 import java.util.{ListResourceBundle, TimeZone}
 
 class JPLSpec extends AnyWordSpec with Matchers {
-
   private val className = "spec.JPLSpec"
   private var logs: List[LogRecord] = Nil
   private var logOutput: List[String] = Nil
