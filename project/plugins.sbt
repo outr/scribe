@@ -12,7 +12,7 @@ addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.1")
 
 addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.4.8")
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.4.1")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.4.2")
 
 addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 
