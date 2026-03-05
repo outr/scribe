@@ -71,7 +71,17 @@ object FormatBlock {
 
       override protected def formatCached(record: LogRecord): LogOutput = {
         val l = record.timeStamp
-        val d = s"${l.t.Y}-${l.t.m}-${l.t.d}T${l.t.T}${l.t.Z}"
+        val offsetMillis = l.t.timeZoneOffsetMillis
+        val offset = if (offsetMillis == 0) {
+          "Z"
+        } else {
+          val sign = if (offsetMillis < 0) "-" else "+"
+          val totalMinutes = Math.abs(offsetMillis) / 60000
+          val hh = totalMinutes / 60
+          val mm = totalMinutes % 60
+          f"$sign$hh%02d:$mm%02d"
+        }
+        val d = s"${l.t.Y}-${l.t.m}-${l.t.d}T${l.t.T}$offset"
         new TextOutput(d)
       }
     }

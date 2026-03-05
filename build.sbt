@@ -37,7 +37,7 @@ ThisBuild / useSuperShell := false
 Global / logBuffered := false
 
 // Core
-val perfolationVersion: String = "1.2.12"
+val perfolationVersion: String = "1.3.0"
 
 val sourcecodeVersion: String = "0.4.4"
 
