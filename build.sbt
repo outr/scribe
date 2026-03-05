@@ -160,7 +160,9 @@ lazy val overlay = crossProject(JVMPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.jline" % "jline" % jlineVersion,
       "org.fusesource.jansi" % "jansi" % jansiVersion
-    ),
+    )
+  )
+  .jvmSettings(
     fork := true,
     connectInput := true
   )
