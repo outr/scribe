@@ -44,11 +44,33 @@ object Formatter {
     messages,
     mdc
   )
+
   /**
-   * A multi-line formatter that includes expanded log information on the first line, and indented and auto-wrapping
-   * message and MDC on the following line(s). The default format.
+   * A multi-line formatter that includes expanded log information on the first, and auto-wrapping messages and MDC on
+   * the following line(s). No longer tabs messages as it can cause issues with copying from the console. See
+   * advancedTabbed if you want that style. The default format.
    */
   lazy val advanced: Formatter = Formatter.fromBlocks(
+    groupBySecond(
+      cyan(bold(dateFull)),
+      space,
+      italic(threadName),
+      space,
+      levelColored,
+      space,
+      green(position),
+      newLine
+    ),
+    messages,
+    mdc
+  )
+
+  /**
+   * A multi-line formatter that includes expanded log information on the first line, and indented and auto-wrapping
+   * message and MDC on the following line(s). This was previously the default, but the indentation can cause issues if
+   * you need to copy multi-line messages.
+   */
+  lazy val advancedTabbed: Formatter = Formatter.fromBlocks(
     groupBySecond(
       cyan(bold(dateFull)),
       space,

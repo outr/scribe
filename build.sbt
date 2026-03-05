@@ -32,6 +32,9 @@ ThisBuild / developers := List(
 ThisBuild / parallelExecution := false
 
 ThisBuild / outputStrategy := Some(StdoutOutput)
+ThisBuild / useSuperShell := false
+
+Global / logBuffered := false
 
 // Core
 val perfolationVersion: String = "1.2.12"
@@ -45,6 +48,11 @@ val moduloadVersion: String = "1.1.7"
 val catsEffectVersion: String = "3.6.3"
 
 val catsEffectTestingVersion: String = "1.7.0"
+
+// Overlay
+val jlineVersion: String = "3.30.6"
+
+val jansiVersion: String = "2.4.2"
 
 // JSON
 val fabricVersion: String = "1.19.0"
@@ -97,6 +105,7 @@ val sourceMapSettings = List(
 lazy val root = project.in(file("."))
   .aggregate(
     core.js, core.jvm, core.native,
+    overlay.jvm, overlay.native,
     // TODO: Re-enable cats.native when cats-effect supports ScalaNative 0.5
     cats.js, cats.jvm, //cats.native,
     fileModule.jvm, fileModule.native,
@@ -142,6 +151,20 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .nativeSettings(
     coverageEnabled := false
   )
+
+lazy val overlay = crossProject(JVMPlatform, NativePlatform)
+  .crossType(CrossType.Full)
+  .settings(
+    name := "scribe-overlay",
+    crossScalaVersions := allScalaVersions,
+    libraryDependencies ++= Seq(
+      "org.jline" % "jline" % jlineVersion,
+      "org.fusesource.jansi" % "jansi" % jansiVersion
+    ),
+    fork := true,
+    connectInput := true
+  )
+  .dependsOn(core)
 
 lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
   .crossType(CrossType.Full)
@@ -294,7 +317,7 @@ lazy val config = project.in(file("config"))
 lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
-    crossScalaVersions := List(scala213, scala3),
+    crossScalaVersions := allScalaVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
@@ -304,7 +327,7 @@ lazy val slack = project.in(file("slack"))
 lazy val logstash = project.in(file("logstash"))
   .settings(
     name := "scribe-logstash",
-    crossScalaVersions := List(scala213, scala3),
+    crossScalaVersions := allScalaVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
