@@ -3,8 +3,8 @@
 set -e
 
 sbt +clean
-sbt +compile
-sbt +test
+sbt +compile +slack/compile +logstash/compile
+sbt +test +slack/test +logstash/test
 sbt docs/mdoc
-sbt +publishSigned
+sbt +publishSigned +slack/publishSigned +logstash/publishSigned
 sbt sonatypeBundleRelease

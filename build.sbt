@@ -114,7 +114,7 @@ lazy val root = project.in(file("."))
     cats.js, cats.jvm, //cats.native,
     fileModule.jvm, fileModule.native,
     json.js, json.jvm, jsonFabric.js, jsonFabric.jvm, jsonCirce.js, jsonCirce.jvm,
-    slf4j, slf4j2, log4j, migration, config, slack, logstash, jpl
+    slf4j, slf4j2, log4j, migration, config, jpl
   )
   .settings(
     name := "scribe",
