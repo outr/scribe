@@ -6,12 +6,18 @@ import scribe.output._
 import scala.language.implicitConversions
 
 object ANSIOutputFormat extends OutputFormat {
-  private var fg: Option[ANSI] = None
-  private var bg: Option[ANSI] = None
-  private var bold: Boolean = false
-  private var italic: Boolean = false
-  private var underline: Boolean = false
-  private var strikethrough: Boolean = false
+  private class State {
+    var fg: Option[ANSI] = None
+    var bg: Option[ANSI] = None
+    var bold: Boolean = false
+    var italic: Boolean = false
+    var underline: Boolean = false
+    var strikethrough: Boolean = false
+  }
+
+  private val threadState = new ThreadLocal[State] {
+    override def initialValue(): State = new State
+  }
 
   override def begin(stream: String => Unit): Unit = {}
 
@@ -19,15 +25,17 @@ object ANSIOutputFormat extends OutputFormat {
     stream(ANSI.ctrl.Reset)
   }
 
-  def apply(output: LogOutput, stream: String => Unit): Unit = synchronized {
+  def apply(output: LogOutput, stream: String => Unit): Unit = {
+    val state = threadState.get()
+
     def reset(stream: String => Unit): Unit = {
       stream(ANSI.ctrl.Reset)
-      fg.map(_.ansi).foreach(stream)
-      bg.map(_.ansi).foreach(stream)
-      if (bold) stream(ANSI.fx.Bold.ansi)
-      if (italic) stream(ANSI.fx.Italic.ansi)
-      if (underline) stream(ANSI.fx.Underline.ansi)
-      if (strikethrough) stream(ANSI.fx.Strikethrough.ansi)
+      state.fg.map(_.ansi).foreach(stream)
+      state.bg.map(_.ansi).foreach(stream)
+      if (state.bold) stream(ANSI.fx.Bold.ansi)
+      if (state.italic) stream(ANSI.fx.Italic.ansi)
+      if (state.underline) stream(ANSI.fx.Underline.ansi)
+      if (state.strikethrough) stream(ANSI.fx.Strikethrough.ansi)
     }
 
     output match {
@@ -36,73 +44,73 @@ object ANSIOutputFormat extends OutputFormat {
       case o: ColoredOutput =>
         val color = color2fg(o.color)
         stream(color.ansi)
-        val previous = fg
-        fg = Some(color)
+        val previous = state.fg
+        state.fg = Some(color)
         try {
           apply(o.output, stream)
         } finally {
-          fg = previous
+          state.fg = previous
           reset(stream)
         }
       case o: BackgroundColoredOutput =>
         val color = color2bg(o.color)
         stream(color.ansi)
-        val previous = bg
-        bg = Some(color)
+        val previous = state.bg
+        state.bg = Some(color)
         try {
           apply(o.output, stream)
         } finally {
-          bg = previous
+          state.bg = previous
           reset(stream)
         }
       case o: URLOutput =>
-        stream("""]8;;""")
+        stream("""]8;;""")
         stream(o.url)
-        stream("""\""")
+        stream("""\""")
         if (o.output == EmptyOutput) {
           stream(o.url)
         } else {
           apply(o.output, stream)
         }
-        stream("""]8;;\""")
+        stream("""]8;;\""")
       case o: BoldOutput =>
-        val previous = bold
-        bold = true
+        val previous = state.bold
+        state.bold = true
         try {
           stream(ANSI.fx.Bold.ansi)
           apply(o.output, stream)
         } finally {
-          bold = previous
+          state.bold = previous
           reset(stream)
         }
       case o: ItalicOutput =>
-        val previous = italic
-        italic = true
+        val previous = state.italic
+        state.italic = true
         try {
           stream(ANSI.fx.Italic.ansi)
           apply(o.output, stream)
         } finally {
-          italic = previous
+          state.italic = previous
           reset(stream)
         }
       case o: UnderlineOutput =>
-        val previous = underline
-        underline = true
+        val previous = state.underline
+        state.underline = true
         try {
           stream(ANSI.fx.Underline.ansi)
           apply(o.output, stream)
         } finally {
-          underline = previous
+          state.underline = previous
           reset(stream)
         }
       case o: StrikethroughOutput =>
-        val previous = strikethrough
-        strikethrough = true
+        val previous = state.strikethrough
+        state.strikethrough = true
         try {
           stream(ANSI.fx.Strikethrough.ansi)
           apply(o.output, stream)
         } finally {
-          strikethrough = previous
+          state.strikethrough = previous
           reset(stream)
         }
       case EmptyOutput => // Nothing to do
