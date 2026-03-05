@@ -38,8 +38,7 @@ case class MaxSize(maxSizeInBytes: Long, separator: String) extends FileNamePart
       rollPaths(writer, i + 1)
       val nextPath = fileFor(writer, i + 1)
       val lastModified = path.lastModified()
-      LogFile.copy(path, nextPath)
-      LogFile.truncate(path)
+      LogFile.move(path, nextPath)
       nextPath.setLastModified(lastModified)
     }
   }
