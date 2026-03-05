@@ -3,7 +3,11 @@ val scala213 = "2.13.18"
 
 val scala3 = "3.3.7"
 
+val scala3Next = "3.8.2"
+
 val allScalaVersions = List(scala213, scala3)
+
+val spiceScalaVersions = List(scala213, scala3Next)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
@@ -319,7 +323,7 @@ lazy val config = project.in(file("config"))
 lazy val slack = project.in(file("slack"))
   .settings(
     name := "scribe-slack",
-    crossScalaVersions := allScalaVersions,
+    crossScalaVersions := spiceScalaVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
@@ -329,7 +333,7 @@ lazy val slack = project.in(file("slack"))
 lazy val logstash = project.in(file("logstash"))
   .settings(
     name := "scribe-logstash",
-    crossScalaVersions := allScalaVersions,
+    crossScalaVersions := spiceScalaVersions,
     libraryDependencies ++= Seq(
       "com.outr" %% "spice-client-okhttp" % spiceVersion
     )
