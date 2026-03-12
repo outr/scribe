@@ -471,7 +471,10 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
             val logger = Logger().orphan().withHandler(writer = writer, outputFormat = HTMLOutputFormat())
             Thread.currentThread().setName("test-thread")
             logger.info("Hello, HTML!")
-            b.toString() should be("""<div class="record"><span style="color: cyan"><strong>2020.11.24&#160;10:26:00:799</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:473</span><br/>Hello,&#160;HTML!</div>""")
+            // Build expected string dynamically to avoid timezone sensitivity
+            val ts = MomentInTime.t
+            val expectedDate = s"${ts.Y}.${ts.m}.${ts.d}&#160;${ts.T}:${ts.L}"
+            b.toString() should be(s"""<div class="record"><span style="color: cyan"><strong>$expectedDate</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:473</span><br/>Hello,&#160;HTML!</div>""")
           }
       }
     }
