@@ -3,6 +3,7 @@ package spec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.slf4j.{LoggerFactory, MDC}
+import perfolation._
 import scribe.format._
 import scribe.handler.LogHandler
 import scribe.output.LogOutput
@@ -11,10 +12,8 @@ import scribe.util.Time
 import scribe.writer.Writer
 import scribe.{Level, LogRecord, Logger, format}
 
-import java.util.TimeZone
-
 class SLF4JSpec extends AnyWordSpec with Matchers {
-  TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+  private val MomentInTime = 1542376191920L
 
   private var logs: List[LogRecord] = Nil
   private var logOutput: List[String] = Nil
@@ -30,12 +29,14 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
     formatter = formatter"$dateFull ${string("[")}$levelColoredPaddedRight${string("]")} ${green(position)} - ${format.messages}$mdc"
   )
 
-  "SLF4J" should {
-    TimeZone.setDefault(TimeZone.getTimeZone("America/Chicago"))
+  // Build expected date prefix dynamically to avoid timezone sensitivity
+  private val ts = MomentInTime.t
+  private val expectedDate = s"${ts.Y}.${ts.m}.${ts.d} ${ts.T}:${ts.L}"
 
+  "SLF4J" should {
     "set the time to an arbitrary value" in {
       OutputFormat.default = ASCIIOutputFormat
-      Time.function = () => 1542376191920L
+      Time.function = () => MomentInTime
     }
     "remove existing handlers from Root" in {
       Logger.root.clearHandlers().replace()
@@ -61,25 +62,25 @@ class SLF4JSpec extends AnyWordSpec with Matchers {
     "verify Scribe wrote value" in {
       logOutput.size should be(1)
       val s = logOutput.head
-      s should be("2018.11.16 07:49:51:920 [INFO ] spec.SLF4JSpec - Hello World!")
+      s should be(s"$expectedDate [INFO ] spec.SLF4JSpec - Hello World!")
     }
     "use MDC" in {
       MDC.put("name", "John Doe")
       val logger = LoggerFactory.getLogger(getClass)
       logger.info("A generic name")
-      logOutput.head should be("2018.11.16 07:49:51:920 [INFO ] spec.SLF4JSpec - A generic name (name: John Doe)")
+      logOutput.head should be(s"$expectedDate [INFO ] spec.SLF4JSpec - A generic name (name: John Doe)")
     }
     "clear MDC" in {
       MDC.clear()
       val logger = LoggerFactory.getLogger(getClass)
       logger.info("MDC cleared")
-      logOutput.head should be("2018.11.16 07:49:51:920 [INFO ] spec.SLF4JSpec - MDC cleared")
+      logOutput.head should be(s"$expectedDate [INFO ] spec.SLF4JSpec - MDC cleared")
     }
     "make sure logging nulls doesn't error" in {
       val logger = LoggerFactory.getLogger(getClass)
       logger.error(null)
       logs.length should be(3)
-      logOutput.head should be("2018.11.16 07:49:51:920 [ERROR] spec.SLF4JSpec - null")
+      logOutput.head should be(s"$expectedDate [ERROR] spec.SLF4JSpec - null")
     }
   }
 }
