@@ -51,7 +51,7 @@ val moduloadVersion: String = "1.1.7"
 
 val catsEffectVersion: String = "3.6.3"
 
-val catsEffectTestingVersion: String = "1.7.0"
+val catsEffectTestingVersion: String = "1.8.0"
 
 // Overlay
 val jlineVersion: String = "3.30.6"
