@@ -56,7 +56,7 @@ val catsEffectTestingVersion: String = "1.7.0"
 // Overlay
 val jlineVersion: String = "3.30.6"
 
-val jansiVersion: String = "2.4.2"
+val jansiVersion: String = "2.4.3"
 
 // JSON
 val fabricVersion: String = "1.19.0"
