@@ -49,9 +49,9 @@ val collectionCompatVersion: String = "2.12.0"
 
 val moduloadVersion: String = "1.1.7"
 
-val catsEffectVersion: String = "3.6.3"
+val catsEffectVersion: String = "3.7.0"
 
-val catsEffectTestingVersion: String = "1.7.0"
+val catsEffectTestingVersion: String = "1.8.0"
 
 // Overlay
 val jlineVersion: String = "3.30.6"
@@ -99,7 +99,7 @@ val fs2Version: String = "3.2.9"
 // set source map paths from local directories to github path
 val sourceMapSettings = List(
   scalacOptions ++= git.gitHeadCommit.value.map { headCommit =>
-    val compilerJsSourceMapFlag = if (scalaVersion.value.startsWith("2.")) "-P:scalajs:mapSourceURI" else "-scalajs-mapSourceURI"    
+    val compilerJsSourceMapFlag = if (scalaVersion.value.startsWith("2.")) "-P:scalajs:mapSourceURI" else "-scalajs-mapSourceURI"
     val local = baseDirectory.value.toURI
     val remote = s"https://raw.githubusercontent.com/outr/scribe/$headCommit/"
     s"$compilerJsSourceMapFlag:$local->$remote"
@@ -110,8 +110,7 @@ lazy val root = project.in(file("."))
   .aggregate(
     core.js, core.jvm, core.native,
     overlay.jvm, overlay.native,
-    // TODO: Re-enable cats.native when cats-effect supports ScalaNative 0.5
-    cats.js, cats.jvm, //cats.native,
+    cats.js, cats.jvm, cats.native,
     fileModule.jvm, fileModule.native,
     json.js, json.jvm, jsonFabric.js, jsonFabric.jvm, jsonCirce.js, jsonCirce.jvm,
     slf4j, slf4j2, log4j, migration, config, jpl
@@ -172,7 +171,7 @@ lazy val overlay = crossProject(JVMPlatform, NativePlatform)
   )
   .dependsOn(core)
 
-lazy val cats = crossProject(JVMPlatform, JSPlatform) //, NativePlatform)
+lazy val cats = crossProject(JVMPlatform, JSPlatform , NativePlatform)
   .crossType(CrossType.Full)
   .settings(
     name := "scribe-cats",
