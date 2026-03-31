@@ -116,10 +116,21 @@ case class Logger(parentId: Option[LoggerId] = Some(Logger.RootId),
   }
 
   override final def log(record: => LogRecord): Unit = {
-    val r = if (data.nonEmpty) {
-      record.copy(data = data ++ record.data)
+    val r0 = record
+    val r1 = overrideClassName match {
+      case Some(cn) if r0.className != cn => r0.copy(className = cn)
+      case _ => r0
+    }
+    val r2 = if (r1.loggerName.isEmpty) {
+      val names = Logger.namesFor(id)
+      if (names.nonEmpty) r1.copy(loggerName = Some(names.head)) else r1
     } else {
-      record
+      r1
+    }
+    val r = if (data.nonEmpty) {
+      r2.copy(data = data ++ r2.data)
+    } else {
+      r2
     }
     r.modify(modifiers).foreach { r =>
       handlers.foreach(_.log(r))

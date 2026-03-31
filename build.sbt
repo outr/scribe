@@ -11,7 +11,7 @@ val spiceScalaVersions = List(scala213, scala3Next)
 
 name := "scribe"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "3.18.0"
+ThisBuild / version := "3.19.0-SNAPSHOT"
 ThisBuild / scalaVersion := scala3
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation")
 ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")

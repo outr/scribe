@@ -121,6 +121,7 @@ package object format {
   )
   def classNameSimple: FormatBlock = FormatBlock.ClassNameSimple
   def methodName: FormatBlock = FormatBlock.MethodName
+  def loggerName: FormatBlock = FormatBlock.LoggerName
   def position: FormatBlock = FormatBlock.Position
   def positionAbbreviated: FormatBlock = FormatBlock.Position.abbreviate(maxLength = PositionAbbreviationLength)
   def positionSimple: FormatBlock = FormatBlock.PositionSimple

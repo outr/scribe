@@ -20,7 +20,8 @@ case class LogRecord(level: Level,
                      column: Option[Int],
                      thread: Thread = Thread.currentThread(),
                      data: Map[String, () => Any] = Map.empty,
-                     timeStamp: Long = Time()) {
+                     timeStamp: Long = Time(),
+                     loggerName: Option[String] = None) {
   protected var appliedModifierIds = Set.empty[String]
 
   final val id: Long = LogRecord.incrementor.incrementAndGet()

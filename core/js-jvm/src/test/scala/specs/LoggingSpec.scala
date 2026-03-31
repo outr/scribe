@@ -10,7 +10,7 @@ import scribe.format.{FormatBlock, Formatter}
 import scribe.handler.LogHandler
 import scribe.message.LoggableMessage
 import scribe.modify.{LevelFilter, LogBooster}
-import scribe.output.format.{HTMLOutputFormat, OutputFormat}
+import scribe.output.format.{ASCIIOutputFormat, HTMLOutputFormat, OutputFormat}
 import scribe.output.{LogOutput, TextOutput}
 import scribe.util.Time
 import scribe.writer.{CacheWriter, Writer}
@@ -477,6 +477,43 @@ class LoggingSpec extends AnyWordSpec with Matchers with Logging {
             b.toString() should be(s"""<div class="record"><span style="color: cyan"><strong>$expectedDate</strong></span>&#160;<em>test-thread</em>&#160;<span style="color: blue">INFO</span>&#160;<span style="color: green">specs.LoggingSpec.LoggingSpec:473</span><br/>Hello,&#160;HTML!</div>""")
           }
       }
+    }
+    "use overrideClassName to change the class name in output" in {
+      import scribe.format.{FormatterInterpolator, className => fmtClassName, messages}
+      val cached = new CacheWriter
+      val fmt = formatter"$fmtClassName - $messages"
+      val logger = Logger("overrideTest")
+        .orphan()
+        .withClassNameOverride("custom.OverriddenClass")
+        .withHandler(writer = cached, formatter = fmt, outputFormat = ASCIIOutputFormat)
+      logger.replace()
+      logger.info("override test")
+      cached.output.map(_.plainText) should have size 1
+      val text = cached.output.head.plainText
+      text should be("custom.OverriddenClass - override test")
+    }
+    "use loggerName FormatBlock to display the logger name" in {
+      import scribe.format.{FormatterInterpolator, loggerName => fmtLoggerName, messages}
+      val cached = new CacheWriter
+      val fmt = formatter"$fmtLoggerName - $messages"
+      val logger = Logger("MyCustomLogger")
+        .orphan()
+        .withHandler(writer = cached, formatter = fmt, outputFormat = ASCIIOutputFormat)
+      logger.replace()
+      logger.info("hello from named logger")
+      cached.output.head.plainText should be("MyCustomLogger - hello from named logger")
+    }
+    "use loggerName FormatBlock falling back to className when no logger name" in {
+      import scribe.format.{FormatterInterpolator, loggerName => fmtLoggerName, messages}
+      val cached = new CacheWriter
+      val fmt = formatter"$fmtLoggerName - $messages"
+      val logger = Logger()
+        .orphan()
+        .withHandler(writer = cached, formatter = fmt, outputFormat = ASCIIOutputFormat)
+      logger.info("hello from anonymous logger")
+      val text = cached.output.head.plainText
+      text should include("specs.LoggingSpec")
+      text should endWith(" - hello from anonymous logger")
     }
   }
 

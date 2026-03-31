@@ -164,6 +164,10 @@ object FormatBlock {
     override def format(record: LogRecord): LogOutput = new TextOutput(record.methodName.getOrElse(""))
   }
 
+  object LoggerName extends FormatBlock {
+    override def format(record: LogRecord): LogOutput = new TextOutput(record.loggerName.getOrElse(record.className))
+  }
+
   object ClassAndMethodName extends FormatBlock {
     override def format(record: LogRecord): LogOutput = {
       val className = ClassName.format(record).plainText
