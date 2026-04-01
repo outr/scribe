@@ -93,7 +93,8 @@ public final class ScribeSystemLogger implements System.Logger {
                 Option.empty(),            // column
                 Thread.currentThread(),
                 m,
-                Time$.MODULE$.apply()
+                Time$.MODULE$.apply(),
+                Option.empty()             // loggerName
         );
 
         Function0<LogRecord> f0 = FunctionConverters.asScalaFromSupplier(() -> record);
