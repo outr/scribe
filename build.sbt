@@ -69,7 +69,7 @@ val scalaTestVersion: String = "3.2.20"
 // SLF4J
 val slf4jVersion: String = "1.7.36"
 
-val slf4j2Version: String = "2.0.17"
+val slf4j2Version: String = "2.0.18"
 
 // Config Dependencies
 val profigVersion: String = "3.5.0"
