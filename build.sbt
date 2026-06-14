@@ -59,7 +59,7 @@ val jlineVersion: String = "3.30.9"
 val jansiVersion: String = "2.4.3"
 
 // JSON
-val fabricVersion: String = "1.21.2"
+val fabricVersion: String = "1.30.0"
 
 val circeVersion = "0.14.15"
 
