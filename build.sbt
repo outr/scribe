@@ -61,7 +61,7 @@ val jansiVersion: String = "2.4.3"
 // JSON
 val fabricVersion: String = "1.21.2"
 
-val circeVersion = "0.14.15"
+val circeVersion = "0.14.16"
 
 // Testing
 val scalaTestVersion: String = "3.2.20"
