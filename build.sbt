@@ -47,7 +47,7 @@ val sourcecodeVersion: String = "0.4.4"
 
 val collectionCompatVersion: String = "2.12.0"
 
-val moduloadVersion: String = "1.1.7"
+val moduloadVersion: String = "1.1.8"
 
 val catsEffectVersion: String = "3.7.0"
 
