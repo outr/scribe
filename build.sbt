@@ -43,7 +43,7 @@ Global / logBuffered := false
 // Core
 val perfolationVersion: String = "1.3.1"
 
-val sourcecodeVersion: String = "0.4.4"
+val sourcecodeVersion: String = "0.4.5"
 
 val collectionCompatVersion: String = "2.12.0"
 
